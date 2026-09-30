@@ -1,0 +1,1422 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>11. Latent Variable Models and MLE &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/09-latent-variable-models';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/09-latent-variable-models.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="12. Bayesian Latent Variable Models and Variational Inference" href="10-variational-inference.html" />
+    <link rel="prev" title="10. Applications and Broader Impact: Sampling and Monte Carlo" href="impact-2-sampling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/09-latent-variable-models.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/09-latent-variable-models.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Latent Variable Models and MLE</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-latent-variable-models">11.1. Motivation for Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-model-for-birth-weights">A Model for Birth Weights</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-similarity-measure-for-distributions-kullbackleibler-divergence">A Similarity Measure for Distributions: Kullback–Leibler Divergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-membership-as-a-latent-variable">Class Membership as a Latent Variable</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-latent-variable-models">11.2. Common Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-variable-models">Latent Variable Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#item-response-models">Item-Response Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#applications">Applications</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#factor-analysis-models">Factor Analysis Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Applications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization">11.3. Maximum Likelihood Estimation for Latent Variable Models: Expectation Maximization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-expectation-maximization-algorithm">The Expectation Maximization Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-em-for-the-gaussian-mixture-model-of-birth-weight">Example: EM for the Gaussian Mixture Model of Birth Weight</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-m-step">Solving the M-Step</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example: EM for the Gaussian Mixture Model of Birth Weight</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#all-together">All Together</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-em-for-the-gaussian-mixture-model-of-birth-weight">Implementing EM for the Gaussian Mixture Model of Birth Weight</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-log-likelihood-during-training">Sanity Check: Log-Likelihood During Training</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">11.4. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-latent-variables-for-data-augmentation">Problem Set: Latent Variables for Data Augmentation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">11.5. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="latent-variable-models-and-mle">
+<h1><span class="section-number">11. </span>Latent Variable Models and MLE<a class="headerlink" href="#latent-variable-models-and-mle" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/KWv5k1QaXIk" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Motivation for Latent Variable Models</p></li>
+<li><p>Common Latent Variable Models</p></li>
+<li><p>Maximum Likelihood Estimation for Latent Variable Models: Expectation Maximization</p></li>
+<li><p>Mixture of Gaussians</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="motivation-for-latent-variable-models">
+<h2><span class="section-number">11.1. </span>Motivation for Latent Variable Models<a class="headerlink" href="#motivation-for-latent-variable-models" title="Link to this heading">#</a></h2>
+<section id="a-model-for-birth-weights">
+<h3>A Model for Birth Weights<a class="headerlink" href="#a-model-for-birth-weights" title="Link to this heading">#</a></h3>
+<p>Recall our model for birth weigths, <span class="math notranslate nohighlight">\(Y_1,\ldots, Y_N\)</span>. We <em>posited</em> that the birth weights are iid normally distributed with known <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(Y_n \sim \mathcal{N}(\mu, 1)\)</span>.</p>
+<p>Compare the maximum likelihood model and the Bayesian model for bith weight. Which model would you use to make clinical decisions? What’s hard about this comparison?</p>
+<figure class="align-center" id="fig-09-compare">
+<a class="reference internal image-reference" href="../_images/compare.jpg"><img alt="../_images/compare.jpg" src="../_images/compare.jpg" style="width: 569px;" />
+</a>
+</figure>
+</section>
+<section id="a-similarity-measure-for-distributions-kullbackleibler-divergence">
+<h3>A Similarity Measure for Distributions: Kullback–Leibler Divergence<a class="headerlink" href="#a-similarity-measure-for-distributions-kullbackleibler-divergence" title="Link to this heading">#</a></h3>
+<p>Visually comparing models to the <em><strong>empirical distribution</strong></em> of the data is impractical. Fortunately, there are a large number of quantitative measures for comparing two distributions, these are called <em><strong>divergence measures</strong></em>. For example, the <em><strong>Kullback–Leibler (KL) Divergence</strong></em> is defined for two distributions <span class="math notranslate nohighlight">\(p(\theta)\)</span> and <span class="math notranslate nohighlight">\(q(\theta)\)</span> supported on <span class="math notranslate nohighlight">\(\Theta\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[
+D_{\text{KL}}[q \,\|\, p] = \int_{\Theta} \log\left[\frac{q(\theta)}{p(\theta)} \right] q(\theta)d\theta
+\]</div>
+<p>The KL-divergence <span class="math notranslate nohighlight">\(D_{\text{KL}}[q \,\|\, p]\)</span> is bounded below by 0, which happens if and only if <span class="math notranslate nohighlight">\(q=p\)</span>.
+The KL-divergence has information theoretic interpretations that we will explore later in the course.</p>
+<p><strong>Note:</strong> The KL-divergence is defined in terms of the pdf’s of <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>. If <span class="math notranslate nohighlight">\(p\)</span> is a distribution from which we only have samples and not the pdf (like the empirical distribution), we can nontheless estimate <span class="math notranslate nohighlight">\(D_{\text{KL}}[q \,\|\, p]\)</span>. Techniques that estimate the KL-divergence from samples are called <em><strong>non-parametric</strong></em>. We will use them later in the course.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Why is the KL bounded below by 0?</p>
+<p>First let’s see why the answer isn’t obvious. Recall that the <em><strong>KL divergence is the expected log ratio between two distribution</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+D_{\text{KL}} [q\| p] = \mathbb{E}_{q}\left[ \log \frac{q}{p}\right]
+\]</div>
+<p>Now, we know that when <span class="math notranslate nohighlight">\(q\)</span> is less than <span class="math notranslate nohighlight">\(p\)</span> (i.e. <span class="math notranslate nohighlight">\(q/p &lt; 1\)</span>) then the log can be an arbitrarily negative number. So it’s not immediately obvious that the expected value of this fraction should always be non-negative!</p>
+<p><strong>An intuitive explanation:</strong></p>
+<p>Let the blue curve be q and the red be p. We have <span class="math notranslate nohighlight">\(q &lt; p\)</span> from <span class="math notranslate nohighlight">\((-\infty, 55)\)</span>, on this part of the domain <span class="math notranslate nohighlight">\(\log(q/p)\)</span> is negative. On <span class="math notranslate nohighlight">\([55, \infty)\)</span>, <span class="math notranslate nohighlight">\(\log(q/p)\)</span> is nonnegative.</p>
+<p>However, since we are sampling from <span class="math notranslate nohighlight">\(q\)</span>, and <span class="math notranslate nohighlight">\(q\)</span>’s mass is largely over <span class="math notranslate nohighlight">\([55, \infty)\)</span>, the log fraction <span class="math notranslate nohighlight">\(\log(q/p\)</span>) will tend to be nonnegative.</p>
+<figure class="align-center" id="fig-09-kl">
+<a class="reference internal image-reference" href="../_images/kl.png"><img alt="../_images/kl.png" src="../_images/kl.png" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>A formal argument:</strong></p>
+<p>There are many proofs of the non-negativity of the KL. Ranging from the very complex to the very simple. Here is one that just involves a bit of algebra:</p>
+<p>We want to show that <span class="math notranslate nohighlight">\(D_{\text{KL}}[q\|p] \geq 0\)</span>. Instead we’ll show, equivalently, that <span class="math notranslate nohighlight">\(-D_{\text{KL}}[q\|p] \leq 0\)</span> (we’re choosing show the statement about the negative KL, just so we can flip the fraction on the inside of the log and cancel terms):</p>
+<figure class="align-center" id="fig-09-derivation">
+<a class="reference internal image-reference" href="../_images/derivation.png"><img alt="../_images/derivation.png" src="../_images/derivation.png" style="width: 501px;" />
+</a>
+</figure>
+<figure class="align-center" id="fig-09-log">
+<a class="reference internal image-reference" href="../_images/log.png"><img alt="../_images/log.png" src="../_images/log.png" style="width: 561px;" />
+</a>
+</figure>
+</div>
+</section>
+<section id="class-membership-as-a-latent-variable">
+<h3>Class Membership as a Latent Variable<a class="headerlink" href="#class-membership-as-a-latent-variable" title="Link to this heading">#</a></h3>
+<p>We observe that there are three <em><strong>clusters</strong></em> in the data. We posit that there are three <em><strong>classes</strong></em> of infants in the study: infants with low birth weights, infants with normal birth weights and those with high birth weights. The numbers of infants in the classes are not equal.</p>
+<p>For each observation <span class="math notranslate nohighlight">\(Y_n\)</span>, we model its class membership <span class="math notranslate nohighlight">\(Z_n\)</span> as a categorical variable,</p>
+<div class="math notranslate nohighlight">
+\[Z_n\sim Cat(\pi),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\pi_i\)</span> in <span class="math notranslate nohighlight">\(\pi = [\pi_1, \pi_2, \pi_3]\)</span> is the class proportion. Note that we don’t have the class membership <span class="math notranslate nohighlight">\(Z_n\)</span> in the data! So <span class="math notranslate nohighlight">\(Z_n\)</span> is called a <em><strong>latent variable</strong></em>.</p>
+<p>Depending on the class, the <span class="math notranslate nohighlight">\(n\)</span>-th birth weight <span class="math notranslate nohighlight">\(Y_n\)</span> will have a different normal distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+Y_n | Z_n \sim \mathcal{N}\left(\mu_{Z_n}, \sigma^2_{Z_n}\right)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu_{Z_n}\)</span> is one of the three class means <span class="math notranslate nohighlight">\([\mu_1, \mu_2, \mu_3]\)</span> and <span class="math notranslate nohighlight">\(\sigma^2_{Z_n}\)</span> is one of the three class variances <span class="math notranslate nohighlight">\([\sigma^2_1, \sigma^2_2, \sigma^2_3]\)</span>.</p>
+</section>
+</section>
+<section id="common-latent-variable-models">
+<h2><span class="section-number">11.2. </span>Common Latent Variable Models<a class="headerlink" href="#common-latent-variable-models" title="Link to this heading">#</a></h2>
+<section id="latent-variable-models">
+<h3>Latent Variable Models<a class="headerlink" href="#latent-variable-models" title="Link to this heading">#</a></h3>
+<p>Models that include an observed variable <span class="math notranslate nohighlight">\(Y\)</span> and at least one unobserved variable <span class="math notranslate nohighlight">\(Z\)</span> are called <em><strong>latent variable models</strong></em>. In general, our model can allow <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(Z\)</span> to interact in many different ways. Today, we will study models with one type of interaction:</p>
+<figure class="align-center" id="fig-09-graphical-model">
+<a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 592px;" />
+</a>
+</figure>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Gaussian Mixture Models (GMMs)</p>
+<p>In a <em><strong>Gaussian Mixture Model (GMM)</strong></em>, we posit that the observed data <span class="math notranslate nohighlight">\(Y\)</span> is generated by a mixture, <span class="math notranslate nohighlight">\(\pi=[\pi_1, \ldots, \pi_K]\)</span>, of <span class="math notranslate nohighlight">\(K\)</span> number of Gaussians with means <span class="math notranslate nohighlight">\(\mu = [\mu_1, \ldots, \mu_K]\)</span> and covariances <span class="math notranslate nohighlight">\(\Sigma = [\Sigma_1, \ldots, \Sigma_K]\)</span>. For each observation <span class="math notranslate nohighlight">\(Y_n\)</span> the class of the observation <span class="math notranslate nohighlight">\(Z_n\)</span> is a latent variable that indicates which of the <span class="math notranslate nohighlight">\(K\)</span> Gaussian is responsible for generating <span class="math notranslate nohighlight">\(Y_n\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim Cat(\pi),\\
+Y_n | Z_n&amp;\sim \mathcal{N}(\mu_{Z_n}, \Sigma_{Z_n}),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(\sum_{k=1}^K \pi_k = 1\)</span>.</p>
+<p>GMMs are examples of <em><strong>model based clustering</strong></em> - breaking up a data set into natural clusters based on a statistical model fitted to the data.</p>
+</div>
+</section>
+<section id="item-response-models">
+<h3>Item-Response Models<a class="headerlink" href="#item-response-models" title="Link to this heading">#</a></h3>
+<p>In <em><strong>item-response models</strong></em>, we measure an real-valued unobserved trait <span class="math notranslate nohighlight">\(Z\)</span> of a subject by performing a series of experiments with binary observable outcomes, <span class="math notranslate nohighlight">\(Y\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim \mathcal{N}(\mu, \sigma^2),\\
+\theta_n &amp;= g(Z_n)\\
+Y_n|Z_n &amp;\sim Ber(\theta_n),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(g\)</span> is some fixed function of <span class="math notranslate nohighlight">\(Z_n\)</span>.</p>
+<section id="applications">
+<h4>Applications<a class="headerlink" href="#applications" title="Link to this heading">#</a></h4>
+<p>Item response models are used to model the way “underlying intelligence” <span class="math notranslate nohighlight">\(Z\)</span> relates to scores <span class="math notranslate nohighlight">\(Y\)</span> on IQ tests.</p>
+<p>Item response models can also be used to model the way “suicidality” <span class="math notranslate nohighlight">\(Z\)</span> relates to answers on mental health surveys. Building a good model may help to infer when a patient is at psychiatric risk based on in-take surveys at points of care through out the health-care system.</p>
+</section>
+</section>
+<section id="factor-analysis-models">
+<h3>Factor Analysis Models<a class="headerlink" href="#factor-analysis-models" title="Link to this heading">#</a></h3>
+<p>In <em><strong>factor analysis models</strong></em>, we posit that the observed data <span class="math notranslate nohighlight">\(Y\)</span> with many measurements is generated by a small set of unobserved factors <span class="math notranslate nohighlight">\(Z\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim \mathcal{N}(0, I),\\
+Y_n|Z_n &amp;\sim \mathcal{N}(\mu + \Lambda Z_n, \Phi),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span>, <span class="math notranslate nohighlight">\(Z_n\in \mathbb{R}^{D'}\)</span> and <span class="math notranslate nohighlight">\(Y_n\in \mathbb{R}^{D}\)</span>. We typically assume that <span class="math notranslate nohighlight">\(D'\)</span> is much smaller than <span class="math notranslate nohighlight">\(D\)</span>.</p>
+<section id="id1">
+<h4>Applications<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<p>Factor analysis models are useful for biomedical data, where we typically measure a large number of characteristics of a patient (e.g. blood pressure, heart rate, etc), but these characteristics are all generated by a small list of health factors (e.g. diabetes, cancer, hypertension etc). Building a good model means we may be able to infer the list of health factors of a patient from their observed measurements.</p>
+</section>
+</section>
+</section>
+<section id="maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization">
+<h2><span class="section-number">11.3. </span>Maximum Likelihood Estimation for Latent Variable Models: Expectation Maximization<a class="headerlink" href="#maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization" title="Link to this heading">#</a></h2>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Expectation Maximization: Estimating the MLE for Latent Variable Models</p>
+<p>Given a latent variable model <span class="math notranslate nohighlight">\(p(Y, Z| \phi, \theta) = p(Y | Z, \phi) p(Z|\theta)\)</span>, we are interested computing the MLE of parameters <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta_{\text{MLE}}, \phi_{\text{MLE}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \ell(\theta, \phi)\\
+&amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \log \prod_{n=1}^N \int_{\Omega_Z}  p(y_n, z_n | \theta, \phi) dz\\
+&amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \log \prod_{n=1}^N \int_{\Omega_Z}  p(y_n| z_n, \phi)p(z_n| \theta) dz
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Omega_Z\)</span> is the domain of <span class="math notranslate nohighlight">\(Z\)</span>.
+Why is this an hard optimization problem?</p>
+<p>There are two major problems:</p>
+<ol class="arabic simple">
+<li><p>the product in the integrand</p></li>
+<li><p>gradients cannot be past the integral (i.e. we cannot easily compute the gradient to solve the optimization problem).</p></li>
+</ol>
+<p>We solve these two problems by:</p>
+<ol class="arabic simple">
+<li><p>pushing the log past the integral so that it can be applied to the integrand (Jensen’s Inequality)</p></li>
+<li><p>introducing an auxiliary variables <span class="math notranslate nohighlight">\(q(Z_n)\)</span> to allow the gradient to be pushed past the integral.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{\theta, \phi}{\mathrm{max}}\; \ell(\theta, \phi) &amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \log \prod_{n=1}^N\int_{\Omega_Z} \left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}q(z_n)\right) dz\\
+&amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \log\,\prod_{n=1}^N\mathbb{E}_{Z\sim q(Z)} \left[  \frac{p(y_n, Z|\theta, \phi)}{q(Z)}\right]\\
+&amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \sum_{n=1}^N \log \mathbb{E}_{Z\sim q(Z)} \left[\,\left( \frac{p(y_n, Z|\theta, \phi)}{q(Z)}\right)\right]\\
+&amp;\geq \underset{\theta, \phi, q}{\mathrm{max}}\; \underbrace{\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]}_{ELBO(\theta, \phi)}, \quad (\text{Jensen's Inequality})\\
+\end{aligned}\end{split}\]</div>
+<p>We call <span class="math notranslate nohighlight">\(\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[ \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z)}\right)\right]\)</span> the Evidence Lower Bound (ELBO). Note that maximizing the ELBO will yield a lower bound of the maximum value of the log likelihood. Although <strong>the optimal point of the ELBO may not be the optimal point of the log likelihood</strong>, we nontheless prefer to optimize the ELBO because the gradients, with respect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>, of the ELBO are easier to compute:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\theta, \phi} ELBO(\theta, \phi) = \nabla_{\theta, \phi}\left[ \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]\right] =  \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \nabla_{\theta, \phi} \left( \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right)\right]
+\]</div>
+<p>Note that we can push the gradient <span class="math notranslate nohighlight">\(\nabla_{\theta, \phi}\)</span> past the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{Z_n\sim q(Z)}\)</span> since the expectation is not computed with respect to our optimization variables!</p>
+<p>Rather than optimizing the ELBO over all variables <span class="math notranslate nohighlight">\(\theta, \phi, q\)</span> (this would be hard), we optimize one set of variables at a time:</p>
+<p><strong>Step I: the M-step</strong>
+Optimize the ELBO with respect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^*, \phi^* = \underset{\theta, \phi}{\mathrm{max}}\; ELBO(\theta, \phi, q) &amp;= \underset{\theta, \phi}{\mathrm{max}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\;  \sum_{n=1}^N \int_{\Omega_Z} \log\,\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\; \sum_{n=1}^N \int_{\Omega_Z} \log\,\left(p(y_n, z_n|\theta, \phi)\right) q(z_n)dz_n - \underbrace{\int_{\Omega_Z} \log \left(q(z_n)\right)q(z_n) dz_n}_{\text{constant with respect to }\theta, \phi}\\
+&amp;\equiv \underset{\theta, \phi}{\mathrm{max}}\;\sum_{n=1}^N \int_{\Omega_Z} \log\,\left(p(y_n, z_n|\theta, \phi)\right) q(z_n)dz_n\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\;\sum_{n=1}^N \mathbb{E}_{Z_n\sim q(Z)} \left[ \log\left(p(y_n, z_n|\theta, \phi)\right)\right]
+\end{aligned}\end{split}\]</div>
+<p><strong>Step II: the E-step</strong>
+Optimize the ELBO with respect to <span class="math notranslate nohighlight">\(q\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+q^*(Z_n) = \underset{q}{\mathrm{argmax}}\;\left(\underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q) \right) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta^*, \phi^*, q)
+\end{aligned}\]</div>
+<p>Rather than optimizing the ELBO with respect to <span class="math notranslate nohighlight">\(q\)</span>, which seems hard, we will argue that optimizing the ELBO is equivalent to optimizing another function of <span class="math notranslate nohighlight">\(q\)</span>, one whose optimum is easy for us to compute.</p>
+<p><strong>Note:</strong> We can recognize the difference between the log likelihood and the ELBO as a function we’ve seen:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\ell(\theta, \phi) - ELBO(\theta, \phi, q) &amp;= \sum_{n=1}^N \log p(y_n| \theta, \phi) - \sum_{n=1}^N \int_{\Omega_Z} \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;=  \sum_{n=1}^N \int_{\Omega_Z} \log\left(p(y_n| \theta, \phi)\right) q(z_n) dz_n - \sum_{n=1}^N \int_{\Omega_Z} \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;=  \sum_{n=1}^N \int_{\Omega_Z}  \left(\log\left(p(y_n| \theta, \phi)\right) - \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right) \right)q(z_n) dz_n\\
+&amp;= \sum_{n=1}^N \int_{\Omega_Z}  \log\left(\frac{p(y_n| \theta, \phi)q(z_n)}{p(y_n, z_n|\theta, \phi)} \right)q(z_n) dz_n\\
+&amp;= \sum_{n=1}^N \int_{\Omega_Z}  \log\left(\frac{q(z_n)}{p(z_n| y_n, \theta, \phi)} \right)q(z_n) dz_n, \quad\left(\text{Baye's Rule: } \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta, \phi)} = p(z_n| y_n, \theta, \phi)\right)\\
+&amp;= \sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
+\end{aligned}\end{split}\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\ell(\theta, \phi)\)</span> is a constant, the difference <span class="math notranslate nohighlight">\(\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = \ell(\theta, \phi) - ELBO(\theta, \phi, q)\)</span> descreases when <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> increases (and vice versa). Thus, maximizing the ELBO is equivalent to minimizing <span class="math notranslate nohighlight">\(D_{\text{KL}} \left[ q(Z_n) \| p(Y_n| Z_n, \theta, \phi)\right]\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{q}{\mathrm{argmax}}\, ELBO(\theta, \phi, q) = \underset{q}{\mathrm{argmin}}\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
+\]</div>
+<p>Thus, we see that</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+q^*(Z_n) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta^*, \phi^*, q) = \underset{q}{\mathrm{argmin}}\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = p(Z_n| Y_n, \theta, \phi)
+\end{aligned}\]</div>
+<p>That is, we should set the optimal distribution <span class="math notranslate nohighlight">\(q\)</span> to be the posterior <span class="math notranslate nohighlight">\(p(Z_n| Y_n, \theta, \phi)\)</span>.</p>
+<p><strong>Iteration</strong>
+Of course, we know that optimizing a function with respect to each variable is not sufficient for finding the global optimum over all the variables, considered together! Thus, performing one E-step and one M-step is not enough to maximize the ELBO. We need to repeat the two steps over and over.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Question: Why don’t gradients commute with expectation?</p>
+<p>We have the following property of expectations:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_z \mathbb{E}_{x\sim p(x)}[f(x, z)] = \mathbb{E}_{x\sim p(x)}[ \nabla_z f(x, z)]
+\]</div>
+<p>That is, when the gradient is with respect to a variable that does not appear in the distribution with respect to which you are taking the expectation, then you can push the gradient past the expectation.</p>
+<p><strong>The intuition:</strong> the gradient with respect to <span class="math notranslate nohighlight">\(z\)</span> is computing the changes in a function by making infinitesimally small changes to <span class="math notranslate nohighlight">\(z\)</span>, the expectation is computing the average value of a function by sampling <span class="math notranslate nohighlight">\(x\)</span> from a distribution that does not depend on <span class="math notranslate nohighlight">\(z\)</span>. Each operation is making an independent change to two different variables and hence can be done in any order.</p>
+<p>Why can’t you do this in general? I.e. why is it that,</p>
+<div class="math notranslate nohighlight">
+\[ \nabla_z\mathbb{E}_{x\sim p(x|z)}[f(x, z)] \neq \mathbb{E}_{x\sim p(x|z)}[ \nabla_z f(x, z)]?\]</div>
+<p><strong>The intuition:</strong> the gradient with respect to z is computing the changes in a function by making infinitesimally small changes to z, which in turn affects the samples produced by p(x|z), these samples finally affect the output of f. This is a chain of effects and the order matters.</p>
+<p><strong>The formal proof:</strong> Consider the following case,</p>
+<div class="math notranslate nohighlight">
+\[
+p(x\vert z) = (z+1)x^z,\; x\in [0, 1]
+\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[
+f(x, z) = xzf ( x , z ) = x z.
+\]</div>
+<p>Then, we have</p>
+<div class="math notranslate nohighlight">
+\[\nabla_z \mathbb{E}_{x\sim p(x|z)} [f(x, z)] = \nabla_z \int_0^1 f(x, z) p(x|z) dx = \nabla_z\int_0^1 xz \cdot (z+1)x^z dx = \nabla_z z (z+1)\int_0^1x^{z+1} dx = \nabla_z \frac{z (z+1)}{z+2} [x^{z+2} ]_0^1 =  \nabla_z \frac{z (z+1)}{z+2} = \frac{z^2 + 4z + 2}{(z+2)^2}
+\]</div>
+<p>On the other hand, we have</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x\sim p(x|z)}\left[ \nabla_z f(x, z) \right] = \int_0^1 \nabla_z[ xz] (z+1)x^zdx = \int_0^1(z+1)x^{z+1}dx = \frac{z+1}{z+2} [x^{z+2}]_0^1 = \frac{z+1}{z+2}.
+\]</div>
+<p>Note that:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_z \mathbb{E}_{x\sim p(x|z)} [f(x, z)] =  \frac{z^2 + 4z+ 2}{(z+2)^2} \neq \frac{z+1}{z+2} = \mathbb{E}_{x\sim p(x|z)}\left[ \nabla_z f(x, z) \right].
+\]</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Question: Why do we need to maximize the ELBO with respect to q?</p>
+<p>Recall that in the derivation of the ELBO, we first introduced an auxiliary variable q to rewrite the observed log-likelihood:</p>
+<div class="math notranslate nohighlight">
+\[
+\log p(y|\theta, \phi) = \log \int_\Omega p(y, z| \theta, \phi) dz = \log \int_\Omega \frac{p(y, z| \theta, \phi}{q(z)}q(z) dz = \log \mathbb{E}_{q(z)} \left[ \frac{p(y, z|\theta, \phi)}{q(z)} \right]
+\]</div>
+<p>Again, the reason why we do this is because: when we eventually take the gradient wrt to <span class="math notranslate nohighlight">\(\theta, \phi\)</span> during optimization we can use the identity</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\theta, \phi} \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right] = \mathbb{E}_{q(z)}\left[\nabla_{\theta, \phi}  \frac{p(y, z|\theta, \phi)}{q(z)}\right]
+\]</div>
+<p><em><strong>At this point, there is no need to maximize over q</strong></em>, that is:</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\theta, \phi, q}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right] = \max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]
+\]</div>
+<p>The <span class="math notranslate nohighlight">\(q\)</span> cancels and has no effect on the outcome or process of the optimization (but you can’t just choose any <span class="math notranslate nohighlight">\(q\)</span> you want - can you see what are the constraints on <span class="math notranslate nohighlight">\(q\)</span>?).</p>
+<p>Now, the problem is that the log is on the outside of the expectation. This isn’t a problem in the sense that we don’t know how to take the derivative of a logarithm of a complex function (this is just the chain rule ),  the problem is that</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\phi, \theta} \frac{p(y, z|\theta, \phi)}{q(z)}
+\]</div>
+<p>can be very complex (since p and q are pdf’s) and so over all the gradient of the log expectation is not something you can compute roots for. Here is where we push the log inside the expectation using Jensen’s inequality:</p>
+<div class="math notranslate nohighlight">
+\[
+\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \mathbb{E}_{q(z)}\left[\log \left(\frac{p(y, z|\theta, \phi)}{q(z)}\right)\right] \overset{\text{def}}{=} ELBO(\phi, \theta, q)
+\]</div>
+<p>When we push the log inside the expectation, we obtain the <strong>E</strong>vidence <strong>L</strong>ower <strong>Bo</strong>und (ELBO).</p>
+<p>Now, for any choice of <span class="math notranslate nohighlight">\(q\)</span>, we always have:</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \max_{\theta, \phi}ELBO(\phi, \theta, q)
+\]</div>
+<p>But the ELBO is not necessarily a tight bound (i.e. maximizing the ELBO can be very far from maximizing the log-likelihood!)! In particular, some choices of <span class="math notranslate nohighlight">\(q\)</span> might give you a tighter bound on the log-likelihood than others. Thus, we want to select the <span class="math notranslate nohighlight">\(q\)</span> that give us the tightest bound:</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \max_{\theta, \phi, q}ELBO(\phi, \theta, q).
+\]</div>
+</div>
+<section id="the-expectation-maximization-algorithm">
+<h3>The Expectation Maximization Algorithm<a class="headerlink" href="#the-expectation-maximization-algorithm" title="Link to this heading">#</a></h3>
+<p>The <em><strong>exepectation maximization (EM) algorithm</strong></em> maximize the ELBO of the model,</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 296px;" />
+</a>
+</figure>
+<ol class="arabic simple" start="0">
+<li><p><strong>Initialization:</strong> Pick <span class="math notranslate nohighlight">\(\theta_0\)</span>, <span class="math notranslate nohighlight">\(\phi_0\)</span>.</p></li>
+<li><p>Repeat <span class="math notranslate nohighlight">\(i=1, \ldots, I\)</span> times:</p></li>
+</ol>
+<p><strong>E-Step:</strong>
+<div class="math notranslate nohighlight">
+\[q_{\text{new}}(Z_n) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta_{\text{old}}, \phi_{\text{old}}, q) = p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})\]</div>
+</p>
+<p><strong>M-Step:</strong>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+  \theta_{\text{new}}, \phi_{\text{new}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q_{\text{new}})\\
+  &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right].
+\end{aligned}\end{split}\]</div>
+</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: The Auxiliary Function</p>
+<p>We often denote the expectation in the M-step by <span class="math notranslate nohighlight">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) = \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right]
+\]</div>
+<p>and call <span class="math notranslate nohighlight">\(Q\)</span> the auxiliary function.</p>
+<p>Frequently, the EM algorithm is equivalently presented as</p>
+<ul class="simple">
+<li><p>E-step: compute the auxiliary function: <span class="math notranslate nohighlight">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span></p></li>
+<li><p>M-step: maximize the auxiliary function: <span class="math notranslate nohighlight">\(\theta^{\text{new}}, \phi^{\text{new}} = \underset{\theta, \phi}{\mathrm{argmax}}\,Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>.</p></li>
+</ul>
+<p>The log of the joint distribution <span class="math notranslate nohighlight">\(\prod_{n=1}^N p(Z_n, Y_n, \theta, \phi)\)</span> is called the <em><strong>complete data log-likelihood</strong></em> (since it is the likelihood of both observed and latent variables), whereas <span class="math notranslate nohighlight">\(\log \prod_{n=1}^N p(Y_n| \theta, \phi)\)</span> is called the <em><strong>observed data log-likelihood</strong></em> (since it is the likelihood of only the observed variable).</p>
+<p>The auxiliary function presentation of EM is easy to interpret:</p>
+<ul class="simple">
+<li><p>In the E-step, you fill in the latent variables in the complete data log-likelihood using “average” values, this leaves just an estimate of the observed log-likelihood.</p></li>
+<li><p>In the M-step, you find parameters <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> that maximizes your estimate of the observed log-likelihood.</p></li>
+</ul>
+<p>We chose to derive EM via the ELBO in this lecture because it makes an explicit connection between the EM algorithm for estimating MLE and variational inference method for approximating the posterior of Bayesian models. It is, however, worthwhile to derive EM using the auxiliary function <span class="math notranslate nohighlight">\(Q\)</span>, as <span class="math notranslate nohighlight">\(Q\)</span> makes it convient for us to prove properties of the EM algorithm.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Monotonicity and Convergence of EM</p>
+<p>Before we run off estimating MLE parameters of latent variable models with EM, we need to sanity check two points:</p>
+<ol class="arabic simple">
+<li><p><strong>(Monotonicity)</strong> we need to know that repeating the E, M-steps will never decrease the ELBO!</p></li>
+<li><p><strong>(Convergence)</strong> we need to know that at some point the EM algorithm will naturally terminate (the algorithm will cease to update the parameters).</p></li>
+</ol>
+<p>We first prove the monotonicity of EM. Consider the difference between <span class="math notranslate nohighlight">\(\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\)</span>, i.e. the amount by which the log-likelihood can increase or decrease by going from <span class="math notranslate nohighlight">\(\theta^{\text{old}}, \phi^{\text{old}}\)</span> to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}}) &amp;= \sum_{n=1}^N\log \left[ \frac{p(y_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}})} dz_n\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}}) p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})}p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}}) dz_n\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}}) dz_n\\
+&amp;= \sum_{n=1}^N \log \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;\geq \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \log\left[\frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;= \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\log  p(y_n, z_n|\theta, \phi) - \log p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})\right]\\
+&amp;= \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\log  p(y_n, z_n|\theta, \phi)\right] - \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})}\left[ \log  p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})\right]\\
+&amp;= Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right)
+\end{aligned}\end{split}\]</div>
+<p>Thus, when we maximize the gain in log-likelihood going from <span class="math notranslate nohighlight">\(\theta^{\text{old}}, \phi^{\text{old}}\)</span> to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>, we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\underset{\theta, \phi}{\max} \left[\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\right] \geq \underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right)\right]
+\end{aligned}\]</div>
+<p>or equivalently,</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\underset{\theta, \phi}{\max} \left[\ell(\theta, \phi)\right] - \ell(\theta^{\text{old}}, \phi^{\text{old}}) \geq \underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\right] - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right).
+\end{aligned}\]</div>
+<p>Note that the above max is always greater than or equal to zero:</p>
+<div class="math notranslate nohighlight">
+\[\underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\right] - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) \geq 0\]</div>
+<p>since we can always maintain the status quo by choosing <span class="math notranslate nohighlight">\(theta = \theta^{\text{old}}\)</span> <span class="math notranslate nohighlight">\(\phi = \phi^{\text{old}}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) = 0.\]</div>
+<p>Thus, we have that by maximizing <span class="math notranslate nohighlight">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>, we ensure that <span class="math notranslate nohighlight">\(\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\geq 0\)</span> in each iteration of EM.</p>
+<p>If the likelihood of the model is bounded above (i.e. <span class="math notranslate nohighlight">\(\ell(\theta, \phi) \leq M\)</span> for some constant <span class="math notranslate nohighlight">\(M\)</span>), then EM is guaranteed to convergence. This is because we’ve proved that EM increases (or maintains) log-likelihood in each iteration, therefore, if <span class="math notranslate nohighlight">\(\ell(\theta, \phi)\)</span> is bounded, the process must converge.</p>
+<p><strong>Disclaimer:</strong>
+Although EM converges for bounded likelihoods, it is not guaranteed to converge to the global max of the log-likelihood! Maximizing a lower bound of a function does not necessarily maximize the function itself! Often time, EM converges to local optima of the likelihood function and the point to which it converges may be very sensitive to initialization. We will study this kind of behaviour in more detail when we cover non-convex optimization later in the course.</p>
+<figure class="align-center" id="fig-09-em">
+<a class="reference internal image-reference" href="../_images/EM.jpg"><img alt="../_images/EM.jpg" src="../_images/EM.jpg" style="width: 711px;" />
+</a>
+</figure>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: EM for the Gaussian Mixture Model of Birth Weight</p>
+<p>The Gaussian mixture model for the birth weight data has 3 Gaussians with meand <span class="math notranslate nohighlight">\(\mu = [\mu_1, \mu_2, \mu_3]\)</span> and variances <span class="math notranslate nohighlight">\(\sigma^2 = [\sigma_1^2, \sigma_2^2, \sigma_3^2]\)</span>, and the model is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim Cat(\pi),\\
+Y_n | Z_n &amp;\sim \mathcal{N}(\mu_{Z_n}, \sigma^2_{Z_n}),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(\sum_{k=1}^3 \pi_k = 1\)</span>.</p>
+<p><strong>The E-Step</strong>
+The E-step in EM computes the distribution:</p>
+<div class="math notranslate nohighlight">
+\[q_{\text{new}}(Z_n) = \underset{q}{\mathrm{argmax}}\; ELBO(\mu_{i-1}, \sigma^2_{i-1}, \pi_{i_1}, q) = p(Z_n|Y_n, \mu_{\text{old}}, \sigma^2_{\text{old}}, \pi_{\text{old}}).\]</div>
+<p>Since <span class="math notranslate nohighlight">\(Z_n\)</span> is a label, <span class="math notranslate nohighlight">\(p(Z_n|Y_n, \ldots)\)</span> is a categorical distribution, with the probability of <span class="math notranslate nohighlight">\(Z_n=k\)</span> given by:</p>
+<div class="math notranslate nohighlight">
+\[
+p(Z_n = k|Y_n, \mu_{\text{old}}, \sigma^2_{\text{old}}, \pi_{\text{old}}) = \frac{p(y_n|Z_n = k, \mu_{\text{old}}, \sigma^2_{\text{old}})p(Z_n=k | \pi_{\text{old}})}{\sum_{k=1}^K p(y|Z_n = k, \mu_{\text{old}}, \sigma^2_{\text{old}})p(Z_n=k | \pi_{\text{old}})} = \underbrace{\frac{\pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \sigma^2_{k, \text{old}})}{\mathcal{Z}}}_{r_{n, k}},
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{Z} = \sum_{k=1}^K \pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \sigma^2_{k, \text{old}})\)</span>.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: EM for the Gaussian Mixture Model of Birth Weight</p>
+<p><strong>Setting Up the M-Step</strong>
+The M-step in EM maximize the following:</p>
+<div class="math notranslate nohighlight">
+\[\underset{\mu, \sigma^2, \pi}{\mathrm{argmax}}\; ELBO(\mu, \sigma^2, \pi, q_{\text{new}}) = \underset{\mu, \sigma^2, \pi}{\mathrm{argmax}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \mu_{k, \text{old}}, \sigma^2_{k, \text{old}})}\left[\log \left( p(y_n, Z_n | \mu, \sigma^2, \pi\right) \right].\]</div>
+<p>If we expand the expectation a little, we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \mu_{\text{old}}, \sigma^2_{\text{old}}, \pi_{\text{old}})}\left[\log \left(p(y_n, Z_n | \mu, \sigma^2, \pi) \right) \right] &amp;= \sum_{n=1}^N \underbrace{\sum_{n=1}^K \log \left(\underbrace{ p(y_n| Z_n=k, \mu, \sigma^2) p(Z_n=k| \pi)}_{\text{factoring the joint }p(y_n, Z_n| \ldots) } \right) p(Z_n=k|y_n, \theta_{\text{old}}, \phi_{\text{old}})}_{\text{expanding the expectation}}\\
+&amp;=\sum_{n=1}^N \sum_{k=1}^K \underbrace{r_{n, k}}_{p(Z_n=k|y_n, \theta_{\text{old}}, \phi_{\text{old}})} \left[\log \underbrace{\mathcal{N}(y_n; \mu_k, \sigma^2_k)}_{p(y_n| Z_n=k, \mu, \sigma^2)}  + \log \underbrace{\pi_k}_{p(Z_n=k| \pi)}\right]\\
+&amp;= \underbrace{\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \mathcal{N}(y_n; \mu_k, \sigma^2_k)}_{\text{Term #1}} + \underbrace{\sum_{n=1}^N \sum_{k=1}^K r_{n, k}\pi_k}_{\text{Term #2}}
+\end{aligned}\end{split}\]</div>
+<p>We can maximize each Term #1 and Term #2 individually.</p>
+</div>
+</section>
+<section id="example-em-for-the-gaussian-mixture-model-of-birth-weight">
+<h3>Example: EM for the Gaussian Mixture Model of Birth Weight<a class="headerlink" href="#example-em-for-the-gaussian-mixture-model-of-birth-weight" title="Link to this heading">#</a></h3>
+<section id="solving-the-m-step">
+<h4>Solving the M-Step<a class="headerlink" href="#solving-the-m-step" title="Link to this heading">#</a></h4>
+<p>We see that the optimization problem in the M-step: <span class="math notranslate nohighlight">\(\mu_{\text{new}}, \sigma^2_{\text{new}}, \pi_{\text{new}} = \underset{\mu, \sigma^2, \pi}{\mathrm{argmax}}\; ELBO(\mu, \sigma^2, \pi, q_{\text{new}})\)</span> is equivalent to two problems
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+&amp;1.\quad \underset{\mu, \sigma^2}{\mathrm{argmax}}\; \sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \mathcal{N}(y_n; \mu_k, \sigma^2_k)\\
+&amp;2.\quad \underset{\pi}{\mathrm{argmax}}\; \sum_{n=1}^N \sum_{k=1}^K r_{n, k}\pi_k
+\end{aligned}\end{split}\]</div>
+
+We can solve each optimization problem analytically by finding stationary points of the gradient (or the Lagrangian):</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} y_n\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma^2_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} (y_n - \mu_{\text{new}})^2\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\pi_{\text{new}} =  \frac{\sum_{n=1}^N r_{n, k}}{N}\)</span></p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h3>Example: EM for the Gaussian Mixture Model of Birth Weight<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<section id="all-together">
+<h4>All Together<a class="headerlink" href="#all-together" title="Link to this heading">#</a></h4>
+<p><strong>Initialization:</strong>
+Pick any <span class="math notranslate nohighlight">\(\pi\)</span>, <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\)</span></p>
+<p><strong>E-Step:</strong>
+Compute <span class="math notranslate nohighlight">\(r_{n, k} = \displaystyle\frac{\pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \sigma^2_{k, \text{old}})}{\mathcal{Z}}\)</span>, where <span class="math notranslate nohighlight">\(\mathcal{Z} = \sum_{k=1}^K \pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \sigma^2_{k, \text{old}})\)</span>.</p>
+<p><strong>M-Step:</strong>
+Compute model parameters:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} y_n\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma^2_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} (y_n - \mu_{\text{new}})^2\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\pi_{\text{new}} =  \frac{\sum_{n=1}^N r_{n, k}}{N}\)</span></p></li>
+</ul>
+</section>
+</section>
+<section id="implementing-em-for-the-gaussian-mixture-model-of-birth-weight">
+<h3>Implementing EM for the Gaussian Mixture Model of Birth Weight<a class="headerlink" href="#implementing-em-for-the-gaussian-mixture-model-of-birth-weight" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Generate data</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">pis</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+<span class="n">mus</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">7.8</span><span class="p">]</span>
+<span class="n">sigmas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.7</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pis</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="n">sigmas</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zs</span><span class="p">])</span>
+
+<span class="c1">#initialization</span>
+<span class="n">mu_init</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">sigma_init</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span>
+<span class="n">pi_init</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">]</span>
+
+<span class="c1">#implement EM</span>
+<span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_init</span>
+<span class="n">sigma_current</span> <span class="o">=</span> <span class="n">sigma_init</span>
+<span class="n">pi_current</span> <span class="o">=</span> <span class="n">pi_init</span>
+
+<span class="n">log_lkhd</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">total_iter</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="mf">1e-10</span>
+
+<span class="n">mu_diff</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">pi_diff</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">sigma_diff</span> <span class="o">=</span> <span class="mf">1.</span>
+
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total_iter</span> <span class="ow">and</span> <span class="n">mu_diff</span> <span class="o">&gt;</span> <span class="n">threshold</span> <span class="ow">and</span> <span class="n">pi_diff</span> <span class="o">&gt;</span> <span class="n">threshold</span> <span class="ow">and</span> <span class="n">sigma_diff</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+    <span class="c1">#E-step</span>
+    <span class="n">r_unnormalized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">pi_current</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span>  <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">sigma_current</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r_unnormalized</span> <span class="o">/</span> <span class="n">r_unnormalized</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1">#M-step</span>
+    <span class="n">mu_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">r</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">)])</span>
+    <span class="n">sigma_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">r</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">mu_next</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">)])</span>
+    <span class="n">pi_next</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1">#compute log observed likelihood</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'iteration '</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+            <span class="n">ll</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_next</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">sigma_next</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">*</span> <span class="n">pi_next</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">)]))</span> 
+        <span class="n">log_lkhd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
+        
+    <span class="c1">#convergence check</span>
+    <span class="n">mu_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_next</span> <span class="o">-</span> <span class="n">mu_current</span><span class="p">)</span>
+    <span class="n">pi_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pi_next</span> <span class="o">-</span> <span class="n">pi_current</span><span class="p">)</span>
+    <span class="n">sigma_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sigma_next</span> <span class="o">-</span> <span class="n">sigma_current</span><span class="p">)</span>
+           
+    <span class="c1">#update parameters</span>
+    <span class="n">mu_current</span> <span class="o">=</span> <span class="n">mu_next</span>
+    <span class="n">sigma_current</span> <span class="o">=</span> <span class="n">sigma_next</span>
+    <span class="n">pi_current</span> <span class="o">=</span> <span class="n">pi_next</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>iteration  0
+iteration  100
+iteration  200
+iteration  300
+iteration  400
+iteration  500
+iteration  600
+iteration  700
+iteration  800
+iteration  900
+iteration  1000
+iteration  1100
+iteration  1200
+iteration  1300
+iteration  1400
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'histogram of birth weights'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pi_current</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma_current</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'First Gaussian'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pi_current</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigma_current</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Second Gaussian'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pi_current</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mu_current</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sigma_current</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Third Gaussian'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'GMM for Birth Weights'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/68b2a26751c472dc32ae6ac9365f13cb5de6ae715c30e24bdc388f2f680666ab.png" src="../_images/68b2a26751c472dc32ae6ac9365f13cb5de6ae715c30e24bdc388f2f680666ab.png" />
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: EM for Gaussian Mixture Models (Multivariate)</p>
+<p>Recall that our Gaussian mixture model, of <span class="math notranslate nohighlight">\(K\)</span> number of Gaussians with means <span class="math notranslate nohighlight">\(\mu = [\mu_1, \ldots, \mu_K]\)</span> and covariances <span class="math notranslate nohighlight">\(\Sigma = [\Sigma_1, \ldots, \Sigma_K]\)</span>, is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim Cat(\pi),\\
+Y_n &amp;\sim \mathcal{N}(\mu_{Z_n}, \Sigma_{Z_n}),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(\sum_{k=1}^K \pi_k = 1\)</span>.</p>
+<p>We derive the updates for <span class="math notranslate nohighlight">\(\pi\)</span>, <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\Sigma\)</span> for the EM algorithm
+<strong>E-step:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+q_{\text{new}} = p(Z_n|y_n, \pi_{\text{old}}, \mu_{\text{old}}, \Sigma_{\text{old}}) = \frac{p(y_n|Z_n, \mu_{\text{old}}, \Sigma_{\text{old}})p(Z_n|\pi_{\text{old}})}{\int p(y_n|z_n, \mu_{\text{old}}, \Sigma_{\text{old}})p(z_n|\pi_{\text{old}}) dz_n}
+\]</div>
+<p>Since <span class="math notranslate nohighlight">\(Z_n\)</span> is a categorical variable, we compute the probability of <span class="math notranslate nohighlight">\(Z_n = k\)</span> separately:</p>
+<div class="math notranslate nohighlight">
+\[
+p(Z_n = k|y_n, \pi_{\text{old}}, \mu_{\text{old}}, \Sigma_{\text{old}}) = \frac{p(y_n|Z_n = k, \mu_{\text{old}}, \Sigma_{\text{old}})p(Z_n=k | \pi_{\text{old}})}{\sum_{k=1}^K p(y|Z_n = k, \mu_{\text{old}}, \Sigma_{\text{old}})p(Z_n=k | \pi_{\text{old}})} = \underbrace{\frac{\pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \Sigma_{k, \text{old}})}{\mathcal{Z}}}_{r_{n, k}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{Z} = \sum_{k=1}^K \pi_{k, \text{old}}\,\mathcal{N}(y_n; \mu_{k, \text{old}}, \Sigma_{k, \text{old}})\)</span>.</p>
+<p>Thus, <span class="math notranslate nohighlight">\(q_{\text{new}}(Z_n)\)</span> is a categorical distribution <span class="math notranslate nohighlight">\(Cat([r_{n, 1}, \ldots, r_{n, K}])\)</span>.</p>
+<p><strong>M-Step:</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mu_{\text{new}}, \Sigma_{\text{new}}, \pi_{\text{new}} &amp;= \underset{\mu, \Sigma, \pi}{\mathrm{argmax}}\, \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \mu_{\text{old}}, \Sigma_{\text{old}}, \pi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \mu, \sigma \right) \right]\\
+&amp;= \underset{\mu, \Sigma, \pi}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \left[\log p(y_n | Z_n=k, \mu, \Sigma)  + \log p(Z_n=k | \pi)\right]\\
+&amp;= \underset{\mu, \Sigma}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log p(y_n | Z_n=k, \mu, \Sigma)  + \underset{\pi}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log p(Z_n=k | \pi)\\
+&amp;=\underset{\mu, \Sigma}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \mathcal{N}(y_n; \mu_{k}, \Sigma_{k})  + \underset{\pi}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \pi_k
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(\sum_{k=1}^K \pi_k = 1\)</span>.</p>
+<p>We solve the two optimization problems separately. The optimization problem</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\pi}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \pi_k,\quad \sum_{k=1}^K \pi_k = 1
+\]</div>
+<p>can be solved using Lagrangian multipliers yielding the solution:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_{\text{new}, k} = \frac{\sum_{n=1}^N r_{n, k}}{N}
+\]</div>
+<p>The optimization problem</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\mu, \Sigma}{\mathrm{argmax}}\,\sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \mathcal{N}(y_n; \mu_{k}, \Sigma_{k})
+\]</div>
+<p>can be solved by taking the gradient with respect to <span class="math notranslate nohighlight">\(\mu_k\)</span>, <span class="math notranslate nohighlight">\(\Sigma_k\)</span> for each <span class="math notranslate nohighlight">\(k\)</span> and computing the stationary points of the gradient (remember to check for the global concavity to ensure you’ve found a global max). Doing so gives us the optimal points</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mu_{\text{new},k} &amp;= \frac{1}{\sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n,k}y_n, &amp;\quad (\text{weighted sample mean})\\
+\Sigma_{\text{new},k} &amp;= \frac{1}{\sum_{n=1}^N r_{n, k}}  \sum_{n=1}^N r_{n,k} (y_n - \mu_{\text{new},k})(y_n - \mu_{\text{new},k})^\top, &amp;\quad (\text{weighted sample covariance})
+\end{aligned}\end{split}\]</div>
+<p><strong>Exercise:</strong> Verify that the updates for <span class="math notranslate nohighlight">\(\pi_{\text{new},k}, \mu_{\text{new},k}, \Sigma_{\text{new},k}\)</span> maximizes <span class="math notranslate nohighlight">\(\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \mu_{\text{old}}, \Sigma_{\text{old}}, \pi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \mu, \sigma \right) \right]\)</span>.</p>
+</div>
+</section>
+<section id="sanity-check-log-likelihood-during-training">
+<h3>Sanity Check: Log-Likelihood During Training<a class="headerlink" href="#sanity-check-log-likelihood-during-training" title="Link to this heading">#</a></h3>
+<p>Remember that ploting the MLE model against actual data is not always an option (e.g. high-dimensional data).</p>
+<p>A sanity check for that your EM algorithm has been implemented correctly is to plot the observed data log-likelihood over the iterations of the algorithm:
+<div class="math notranslate nohighlight">
+\[
+\ell_y(\mu, \sigma^2, \pi) = \sum_{n=1}^N \log \sum_{k=1}^K \mathcal{N}(y_n; \mu_k, \sigma_k^2) \pi_k
+\]</div>
+</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">log_lkhd</span><span class="p">)),</span> <span class="n">log_lkhd</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'observed data log-likelihood over iterations of EM'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4b71194199426e8b2f435417ab565670130b9edbd50efa4339649e41bcd89bc3.png" src="../_images/4b71194199426e8b2f435417ab565670130b9edbd50efa4339649e41bcd89bc3.png" />
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Review: Latent Variable Models</p>
+<p>Models that include an observed variable <span class="math notranslate nohighlight">\(Y\)</span> and at least one unobserved variable <span class="math notranslate nohighlight">\(Z\)</span> are called <em><strong>latent variable models</strong></em>. In general, our model can allow <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(Z\)</span> to interact in many different ways. We have studied models with one type of interaction:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 395px;" />
+</a>
+</figure>
+<p>We treat the parameters <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> as <em>unknown constants</em>, and we estimate them from the observed data <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span>.</p>
+<p><strong>Example: Gaussian Mixture Models (GMMs)</strong>
+In a <em><strong>Gaussian Mixture Model (GMM)</strong></em>, we posit that the observed data <span class="math notranslate nohighlight">\(Y\)</span> is generated by a mixture, <span class="math notranslate nohighlight">\(\pi=[\pi_1, \ldots, \pi_K]\)</span>, of <span class="math notranslate nohighlight">\(K\)</span> number of Gaussians with means <span class="math notranslate nohighlight">\(\mu = [\mu_1, \ldots, \mu_K]\)</span> and covariances <span class="math notranslate nohighlight">\(\Sigma = [\Sigma_1, \ldots, \Sigma_K]\)</span>. For each observation <span class="math notranslate nohighlight">\(Y_n\)</span> the class of the observation <span class="math notranslate nohighlight">\(Z_n\)</span> is a latent variable that indicates which of the <span class="math notranslate nohighlight">\(K\)</span> Gaussian is responsible for generating <span class="math notranslate nohighlight">\(Y_n\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z_n &amp;\sim Cat(\pi),\\
+Y_n | Z_n&amp;\sim \mathcal{N}(\mu_{Z_n}, \Sigma_{Z_n}),
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(n=1, \ldots, N\)</span> and <span class="math notranslate nohighlight">\(\sum_{k=1}^K \pi_k = 1\)</span>.</p>
+<p>GMMs are examples of <em><strong>model based clustering</strong></em> - breaking up a data set into natural clusters based on a statistical model fitted to the data.</p>
+<p>Inference for this model may mean that we want to learn the mean and covariance for each class in the mixture. Or we may want to infer the class membership <span class="math notranslate nohighlight">\(z_n\)</span> for each observation <span class="math notranslate nohighlight">\(y_n\)</span>.</p>
+<p><strong>Maximum Likelihood Estimate Inference for Latent Variable Models</strong>
+If we are interested in computing the maximum likelihood estimators of the parameters <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>, we need to compute them with respect to the <em><strong>observed likelihood</strong></em> <span class="math notranslate nohighlight">\(p(y| \theta, \phi)\)</span> - this is simply because we don’t have access to the latent variable values, so we can’t evaluate <span class="math notranslate nohighlight">\(p(y, z| \theta, \phi)\)</span> given values for <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>.</p>
+<p>Just like from before, we maximize the log-likelihood rather than the likelihood due to the simplifying properties of the log function:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta^*, \phi^* = \underset{\theta, \phi}{\text{argmax}}\; \ell_y(\theta, \phi) = \underset{\theta, \phi}{\text{argmax}}\; \log p(y| \theta, \phi) = \underset{\theta, \phi}{\text{argmax}}\;\log \int p(y, z| \theta, \phi)\, dz
+\]</div>
+<p>Maximizing the the above requires taking a gradient,</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\theta, \phi} \log \int p(y, z| \theta, \phi)\, dz
+\]</div>
+<p>but it’s not clear how to evaluate this expression. Rewriting the integral as an expectation, it turns out, illuminates the source of the problem:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\theta, \phi} \log \int p(y, z| \theta, \phi)\, dz = \nabla_{\theta, \phi} \log \int p(y| z,  \phi)p(z|\theta)\, dz = \nabla_{\theta, \phi} \log \mathbb{E}_{z\sim p(z|\theta)}[p(y| z,  \phi)] = \frac{\nabla_{\theta, \phi} \mathbb{E}_{z\sim p(z|\theta)}[p(y| z,  \phi)]}{\mathbb{E}_{z\sim p(z|\theta)}[p(y| z,  \phi)]},\quad \text{(chain rule)}
+\]</div>
+<p>The above makes it clear that the gradient is not trivial to compute – the gradient cannot be pushed into the expectation, since the distribution with respect to which we are taking the expectation depends on the optimization variable <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>To make the gradient computation easier, we make two changes:</p>
+<ol class="arabic simple">
+<li><p>we introduce an auxiliary variable <span class="math notranslate nohighlight">\(q(z)\)</span> so that we can replace <span class="math notranslate nohighlight">\(\mathbb{E}_{z\sim p(z|\theta)}\)</span> with <span class="math notranslate nohighlight">\(\mathbb{E}_{z\sim q(z)}\)</span>. Note then the latter expectation no longer depends on <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p>we push the log inside the expectation using Jensen’s inequality.</p></li>
+</ol>
+<p>That is,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\ell_y(\theta, \phi) &amp;= \log \int p(y, z| \theta, \phi)\, dz\\
+&amp;= \log \int \frac{p(y, z| \theta, \phi)}{q(z)}q(z)\, dz\\
+&amp;= \log \mathbb{E}_{z\sim q(z)}\left[\frac{p(y, z| \theta, \phi)}{q(z)}\right]\\
+&amp;\geq \underbrace{\mathbb{E}_{z\sim q(z)} \left[\log\left(\frac{p(y, z| \theta, \phi)}{q(z)}\right)\right]}_{ELBO(\theta, \phi, q)}
+\end{aligned}\end{split}\]</div>
+<p>We have dervied that <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> is a lower bound of the log-likelihood <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span>, for any choice of <span class="math notranslate nohighlight">\(q\)</span>. So rather than maximizing the log-likelihood, we maximize the <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span>, thus ensuring that <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span> is at least as big:</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\theta, \phi}{\max}\ell_y(\theta, \phi)\geq \underset{\theta, \phi, q}{\max}ELBO(\theta, \phi, q)
+\]</div>
+<p>In order to maximize the ELBO, we use coordinate ascent. That is, we take turns maximizing the ELBO with respect to <span class="math notranslate nohighlight">\(q\)</span> and then with repect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>.</p>
+<p>This algorithm is called <em><strong>expectation maximization (EM)</strong></em>.</p>
+</div>
+</section>
+</section>
+<section id="exercises">
+<h2><span class="section-number">11.4. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-latent-variables-for-data-augmentation">
+<span id="ps-hw4a"></span><h3>Problem Set: Latent Variables for Data Augmentation<a class="headerlink" href="#problem-set-latent-variables-for-data-augmentation" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>A botany research lab in Cambridge is exprimentally cross-breeding two types of hibiscus flowers: blue and pink. The goal is to study the genetic factor that creates an exotic flower whose petals are pink with a ring of blue on each.</p>
+<p>There are four types of child plant that can result from this cross-breeding:</p>
+<ul class="simple">
+<li><p>Type 1: blue petals</p></li>
+<li><p>Type 2: pink petals</p></li>
+<li><p>Type 3: purple petals</p></li>
+<li><p>Type 4: pink petals with a blue ring on each.</p></li>
+</ul>
+<p>Out of 197 initial cross-breedings, the nursery obtained the following counts of the four types of child plants:</p>
+<div class="math notranslate nohighlight">
+\[Y = (y_1, y_2, y_3, y_4) = (125, 18, 20, 34)\]</div>
+<p>where <span class="math notranslate nohighlight">\(y_i\)</span> represents the number of child plants that are of type <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>The geneticist in the lab know that the probability of obtaining each type of child plant in any single breeding experiment is correlated by the inheritability <span class="math notranslate nohighlight">\(\theta\)</span> of a specific genetic factor. That is, the probabilities of obtaining the four subtypes are as follows:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{\theta+2}{4}, \frac{1-\theta}{4}, \frac{1-\theta}{4}, \frac{\theta}{4},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta \in [0, 1]\)</span> is unknown.</p>
+<p>The lab chose to model the observed data using a multinomial model:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+Y &amp; \sim Mult\left(197, \left[\frac{\theta+2}{4}, \frac{1 - \theta}{4}, \frac{1 - \theta}{4}, \frac{\theta}{4} \right]\right)
+\end{aligned}\]</div>
+<p>The aim of this problem is to estimate <span class="math notranslate nohighlight">\(\theta\)</span> from the observed counts.</p>
+<div class="admonition-exercise-part-i-mle-through-latent-variable-augmentation-and-em admonition">
+<p class="admonition-title">Exercise: Part I: MLE Through Latent Variable Augmentation and EM</p>
+<p>In models where directly computing the MLE is hard (you can think about if that is the case here), the optimization of the likelihood can often be simplified by introducing a latent variable into the model and then optimize the liklelihood using EM - this process is called <em><strong>data augmentation</strong></em>.</p>
+<p>The nursery augmented the data with a new variable <span class="math notranslate nohighlight">\(Z\)</span> such that:
+<div class="math notranslate nohighlight">
+\[Z + (y_1 - Z) = y_1.\]</div>
+
+That is, using <span class="math notranslate nohighlight">\(Z\)</span>, they are breaking <span class="math notranslate nohighlight">\(y_1\)</span>, the number of Type I child plants, into two subtypes, with <span class="math notranslate nohighlight">\(Z\)</span> being the count of Subtype #1 and <span class="math notranslate nohighlight">\((y_1-Z)\)</span> being the count of Subtype #2. The lab posited the probability of obtain the two subtype <span class="math notranslate nohighlight">\(\theta/4\)</span> and <span class="math notranslate nohighlight">\(1/2\)</span>, respectively.</p>
+<p>The augmented model (which includes the observed data <span class="math notranslate nohighlight">\(y\)</span> and the latent variable <span class="math notranslate nohighlight">\(z\)</span> they introduced) they derived is as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Z | Y, \theta &amp;\sim Bin\left(y_1, \frac{\theta}{2 + \theta}\right)\\
+Y &amp; \sim Mult\left(197, \left[\frac{1}{2} + \frac{\theta}{4}, \frac{1 - \theta}{4}, \frac{1 - \theta}{4}, \frac{\theta}{4} \right]\right)
+\end{aligned}\end{split}\]</div>
+<ol class="arabic simple">
+<li><p>Show that the assumptions the lab made about <span class="math notranslate nohighlight">\(Z\)</span> implies that <span class="math notranslate nohighlight">\(Z | Y, \theta \sim Bin\left(y_1, \frac{\theta}{2 + \theta}\right)\)</span>.<br><br></p></li>
+<li><p>Derive the EM updates for the augmented latent variable model.<br><br></p></li>
+<li><p>Implement the EM algorithm to estimate the MLE of <span class="math notranslate nohighlight">\(\theta\)</span>. Choose an appropriate initialization point and an appropriate stopping condition.</p></li>
+</ol>
+</div>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">11.5. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Latent Variable Models</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://www.cs.columbia.edu/~blei/papers/Blei2014b.pdf" rel="noreferrer" target="_blank">Build, Compute, Critique, Repeat: Data Analysis with Latent Variable Models</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="http://mayagupta.org/publications/EMbookGuptaChen2010.pdf" rel="noreferrer" target="_blank">Theory and Use of the EM Algorithm</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="impact-2-sampling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">10. </span>Applications and Broader Impact: Sampling and Monte Carlo</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="10-variational-inference.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">12. </span>Bayesian Latent Variable Models and Variational Inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-latent-variable-models">11.1. Motivation for Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-model-for-birth-weights">A Model for Birth Weights</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-similarity-measure-for-distributions-kullbackleibler-divergence">A Similarity Measure for Distributions: Kullback–Leibler Divergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-membership-as-a-latent-variable">Class Membership as a Latent Variable</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-latent-variable-models">11.2. Common Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#latent-variable-models">Latent Variable Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#item-response-models">Item-Response Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#applications">Applications</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#factor-analysis-models">Factor Analysis Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Applications</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization">11.3. Maximum Likelihood Estimation for Latent Variable Models: Expectation Maximization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-expectation-maximization-algorithm">The Expectation Maximization Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-em-for-the-gaussian-mixture-model-of-birth-weight">Example: EM for the Gaussian Mixture Model of Birth Weight</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-m-step">Solving the M-Step</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example: EM for the Gaussian Mixture Model of Birth Weight</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#all-together">All Together</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-em-for-the-gaussian-mixture-model-of-birth-weight">Implementing EM for the Gaussian Mixture Model of Birth Weight</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-log-likelihood-during-training">Sanity Check: Log-Likelihood During Training</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">11.4. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-latent-variables-for-data-augmentation">Problem Set: Latent Variables for Data Augmentation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">11.5. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

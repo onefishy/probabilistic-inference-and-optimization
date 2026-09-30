@@ -1,0 +1,1226 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>15. Logistic Regression and Gradient Descent &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/12-logistic-regression-gradient-descent';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/12-logistic-regression-gradient-descent.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="16. Stochastic Gradient Descent and Simulated Annealing" href="13-sgd-simulated-annealing.html" />
+    <link rel="prev" title="14. Applications and Broader Impact: Latent Variables and Variational Inference" href="impact-3-latent-variables.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/12-logistic-regression-gradient-descent.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/12-logistic-regression-gradient-descent.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Logistic Regression and Gradient Descent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logistic-regression">15.1. Logistic Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates">Coin-Toss Revisited: Modeling a Bernoulli Variable with Covariates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-logistic-regression-model">The Logistic Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-a-logistic-regression-model">Interpreting a Logistic Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-great-explanatory-power-comes-great-responsibility">With Great Explanatory Power Comes Great Responsibility!</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#when-not-to-use-sensitive-protected-attributes">When not to use sensitive/protected attributes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#when-you-might-want-to-use-sensitive-protected-attributes">When you might want to use sensitive/protected attributes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#appropriate-usage-of-sensitive-protected-attributes">Appropriate usage of sensitive/protected attributes</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-logistic-regression-log-likelihood">Maximizing the Logistic Regression Log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">15.2. Gradient Descent</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-as-directional-information">Gradient as Directional Information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-intuition-for-gradient-descent">An Intuition for Gradient Descent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-the-algorithm">Gradient Descent: the Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnosing-design-choices-with-the-trajectory">Diagnosing Design Choices with the Trajectory</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnosing-issues-with-the-trajectory">Diagnosing Issues with the Trajectory</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-step-size-matters">Gradient Descent: Step Size Matters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-for-logistic-regression">Gradient Descent for Logistic Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#but-did-we-optimize-it">But Did We Optimize It?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-optimization">15.3. Convex Optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-sets">Convex Sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-functions">Convex Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-function-first-order-condition">Convex Function: First Order Condition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-function-second-order-condition">Convex Function: Second Order Condition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-convex-functions">Properties of Convex Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Convex Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convexity-of-the-logistic-regression-negative-log-likelihood">Convexity of the Logistic Regression Negative Log-Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#but-does-it-scale">But Does It Scale?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">15.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">15.5. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="logistic-regression-and-gradient-descent">
+<h1><span class="section-number">15. </span>Logistic Regression and Gradient Descent<a class="headerlink" href="#logistic-regression-and-gradient-descent" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/kqPcV2RQySU" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Logistic Regression</p></li>
+<li><p>Gradient Descent</p></li>
+<li><p>Convex Optimization</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets.samples_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="logistic-regression">
+<h2><span class="section-number">15.1. </span>Logistic Regression<a class="headerlink" href="#logistic-regression" title="Link to this heading">#</a></h2>
+<section id="coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates">
+<h3>Coin-Toss Revisited: Modeling a Bernoulli Variable with Covariates<a class="headerlink" href="#coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates" title="Link to this heading">#</a></h3>
+<p>Let’s revisit our model for coin-toss: we’d assumed that the outcomes <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> were independently and identically distributed as Bernoulli’s, <span class="math notranslate nohighlight">\(Y^{(n)} \sim Ber(\theta)\)</span>. Today, we will re-examine the <em><strong>identical</strong></em> part of the modeling assumptions.</p>
+<p>Realistically, the probability of <span class="math notranslate nohighlight">\(Y^{(n)} = 1\)</span> depends on variables like force, angle, spin etc.</p>
+<p>Let <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)} \in \mathbb{R}^D\)</span> be <span class="math notranslate nohighlight">\(D\)</span> number of such measurements of the <span class="math notranslate nohighlight">\(n\)</span>-th toss. We model the probability of <span class="math notranslate nohighlight">\(Y^{(n)} = 1\)</span> as a function of these <em><strong>covariates</strong></em> <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+Y^{(n)} \sim Ber\left(\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right)\right)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> are the parameters of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(\mathrm{sigm}\)</span> is the sigmoid function <span class="math notranslate nohighlight">\(\mathrm{sigm}(z) = \frac{1}{1 + e^{-z}}\)</span>.</p>
+<p><strong>Note:</strong> we need the sigmoid function to transform an arbitrary real number <span class="math notranslate nohighlight">\(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\)</span> into a probability (i.e. a number in <span class="math notranslate nohighlight">\([0, 1]\)</span>).</p>
+</section>
+<section id="the-logistic-regression-model">
+<h3>The Logistic Regression Model<a class="headerlink" href="#the-logistic-regression-model" title="Link to this heading">#</a></h3>
+<p>Given a set of <span class="math notranslate nohighlight">\(N\)</span> observations <span class="math notranslate nohighlight">\((\mathbf{x}^{(1)}, y^{(1)}), \ldots, (\mathbf{x}^{(N)}, y^{(N)})\)</span>. We assume the following model for the data.</p>
+<div class="math notranslate nohighlight">
+\[
+Y^{(n)} \sim Ber\left(\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right)\right).
+\]</div>
+<p>This is called the <em><strong>logistic regression</strong></em> model.</p>
+<p>Fitting this model on the data means <em><strong>inferring</strong></em> the parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> that best aligns with the observations.</p>
+<p>Once we have inferred the parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>, given a new set of covariates <span class="math notranslate nohighlight">\(\mathbf{x}^{\text{new}}\)</span>, we can <strong>predict</strong> the probability of <span class="math notranslate nohighlight">\(\mathbf{Y}^{\text{new}} = 1\)</span> by computing</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right).\]</div>
+<p>For now, we will assume that <span class="math notranslate nohighlight">\(f\)</span> is a linear function:</p>
+<div class="math notranslate nohighlight">
+\[
+f\left(\mathbf{X}^{(n)}; \mathbf{w}\right) = \mathbf{w}^\top \mathbf{X}^{(n)}.
+\]</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: The Relationship Between Logistic Regression and Classification</p>
+<p><strong>What Is Classification?</strong>
+A regression problem is where we predict a <strong>quantitative</strong> outcome <span class="math notranslate nohighlight">\(y\)</span> based on some covariates <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<ul class="simple">
+<li><p><strong>Example:</strong> Given the number of room, the number of allowed guests and the neighborhood, predict price of an Airbnb listing.</p></li>
+</ul>
+<p>A <em><strong>classification</strong></em> problem is a <strong>categorical</strong> outcome <span class="math notranslate nohighlight">\(y\)</span> based on some covariates <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<ul class="simple">
+<li><p><strong>Example:</strong> Given the age, education and income level of a loan applicant, predict whether or not the loan application will be approved.</p></li>
+</ul>
+<p><strong>How Do We Classify?</strong>
+The data for classification consists of a set of tuples <span class="math notranslate nohighlight">\((\mathbf{x}^{(n)}, y^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{x}^{(n)}\in \mathbb{R}^D\)</span> is a set of predictors/covariates (e.g. age, income etc) for the <span class="math notranslate nohighlight">\(n\)</span>-th observation and <span class="math notranslate nohighlight">\(y^{(n)}\)</span> is the binary label (e.g. did the person receive the loan). The set of observations that are labeled <span class="math notranslate nohighlight">\(y=0\)</span> are called class 0 and the set labeled <span class="math notranslate nohighlight">\(y=1\)</span> are called class 1.</p>
+<p>The goal is learn a function <span class="math notranslate nohighlight">\(f(\mathbf{x})\)</span> so that given a new set of covariates <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> we can predict the correpsonding label <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>Suppose our data has a small number of predictors, by visualizing the data we can intuitively check how easy it is to separate the classes. In the following example, we have two covariates. We scatter plot the covariates (pictured as crosses and bars), we then indicate data belonging to class 1 by visualizing them as blue crosses and those belonging to class 0 as red bars.</p>
+<figure class="align-center" id="fig-12-fig0">
+<a class="reference internal image-reference" href="../_images/fig0.png"><img alt="../_images/fig0.png" src="../_images/fig0.png" style="width: 301px;" />
+</a>
+</figure>
+<p>Ideally, the classes are easily separated by a curve (or surface) in the input space, this curve (or surface) is called the <em><strong>decision boundary</strong></em>.</p>
+<p>When the decision boundary is linear (i.e. a line or a plane), it is defined by the equation</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{w}^\top \mathbf{x} = w_0x_0 + w_1x_1 + \ldots + w_D x_D = 0
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_0 = 1\)</span>. Often we write <span class="math notranslate nohighlight">\(b = w_0x_0\)</span> and we call <span class="math notranslate nohighlight">\(b\)</span> the <em><strong>bias</strong></em> term.</p>
+<p>The vector <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> allow us to gauge the ‘distance’ of a point from the decision boundary. That is, the magnitude of the inner product <span class="math notranslate nohighlight">\(|\mathbf{w}^\top \mathbf{x}|\)</span> gives us the distance between the point <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and the decision boundary, whereas the sign of <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}\)</span> gives us the side of the decision boundary on which the point <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> lies. The proof of this is short and geometric – you should try to work it out!</p>
+<p><em>(In the picture below, they use <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}\)</span> to express <span class="math notranslate nohighlight">\(w_1x_1 + \ldots + w_D x_D + b\)</span>, whereas we pretend that <span class="math notranslate nohighlight">\(x_0 = 1\)</span> and <span class="math notranslate nohighlight">\(b = w_0x_0\)</span>. This is just a difference in notation)</em></p>
+<figure class="align-center" id="fig-12-fig1">
+<a class="reference internal image-reference" href="../_images/fig1.png"><img alt="../_images/fig1.png" src="../_images/fig1.png" style="width: 307px;" />
+</a>
+</figure>
+<p>Once we have a decision boundary should we always classify points on one side of the boundary as 1 and points on the other side as 0?</p>
+<figure class="align-center" id="fig-12-fig2">
+<a class="reference internal image-reference" href="../_images/fig2.png"><img alt="../_images/fig2.png" src="../_images/fig2.png" style="width: 276px;" />
+</a>
+</figure>
+<p>For classes that are not linearly separable (the classes don’t fall cleanly along two sides of a linear decision boundary), we want to make “soft classifications”. That is, rather than declaring <span class="math notranslate nohighlight">\(y=1\)</span> when <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x} &gt; 0\)</span> and <span class="math notranslate nohighlight">\(y=0\)</span> when <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x} &lt;0\)</span>, we want to encode uncertainty in our prediction of the label <span class="math notranslate nohighlight">\(y\)</span>. We want to say the following:</p>
+<blockquote>
+<div><p>When <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is very far from the decision boundary, i.e. when <span class="math notranslate nohighlight">\(|\mathbf{w}^\top \mathbf{x}|\)</span> is very large, and when <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}&gt;0\)</span> then we want to say <span class="math notranslate nohighlight">\(y=1\)</span> with <strong>high probability</strong> (analogously, when <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is very far from the decision boundary and <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}&lt;0\)</span>, we want to say <span class="math notranslate nohighlight">\(y=0\)</span> with high probability). When <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is very close from the decision boundary, i.e. when <span class="math notranslate nohighlight">\(|\mathbf{w}^\top \mathbf{x}|\approx 0\)</span>, we want to be maximally uncertain about how predict <span class="math notranslate nohighlight">\(y\)</span>, i.e. we predict <span class="math notranslate nohighlight">\(y\)</span> randomly by a 50-50 chance.</p>
+</div></blockquote>
+<p>Formalizing this: to model the <strong>probability of labeling a point a certain class</strong>, we have to convert distance, <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> (which is unbounded) into a number (probability) between 0 and 1, using the <em><strong>sigmoid function</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{Prob}(y = 1 | \mathbf{x}) = \text{sigm}(\underbrace{\mathbf{w}^\top\mathbf{x}}_{\text{distance}})
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\text{sigm}(z) = \frac{1}{1 + e^{-z}}\)</span>. This way, when <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> is large and positive then <span class="math notranslate nohighlight">\(\text{sigm}(\underbrace{\mathbf{w}^\top\mathbf{x}}_{\text{distance}})\)</span> is close to 1, when <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> is large and negative then <span class="math notranslate nohighlight">\(\text{sigm}(\underbrace{\mathbf{w}^\top\mathbf{x}}_{\text{distance}})\)</span> is close to 0; when <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> is near 0 then <span class="math notranslate nohighlight">\(\text{sigm}(\underbrace{\mathbf{w}^\top\mathbf{x}}_{\text{distance}})\)</span> is close to 0.5, i.e. <span class="math notranslate nohighlight">\(\text{Prob}(y = 1 | \mathbf{x}) = 0.5\)</span>. This is exactly what we wanted!</p>
+</div>
+</section>
+<section id="interpreting-a-logistic-regression-model">
+<h3>Interpreting a Logistic Regression Model<a class="headerlink" href="#interpreting-a-logistic-regression-model" title="Link to this heading">#</a></h3>
+<p>Suppose that you fit a logistic regression model to predict whether a loan application should be approved. Suppose that you have three covariates:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x_1</span></code> representing gender: 0 for male, 1 for female</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p></li>
+</ol>
+<p>Suppose that the parameters you found are:
+<div class="math notranslate nohighlight">
+\[
+p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
+\]</div>
+</p>
+<p>What are the parameters telling us about the most influential attribute for predicting loan approval? What does this say about our data?</p>
+</section>
+<section id="with-great-explanatory-power-comes-great-responsibility">
+<h3>With Great Explanatory Power Comes Great Responsibility!<a class="headerlink" href="#with-great-explanatory-power-comes-great-responsibility" title="Link to this heading">#</a></h3>
+<p>So in the previous predictve model for loan application model we’d use the follwing covariates:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x_1</span></code> representing gender: 0 for male, 1 for female</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p></li>
+</ol>
+<p>We were pleased that using covariates we can hypothesize <strong>why</strong> the outcome <span class="math notranslate nohighlight">\(y\)</span> is a certain way - why is the loan approved or denied. But just because we can collect the data for the covariates does it mean that we should use them? It particular, in our logistic model on the previous slide, the most impactful factor on a loan decision was gender, does this seem reasonable? Should we use this model in real-life loan decisions?</p>
+<p>In models that are built on human data, covariates containing information that infringes on the rights of the subject to remain anonymous or to keep potentially non-relevant and biasing information out of the decision making process are called <strong>sensitive</strong> or <strong>protected attributes</strong>.</p>
+<section id="when-not-to-use-sensitive-protected-attributes">
+<h4>When not to use sensitive/protected attributes<a class="headerlink" href="#when-not-to-use-sensitive-protected-attributes" title="Link to this heading">#</a></h4>
+<p>Gender, in the case of loan decisions, is a protected attribute, since under the <a class="reference external" href="https://www.consumerfinance.gov/fair-lending/" rel="noreferrer" target="_blank">Equal Credit Opportunity Act</a> makes it illegal for a creditor to discriminate in any aspect of credit transaction based on certain characteristics including gender. Thus, any decision process using gender to inform a loan decision can be potentially considered discriminatory.</p>
+<p>In fact, most credit models used in industry are trained on data that are stripped of protected attributes - meaning that these models never see covariates like gender during training or deployment!</p>
+<p>If we had deployed the logistic model to make real life loan decisions, not only would our decisions be potentially unfair and possibly questionable in terms of financial soundness (since our decisions are heavily influenced by a covariate not directly related to the financial qualifications of a loan applicant), using such a model exposes our company to regulatory sanctions and law-suits.</p>
+</section>
+<section id="when-you-might-want-to-use-sensitive-protected-attributes">
+<h4>When you might want to use sensitive/protected attributes<a class="headerlink" href="#when-you-might-want-to-use-sensitive-protected-attributes" title="Link to this heading">#</a></h4>
+<p>So should we never collect data on protected attributes? Well, unfortunately, just because we are blind to protected attributes it does not mean that our decisions are fair with respect to these attributes! That is, just because we don’t see gender when making decisions, it does not mean that our decisions impact men and women equally. In fact, the Equal Credit Opportunity Act contains explicit language that protects consumers from the <a class="reference external" href="https://www.americanbanker.com/opinion/dont-ditch-disparate-impact" rel="noreferrer" target="_blank">disparate impact</a> of credit decision systems. Disparate impact is defined as the unequal impact of a credit policy on a legally protected class:</p>
+<blockquote>
+<div><p>“A lender’s policies, even when applied equally to all its credit applicants, may have a negative effect on certain applicants. For example, a lender may have a policy of not making single family home loans for less than $60,000. This policy might exclude a high number of applicants who have lower income levels or lower home values than the rest of the applicant pool. That uneven effect of the policy is called disparate impact.”</p>
+</div></blockquote>
+<p>How do modelers and engineers prevent their models from creating disparate impact for protected classes of people? One of the key ways to check for disparate impact is to compare model decisions on protected classes against model decisions against the population (for example, we can compare the percentages of loans the model approves for men and for women). But in order perform these checks, we need access to protected attributes!</p>
+<p>Often times, the models we are auditing for disparate impact are “black-boxes”, that is, the inner workings of the model (as well as details like the training procedure) are all proprietary information and we only have access to the models inputs and outputs, <span class="math notranslate nohighlight">\((x_2, x_3, y)\)</span> (note that the black-box model is not using the protected attribute gender <span class="math notranslate nohighlight">\(x_1\)</span>). In these cases, we can train a proxy model on covariates including protected attributes as well as the predictions of the black-box model, and then analyze our proxy model as an approximation to the black-box model. If we suppose that our logistic regression model in the previous slide was a proxy model that is trained to approximate a black-box model, then our proxy model is telling us that the black-box model’s decisions are highly correlated with gender and hence it’s decisions may cause disparate impact! This is a case where we needed to look at protected attributes in order to check for regulartory compliance!</p>
+<p>So why is this happening - why is a black-box model that is trained on data stripped of gender information making decisions that are highly correlated with gender? There are many possible explanations for this, but one common reason for this is that gender is a <strong>confounding variable</strong>, that is, some combination of income and loan amount is secretly encoding for gender (e.g. let’s say that in your data set, all the men earn 50k-60k and apply for exactly $10,000 of loans) and the black-box model is <em><strong>implicitly</strong></em> relying on gender to make loan decisions.</p>
+</section>
+<section id="appropriate-usage-of-sensitive-protected-attributes">
+<h4>Appropriate usage of sensitive/protected attributes<a class="headerlink" href="#appropriate-usage-of-sensitive-protected-attributes" title="Link to this heading">#</a></h4>
+<p>So now we see that protected attributes can be extremely useful when we are auditing models for regulatory compliance, should we collect sensitive or protected attributes all the time and as many of them as possible? Unfortunately, it’s not so simple: some industries are required by law to collect sensitive attribute data, while others are prohibited from doing so, still others infer sensitive attributes from collected data for compliance checking purposes (e.g. using income and other covariates to infer gender or zip codes to infer race). While useful for antidiscrimnatory purposes, collecting or infering sensitive protected attribute is nonetheless full of challenges and potential pitfalls (for example, protected attributes you infered can violate the subject’s right to non-disclosure!) - references in this section addresses the issues of appropriate usage of sensitive attributes.</p>
+<p>Furthermore, <strong>how</strong> you collect and ecnode ata can deeply impact your fairness/compliance analysis. For example, application forms that include two options for gender and three boxes for race may cause us to incorrectly aggregate subjects who do not fall neatly into these boxes under categories that are inappropriate (and by the way, we’ve not been carefully distinguishing gender and sex in this discussion, but they maybe treated differently under different bodies of laws. Also, are they equivalent concepts to our human subjects from whom we are collecting the data? What are we really trying to measure by collecting gender or sex data?). Such misleading categorization can cause us to miss cases of disparate impact in our analysis, since we have simply missed out on important subgroups of the population.</p>
+<p>If you feel like we’re now treading in the unfamiliar territories of social science or law, you are not mistaken! When we work with human data, the interpretation of the data and hence our analysis hinges on our ability to meaningfully understand the data in social contexts and in human terms. Just as we need to consult physicist domain experts when we are building a statistical model for physical data, medical experts when we are building models for medical data, when we build models that have social impact we have to proceed carefully under the advisement of experts on our social/legal systems.</p>
+<p><strong>References for Issues Involving Proper Use of Protected Attributes</strong>
+0. <a href="https://journals.sagepub.com/doi/10.1177/0891243215584758">New Categories Are Not Enough: Rethinking the Measurement of Sex and Gender in Social Surveys</a></p>
+<ol class="arabic simple">
+<li><p><a href="https://www.pewsocialtrends.org/2015/11/06/chapter-1-estimates-of-multiracial-adults-and-other-racial-and-ethnic-groups-across-various-question-formats/"> Estimates of Multiracial Adults and Other Racial and Ethnic Groups Across Various Question Formats</a></p></li>
+<li><p><a href="https://arxiv.org/pdf/1806.03281.pdf">Blind Justice: Fairness with Encrypted Sensitive Attributes</a></p></li>
+<li><p><a href="https://arxiv.org/pdf/1912.06171.pdf">Awareness in Practice: Tensions in Access to Sensitive Attribute Data for Antidiscrimination</a></p></li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Interpreting a Logistic Regression Model: Log-Odds</p>
+<p>A more formal way of interpreting the parameters of the logistic regression model is through the <em><strong>log-odds</strong></em>. That is, we solve for <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> in terms of <span class="math notranslate nohighlight">\(\text{Prob}(y = 1 | \mathbf{x})\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\text{Prob}(y = 1 | \mathbf{x}) &amp;= \text{sigm}(\mathbf{w}^\top\mathbf{x})\\
+\text{sigm}^{-1}(\text{Prob}(y = 1 | \mathbf{x})) &amp;= \mathbf{w}^\top\mathbf{x}\\
+\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{1 - \text{Prob}(y = 1 | \mathbf{x})}\right)&amp;= \mathbf{w}^\top\mathbf{x}\\
+\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\right)&amp;= \mathbf{w}^\top\mathbf{x}
+\end{aligned}\end{split}\]</div>
+<p>where we used the fact that <span class="math notranslate nohighlight">\(\text{sigm}^{-1}(z) = \frac{z}{1 - z}\)</span>.</p>
+<p>The term <span class="math notranslate nohighlight">\(\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\right)\)</span> is essentially a ratio of the probability of <span class="math notranslate nohighlight">\(y=1\)</span> and the probability of <span class="math notranslate nohighlight">\(y=0\)</span>, we can interpret this quantity as the (log) odds of you winning if you’d bet that <span class="math notranslate nohighlight">\(y=1\)</span>. Thus, we can imagine the parameter <span class="math notranslate nohighlight">\(w_d\)</span> for the covariate <span class="math notranslate nohighlight">\(x_d\)</span> as telling us if the odd of winning a bet on <span class="math notranslate nohighlight">\(y=1\)</span> is good.</p>
+<ol class="arabic simple">
+<li><p>if <span class="math notranslate nohighlight">\(w_d &lt; 0\)</span>, then by increasing <span class="math notranslate nohighlight">\(x_d\)</span> (while holding all other covariates constant) we make <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> more negative, and hence the ratio <span class="math notranslate nohighlight">\(\frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\)</span> closer to 0. That is, when <span class="math notranslate nohighlight">\(w_d &lt; 0\)</span>, increasing <span class="math notranslate nohighlight">\(x_d\)</span> decreases our odds.<br><br></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(w_d &gt; 0\)</span>, then by increasing <span class="math notranslate nohighlight">\(x_d\)</span> (while holding all other covariates constant) we make <span class="math notranslate nohighlight">\(\mathbf{w}^\top\mathbf{x}\)</span> more positive, and hence the ratio <span class="math notranslate nohighlight">\(\frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\)</span> larger. That is, when <span class="math notranslate nohighlight">\(w_d &gt; 0\)</span>, increasing <span class="math notranslate nohighlight">\(x_d\)</span> decreases our odds.</p></li>
+</ol>
+</div>
+</section>
+</section>
+<section id="maximizing-the-logistic-regression-log-likelihood">
+<h3>Maximizing the Logistic Regression Log-likelihood<a class="headerlink" href="#maximizing-the-logistic-regression-log-likelihood" title="Link to this heading">#</a></h3>
+<p>Given a set of <span class="math notranslate nohighlight">\(N\)</span> observations <span class="math notranslate nohighlight">\((\mathbf{x}^{(1)}, y^{(1)}), \ldots, (\mathbf{x}^{(N)}, y^{(N)})\)</span>. We want to find <span class="math notranslate nohighlight">\(\mathbf{w}_{\text{MLE}}\)</span> that maximizes the log (joint) likelihood:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\small
+\mathbf{w}_{\text{MLE}} =&amp; \underset{\mathbf{w}}{\mathrm{argmax}}\;\ell(\mathbf{w}) \equiv \underset{\mathbf{w}}{\mathrm{argmin}}\;-\ell(\mathbf{w}) =\underset{\mathbf{w}}{\mathrm{argmin}}-\log \prod_{n=1}^N p(y^{(n)} | \mathbf{x}^{(n)}) \\
+=&amp; \underset{\mathbf{w}}{\mathrm{argmin}}\sum_{n=1}^N -\log\left( \mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)})^{y^{(n)}}(1 -\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}))^{1 - y^{(n)}}   \right) \\
+=&amp; \underset{\mathbf{w}}{\mathrm{argmin}}\sum_{n=1}^N -y^{(n)}\,\log\,\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}) \\
+&amp;- (1 - y^{(n)}) \log (1 -\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}))
+\end{aligned}\end{split}\]</div>
+<p>Optimizing the likelihood requires us to find the stationary points of the gradient of <span class="math notranslate nohighlight">\(\ell(\mathbf{w})\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
+\]</div>
+<p>Can we solve for <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>?</p>
+</section>
+</section>
+<section id="gradient-descent">
+<h2><span class="section-number">15.2. </span>Gradient Descent<a class="headerlink" href="#gradient-descent" title="Link to this heading">#</a></h2>
+<section id="gradient-as-directional-information">
+<h3>Gradient as Directional Information<a class="headerlink" href="#gradient-as-directional-information" title="Link to this heading">#</a></h3>
+<p>The gradient is orthogonal to the level curve of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x^*\)</span> and hence, <em>when it is not zero</em>, points in the direction of the greatest instantaneous increase in <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<figure class="align-center" id="fig-12-levelcurves">
+<a class="reference internal image-reference" href="../_images/levelcurves.jpg"><img alt="../_images/levelcurves.jpg" src="../_images/levelcurves.jpg" style="width: 655px;" />
+</a>
+</figure>
+</section>
+<section id="an-intuition-for-gradient-descent">
+<h3>An Intuition for Gradient Descent<a class="headerlink" href="#an-intuition-for-gradient-descent" title="Link to this heading">#</a></h3>
+<p>The intuition behind various flavours of gradient descent  is as follows:</p>
+<p><a class="reference download internal" download="" href="../_downloads/264806ebdff3c0a000a8af9603812e94/fig9.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">derivation</span> <span class="pre">(PDF)</span></code></a></p>
+</section>
+<section id="gradient-descent-the-algorithm">
+<h3>Gradient Descent: the Algorithm<a class="headerlink" href="#gradient-descent-the-algorithm" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>start at random place: <span class="math notranslate nohighlight">\(\mathbf{w}^{(0)}\leftarrow \textbf{random}\)</span></p></li>
+<li><p>until (stopping condition satisfied):</p></li>
+</ol>
+<p>a. compute gradient at <span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>:
+gradient (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>) = <span class="math notranslate nohighlight">\(\nabla_{\mathbf{w}}\)</span> loss_function (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>)</p>
+<p>b. take a step in the negative gradient direction:
+<span class="math notranslate nohighlight">\(\mathbf{w}^{(t+1)} \leftarrow \mathbf{w}^{(t)}\)</span> - <span class="math notranslate nohighlight">\(\eta\)</span> * gradient (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>)</p>
+<p>Here <span class="math notranslate nohighlight">\(\eta\)</span> is called the <em><strong>learning rate</strong></em>.</p>
+</section>
+<section id="diagnosing-design-choices-with-the-trajectory">
+<h3>Diagnosing Design Choices with the Trajectory<a class="headerlink" href="#diagnosing-design-choices-with-the-trajectory" title="Link to this heading">#</a></h3>
+<p>If this is your objective function during training, what can you conclude about your step-size?</p>
+<figure class="align-center" id="fig-12-fig13">
+<a class="reference internal image-reference" href="../_images/fig13.png"><img alt="../_images/fig13.png" src="../_images/fig13.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="diagnosing-issues-with-the-trajectory">
+<h3>Diagnosing Issues with the Trajectory<a class="headerlink" href="#diagnosing-issues-with-the-trajectory" title="Link to this heading">#</a></h3>
+<p>If this is your objective function during training, what can you conclude about your step-size?</p>
+<figure class="align-center" id="fig-12-fig14">
+<a class="reference internal image-reference" href="../_images/fig14.png"><img alt="../_images/fig14.png" src="../_images/fig14.png" style="width: 735px;" />
+</a>
+</figure>
+<p>If this is your objective function during training, what can you conclude about your step-size?</p>
+<figure class="align-center" id="fig-12-fig15">
+<a class="reference internal image-reference" href="../_images/fig15.png"><img alt="../_images/fig15.png" src="../_images/fig15.png" style="width: 735px;" />
+</a>
+</figure>
+</section>
+<section id="gradient-descent-step-size-matters">
+<h3>Gradient Descent: Step Size Matters<a class="headerlink" href="#gradient-descent-step-size-matters" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-12-fig10">
+<a class="reference internal image-reference" href="../_images/fig10.jpg"><img alt="../_images/fig10.jpg" src="../_images/fig10.jpg" style="width: 697px;" />
+</a>
+</figure>
+</section>
+<section id="gradient-descent-for-logistic-regression">
+<h3>Gradient Descent for Logistic Regression<a class="headerlink" href="#gradient-descent-for-logistic-regression" title="Link to this heading">#</a></h3>
+<p>When diagnosing our gradient descent learning, we can:</p>
+<ol class="arabic simple">
+<li><p>Visualize the log-likelihood. <strong>What does this tell us?</strong></p></li>
+<li><p>Visualize the norm of the gradients. <strong>What does this tell us?</strong></p></li>
+</ol>
+<p>What else should we visualize to check that our learned model aligns with the data?</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate 2d classification dataset</span>
+<span class="n">centers</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="n">centers</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))))</span>
+
+<span class="c1">#define the sigmoid function</span>
+<span class="n">sigmoid</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+
+<span class="c1">#define the negative log-likelihood</span>
+<span class="n">nll</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span>  <span class="o">-</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">)))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">))))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="c1">#define logistic regression MLE inference by gradient descent</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logistic_regression_fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">total_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+    <span class="c1">#implement the gradient</span>
+    <span class="n">gradient</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="o">-</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">)))[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1">#initialize parameters w</span>
+    <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">w_current</span> <span class="o">=</span> <span class="n">init</span>
+    <span class="c1">#store the negative log-likelihood</span>
+    <span class="n">nlls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#store the norm of the gradients </span>
+    <span class="n">grad_norms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#initialize the difference between current and new parameters</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#gradient descent </span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total_iterations</span> <span class="ow">and</span> <span class="n">delta</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+        <span class="c1">#compute the gradient</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">w_current</span><span class="p">)</span>
+        <span class="c1">#update parameter by taking gradient step</span>
+        <span class="n">w_next</span> <span class="o">=</span> <span class="n">w_current</span> <span class="o">-</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">grad</span>
+        <span class="c1">#compute the difference between current parameters and new parameters</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">w_next</span> <span class="o">-</span> <span class="n">w_current</span><span class="p">)</span>
+        <span class="c1">#compute the norm of the gradient</span>
+        <span class="n">grad_norms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">grad</span><span class="p">))</span>
+        <span class="c1">#compute the negative log-likelihood</span>
+        <span class="n">nlls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w_current</span><span class="p">))</span>
+        
+        <span class="n">w_current</span> <span class="o">=</span> <span class="n">w_next</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">return</span> <span class="n">w_current</span><span class="p">,</span> <span class="n">nlls</span><span class="p">,</span> <span class="n">grad_norms</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_diagnostics</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">nlls</span><span class="p">,</span> <span class="n">grad_norms</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nlls</span><span class="p">)),</span> <span class="n">nlls</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'negative log-likelihood over iterations of gradient descent'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'negative log-likelihood'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'iterations of gradient descent'</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grad_norms</span><span class="p">)),</span> <span class="n">grad_norms</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'norms of gradients over iterations of gradient descent'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'norm of gradient'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'iterations of gradient descent'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="n">w_MLE</span><span class="p">,</span> <span class="n">nlls</span><span class="p">,</span> <span class="n">grad_norms</span> <span class="o">=</span> <span class="n">logistic_regression_fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">total_iterations</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_diagnostics</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">nlls</span><span class="p">,</span> <span class="n">grad_norms</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a75b6c54a7cd03fe9c2637c28f89810f5353c9b572d42d16c0093a09ed48390d.png" src="../_images/a75b6c54a7cd03fe9c2637c28f89810f5353c9b572d42d16c0093a09ed48390d.png" />
+</div>
+</div>
+</section>
+<section id="but-did-we-optimize-it">
+<h3>But Did We Optimize It?<a class="headerlink" href="#but-did-we-optimize-it" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-12-optima">
+<a class="reference internal image-reference" href="../_images/optima.jpg"><img alt="../_images/optima.jpg" src="../_images/optima.jpg" style="width: 475px;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="convex-optimization">
+<h2><span class="section-number">15.3. </span>Convex Optimization<a class="headerlink" href="#convex-optimization" title="Link to this heading">#</a></h2>
+<section id="convex-sets">
+<h3>Convex Sets<a class="headerlink" href="#convex-sets" title="Link to this heading">#</a></h3>
+<p>A <em><strong>convex set</strong></em> <span class="math notranslate nohighlight">\(S\subset \mathbb{R}^D\)</span> is a set that contains the line segment between any two points in <span class="math notranslate nohighlight">\(S\)</span>. Formally, if <span class="math notranslate nohighlight">\(x, y \in S\)</span> then <span class="math notranslate nohighlight">\(S\)</span> contains all convex combinations of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+tx + (1-t) y \in S,\quad t\in [0, 1].
+\]</div>
+<figure class="align-center" id="fig-12-convexset">
+<a class="reference internal image-reference" href="../_images/convexset.jpg"><img alt="../_images/convexset.jpg" src="../_images/convexset.jpg" style="width: 563px;" />
+</a>
+</figure>
+</section>
+<section id="convex-functions">
+<h3>Convex Functions<a class="headerlink" href="#convex-functions" title="Link to this heading">#</a></h3>
+<p>A function <span class="math notranslate nohighlight">\(f\)</span> is a <em><strong>convex function</strong></em> if domain of <span class="math notranslate nohighlight">\(f\)</span> is a convex set, and the line segment between the points <span class="math notranslate nohighlight">\((x, f(x))\)</span> and <span class="math notranslate nohighlight">\((y, f(y))\)</span> lie above the graph of <span class="math notranslate nohighlight">\(f\)</span>. Formally, for any <span class="math notranslate nohighlight">\(x, y\in \mathrm{dom}(f)\)</span>, we have</p>
+<div class="math notranslate nohighlight">
+\[
+\underbrace{f(tx + (1-t)y)}_{\text{height of graph of $f$ at a point between $x$ and $y$}} \quad \leq \underbrace{tf(x) + (1-t)f(y)}_{\text{height of point on line segment between $(x, f(x))$ and $(y, f(y))$}},\quad t\in [0, 1]
+\]</div>
+<figure class="align-center" id="fig-12-convex">
+<a class="reference internal image-reference" href="../_images/convex.jpg"><img alt="../_images/convex.jpg" src="../_images/convex.jpg" style="width: 577px;" />
+</a>
+</figure>
+</section>
+<section id="convex-function-first-order-condition">
+<h3>Convex Function: First Order Condition<a class="headerlink" href="#convex-function-first-order-condition" title="Link to this heading">#</a></h3>
+<p>How do we check that a function <span class="math notranslate nohighlight">\(f\)</span> is convex? If <span class="math notranslate nohighlight">\(f\)</span> is differentiable then <span class="math notranslate nohighlight">\(f\)</span> is convex if the graph of <span class="math notranslate nohighlight">\(f\)</span> lies above every tangent plane.</p>
+<p><strong>Theorem:</strong> If <span class="math notranslate nohighlight">\(f\)</span> is differentiable then <span class="math notranslate nohighlight">\(f\)</span> is convex if and only if for every <span class="math notranslate nohighlight">\(x \in \mathrm{dom}(f)\)</span>, we have</p>
+<div class="math notranslate nohighlight">
+\[
+\underbrace{f(y)}_{\text{height of graph of $f$ over $y$}} \geq \underbrace{f(x) + \nabla f(x)^\top (y - x)}_{\text{height of plane tangent to $f$ at $x$, evaluated over $y$}},\quad \forall y\in \mathrm{dom}(f)
+\]</div>
+<figure class="align-center" id="fig-12-convex-first-order">
+<a class="reference internal image-reference" href="../_images/convex_first_order.jpg"><img alt="../_images/convex_first_order.jpg" src="../_images/convex_first_order.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="convex-function-second-order-condition">
+<h3>Convex Function: Second Order Condition<a class="headerlink" href="#convex-function-second-order-condition" title="Link to this heading">#</a></h3>
+<p>If <span class="math notranslate nohighlight">\(f\)</span> is twice-differentiable then <span class="math notranslate nohighlight">\(f\)</span> is convex if the “second derivative is positive”.</p>
+<p><strong>Theorem:</strong> If <span class="math notranslate nohighlight">\(f\)</span> is twice-differentiable then <span class="math notranslate nohighlight">\(f\)</span> is convex if and only if the Hessian <span class="math notranslate nohighlight">\(\nabla^2 f(x)\)</span> is positive semi-definite for every <span class="math notranslate nohighlight">\(x\in \mathrm{dom}(f)\)</span>.</p>
+<figure class="align-center" id="fig-12-convex-nonconvex">
+<a class="reference internal image-reference" href="../_images/convex_nonconvex.jpg"><img alt="../_images/convex_nonconvex.jpg" src="../_images/convex_nonconvex.jpg" style="width: 548px;" />
+</a>
+</figure>
+</section>
+<section id="properties-of-convex-functions">
+<h3>Properties of Convex Functions<a class="headerlink" href="#properties-of-convex-functions" title="Link to this heading">#</a></h3>
+<p>How to build complex convex functions from simple convex functions:</p>
+<ol class="arabic simple">
+<li><p>if <span class="math notranslate nohighlight">\(w_1, w_2 \geq 0\)</span> and <span class="math notranslate nohighlight">\(f_1, f_2\)</span> are convex, then <span class="math notranslate nohighlight">\(h = w_1 f_1 + w_2 f_2\)</span> is convex<br><br></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> are convex, and <span class="math notranslate nohighlight">\(g\)</span> is univariate and non-decreasing then <span class="math notranslate nohighlight">\(h = g \circ f\)</span> is convex<br><br></p></li>
+<li><p>Log-sum-exp functions are convex: <span class="math notranslate nohighlight">\(f(x) = \log \sum_{k=1}^K e^{x}\)</span></p></li>
+</ol>
+<p><strong>Note:</strong> there are many other convexity preserving operations on functions.</p>
+</section>
+<section id="id1">
+<h3>Convex Optimization<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>A <em><strong>convex optimization problem</strong></em> is an optimization of the following form:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathrm{min}\; &amp;f(x) &amp; (\text{convex objective function})\\
+\text{subject to}\; &amp; h_i(x) \leq 0, i=1, \ldots, i &amp; (\text{convex inequality constraints}) \\
+&amp; a_j^\top x - b_j = 0, j=1, \ldots, J &amp; (\text{affine equality constraints}) \\
+\end{aligned}\end{split}\]</div>
+<p>The set of points that satisfy the constraints is called the <em><strong>feasible set</strong></em>.</p>
+<p>You can prove that the a convex optimization problem optimizes a convex objective function over a convex feasible set. But why should we care about convex optimization problems?</p>
+<p><strong>Theorem:</strong> Let <span class="math notranslate nohighlight">\(f\)</span> be a convex function defined over a convex feasible set <span class="math notranslate nohighlight">\(\Omega\)</span>. Then if <span class="math notranslate nohighlight">\(f\)</span> has a local minimum at <span class="math notranslate nohighlight">\(x\in \Omega\)</span> – <span class="math notranslate nohighlight">\(f(y) \geq f(x)\)</span> for <span class="math notranslate nohighlight">\(y\)</span> in a small neighbourhood of <span class="math notranslate nohighlight">\(x\)</span> – then <span class="math notranslate nohighlight">\(f\)</span> has a global minimum at <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p><strong>Corollary:</strong> Let <span class="math notranslate nohighlight">\(f\)</span> be a differentiable convex function:</p>
+<ol class="arabic simple">
+<li><p>if <span class="math notranslate nohighlight">\(f\)</span> is unconstrained, then <span class="math notranslate nohighlight">\(f\)</span> has a <strong>local minimum</strong> and hence <strong>global minimum</strong> at <span class="math notranslate nohighlight">\(x\)</span> if <span class="math notranslate nohighlight">\(\nabla f(x) = 0\)</span>.</p></li>
+<li><p>if <span class="math notranslate nohighlight">\(f\)</span> is constrained by equalities, then <span class="math notranslate nohighlight">\(f\)</span> has a global minimum at <span class="math notranslate nohighlight">\(x\)</span> if <span class="math notranslate nohighlight">\(\nabla J(x, \lambda) = 0\)</span>, where <span class="math notranslate nohighlight">\(J(x, \lambda)\)</span> is the Lagrangian of the constrained optimization problem.</p></li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p><strong>Note:</strong> we can also characterize the global minimum of inequalities constrained convex optimization problems using the Lagrangian, but the formulation is more complicated.</p>
+</div>
+</section>
+<section id="convexity-of-the-logistic-regression-negative-log-likelihood">
+<h3>Convexity of the Logistic Regression Negative Log-Likelihood<a class="headerlink" href="#convexity-of-the-logistic-regression-negative-log-likelihood" title="Link to this heading">#</a></h3>
+<p>But why do we care about convex optimization problems? Let’s connect the theory of convex optimization to MLE inference for logistic regression. Recall that the negative log-likelihood of the logistic regression model is</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+-\ell(\mathbf{w}) &amp;= -\sum_{n=1}^N y^{(n)}\,\log\,\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}) + (1 - y^{(n)}) \log (1 -\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}))\\
+&amp;=\sum_{n=1}^N y^{(n)} \log(e^0 + e^{\mathbf{w}^\top \mathbf{x}^{(n)}}) + (1 - y^{(n)})(- \mathbf{w}^\top \mathbf{x}^{(n)})
+\end{aligned}\end{split}\]</div>
+<p><strong>Proposition:</strong> The negative log-likelihood of logistic regression <span class="math notranslate nohighlight">\(-\ell(\mathbf{w})\)</span> is convex.</p>
+<p><strong>What does this mean for gradient descent?</strong> If gradient descent finds that <span class="math notranslate nohighlight">\(\mathbf{w}^*\)</span> is a stationary point of <span class="math notranslate nohighlight">\(-\nabla_{\mathbf{w}}\ell(\mathbf{w})\)</span> then <span class="math notranslate nohighlight">\(-\ell(\mathbf{w})\)</span> has a global minimum at <span class="math notranslate nohighlight">\(\mathbf{w}^*\)</span>. Hence, <span class="math notranslate nohighlight">\(\ell(\mathbf{w})\)</span> is maximized at <span class="math notranslate nohighlight">\(\mathbf{w}^*\)</span>.</p>
+<p><em><strong>Proof of the Proposition:</strong></em> Note that</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(- \mathbf{w}^\top \mathbf{x}^{(n)}\)</span> and <span class="math notranslate nohighlight">\((1 - y^{(n)})(- \mathbf{w}^\top \mathbf{x}^{(n)})\)</span> are convex, since they are linear</p></li>
+<li><p><span class="math notranslate nohighlight">\(\log(e^0 + e^{\mathbf{w}^\top \mathbf{x}^{(n)}})\)</span> is convex since it is the composition of a log-sum-exp function (which is convex) and a convex function <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}^{(n)}\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\sum_{n=1}^N y^{(n)} \log(e^0 + e^{\mathbf{w}^\top \mathbf{x}^{(n)}})\)</span> is convex since it is a nonnegative linear combination of convex functions</p></li>
+<li><p><span class="math notranslate nohighlight">\(-\ell(\mathbf{w})\)</span> is convex since it is the sum of two convex functions</p></li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: But Does It Always Converge?</p>
+<p>We’ve seen that if we choose the learning rate to be too large (say for example <code class="docutils literal notranslate"><span class="pre">1e10</span></code> then gradient descent can fail to converge even if the function <span class="math notranslate nohighlight">\(f\)</span> is convex. But how large is “too large”. There are two cases to consider</p>
+<ol class="arabic simple">
+<li><p>You have some prior knowledge about how smooth the function <span class="math notranslate nohighlight">\(f\)</span> is – i.e. how quickly <span class="math notranslate nohighlight">\(f\)</span> can increase or decrease. Then using this you can choose a learning rate that will provably guaratee convergence<br><br></p></li>
+<li><p>In most cases, the objective function (like the log-likelihood) may be too complex to reason about. In which case,</p></li>
+<li><p>we do a scientific “guess-and-check” to determine the learning rate:
+1. we find a learning rate that is large enough to cause gradient descent to diverge
+2. we find a leanring rate that is small enough to cause gradient descent to converge too slowly
+3. we choose a range of values between the large rate and the small rate and try them all to determine the optimal rate<br><br></p></li>
+<li><p>alternatively, we can choose the step-size <span class="math notranslate nohighlight">\(\eta\)</span> adaptively (e.g. when the gradient is large we can set <span class="math notranslate nohighlight">\(\eta\)</span> to be moderate to small and when the gradient is small we can set <span class="math notranslate nohighlight">\(\eta\)</span> to be larger). There are a number of adaptive step-size regimes that you may want to look up and implement for your specific problem.</p></li>
+</ol>
+<p>The prior knowledge required to choose <span class="math notranslate nohighlight">\(\eta\)</span> for provable convergence is called Lipschitz continuity. If we knew that <span class="math notranslate nohighlight">\(f\)</span> is convex, differentiable and that there is a constant <span class="math notranslate nohighlight">\(L&gt;0\)</span> such that <span class="math notranslate nohighlight">\(\|\nabla f(x) - \nabla f(y)\|_2 \leq L\|x -y\|_2\)</span>, then if we choose a fixed step size to be <span class="math notranslate nohighlight">\(\eta \leq \frac{1}{L}\)</span> then gradient descent <strong>provably</strong> converges to the global minimum of <span class="math notranslate nohighlight">\(f\)</span> as the number of iterations <span class="math notranslate nohighlight">\(N\)</span> goes to infinity. The constant <span class="math notranslate nohighlight">\(L\)</span> is called the <em><strong>Lipschitz constant</strong></em>.</p>
+<p><strong>But How Quickly Can We Get There?</strong>
+Just because we know gradient descent will converge it doesn’t mean that it will give us a good enough approximation of the global minimum within our time limit. This is why studying the <em><strong>rate of convergence</strong></em> of gradient descent is extremely important. Again there are two cases to consider</p>
+<ol class="arabic simple">
+<li><p>You have prior knowledge that <span class="math notranslate nohighlight">\(f\)</span> is convex, differentiable and its Lipschitz constant is <span class="math notranslate nohighlight">\(L\)</span> and suppose that <span class="math notranslate nohighlight">\(f\)</span> has a global minimum at <span class="math notranslate nohighlight">\(x^*\)</span>, then for gradient descent to get within <span class="math notranslate nohighlight">\(\epsilon\)</span> of <span class="math notranslate nohighlight">\(f(x^*)\)</span>, we need <span class="math notranslate nohighlight">\(O(1/\epsilon)\)</span> number of iterations.<br><br></p></li>
+<li><p>In most cases, the objective function will fail to be convex and its Lipschitz constant may be too difficult to compute. In this case, we simply stop the gradient descent when the gradient is sufficiently small.</p></li>
+</ol>
+</div>
+</section>
+<section id="but-does-it-scale">
+<h3>But Does It Scale?<a class="headerlink" href="#but-does-it-scale" title="Link to this heading">#</a></h3>
+<p>Gradient is such a simple algorithm that can be applied to <strong>any optimization problem</strong> for which you can compute the gradient of the objective function.</p>
+<p><strong>Question:</strong> Does this mean that maximum likelihood inference for statistical models is now an easy task (i.e. just use gradient descent)?</p>
+<p>For every likelihood optimization problem, evaluating the gradient at a set of parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> requires evaluating the likelihood of the entire dataset using <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
+\]</div>
+<p>Imagine if the size of your dataset <span class="math notranslate nohighlight">\(N\)</span> is in the millions. Naively evaluating the gardient <strong>just once</strong> may take up to seconds or minutes, thus running gradient descent until convergence may be unachievable in practice!</p>
+<p><strong>Idea:</strong> Maybe we don’t need to use the entire data set to evaluate the gradient during each step of gradient descent. Maybe we can approximate the gradient at <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> well enough with just a subset of the data.</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">15.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>For a set of observations <span class="math notranslate nohighlight">\(y\)</span>, we can collect additional data <span class="math notranslate nohighlight">\(x\)</span> and model the <em><strong>conditional distribution</strong></em> <span class="math notranslate nohighlight">\(p(Y|X)\)</span>. This is exactly regression and classification models do, they use <em><strong>covariates</strong></em> <span class="math notranslate nohighlight">\(x\)</span> to predict the <em><strong>outcome</strong></em> <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<ol class="arabic simple">
+<li><p><strong>(Conditional Models)</strong> Why do we need additional data <span class="math notranslate nohighlight">\(x\)</span>? Why isn’t it sufficient to just model <span class="math notranslate nohighlight">\(y\)</span> as a binomial, Guassian or a mixture of Gaussians?</p></li>
+</ol>
+<ul class="simple">
+<li><p>to predict</p></li>
+<li><p>to explain</p></li>
+<li><p>to model finer grain variations in y<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Classification)</strong> For binary data (like whether or not an individual has kidney cancer), we can model <span class="math notranslate nohighlight">\(p(Y|X)\)</span> as a Bernoulli
+<div class="math notranslate nohighlight">
+\[
+Y^{(n)} \sim Ber\left(\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right)\right).
+\]</div>
+
+Geomtrically, <span class="math notranslate nohighlight">\(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\)</span> gives the distance from a decision boundary that separates <span class="math notranslate nohighlight">\(y=1\)</span> from <span class="math notranslate nohighlight">\(y=0\)</span>, and we convert this distance into a probability using the sigmoid function <span class="math notranslate nohighlight">\(\mathrm{sigm}\)</span>.</p></li>
+</ol>
+<figure class="align-center" id="fig-12-summary-fig0">
+<a class="reference internal image-reference" href="../_images/fig0.png"><img alt="../_images/fig0.png" src="../_images/fig0.png" style="width: 301px;" />
+</a>
+</figure>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Maximizing the Likelihood)</strong> We want to maximize the log Bernoulli likelihood of <span class="math notranslate nohighlight">\(y\)</span> (conditioned on <span class="math notranslate nohighlight">\(x\)</span>) over model parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>, but the zeros of the gradient of the log-likelihood cannot be analytically solved for!
+<div class="math notranslate nohighlight">
+\[
+\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
+\]</div>
+
+But just because we can’t analytically find the zeros of the gradient, it doesn’t mean that the gradient is useless! The gradient of a loss function points to the direction of the greatest rate of increase, hence <em><strong>the negative gradient points to the direction of the fastest way of decreasing the loss function</strong></em>.</p></li>
+</ol>
+<p>When we iteratively decrease the loss function by changing <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> in the direction of the negative gradient, this is called <em><strong>gradient descent</strong></em>.<br><br></p>
+<ol class="arabic simple" start="4">
+<li><p><strong>(Properties of Gradient Descent)</strong> Gradient descent sounds like we can optimize any function without work, is it as good as it sounds?</p></li>
+</ol>
+<ul class="simple">
+<li><p>What do I need to know in order to use gradient descent?</p></li>
+<li><p>Is gradient descent guaranteed to converge?</p></li>
+<li><p>Is gradient descent efficient?</p>
+<ul>
+<li><p>EM was also an algorithm to maximize a log pdf. What is the difference between EM and gradient descent? What was the point of learning EM if we could have just learned gradient descent?<br><br></p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p><strong>(The Challenges of Conditional Models)</strong> Conditional models have so much potential to generate scientific understanding of our data but they are also the most frequently misused!</p></li>
+</ol>
+<p>Suppose that you fit a logistic regression model to predict whether a loan application should be approved. Suppose that you have three covariates:</p>
+<p><code class="docutils literal notranslate"><span class="pre">x_1</span></code> representing gender: 0 for male, 1 for female<br>
+<code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income<br>
+<code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p>
+<p>Suppose that the parameters you found are:
+<div class="math notranslate nohighlight">
+\[
+p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
+\]</div>
+
+What can I conclude about the loan decisions data that this model was fitted on? Can I deploy this model for usage?</p>
+<ul>
+<li><p><strong>Bias in your conclusions is exponentially exacerbated by bias in the data collection process.</strong><br><br></p>
+<ul>
+<li><p><strong>What information are you asking for?</strong> If you ask the wrong question, the covariates you collect are at best unpredictive, and <em><strong>at worse they can mask the signal in the data</strong></em>.</p>
+<p>In many data collection processes, one finds that the questionaire might be using “sex” and “gender” interchangeably, or “race” and “ethnicity” interchageably. But the former (depending on field and context) frequently refers to biological invariants (like chromosomes and genetic lineage), whereas the latter frequently refers to lived experiences (related to identity, culture etc). <strong>Caveat:</strong> although we collect data on race and sex as if delineation in these categories are more “immutable” or “factual”, many have/do argue that these concepts are also social constructs (see discussion on false binaries and false aggregtaion)!</p>
+<p>When you ask for “sex” are you asking about a person’s chromosomal information, becaues you’re studying chromosomal related diseases, or are you asking about their experiences with the US medical system and how their health outcome is affected by their gendery identity OR the identity that people tend to assume of them? <strong>For example:</strong> women, especially women of color, tend to be under-diagnosed and mis-diagnosed due to gendered treatments of patients.</p>
+<p>To complicate matters, the terms “gender” and “sex” can have very specific legal definitions – that may not align with defintions in medical or sociological contexts! For example, the language of the Equal Credit Opportunity Act is written in terms of “sex”, however, this term is not defined in the ECOA. The Consumer Financial Protection Bureau interprets (in their operating philosophy) this term to include both sexual orientation and gender identity.  <br><br></p>
+</li>
+<li><p><strong>Did you already bias the answer?</strong> If you gave confusing, misleading or incorrect options for answers (think about when you were frustrated with the concept quizzes!), then the covariates you collect are at best unpredictive, and <em><strong>at worse they can mask the signal in the data</strong></em>.</p>
+<p>In many data collection processes, one finds that the respondent is forced into a category that is unrepresentative of their experience, like having “Asian” as a broad racial category that includes South Asian, East Asian, South East Asian, like providing binary choices for gender or sex.</p>
+<p>If you are looking for disparaties in health outcomes, you might miss disparaties amongst important smaller subgroups within broad group of “Asian”, since health outcomes are often affected by income and  Asian-Americans have the largest in-group income disparity. <br><br></p>
+</li>
+<li><p><strong>Should you be asking for this information?</strong> The complexity of asking a seemingly simple question can seem overwhelming, often we resort to over-collecting (collecting every piece of information that we can think of) or under-collecting (not collecting any sensitive attribute). <br><br></p>
+<p><strong>Why you might not want to</strong> But respondents (e.g. patients, applicants for benefits) can be suspicious that their data can be used precisely to discriminate against them on the basis of protected attributes. Note that data collection have often historically been used to oppress, not to up-lift, vunerable communities. So collecting this data without clear purpose can compromise user trust and constitute a privacy threat if this data is not well protected.<br><br></p>
+<p><strong>Why you should</strong> However, in order to make sure our model is not disproportionately negatively impacting vunerable subgroups and that we are in compliancenb with laws like the EOCA, we need to check for disparate impact on protected groups. But in order to do that, we need to have access to sensitive attributes.<br><br></p>
+</li>
+</ul>
+</li>
+<li><p><strong>Is correlation causation?</strong><br><br></p>
+<ul class="simple">
+<li><p>It appears that the sex of the applicant the logistic regression model has the greatest influence on the prediction of the model, does this mean that the human decision makers were biased? (<strong>Hint:</strong> not necssarily, but it might be a hypothesis to explore to retroactively detect potential regulatory violation in this dataset.)<br><br></p></li>
+<li><p>If the interpretations of the coefficients of the logistic regression model does not imply human bias in the data, then can we use this model for real life loan decisions? (<strong>Hint:</strong> the answer is NO. It would be an violation!)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">15.5. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Gradient Descent and Stochastic Gradient Descent</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://towardsdatascience.com/gradient-descent-algorithm-and-its-variants-10f652806a3" rel="noreferrer" target="_blank">Gradient Descent Algorithm and Its Variants</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="https://www.cs.rochester.edu/u/jliu/CSC-576/class-note-10.pdf" rel="noreferrer" target="_blank">Stochastic Gradient “Descent” Algorithm</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="http://proceedings.mlr.press/v89/li19c/li19c.pdf" rel="noreferrer" target="_blank">On the Convergence of Stochastic Gradient Descent with Adaptive Stepsizes</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://arxiv.org/pdf/1809.04564.pdf" rel="noreferrer" target="_blank">On the Stability and Convergence of Stochastic Gradient Descent with Momentum</a></p></li>
+<li><p>(Practical) <a class="reference external" href="https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Descent Tricks</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="https://ee227c.github.io/notes/ee227c-notes.pdf" rel="noreferrer" target="_blank">Convex Optimization and Approximation</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="impact-3-latent-variables.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">14. </span>Applications and Broader Impact: Latent Variables and Variational Inference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="13-sgd-simulated-annealing.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">16. </span>Stochastic Gradient Descent and Simulated Annealing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logistic-regression">15.1. Logistic Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates">Coin-Toss Revisited: Modeling a Bernoulli Variable with Covariates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-logistic-regression-model">The Logistic Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-a-logistic-regression-model">Interpreting a Logistic Regression Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-great-explanatory-power-comes-great-responsibility">With Great Explanatory Power Comes Great Responsibility!</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#when-not-to-use-sensitive-protected-attributes">When not to use sensitive/protected attributes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#when-you-might-want-to-use-sensitive-protected-attributes">When you might want to use sensitive/protected attributes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#appropriate-usage-of-sensitive-protected-attributes">Appropriate usage of sensitive/protected attributes</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-logistic-regression-log-likelihood">Maximizing the Logistic Regression Log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">15.2. Gradient Descent</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-as-directional-information">Gradient as Directional Information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-intuition-for-gradient-descent">An Intuition for Gradient Descent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-the-algorithm">Gradient Descent: the Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnosing-design-choices-with-the-trajectory">Diagnosing Design Choices with the Trajectory</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnosing-issues-with-the-trajectory">Diagnosing Issues with the Trajectory</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-step-size-matters">Gradient Descent: Step Size Matters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-for-logistic-regression">Gradient Descent for Logistic Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#but-did-we-optimize-it">But Did We Optimize It?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-optimization">15.3. Convex Optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-sets">Convex Sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-functions">Convex Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-function-first-order-condition">Convex Function: First Order Condition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-function-second-order-condition">Convex Function: Second Order Condition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-convex-functions">Properties of Convex Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Convex Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convexity-of-the-logistic-regression-negative-log-likelihood">Convexity of the Logistic Regression Negative Log-Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#but-does-it-scale">But Does It Scale?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">15.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">15.5. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

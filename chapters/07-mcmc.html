@@ -1,0 +1,998 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>8. Markov Chain Monte Carlo &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/07-mcmc';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/07-mcmc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9. Metropolis-Hastings and Gibbs" href="08-metropolis-hastings-gibbs.html" />
+    <link rel="prev" title="7. Monte Carlo Integration" href="06-monte-carlo-integration.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/07-mcmc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/07-mcmc.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Markov Chain Monte Carlo</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">8.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-for-a-discrete-distribution">8.2. Gibbs Sampler for a Discrete Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-for-a-bivariate-discrete-distribution">Gibbs Sampler for a Bivariate Discrete Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-as-transition-matrix-and-state-diagram">Gibbs Sampler as Transition Matrix and State Diagram</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limiting-distribution">Limiting Distribution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-and-properties-of-markov-chains">8.3. Definition and Properties of Markov Chains</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chains-in-discrete-and-continuous-spaces">Markov Chains in Discrete and Continuous Spaces</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transition-matrices-and-kernels">Transition Matrices and Kernels</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chapman-kolmogorov-equations-dynamics-as-matrix-multiplication">Chapman-Kolmogorov Equations: Dynamics as Matrix Multiplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-smart-phone-market-model">Example: Smart Phone Market Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chapman-kolmogorov-equations-continuous-state-space">Chapman-Kolmogorov Equations: Continuous State Space</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-irreducibility">Properties of Markov Chains: Irreducibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-aperiodicity">Properties of Markov Chains: Aperiodicity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-stationary-distributions">Properties of Markov Chains: Stationary Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-limiting-distributions">Properties of Markov Chains: Limiting Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorm-of-markov-chains">Fundamental Theorm of Markov Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-reversibility">Properties of Markov Chains: Reversibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reversibility-and-stationary-distributions">Reversibility and Stationary Distributions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">8.4. Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-samplers">Markov Chain Monte Carlo Samplers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-as-mcmc">Gibbs as MCMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">8.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">8.6. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="markov-chain-monte-carlo">
+<h1><span class="section-number">8. </span>Markov Chain Monte Carlo<a class="headerlink" href="#markov-chain-monte-carlo" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/a9H0oo_8BiI" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Gibbs Sampler for a Discrete Distribution</p></li>
+<li><p>Definition and Properties of Markov Chains</p></li>
+<li><p>Markov Chain Monte Carlo</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="motivation">
+<h2><span class="section-number">8.1. </span>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
+<p>Recall that the Gibbs sampler was a sampling technique that we introduced along with rejection sampling and inverse CDF sampling.</p>
+<p>We applied this sampler to sample from the posterior of a semi-conjugate Bayesian model (normal likelihood and Inverse-Gamma prior on the mean parameter). Using rejection sampling on this posterior would have been quite difficult (recall how difficult it is to tune rejection sampling; see <a class="reference internal" href="05-sampling.html"><span class="doc">Chapter 6</span></a>).</p>
+<p>But unlike in the case of rejection sampling and inverse CDF sampling, we never proved the correctness of this sampler!</p>
+</section>
+<section id="gibbs-sampler-for-a-discrete-distribution">
+<h2><span class="section-number">8.2. </span>Gibbs Sampler for a Discrete Distribution<a class="headerlink" href="#gibbs-sampler-for-a-discrete-distribution" title="Link to this heading">#</a></h2>
+<section id="gibbs-sampler-for-a-bivariate-discrete-distribution">
+<h3>Gibbs Sampler for a Bivariate Discrete Distribution<a class="headerlink" href="#gibbs-sampler-for-a-bivariate-discrete-distribution" title="Link to this heading">#</a></h3>
+<p>Suppose we have two independent random variables <span class="math notranslate nohighlight">\(X\sim Ber(0.2)\)</span> and <span class="math notranslate nohighlight">\(Y\sim Ber(0.6)\)</span>. Their joint distribution is a categorical distribution:</p>
+<div class="math notranslate nohighlight">
+\[
+p(X, Y) = [0.12\;\; 0.48\;\; 0.08\;\; 0.32]
+\]</div>
+<p>over the set of possible outcomes <span class="math notranslate nohighlight">\((X=1, Y=1), (X=0, Y=1), (X=1, Y=0), (X=1, Y=1)\)</span>.</p>
+<p>A Gibbs sampler for <span class="math notranslate nohighlight">\(p(X, Y)\)</span> will start with a sample <span class="math notranslate nohighlight">\((X=X_n, Y=Y_n)\)</span> and then generate a sample <span class="math notranslate nohighlight">\((X=X_{n+1}, Y=Y_{n+1})\)</span> by</p>
+<ol class="arabic simple">
+<li><p>sampling <span class="math notranslate nohighlight">\(X_{n+1}\)</span> from <div class="math notranslate nohighlight">
+\[p(X|Y = Y_{n})\]</div>
+</p></li>
+<li><p>sampling <span class="math notranslate nohighlight">\(Y_{n+1}\)</span> from <div class="math notranslate nohighlight">
+\[p(Y|X = X_{n+1})\]</div>
+</p></li>
+</ol>
+<p>We want to compute what is the distribution of the generated sample <span class="math notranslate nohighlight">\((X=X_{n+1}, Y=Y_{n+1})\)</span> given <span class="math notranslate nohighlight">\((X=X_n, Y=Y_n)\)</span>, i.e. we want <span class="math notranslate nohighlight">\(p(X=X_{n+1}, Y=Y_{n+1}| X=X_n, Y=Y_n)\)</span>, but there are <span class="math notranslate nohighlight">\(4^2\)</span> number of these probabilities! How do we succinctly represent them?</p>
+</section>
+<section id="gibbs-sampler-as-transition-matrix-and-state-diagram">
+<h3>Gibbs Sampler as Transition Matrix and State Diagram<a class="headerlink" href="#gibbs-sampler-as-transition-matrix-and-state-diagram" title="Link to this heading">#</a></h3>
+<p>We can represent the <span class="math notranslate nohighlight">\(p(X=X_{n+1}, Y=Y_{n+1}| X=X_n, Y=Y_n)\)</span> as a <span class="math notranslate nohighlight">\(4\times 4\)</span> matrix, <span class="math notranslate nohighlight">\(T\)</span>, where the <span class="math notranslate nohighlight">\(i, j\)</span>-th entry is the probability of starting with sample <span class="math notranslate nohighlight">\(i\)</span> and generating sample <span class="math notranslate nohighlight">\(j\)</span>.</p>
+<p>Alternatively, we can visualize how the Gibbs sampler moves around in the sample space <span class="math notranslate nohighlight">\((X, Y)\)</span> with a diagram.</p>
+<figure class="align-center" id="fig-07-gibbs">
+<a class="reference internal image-reference" href="../_images/gibbs.jpg"><img alt="../_images/gibbs.jpg" src="../_images/gibbs.jpg" style="width: 647px;" />
+</a>
+</figure>
+</section>
+<section id="limiting-distribution">
+<h3>Limiting Distribution<a class="headerlink" href="#limiting-distribution" title="Link to this heading">#</a></h3>
+<p>We see that computing the probability of the next sample given the current sample <span class="math notranslate nohighlight">\((X=1, Y=1)\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+p(X_{n+1}, Y_{n+1} | X_n=1, Y_n=1)
+\]</div>
+<p>is equivalent to multiplying the vector <span class="math notranslate nohighlight">\([1\;\; 0\;\; 0\;\; 0]\)</span> with the matrix <span class="math notranslate nohighlight">\(T\)</span>. <strong>Can you see why?</strong></p>
+<p>When we do, we get the distribution <span class="math notranslate nohighlight">\([0.12\;\; 0.48\;\; 0.08\;\; 0.32]\)</span> over the next sample. But this distribution looks just like the joint distribution <span class="math notranslate nohighlight">\(p(X, Y)\)</span>!</p>
+<p>This means that if we start at <span class="math notranslate nohighlight">\((X=1, Y=1)\)</span>, the next sample the Gibbs sampler returns will be from the joint distribution.</p>
+<p>In fact, you can start with any point in the samples space <span class="math notranslate nohighlight">\((X, Y)\)</span> or any distribution over the sample space, the next sample the Gibbs sampler returns will be from the joint distribution. I.e. any vector times <span class="math notranslate nohighlight">\(T\)</span> will return <span class="math notranslate nohighlight">\([0.12\;\; 0.48\;\; 0.08\;\; 0.32]\)</span>.</p>
+<p>This proves the correctness of the Gibbs sampler for <span class="math notranslate nohighlight">\(p(X, Y)\)</span>!</p>
+</section>
+</section>
+<section id="definition-and-properties-of-markov-chains">
+<h2><span class="section-number">8.3. </span>Definition and Properties of Markov Chains<a class="headerlink" href="#definition-and-properties-of-markov-chains" title="Link to this heading">#</a></h2>
+<section id="markov-chains-in-discrete-and-continuous-spaces">
+<h3>Markov Chains in Discrete and Continuous Spaces<a class="headerlink" href="#markov-chains-in-discrete-and-continuous-spaces" title="Link to this heading">#</a></h3>
+<p>A <em><strong>discrete-time stochastic process</strong></em> is set of random variables <span class="math notranslate nohighlight">\(\{X_0, X_1, \ldots \}\)</span>, where each random variable takes value in <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>. The set <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is called the <em><strong>state space</strong></em> and can be continuous or finite.</p>
+<p>A stochastic process satisfies the <em><strong>Markov property</strong></em> if <span class="math notranslate nohighlight">\(X_n\)</span> depends only on <span class="math notranslate nohighlight">\(X_{n-1}\)</span> (i.e. <span class="math notranslate nohighlight">\(X_n\)</span> is independent of <span class="math notranslate nohighlight">\(X_1, \ldots, X_{n-2}\)</span>). A stochastic process that satisfies the Markov property is called a <em><strong>Markov chain</strong></em>.</p>
+<p>We will assume that <span class="math notranslate nohighlight">\(p(X_n | X_{n-1})\)</span> is the same for all <span class="math notranslate nohighlight">\(n\)</span>.</p>
+<p><strong>Exercise:</strong> Give an example of a stochastic process that is not a Markov chain. Given an example of a stochastic process that is a Markov chain.</p>
+</section>
+<section id="transition-matrices-and-kernels">
+<h3>Transition Matrices and Kernels<a class="headerlink" href="#transition-matrices-and-kernels" title="Link to this heading">#</a></h3>
+<p>The Markov property ensure that we can describe the dynamics of the entire chain by describing how the chain <em><strong>transitions</strong></em> from state <span class="math notranslate nohighlight">\(i\)</span> to state <span class="math notranslate nohighlight">\(j\)</span>. <strong>Why?</strong></p>
+<p>If the state space is finite, then we can represent the transition from <span class="math notranslate nohighlight">\(X_{n-1}\)</span> to <span class="math notranslate nohighlight">\(X_{n}\)</span> as a <em><strong>transition matrix</strong></em> <span class="math notranslate nohighlight">\(T\)</span>, where <span class="math notranslate nohighlight">\(T_{ij}\)</span> is the probability of the chain transitioning from state <span class="math notranslate nohighlight">\(i\)</span> to <span class="math notranslate nohighlight">\(j\)</span>:
+<div class="math notranslate nohighlight">
+\[
+T_{ij} = \mathbb{P}[X_n = j | X_{n-1} = i].
+\]</div>
+</p>
+<p>The transition matrix can be represented visually as a <em><strong>finite state diagram</strong></em>.</p>
+<p>If the state space is continuous, then we can represent the transition from <span class="math notranslate nohighlight">\(X_{n-1}\)</span> to <span class="math notranslate nohighlight">\(X_{n}\)</span> as <em><strong>transition kernel pdf</strong></em>,
+<span class="math notranslate nohighlight">\(
+T(x, x')
+\)</span>,
+representing the likelihood of transitioning from state <span class="math notranslate nohighlight">\(X_{n-1}=x\)</span> to state <span class="math notranslate nohighlight">\(X_{n} = x'\)</span>. The probability of transitioning into a region <span class="math notranslate nohighlight">\(A \subset S\)</span> from state <span class="math notranslate nohighlight">\(x\)</span> is given by</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{P}[X_n \in A | X_{n-1} = x] = \int_{A} T(x, y) dy,
+\]</div>
+<p>such that <span class="math notranslate nohighlight">\(\int_{\mathcal{S}} T(x, y) dy = 1\)</span>.</p>
+</section>
+<section id="chapman-kolmogorov-equations-dynamics-as-matrix-multiplication">
+<h3>Chapman-Kolmogorov Equations: Dynamics as Matrix Multiplication<a class="headerlink" href="#chapman-kolmogorov-equations-dynamics-as-matrix-multiplication" title="Link to this heading">#</a></h3>
+<p>If the state space is finite, the probability of the <span class="math notranslate nohighlight">\(n=2\)</span> state, given the initial <span class="math notranslate nohighlight">\(n=0\)</span> state. can be computed by the <em><strong>Chapman-Kolmogorov equation</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{P}[X_2 = j | X_{0} = i] = \sum_{k\in \mathcal{S}} \mathbb{P}[X_1 = k | X_{0} = i]\mathbb{P}[X_{2} = j|X_{1}=k] = \sum_{k\in \mathcal{S}}T_{ik}T_{kj}
+\]</div>
+<p>We recognize <span class="math notranslate nohighlight">\(\sum_{k\in \mathcal{S}}T_{ik}T_{kj}\)</span> as the <span class="math notranslate nohighlight">\(ij\)</span>-the entry in the matrix <span class="math notranslate nohighlight">\(TT\)</span>. Thus, the Chapman-Kolmogorov equation gives us that the matrix <span class="math notranslate nohighlight">\(T^{(n)}\)</span> for a <span class="math notranslate nohighlight">\(n\)</span>-step transition is
+<div class="math notranslate nohighlight">
+\[
+T^{(n)} = \underbrace{T\ldots T}_{\text{$n$ times}}
+\]</div>
+</p>
+<p>In particular, when we have the initial distribution <span class="math notranslate nohighlight">\(\pi^{(0)}\)</span> over states, then the unconditional distribution <span class="math notranslate nohighlight">\(\pi^{(1)}\)</span> over the next state is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{P}[S_1 = i] = \sum_{k\in \mathcal{S}} \mathbb{P}[X_1 = i | X_0 = k]\mathbb{P}[X_0 = k]
+\]</div>
+<p>That is, <span class="math notranslate nohighlight">\(\pi^{(1)} = \pi^{(0)} T\)</span>.</p>
+</section>
+<section id="example-smart-phone-market-model">
+<h3>Example: Smart Phone Market Model<a class="headerlink" href="#example-smart-phone-market-model" title="Link to this heading">#</a></h3>
+<p>Consider a simple model of the dynamics of the smart phone market, where we model the customer loyalty as follows:</p>
+<figure class="align-center" id="fig-07-apple">
+<a class="reference internal image-reference" href="../_images/apple.jpg"><img alt="../_images/apple.jpg" src="../_images/apple.jpg" style="width: 498px;" />
+</a>
+</figure>
+<p>The transition matrix for the Markov chain is:
+<div class="math notranslate nohighlight">
+\[\begin{split}
+T = \left(\begin{array}{cc}0.8 &amp; 0.2\\ 0.4 &amp; 0.6 \end{array} \right)
+\end{split}\]</div>
+</p>
+<p>Say that the market is initially <span class="math notranslate nohighlight">\(\pi^{(0)} = [0.7\; 0.3]\)</span>, i.e. 70% Apple. What is the market distribution in the long term?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#transition matrix</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]])</span>
+<span class="c1">#initial distribution</span>
+<span class="n">pi_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">#time</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">pi_0</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<span class="c1">#try different values of N and different inital distributions!</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.66666667, 0.33333333]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="chapman-kolmogorov-equations-continuous-state-space">
+<h3>Chapman-Kolmogorov Equations: Continuous State Space<a class="headerlink" href="#chapman-kolmogorov-equations-continuous-state-space" title="Link to this heading">#</a></h3>
+<p>If the state space is continuous, the likelihood of the <span class="math notranslate nohighlight">\(n=2\)</span> state, given the initial <span class="math notranslate nohighlight">\(n=0\)</span> state, can be computed by the <em><strong>Chapman-Kolmogorov equation</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+T^{(2)}(x, x') = \int_{\mathcal{S}}T(x, y)\, T(y, x') dy.
+\]</div>
+<p>In particular, when we have the initial distribution <span class="math notranslate nohighlight">\(\pi^{(0)}(x)\)</span> over states, then the unconditional distribution <span class="math notranslate nohighlight">\(\pi^{(1)}(x)\)</span> over the next state is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi^{(1)}(x) = \int_{\mathcal{S}} T(y, x)\,\pi^{(0)}(y)dy.
+\]</div>
+</section>
+<section id="properties-of-markov-chains-irreducibility">
+<h3>Properties of Markov Chains: Irreducibility<a class="headerlink" href="#properties-of-markov-chains-irreducibility" title="Link to this heading">#</a></h3>
+<p>A Markov chain is called <em><strong>irreducible</strong></em> if every state can be reached from every other state in finite time.</p>
+<figure class="align-center" id="fig-07-irred">
+<a class="reference internal image-reference" href="../_images/irred.jpg"><img alt="../_images/irred.jpg" src="../_images/irred.jpg" style="width: 363px;" />
+</a>
+</figure>
+</section>
+<section id="properties-of-markov-chains-aperiodicity">
+<h3>Properties of Markov Chains: Aperiodicity<a class="headerlink" href="#properties-of-markov-chains-aperiodicity" title="Link to this heading">#</a></h3>
+<p>A state <span class="math notranslate nohighlight">\(s\in \mathcal{S}\)</span> is has period <span class="math notranslate nohighlight">\(t\)</span> if one can only return to <span class="math notranslate nohighlight">\(s\)</span> in multiples of <span class="math notranslate nohighlight">\(t\)</span> steps.</p>
+<p>A Markov chain is called <em><strong>aperiodic</strong></em> if the period of each state is 1.</p>
+<figure class="align-center" id="fig-07-periodicity">
+<a class="reference internal image-reference" href="../_images/periodicity.jpg"><img alt="../_images/periodicity.jpg" src="../_images/periodicity.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="properties-of-markov-chains-stationary-distributions">
+<h3>Properties of Markov Chains: Stationary Distributions<a class="headerlink" href="#properties-of-markov-chains-stationary-distributions" title="Link to this heading">#</a></h3>
+<p>A distribution <span class="math notranslate nohighlight">\(\pi\)</span> over the finite state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is a <em><strong>stationary distribution</strong></em> of the Markov Chain with transition matrix <span class="math notranslate nohighlight">\(T\)</span> if
+<div class="math notranslate nohighlight">
+\[
+\pi = \pi T,
+\]</div>
+
+i.e. performing the transition matrix doesn’t change the distribution.</p>
+<p>The equivalent condition for continuous state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is:
+<div class="math notranslate nohighlight">
+\[
+\pi(x) = \int_{\mathcal{S}} T(y, x)\,\pi(y)dy.
+\]</div>
+</p>
+</section>
+<section id="properties-of-markov-chains-limiting-distributions">
+<h3>Properties of Markov Chains: Limiting Distributions<a class="headerlink" href="#properties-of-markov-chains-limiting-distributions" title="Link to this heading">#</a></h3>
+<p>We are often interested in what happens to a distribution after many transitions,</p>
+<div class="math notranslate nohighlight">
+\[
+\pi^{(n)} = \pi^{(0)}T^{(n)},\; \text{ or }\; \pi^{(n)}(x) = \int_{\mathcal{S}} T^{(n)}(y, x)\,\pi^{(0)}(y)dy
+\]</div>
+<p>If <span class="math notranslate nohighlight">\(\pi^{(\infty)} = \underset{n\to \infty}{\lim}\pi^{(n)}\)</span> exists (with some caveats in the continuous state case), we call it the <em><strong>limiting distribution</strong></em> of the Markov chain.</p>
+</section>
+<section id="fundamental-theorm-of-markov-chains">
+<h3>Fundamental Theorm of Markov Chains<a class="headerlink" href="#fundamental-theorm-of-markov-chains" title="Link to this heading">#</a></h3>
+<p>Now we are ready to relate all these properties of Markov chains in a single theorem:</p>
+<p><strong>Fundamental Theorem of Markov Chains:</strong> if a Markov chain is irreducible and aperiodic, then it has a <em>unique</em> stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> and <span class="math notranslate nohighlight">\(\pi^{\infty} = \underset{n\to \infty}{\lim}\pi^{(n)} = \pi\)</span>.</p>
+<p>In practice, the theorem says you can start with any initial distribution over the state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>, asymptotically, you will always obtain the distribution <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+<p>While we unfortunately can’t prove the theorem, we can indicate why both conditions are helpful.</p>
+<figure class="align-center" id="fig-07-counter">
+<a class="reference internal image-reference" href="../_images/counter.jpg"><img alt="../_images/counter.jpg" src="../_images/counter.jpg" style="width: 642px;" />
+</a>
+</figure>
+</section>
+<section id="properties-of-markov-chains-reversibility">
+<h3>Properties of Markov Chains: Reversibility<a class="headerlink" href="#properties-of-markov-chains-reversibility" title="Link to this heading">#</a></h3>
+<p>A Markov chain is called <em><strong>reversible</strong></em> with respect to a distribution <span class="math notranslate nohighlight">\(\pi\)</span> over a finite state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> if the following holds:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_i T_{i, j} = \pi_j T_{j , i}
+\]</div>
+<p>For a continuous state space, the condition is:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi(x)T(x, y) = T(y, x) \pi(y).
+\]</div>
+<p>The condition for reversibility is often called the <em><strong>detailed balance</strong></em> condition.</p>
+</section>
+<section id="reversibility-and-stationary-distributions">
+<h3>Reversibility and Stationary Distributions<a class="headerlink" href="#reversibility-and-stationary-distributions" title="Link to this heading">#</a></h3>
+<p>Using reversibility, we have another way to characterize a stationary distribution.</p>
+<p><strong>Theorem:</strong> If a Markov chain, with transition matrix or kernel pdf <span class="math notranslate nohighlight">\(T\)</span>, is reversible with respect to <span class="math notranslate nohighlight">\(\pi\)</span>. Then <span class="math notranslate nohighlight">\(\pi\)</span> is a stationary distribution of the chain.</p>
+<p><em><strong>Proof:</strong></em> We will give the proof for the case of a continuous state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>.
+Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x) \pi(y)\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{\mathcal{S}}\pi(y) T(y, x)dy = \int_{\mathcal{S}} \pi(x) T(x, y)dy  = \pi(x) \int_{\mathcal{S}}T(y, x)dx = \pi(x) \cdot 1 = \pi(x).
+\]</div>
+</section>
+</section>
+<section id="id1">
+<h2><span class="section-number">8.4. </span>Markov Chain Monte Carlo<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="markov-chain-monte-carlo-samplers">
+<h3>Markov Chain Monte Carlo Samplers<a class="headerlink" href="#markov-chain-monte-carlo-samplers" title="Link to this heading">#</a></h3>
+<p>Every sampler for a distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span> over the domain <span class="math notranslate nohighlight">\(\Theta\)</span> defines a stochastic process <span class="math notranslate nohighlight">\(\{X_0, X_1, \ldots, \}\)</span>, where the state space is <span class="math notranslate nohighlight">\(\Theta\)</span>.</p>
+<p>If the sampler defines a Markov chain whose unique stationary and limiting distribution is <span class="math notranslate nohighlight">\(p\)</span>, we call it a <em><strong>Markov Chain Monte Carlo (MCMC)</strong></em> sampler.</p>
+<p>That is, for every MCMC sampler, we have that</p>
+<ol class="arabic simple">
+<li><p><strong>Stationary:</strong> <span class="math notranslate nohighlight">\(pT = p\)</span><br><br></p></li>
+<li><p><strong>Limiting:</strong> <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>, for any <span class="math notranslate nohighlight">\(\pi^{(0)}\)</span></p></li>
+</ol>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the transition matrix or kernel pdf defined by the sampler.</p>
+</section>
+<section id="what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">
+<h3>What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?<a class="headerlink" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Prove that the sampler is <em><strong>irreducible</strong></em> and <em><strong>aperiodic</strong></em>. Then, there is a unique stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> such that
+<div class="math notranslate nohighlight">
+\[\pi T = \pi.\]</div>
+</p></li>
+<li><p>Prove that the sampler is <em><strong>reversible</strong></em> or <em><strong>detailed balanced</strong></em> with respect to <span class="math notranslate nohighlight">\(p\)</span>. Then,
+<div class="math notranslate nohighlight">
+\[\pi = p.\]</div>
+</p></li>
+</ol>
+</section>
+<section id="gibbs-as-mcmc">
+<h3>Gibbs as MCMC<a class="headerlink" href="#gibbs-as-mcmc" title="Link to this heading">#</a></h3>
+<p>We’ve seen an example where the Gibbs sampler for a discrete target distribution defines a MCMC sampler.</p>
+<p>But what about Gibbs samplers for a continuous target distribution <span class="math notranslate nohighlight">\(p\)</span>? Certainly, the samples <span class="math notranslate nohighlight">\(X_n\)</span> obtained by the sampler defines a Markov Chain: the distribution over the next sample depends only on the current sample.</p>
+<p>But, in order to be a MCMC sampler, we need to prove that <span class="math notranslate nohighlight">\(p\)</span> is the stationary and limiting distribution of the sampler?</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">8.5. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>We need more samplers!</strong> Now we’ve seen that every activity in Bayesian modeling requires sampling! But our current tool-box of sampler’s isn’t really that great.</p></li>
+</ol>
+<ul class="simple">
+<li><p>What’s wrong with Inverse CDF Sampling?</p></li>
+<li><p>What’s wrong with Rejection Sampling?</p></li>
+<li><p>What’s wrong with Gibbs Sampling?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>Samplers as Markov Chains – Markov Chain Monte Carlo Sampling:</strong> Why do we need to talk about Markov Chains again?</p></li>
+</ol>
+<ul>
+<li><p>All the samplers we’ve seen so far define Markov Chains. <em>How?</em></p></li>
+<li><p>What’s the big deal with Markov Chains? They are easy to describe and analyze!</p>
+<ul class="simple">
+<li><p>Describing a Markov Chain just means describing how the chain evolves from a given state to the next (the <em><strong>transition matrix</strong></em> or <em><strong>transition kernel</strong></em>)</p></li>
+<li><p>Many nice Markov Chains have predictable long-term (asymptotic) behavior, i.e. as time goes on, the probability that the chain will visit state <span class="math notranslate nohighlight">\(0\)</span> is 0.6, the probability that the chain will visit state <span class="math notranslate nohighlight">\(1\)</span> is 0.2 etc.</p></li>
+</ul>
+</li>
+<li><p>What are some useful behaviors to look for in Markov Chains?</p>
+<ul class="simple">
+<li><p>Stationary distributions (i.e. when the market is 70% Apple customers and 30% Android then the market distribution will be stable)</p>
+<ul>
+<li><p>How do you check that a distribution <span class="math notranslate nohighlight">\(\pi\)</span> is stationary?</p></li>
+</ul>
+</li>
+<li><p>Limiting distributions (i.e. however the market for smart phones start off, eventually it will be 70% Apple customers)</p>
+<ul>
+<li><p>How do you check that a distribution is limiting?</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Claim:</strong> we want our samplers to have a limiting distribution and we want that distribution to be our target distribution!</p>
+<ul class="simple">
+<li><p>Why?</p></li>
+</ul>
+</li>
+<li><p>What kinds of Markov Chains have limiting distributions?</p>
+<p><strong>Fundamental Theorem of Markov Chains:</strong> if a Markov chain is <em><strong>irreducible</strong></em> and <em><strong>aperiodic</strong></em>, then it has a <em>unique</em> stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> and <span class="math notranslate nohighlight">\(\pi^{\infty} = \underset{n\to \infty}{\lim}\pi^{(n)} = \pi\)</span>.</p>
+<p>In practice, the theorem says you can start with any initial distribution over the state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>, asymptotically, you will always obtain the distribution <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+<p>While we unfortunately can’t prove the theorem, we can indicate why both conditions are helpful.</p>
+<figure class="align-center" id="fig-07-summary-counter">
+<a class="reference internal image-reference" href="../_images/counter.jpg"><img alt="../_images/counter.jpg" src="../_images/counter.jpg" style="width: 642px;" />
+</a>
+</figure>
+</li>
+<li><p>But how do I check that the limiting distribution is our target distribution?</p>
+<ul class="simple">
+<li><p>We check that our sampler satisfy the <em><strong>detailed balance</strong></em> condition with respect to the target distribution.</p></li>
+<li><p><strong>Theorem:</strong> If a Markov chain satisfies the <em><strong>detailed balance</strong></em> condition with respect to <span class="math notranslate nohighlight">\(\pi\)</span>. Then <span class="math notranslate nohighlight">\(\pi\)</span> is a stationary distribution of the chain.</p></li>
+<li><p>By the Fundamental Theorem, an irreducible and aperiodic Markov Chain, since our target distribution is stationary, it must be the limiting distribution.<br><br></p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p><strong>How Do I Use This In Practice?</strong> What do we need to prove to show that our sampler is correct (is an MCMC sampler)?</p></li>
+</ol>
+<ul class="simple">
+<li><p>Show that the Markov Chain defined by our sampler is irreducible and aperiodic</p></li>
+<li><p>Show that the sampler satisfies detailed balance with respect to the target distribution</p></li>
+<li><p>Invoke the Fundamental Theorem<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p><strong>But do I HAVE to be Bayesian???</strong> So some of you might be thinking, I will never work with a Bayesian model because MLE’s are so easy to compute. You’ll be disappointed to find out in Lecture #9 that MLE inference be just as difficult as Bayesian inference.<br><br></p></li>
+<li><p><strong>But do I HAVE to do probabilistic machine learning at all???</strong> Related questions:</p></li>
+</ol>
+<ul class="simple">
+<li><p>If not you who?</p></li>
+<li><p>What is the broader impact of MCMC theory?<br><br></p></li>
+</ul>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">8.6. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Markov Chain Monte Carlo</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://drum.lib.umd.edu/bitstream/handle/1903/10058/gsfu.pdf?sequence=3&amp;amp;isAllowed=y" rel="noreferrer" target="_blank">Gibbs Sampling for the Uninitiated</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://webpages.uncc.edu/imsonin/Lay_chapter10_MCs.pdf" rel="noreferrer" target="_blank">Finite State Markov Chains: A Linear Algebra Treatment</a></p></li>
+<li><p>(In Depth) <a class="reference external" href="https://bayes.wustl.edu/Manual/RadfordNeal.review.pdf" rel="noreferrer" target="_blank">Probabilistic Inference Using Markov Chain Monte Carlo Methods</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06-monte-carlo-integration.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Monte Carlo Integration</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08-metropolis-hastings-gibbs.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">9. </span>Metropolis-Hastings and Gibbs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">8.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-for-a-discrete-distribution">8.2. Gibbs Sampler for a Discrete Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-for-a-bivariate-discrete-distribution">Gibbs Sampler for a Bivariate Discrete Distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampler-as-transition-matrix-and-state-diagram">Gibbs Sampler as Transition Matrix and State Diagram</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limiting-distribution">Limiting Distribution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-and-properties-of-markov-chains">8.3. Definition and Properties of Markov Chains</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chains-in-discrete-and-continuous-spaces">Markov Chains in Discrete and Continuous Spaces</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transition-matrices-and-kernels">Transition Matrices and Kernels</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chapman-kolmogorov-equations-dynamics-as-matrix-multiplication">Chapman-Kolmogorov Equations: Dynamics as Matrix Multiplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-smart-phone-market-model">Example: Smart Phone Market Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chapman-kolmogorov-equations-continuous-state-space">Chapman-Kolmogorov Equations: Continuous State Space</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-irreducibility">Properties of Markov Chains: Irreducibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-aperiodicity">Properties of Markov Chains: Aperiodicity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-stationary-distributions">Properties of Markov Chains: Stationary Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-limiting-distributions">Properties of Markov Chains: Limiting Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorm-of-markov-chains">Fundamental Theorm of Markov Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-reversibility">Properties of Markov Chains: Reversibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reversibility-and-stationary-distributions">Reversibility and Stationary Distributions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">8.4. Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-samplers">Markov Chain Monte Carlo Samplers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-as-mcmc">Gibbs as MCMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">8.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">8.6. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

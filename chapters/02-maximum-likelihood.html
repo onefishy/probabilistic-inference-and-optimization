@@ -1,0 +1,1228 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Maximum Likelihood Estimation &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/02-maximum-likelihood';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/02-maximum-likelihood.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Bayesian Modeling" href="03-bayesian-modeling.html" />
+    <link rel="prev" title="1. Overview: Stochastic Methods for Data Analysis" href="01-overview.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/02-maximum-likelihood.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/02-maximum-likelihood.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Maximum Likelihood Estimation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-motivating-example">2.1. A Motivating Example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-simple-betting-game">A Simple Betting Game</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estimating-the-bias-of-a-coin">Estimating the “Bias” of a Coin</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-a-coin-toss">2.2. A Statistical Model for a Coin Toss</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-for-a-coin-toss">Likelihood for a Coin Toss</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.3. Maximum Likelihood Estimation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-estimation-maximum-likelihood">Parameter Estimation: Maximum Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood">Maximizing Likelihood is Equivalent to Maximizing Log-Likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-optimization-constrained-and-unconstrained">2.4. Convex Optimization: Constrained and Unconstrained</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-optimization-types-of-optima">Introduction to Optimization: Types of Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points">Stationary Points</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#characterization-of-local-optima">Characterization of Local Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#characterization-of-global-optima">Characterization of Global Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unconstrained-optimization">Unconstrained Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-univariate-gaussian-distribution">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-and-log-likelihood">Likelihood and log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-of-log-likelihood">Gradient of log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points-of-the-gradient">Stationary points of the gradient</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#characterize-local-and-global-optima">Characterize local and global optima</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization">Constrained Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization-via-lagrange-multipliers">Constrained Optimization via Lagrange Multipliers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-binomial-distribution">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Likelihood and Log-Likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Gradient of log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points-of-the-lagrangian">Stationary points of the Lagrangian</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#characterize-global-optima">Characterize global optima</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-good-estimator">What Is a Good Estimator?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-mle">2.5. Properties of MLE</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#desiderata-of-estimators">Desiderata of Estimators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Properties of MLE</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-quantification">2.6. Uncertainty Quantification</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-intervals">Confidence Intervals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretation-of-confidence-intervals">Interpretation of Confidence Intervals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bootstrap-confidence-intervals">Bootstrap Confidence Intervals</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">2.7. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="maximum-likelihood-estimation">
+<h1><span class="section-number">2. </span>Maximum Likelihood Estimation<a class="headerlink" href="#maximum-likelihood-estimation" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/YBXBIUwYQSQ" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>A Motivating Example</p></li>
+<li><p>A Statistical Model for a Coin Flip</p></li>
+<li><p>Maximum Likelihood Estimation</p></li>
+<li><p>Convex Optimization: Constrained and Unconstrained</p></li>
+<li><p>Properties of MLE</p></li>
+<li><p>Uncertainty Quantification</p></li>
+</ol>
+</div>
+<section id="a-motivating-example">
+<h2><span class="section-number">2.1. </span>A Motivating Example<a class="headerlink" href="#a-motivating-example" title="Link to this heading">#</a></h2>
+<section id="a-simple-betting-game">
+<h3>A Simple Betting Game<a class="headerlink" href="#a-simple-betting-game" title="Link to this heading">#</a></h3>
+<p>I propose to you that we play a betting game: I toss a coin, if the coin lands heads up then you will pay me <span class="math notranslate nohighlight">\(\$20\)</span>, otherwise I will pay you <span class="math notranslate nohighlight">\(\$20\)</span>.</p>
+<figure class="align-center" id="fig-02-quarter">
+<a class="reference internal image-reference" href="../_images/quarter.jpg"><img alt="../_images/quarter.jpg" src="../_images/quarter.jpg" style="width: 250px;" />
+</a>
+</figure>
+<p><strong>Question:</strong> What information do you need to determine if this will be a profitable game for you to play?</p>
+</section>
+<section id="estimating-the-bias-of-a-coin">
+<h3>Estimating the “Bias” of a Coin<a class="headerlink" href="#estimating-the-bias-of-a-coin" title="Link to this heading">#</a></h3>
+<p>You might want to determine if my coin is a “trick” or “biased” coin before betting your money. A common way to test a coin for bias is to toss this coin <span class="math notranslate nohighlight">\(N\)</span> number of times and count the number of heads, <span class="math notranslate nohighlight">\(H\)</span>. The fraction</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\text{Number of Heads}}{\text{Total Number of Tosses}} = \frac{H}{N}
+\]</div>
+<p>is one way to quantify the probability of the coin to land heads up on any given toss.</p>
+<p>Alternatively, we can interpret this fraction to represent the fraction of heads that would appear in a large (infinite) number of such experiments.</p>
+<p><strong>Question 1:</strong> Is this estimate of the bias valid? I.e. does <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> acurately capture the property of interest?</p>
+<p><strong>Question 2:</strong> Is this the “best” way to estimate the bias? For example, is the quantity</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\text{Number of Heads} + 1}{\text{Total Number of Tosses} + 2} = \frac{H + 1}{N + 2}
+\]</div>
+<p>an equally valid or better estimate of the bias?</p>
+</section>
+</section>
+<section id="a-statistical-model-for-a-coin-toss">
+<h2><span class="section-number">2.2. </span>A Statistical Model for a Coin Toss<a class="headerlink" href="#a-statistical-model-for-a-coin-toss" title="Link to this heading">#</a></h2>
+<section id="likelihood-for-a-coin-toss">
+<h3>Likelihood for a Coin Toss<a class="headerlink" href="#likelihood-for-a-coin-toss" title="Link to this heading">#</a></h3>
+<p>We can formally model the outcome of the single toss of a coin by a Bernoulli distribution
+<div class="math notranslate nohighlight">
+\[
+Y \sim Ber(\theta)
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\theta\)</span> is the probability that the outcome <span class="math notranslate nohighlight">\(Y\)</span> will be heads.</p>
+<p><strong>Question:</strong> what assumptions does this statistical model expose?</p>
+<p>After <span class="math notranslate nohighlight">\(N\)</span> number of <em><strong>independent</strong></em> tosses of an <em><strong>identical</strong></em> coin, the probability (or likelihood) of observing <span class="math notranslate nohighlight">\(Y=H\)</span> number of heads is</p>
+<div class="math notranslate nohighlight">
+\[
+{N \choose H} \theta^{H} (1 - \theta)^{N-H}
+\]</div>
+<p>That is, <span class="math notranslate nohighlight">\(Y\)</span> is a random variable with a <em><strong>binomial</strong></em> distribution <span class="math notranslate nohighlight">\(Y \sim Bin(N, \theta)\)</span>.</p>
+<p>We see that the fraction <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> from our empirical experiment is an estimate of the parameter <span class="math notranslate nohighlight">\(\theta\)</span> of the binomal distribution <span class="math notranslate nohighlight">\(Bin(N, \theta)\)</span>. Now that we have a statistical model, we can give formal justification for why our estimate is desirable (or undesirable).</p>
+</section>
+</section>
+<section id="id1">
+<h2><span class="section-number">2.3. </span>Maximum Likelihood Estimation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="parameter-estimation-maximum-likelihood">
+<h3>Parameter Estimation: Maximum Likelihood<a class="headerlink" href="#parameter-estimation-maximum-likelihood" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span> be independently and identically distributed with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span>, where <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span> is a distribution parameterized by <span class="math notranslate nohighlight">\(\theta\)</span> (<span class="math notranslate nohighlight">\(\theta\)</span> can be a scalar, a vector, a matrix, or a n-tuple of such quantities). The <em><strong>joint likelihood</strong></em> of <span class="math notranslate nohighlight">\(N\)</span> observations, <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span>, is
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\mathcal{L}(\theta) = \prod_{n=1}^N p(y_n | \theta)
+\end{aligned}\]</div>
+
+<em>Note that we use upper-case letters <span class="math notranslate nohighlight">\(Y_n\)</span> to represent random variables and lower-case <span class="math notranslate nohighlight">\(y_n\)</span> to represent specific observed values of those variables.</em></p>
+<p>The joint likelihood quantifies how likely (or probable, if <span class="math notranslate nohighlight">\(Y\)</span> is discrete) we are to observed the data assuming the model <span class="math notranslate nohighlight">\(\theta\)</span>. When we consider the joint likelihood as a function of <span class="math notranslate nohighlight">\(\theta\)</span> (that is, treat the observed data as fixed), the <span class="math notranslate nohighlight">\(\mathcal{L}(\theta)\)</span> is called the <em><strong>likelihood function</strong></em>.</p>
+<p>The <em><strong>maximium likelihood estimate</strong></em> of <span class="math notranslate nohighlight">\(\theta\)</span> is defined as
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\theta_{\text{MLE}} = \underset{\theta}{\mathrm{argmax}}\; \mathcal{L}(\theta) = \underset{\theta}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | \theta)
+\end{aligned}\]</div>
+
+Recall that in Lecture #1 we gave some intuitive justification for the validity of the MLE.</p>
+</section>
+<section id="maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood">
+<h3>Maximizing Likelihood is Equivalent to Maximizing Log-Likelihood<a class="headerlink" href="#maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood" title="Link to this heading">#</a></h3>
+<p>Frequently, the likelihood function is complex and so it’s often preferable to work with the log of the likelihood function. Luckily, <em><strong>maximizing the likelihood is equivalent to maximizing the log likelihood</strong></em> due to the following fact.</p>
+<p><strong>Theorem:</strong>  For any <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, we have that <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; f(x)\)</span> if and only if <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; \log (f(x))\)</span>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p><em><strong>Proof:</strong></em> Recall that the monotone property of the <span class="math notranslate nohighlight">\(\log: \mathbb{R} \to \mathbb{R}\)</span> function:</p>
+<div class="math notranslate nohighlight">
+\[
+z_1 &lt; z_2 \text{ if and only if } \log(z_1) &lt; \log(z_2).
+\]</div>
+<p>Suppose that <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; f(x)\)</span>, then for all <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span> we must have that <span class="math notranslate nohighlight">\(f(x) \leq f(x^*)\)</span>. Hence, it follow from the monotonicity of <span class="math notranslate nohighlight">\(\log\)</span> that <span class="math notranslate nohighlight">\(\log(f(x)) \leq \log(f(x^*))\)</span>, for all <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span>. So, by definition, we have that <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; \log (f(x))\)</span>. <br><br> Now suppose that <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; \log (f(x))\)</span>, for all <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span>. That is, for any <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span>, we have that <span class="math notranslate nohighlight">\(\log (f(x)) \leq \log (f(x^*))\)</span>. It then follows from the monotonicity of <span class="math notranslate nohighlight">\(\log\)</span> that <span class="math notranslate nohighlight">\( f(x) \leq f(x^*)\)</span> for all <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span>. By definition, we conclude that <span class="math notranslate nohighlight">\(x^* = \underset{\theta}{\mathrm{argmax}}\; f(x)\)</span>.</p>
+</div>
+</section>
+</section>
+<section id="convex-optimization-constrained-and-unconstrained">
+<h2><span class="section-number">2.4. </span>Convex Optimization: Constrained and Unconstrained<a class="headerlink" href="#convex-optimization-constrained-and-unconstrained" title="Link to this heading">#</a></h2>
+<section id="introduction-to-optimization-types-of-optima">
+<h3>Introduction to Optimization: Types of Optima<a class="headerlink" href="#introduction-to-optimization-types-of-optima" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-02-optima">
+<a class="reference internal image-reference" href="../_images/optima.jpg"><img alt="../_images/optima.jpg" src="../_images/optima.jpg" style="width: 475px;" />
+</a>
+</figure>
+</section>
+<section id="stationary-points">
+<h3>Stationary Points<a class="headerlink" href="#stationary-points" title="Link to this heading">#</a></h3>
+<p>The instaneous rate of change, at <span class="math notranslate nohighlight">\(x=x_0\)</span>, of a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R} \to \mathbb{R}\)</span> is given by it’s first derivative at <span class="math notranslate nohighlight">\(x=x^*\)</span>, <span class="math notranslate nohighlight">\(\left.\frac{df}{dx}\right\vert_{x^*}\)</span>.</p>
+<p>For a multivariate differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the <em><strong>gradient</strong></em> of <span class="math notranslate nohighlight">\(f\)</span> at a point <span class="math notranslate nohighlight">\(x^*\)</span> is a vector consisting of the partial derivatives of <span class="math notranslate nohighlight">\(f\)</span> evaluated at <span class="math notranslate nohighlight">\(x^*\)</span>:
+<div class="math notranslate nohighlight">
+\[
+\left.\nabla_x f \right\vert_{x^*}= \left[\left.\frac{\partial}{\partial x^{(1)}}\right\vert_{x^*}, \ldots, \left.\frac{\partial}{\partial x^{(D)}}\right\vert_{x^*}\right]
+\]</div>
+</p>
+<p>Each <span class="math notranslate nohighlight">\(\left.\frac{\partial}{\partial x^{(1)}}\right\vert_{x^*}\)</span> compute the instantaneous change of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x=x^*\)</span> with respect to <span class="math notranslate nohighlight">\(x^{(1)}\)</span>.</p>
+<p>The gradient is orthogonal to the level curve of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x^*\)</span> and hence, <em>when it is not zero</em>, points in the direction of the greatest instantaneous increase in <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<figure class="align-center" id="fig-02-levelcurves">
+<a class="reference internal image-reference" href="../_images/levelcurves.jpg"><img alt="../_images/levelcurves.jpg" src="../_images/levelcurves.jpg" style="width: 655px;" />
+</a>
+</figure>
+<p>A point <span class="math notranslate nohighlight">\(x=x^*\)</span> at which the first derivative or gradient is zero is called a <em><strong>stationary point</strong></em>.</p>
+</section>
+<section id="characterization-of-local-optima">
+<h3>Characterization of Local Optima<a class="headerlink" href="#characterization-of-local-optima" title="Link to this heading">#</a></h3>
+<p>A local optima must be a stationary point, but <em>a stationary point need not be a local optima</em>!</p>
+<figure class="align-center" id="fig-02-stationary">
+<a class="reference internal image-reference" href="../_images/stationary.jpg"><img alt="../_images/stationary.jpg" src="../_images/stationary.jpg" style="width: 734px;" />
+</a>
+</figure>
+<p>To check that a stationary point is a local max (or local min), we must check that the function is <em><strong>concave</strong></em> (or <em><strong>convex</strong></em>) at the point.</p>
+<p>Recall, that for a twice differentiable function  <span class="math notranslate nohighlight">\(f: \mathbb{R} \to \mathbb{R}\)</span>, <span class="math notranslate nohighlight">\(f\)</span> is concave at <span class="math notranslate nohighlight">\(x=x^*\)</span> if the second derivative of <span class="math notranslate nohighlight">\(f\)</span> is negative; <span class="math notranslate nohighlight">\(f\)</span> is convex at <span class="math notranslate nohighlight">\(x=x^*\)</span> if the second derivative of <span class="math notranslate nohighlight">\(f\)</span> is positive. For a multivariate twice differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, <span class="math notranslate nohighlight">\(f\)</span> is concave at <span class="math notranslate nohighlight">\(x=x^*\)</span> if the Hessian matrix is negative semi-definite; <span class="math notranslate nohighlight">\(f\)</span> is convex at <span class="math notranslate nohighlight">\(x=x^*\)</span> if the Hessian is positive semi-definite.</p>
+</section>
+<section id="characterization-of-global-optima">
+<h3>Characterization of Global Optima<a class="headerlink" href="#characterization-of-global-optima" title="Link to this heading">#</a></h3>
+<p>For an arbitrary function, we cannot generally determine if a local optimal is a global one! In certain very restricted cases, we can deduce if a local optimal is global:</p>
+<p><strong>Theorem:</strong> If a continuous function <span class="math notranslate nohighlight">\(f\)</span> is convex (or resp. concave) on its domain then every local min (or resp. max) is a global min (or resp. max).</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/optima.jpg"><img alt="../_images/optima.jpg" src="../_images/optima.jpg" style="width: 264px;" />
+</a>
+</figure>
+</section>
+<section id="unconstrained-optimization">
+<h3>Unconstrained Optimization<a class="headerlink" href="#unconstrained-optimization" title="Link to this heading">#</a></h3>
+<p>Analytically solving an optimization problem without constraints on the domain of the function,
+<div class="math notranslate nohighlight">
+\[
+x_{\max} = \underset{x}{\mathrm{argmax}}\; f(x)
+\]</div>
+
+involves:</p>
+<ol class="arabic simple">
+<li><p>find the expression for <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span>.</p></li>
+<li><p>find the stationary points for <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span>. That is, solve the equation <span class="math notranslate nohighlight">\(\nabla_x f(x)=0\)</span> for <span class="math notranslate nohighlight">\(x\)</span>.</p></li>
+<li><p>determine local optima. That is, check the concavity of <span class="math notranslate nohighlight">\(f\)</span> at the stationary points.</p></li>
+<li><p>determine global optima. That is, check if local optima can be characterized as global optima (e.g. check that <span class="math notranslate nohighlight">\(f\)</span> is convex everywhere on its domain).</p></li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: Poisson Distribution</p>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y_n \overset{\text{iid}}{\sim} Poi(\lambda)\)</span>, where <span class="math notranslate nohighlight">\(\lambda &gt; 0\)</span>. The likelihood for <span class="math notranslate nohighlight">\(N\)</span> observations <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\lambda) = \prod_{n=1}^N \frac{e^{-\lambda}\lambda^{y_n}}{y_n!} = e^{-N\lambda}\lambda^{\sum_{n=1}^N y_n} \frac{1}{y_n!}.
+\]</div>
+<p>The log likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\ell(\lambda) = -N\lambda + \log(\lambda) \sum_{n=1}^N y_n - \sum_{n=1}^N \log(y_n!).
+\]</div>
+<p>The first derivative with respect to <span class="math notranslate nohighlight">\(\lambda\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{d\ell}{d\lambda} = -N + \lambda^{-1}\sum_{n=1}^N y_n.
+\]</div>
+<p>Next, we find the stationary points of the first derivative by setting it equal to zero and solving for <span class="math notranslate nohighlight">\(\lambda\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{d\ell}{d\lambda} &amp;= -N + \lambda^{-1}\sum_{n=1}^N y_n = 0\\
+\lambda &amp;= \frac{1}{N}\sum_n y_n
+\end{aligned}\end{split}\]</div>
+<p>We see that the first derivative has a unique stationary point at <span class="math notranslate nohighlight">\(\lambda = \frac{1}{N}\sum_n y_n\)</span>. Taking the second derivative, we get</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\frac{d^2\ell}{d\lambda^2}= -\lambda^{-2} \sum_{n=1}^N y_n.
+\end{aligned}\]</div>
+<p>We see that the second derivative is negative for every value of <span class="math notranslate nohighlight">\(\lambda\)</span>, hence <span class="math notranslate nohighlight">\(\ell(\lambda)\)</span> is a concave function. Thus, <span class="math notranslate nohighlight">\(\ell(\lambda)\)</span> has a global maximum at the stationary point <span class="math notranslate nohighlight">\(\lambda = \frac{1}{N}\sum_n y_n\)</span>. That is</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda_{\text{MLE}} = \frac{1}{N}\sum_n y_n.
+\]</div>
+</div>
+</section>
+<section id="example-univariate-gaussian-distribution">
+<h3>Example: (Univariate) Gaussian Distribution<a class="headerlink" href="#example-univariate-gaussian-distribution" title="Link to this heading">#</a></h3>
+<section id="likelihood-and-log-likelihood">
+<h4>Likelihood and log-likelihood<a class="headerlink" href="#likelihood-and-log-likelihood" title="Link to this heading">#</a></h4>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y_n \overset{\text{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)\)</span>, where <span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>. Let <span class="math notranslate nohighlight">\(\theta\)</span> denote the set of parameters <span class="math notranslate nohighlight">\((\mu, \sigma)\)</span>. The likelihood for <span class="math notranslate nohighlight">\(N\)</span> observations <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\theta) = \prod_{n=1}^N \frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{ -\frac{(y_n-\mu)^2}{2\sigma^2}\right\} =  \frac{1}{(2\pi \sigma^2)^{N/2}} \mathrm{exp} \left\{ -\frac{\sum_{n=1}^N(y_n-\mu)^2}{2\sigma^2}\right\}.
+\]</div>
+<p>The log likelihood is
+<div class="math notranslate nohighlight">
+\[
+\ell(\theta) = -\frac{N}{2}\log 2\pi - N\log\sigma - \frac{(y_n-\mu)^2}{2\sigma^2}.
+\]</div>
+</p>
+</section>
+</section>
+<section id="id2">
+<h3>Example: (Univariate) Gaussian Distribution<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<section id="gradient-of-log-likelihood">
+<h4>Gradient of log-likelihood<a class="headerlink" href="#gradient-of-log-likelihood" title="Link to this heading">#</a></h4>
+<p>The gradient of <span class="math notranslate nohighlight">\(\ell\)</span> with respect to <span class="math notranslate nohighlight">\(\theta\)</span> is the vector <span class="math notranslate nohighlight">\(\nabla_\theta \ell(\theta) = \left[\frac{\partial\ell}{\partial \mu}, \frac{\partial \ell}{\partial \sigma} \right]\)</span>, where the partial derivatives are given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{\partial\ell}{\partial \mu} &amp;= \frac{1}{\sigma^2} \sum_{n=1}^N(y_n - \mu)\\
+\frac{\partial\ell}{\partial \sigma} &amp;= -\frac{N}{\sigma} + \sigma^{-3}\sum_{n=1}^N (y_n - \mu)^2
+\end{aligned}\end{split}\]</div>
+</section>
+</section>
+<section id="id3">
+<h3>Example: (Univariate) Gaussian Distribution<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<section id="stationary-points-of-the-gradient">
+<h4>Stationary points of the gradient<a class="headerlink" href="#stationary-points-of-the-gradient" title="Link to this heading">#</a></h4>
+<p>The stationary points of the gradients are solutions to the following system of equations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\frac{\partial\ell}{\partial \mu} = \frac{1}{\sigma^2} \sum_{n=1}^N(y_n - \mu) = 0 &amp;\\
+\frac{\partial\ell}{\partial \sigma} = -\frac{N}{\sigma} + \sigma^{-3}\sum_{n=1}^N (y_n - \mu)^2 = 0&amp;
+\end{cases}
+\end{split}\]</div>
+<p>Solving this system, we get a <em>unique</em> solution at:
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\mu = \frac{1}{N} \sum_{n=1}^Ny_n &amp;\\
+\sigma = \sqrt{\frac{1}{N}\sum_{n=1}^N(y_n - \mu)^2}&amp;
+\end{cases}
+\end{split}\]</div>
+</p>
+</section>
+</section>
+<section id="id4">
+<h3>Example: (Univariate) Gaussian Distribution<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="characterize-local-and-global-optima">
+<h4>Characterize local and global optima<a class="headerlink" href="#characterize-local-and-global-optima" title="Link to this heading">#</a></h4>
+<p>The log-likelihood in this case is concave – the Hessian will be negative semi-definite for <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma&gt;0\)</span>. Thus, the log-likelihood is globally maximized at:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\mu_{\text{MLE}} = \frac{1}{N} \sum_{n=1}^Ny_n &amp;\\
+\sigma_{\text{MLE}} = \sqrt{\frac{1}{N}\sum_{n=1}^N(y_n - \mu)^2}&amp;
+\end{cases}
+\end{split}\]</div>
+<p><em>Check for yourself:</em> write out the matrix of second order parial derivatives of the log-likelihood and check that all the upper-left submatrices have negative determinants.</p>
+<p><em><strong>Note:</strong></em> If the objective is not concave, then there is no guarantee that the stationary points will be global maxima!</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: (Multivariate) Gaussian Distribution</p>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y_n \overset{\text{iid}}{\sim} \mathcal{N}(\mu, \Sigma)\)</span>, where <span class="math notranslate nohighlight">\(\Sigma \in \mathbb{R}^{D\times D}\)</span> is a permissible covariance matrix. Let <span class="math notranslate nohighlight">\(\theta\)</span> denote the set of parameters <span class="math notranslate nohighlight">\((\mu, \Sigma)\)</span>. The likelihood for <span class="math notranslate nohighlight">\(N\)</span> observations is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\theta) = \prod_{n=1}^N \frac{1}{(2\pi)^{D/2}|\Sigma|^{1/2}} \mathrm{exp}\left\{ -\frac{1}{2} (y_n - \mu)^\top \Sigma^{-1} (y_n - \mu)\right\} = \frac{1}{(2\pi)^{ND/2}|\Sigma|^{N/2}} \mathrm{exp}\left\{ -\frac{1}{2} \sum_{n=1}^N(y_n - \mu)^\top \Sigma^{-1} (y_n - \mu)\right\}.
+\]</div>
+<p>The log likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\ell(\theta) = -\frac{DN}{2}\log 2\pi + \frac{N}{2}\log|\Sigma^{-1}| - \frac{1}{2} \sum_{n=1}^N(y_n - \mu)^\top \Sigma^{-1} (y_n - \mu).
+\]</div>
+<p>In deriving the expression for the log likelihood, we used the fact that <span class="math notranslate nohighlight">\(\frac{1}{|\Sigma|} = |\Sigma^{-1}|\)</span>.</p>
+<p>The partial derivatives of the log-likelihood are given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{\partial\ell}{\partial \mu} &amp;= \sum_{n=1}^N \Sigma^{-1}(y_n - \mu)\\
+\frac{\partial\ell}{\partial \Sigma^{-1}} &amp;= \frac{1}{2}\sum_{n=1}^N(y_n-\mu)(y_n-\mu)^\top + \frac{N}{2} \Sigma
+\end{aligned}\end{split}\]</div>
+<p>Note that we took the derivative with respect to the precision matrix <span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span> rather than <span class="math notranslate nohighlight">\(\Sigma\)</span> in the above. Doing simplifies the algebra we need to do to solve for the stationary points. Note also that in order to compute <span class="math notranslate nohighlight">\(\frac{\partial\ell}{\partial \Sigma^{-1}}\)</span> we made use of two matrix derivative facts:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\frac{\partial}{\partial X} a^\top Xa = aa^\top\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\frac{\partial}{\partial X} \log|X = X^{-T}\)</span></p></li>
+</ol>
+<p>and the fact that <span class="math notranslate nohighlight">\(\Sigma^T = \Sigma\)</span>.</p>
+<p>Solving for where both partial derivative are zero gives us the unique stationary point</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\mu = \overline{y}&amp;\\
+\Sigma = \frac{1}{N}\sum_{n=1}^N(y_n - \overline{y})(y_n - \overline{y})^\top&amp;
+\end{cases}
+\end{split}\]</div>
+<p>You can again check that the Hessian of the log-likelihood is negative semi-definite for all <span class="math notranslate nohighlight">\(\mu\)</span> and all allowable <span class="math notranslate nohighlight">\(\Sigma\)</span> (this is much more involved than in the case of the univariate Gaussian). Hence we can conclude that the log-likelihood is maximized at the stationary point, i.e.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\mu_{\text{MLE}} = \overline{y}&amp;\\
+\Sigma_{\text{MLE}} = \frac{1}{N}\sum_{n=1}^N(y_n - \overline{y})(y_n - \overline{y})^\top&amp;
+\end{cases}
+\end{split}\]</div>
+</div>
+</section>
+</section>
+<section id="constrained-optimization">
+<h3>Constrained Optimization<a class="headerlink" href="#constrained-optimization" title="Link to this heading">#</a></h3>
+<p>Many times, we are constrained by the application to only consider certain types of values of the input <span class="math notranslate nohighlight">\(x\)</span>. Suppose that the <em><strong>constraints</strong></em> on <span class="math notranslate nohighlight">\(x\)</span> are given by the equation <span class="math notranslate nohighlight">\(g(x) = 0\)</span>. The set of values of <span class="math notranslate nohighlight">\(x\)</span> that satisfy the equation are called <em><strong>feasible</strong></em>.</p>
+<p>We recall a useful theorem from calculus:</p>
+<p><strong>Theorem:</strong>  For a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the local optima of <span class="math notranslate nohighlight">\(f\)</span> constrained by <span class="math notranslate nohighlight">\(g(x)=0\)</span> occur at points where the following hold for some <span class="math notranslate nohighlight">\(\lambda \in\mathbb{R}\)</span>,
+<div class="math notranslate nohighlight">
+\[g(x) = 0, \quad \nabla_xf(x) = \lambda \nabla_x g(x).\]</div>
+</p>
+<p>The theorem says that the local optima of <span class="math notranslate nohighlight">\(f\)</span> satisfying <span class="math notranslate nohighlight">\(g(x)=0\)</span> are where the gradients of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> are parallel.</p>
+<figure class="align-center" id="fig-02-lagrange">
+<a class="reference internal image-reference" href="../_images/lagrange.jpg"><img alt="../_images/lagrange.jpg" src="../_images/lagrange.jpg" style="width: 347px;" />
+</a>
+</figure>
+</section>
+<section id="constrained-optimization-via-lagrange-multipliers">
+<h3>Constrained Optimization via Lagrange Multipliers<a class="headerlink" href="#constrained-optimization-via-lagrange-multipliers" title="Link to this heading">#</a></h3>
+<p>Unpacking the theorem, we get that solving an optimization problem within the <em><strong>feasible region</strong></em> of the function, i.e.
+<div class="math notranslate nohighlight">
+\[
+\underset{x}{\mathrm{max}}\; f(x),\quad g(x) = 0
+\]</div>
+
+involves:</p>
+<ol class="arabic simple">
+<li><p>finding the stationary points of the augmented objective <span class="math notranslate nohighlight">\(J(x) = f(x) - \lambda g(x)\)</span>, with respect to <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span>.</p></li>
+<li><p>determine global optima. Determine if any of the stationary points maximizes <span class="math notranslate nohighlight">\(f\)</span>.</p></li>
+</ol>
+<p>The augmented objective <span class="math notranslate nohighlight">\(J\)</span> is called the <em><strong>Lagrangian</strong></em> of the constrained optimization problem and <span class="math notranslate nohighlight">\(\lambda\)</span> is called the <em><strong>Lagrange multiplier</strong></em>.</p>
+<p><strong>Note:</strong> Constrained optimization with inequality constraints can similarly be formulated in terms of finding stationary points of an augmented objective like the Lagrangian; this follows from the <em><strong>Karush–Kuhn–Tucker theorem</strong></em>.</p>
+</section>
+<section id="example-binomial-distribution">
+<h3>Example: Binomial Distribution<a class="headerlink" href="#example-binomial-distribution" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h4>Likelihood and Log-Likelihood<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y \sim Bin(N, \theta)\)</span>. To make the connection with constrained optimization (and to motivate the multinomial case), let’s write <span class="math notranslate nohighlight">\(\theta\)</span> as a vector <span class="math notranslate nohighlight">\([\theta_0, \theta_1]\)</span>, where <span class="math notranslate nohighlight">\(\theta_1\)</span> is the probability of a head and <span class="math notranslate nohighlight">\(\theta_0 + \theta_1 = 1\)</span>.</p>
+<p>The likelihood for a single observations is
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\theta) = \frac{N!}{y!(N-y)!} \theta_1^{y}\theta_0^{N-y}.
+\]</div>
+
+The log likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\ell(\theta) = \log (N!) - \log(y!) - \log(N-y)! + y\log \theta_1 + (N-y) \log \theta_0.
+\]</div>
+<p>We are interested in solving the following constrained optimization problem:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{max}\;\ell(\theta),\quad\theta_0 + \theta_1 = 1
+\]</div>
+<p>whose Lagrangian is give by:</p>
+<div class="math notranslate nohighlight">
+\[
+J(\theta, \lambda) = \ell(\theta) - \lambda(\theta_0 + \theta_1 - 1).
+\]</div>
+</section>
+</section>
+<section id="id6">
+<h3>Example: Binomial Distribution<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h4>Gradient of log-likelihood<a class="headerlink" href="#id7" title="Link to this heading">#</a></h4>
+<p>The gradient of the Lagrangian <span class="math notranslate nohighlight">\(J\)</span> with respect to <span class="math notranslate nohighlight">\((\theta, \lambda)\)</span> is the vector <span class="math notranslate nohighlight">\(\nabla_{(\theta, \lambda)} J(\theta, \lambda) = \left[\frac{\partial\ell}{\partial \theta_0}, \frac{\partial \ell}{\partial \theta_1}, \frac{\partial \ell}{\partial \lambda} \right]\)</span>, where the partial derivatives are given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{\partial J}{\partial \theta_0} &amp;= \frac{(N-y)}{\theta_0} - \lambda\\
+\frac{\partial J}{\partial \theta_1} &amp;= \frac{y}{\theta_1} - \lambda\\
+\frac{\partial J}{\partial \lambda} &amp;= \theta_0 + \theta_1 - 1
+\end{aligned}\end{split}\]</div>
+</section>
+</section>
+<section id="id8">
+<h3>Example: Binomial Distribution<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<section id="stationary-points-of-the-lagrangian">
+<h4>Stationary points of the Lagrangian<a class="headerlink" href="#stationary-points-of-the-lagrangian" title="Link to this heading">#</a></h4>
+<p>The stationary points of the Lagrangian are solutions to the following system of equations:
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\frac{\partial J}{\partial \theta_0} = \frac{(N-y)}{\theta_0} - \lambda=0\\
+\frac{\partial J}{\partial \theta_1} = \frac{y}{\theta_1} - \lambda=0\\
+\frac{\partial J}{\partial \lambda} = \theta_0 + \theta_1 - 1=0
+\end{cases}
+\end{split}\]</div>
+
+Solving this system, we get a <em>unique</em> solution at:
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\theta_0 = \frac{N-y}{\lambda}&amp;\\
+\theta_1 = \frac{y}{\lambda}&amp;\\
+\theta_0 + \theta_1 = 1&amp;
+\end{cases}
+\end{split}\]</div>
+
+In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> and <span class="math notranslate nohighlight">\(\theta_1 = \frac{y}{N}\)</span> and <span class="math notranslate nohighlight">\(\theta_0 = \frac{N-y}{N}\)</span>.</p>
+</section>
+</section>
+<section id="id9">
+<h3>Example: Binomial Distribution<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="characterize-global-optima">
+<h4>Characterize global optima<a class="headerlink" href="#characterize-global-optima" title="Link to this heading">#</a></h4>
+<p>Since the log-likelihood <span class="math notranslate nohighlight">\(\ell(\theta)\)</span> is concave and the constraint <span class="math notranslate nohighlight">\(\theta_0 + \theta_1 = 1\)</span> is affine (linear up to a constant), we know then that <span class="math notranslate nohighlight">\(\ell(\theta)\)</span> is maximized on the line at the stationary point. Hence,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\theta_0^{\text{MLE}} = \frac{N-y}{N}&amp;\\
+\theta_1^{\text{MLE}} = \frac{y}{N}&amp;
+\end{cases}
+\end{split}\]</div>
+<p><em><strong>Note:</strong></em> If the objective function we are maximizing is not concave and the equality constraint is not affine, then we have no guarantee that the stationary points of the langrangian either locally or globally optimizes our objective!</p>
+</section>
+</section>
+<section id="what-is-a-good-estimator">
+<h3>What Is a Good Estimator?<a class="headerlink" href="#what-is-a-good-estimator" title="Link to this heading">#</a></h3>
+<p>We see that if we assume a binomial model, <span class="math notranslate nohighlight">\(Bin(N, \theta)\)</span>, for the number of heads in <span class="math notranslate nohighlight">\(N\)</span> trials, then the fraction <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> is the maximum likelihood estimate of <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p><strong>Question 1:</strong> Is the MLE a good estimator of <span class="math notranslate nohighlight">\(\theta\)</span>?</p>
+<p><strong>Question 2:</strong> Is this the “best” way to estimate the <span class="math notranslate nohighlight">\(\theta\)</span>? For example, is the quantity</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\text{Number of Heads} + 1}{\text{Total Number of Tosses} + 2} = \frac{H + 1}{N + 2}
+\]</div>
+<p>an equally valid or better estimate of <span class="math notranslate nohighlight">\(\theta\)</span>?</p>
+<p>These questions depend on our list of desiderata for our estimator.</p>
+</section>
+</section>
+<section id="properties-of-mle">
+<h2><span class="section-number">2.5. </span>Properties of MLE<a class="headerlink" href="#properties-of-mle" title="Link to this heading">#</a></h2>
+<section id="desiderata-of-estimators">
+<h3>Desiderata of Estimators<a class="headerlink" href="#desiderata-of-estimators" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> be an estimator of the parameter <span class="math notranslate nohighlight">\(\theta\)</span> of a statistical model. We ideally want:</p>
+<ul>
+<li><p><strong>(Consistency)</strong> when the sample size <span class="math notranslate nohighlight">\(N\)</span> increases, in the limit, <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> approaches the true value of <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>More formally, let <span class="math notranslate nohighlight">\(\{p_\theta; \theta\in \Theta \}\)</span> be a family of candidate distributions and <span class="math notranslate nohighlight">\(X^\theta\)</span> be an infinite sample from <span class="math notranslate nohighlight">\(p_\theta\)</span>. Define <span class="math notranslate nohighlight">\(\widehat{g}_N(X^\theta)\)</span> to be an estimator for some parameter <span class="math notranslate nohighlight">\(g(\theta)\)</span> that is based on the first <span class="math notranslate nohighlight">\(N\)</span> samples. Then we say that the sequence of estimators <span class="math notranslate nohighlight">\(\{ \widehat{g}_N(X^\theta)\}\)</span> is (weakly) consistent if <span class="math notranslate nohighlight">\(\lim_{N\to \infty} \widehat{g}_N(X^\theta) = g(\theta)\)</span> in probability for all <span class="math notranslate nohighlight">\(\theta\in \Theta\)</span>.</p>
+</li>
+</ul>
+<ul>
+<li><p><strong>(Unbiasedness)</strong> on average, over all possible sets of observations from the distribution, the estimator nails the true value of <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>More formally, we want <span class="math notranslate nohighlight">\(\mathbb{E}_{X^\theta} \widehat{\theta}(X^\theta) = \theta\)</span>.</p>
+</li>
+</ul>
+<ul class="simple">
+<li><p><strong>(Minimum Variance)</strong> Note that since our estimator <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> depends on the random sample <span class="math notranslate nohighlight">\(X^\theta\)</span>, it follows that <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> also a random variable. The distribution of <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> is called the <em><strong>sampling distribution</strong></em>. Given that our estimator is unbiased, we want it to have minimum variance with respect to the sampling distribution.</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>Properties of MLE<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p><strong>Assumptions:</strong> In order for nice properties of the MLE to hold, we need to make some assumptions, including</p>
+<p>(A) the model is <strong>well-specified</strong> – the observed data is drawn from the same model class as the model being fitted;</p>
+<p>(B) the estimation problem is <strong>well-posed</strong> – there are not two different set of parameters that generate the same data.</p>
+<p>With these assumptions, we have that:</p>
+<ol class="arabic simple">
+<li><p><strong>(Consistency)</strong> The MLE of <em>iid</em> observations is consistent. The asymptotic sampling distribution of the MLE is a Gaussian.</p></li>
+<li><p><strong>(Unbiasedness)</strong> The MLE can be biased.</p></li>
+<li><p><strong>(Minimum Variance)</strong> The MLE is not the estimator with the lowest variance.</p></li>
+</ol>
+<p><em>Asympotically</em>, however, the MLE is unbiased and has the lowest variance (for unbiased estimators).</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: The MLE Can Be Biased</p>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y_n \overset{\text{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)\)</span>, where <span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>. Recall that the MLE of <span class="math notranslate nohighlight">\(\sigma\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{\text{MLE}} = \sqrt{\frac{1}{N}(y_n - \overline{y})^2}.
+\]</div>
+<p>We compute the bias of <span class="math notranslate nohighlight">\(\sigma_{\text{MLE}}\)</span>, for a random sample <span class="math notranslate nohighlight">\(Y^\theta = \{Y_1, \ldots, Y_N\}\)</span> from <span class="math notranslate nohighlight">\(\mathcal{N}(\mu, \sigma^2)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{Y^\theta}[\sigma^2_{\text{MLE}}]&amp;= \mathbb{E}_{Y^\theta}\left[ \frac{1}{N}\sum_{n=1}^N(Y_n - \overline{Y})^2\right]\\
+&amp;= \mathbb{E}_{Y^\theta}\left[ \frac{1}{N}\sum_{n=1}^N(Y^2_n  - 2 Y_n \overline{Y} + \overline{Y}^2)\right]\\
+&amp;= \mathbb{E}_{Y^\theta}\left[ \frac{1}{N}\sum_{n=1}^NY^2_n  - 2\frac{1}{N}\sum_{n=1}^N Y_n \overline{Y} + \frac{1}{N}\sum_{n=1}^N\overline{Y}^2\right]\\
+&amp;= \mathbb{E}_{Y^\theta}\left[ \frac{1}{N}\sum_{n=1}^NY^2_n  - 2\overline{Y}^2 + \overline{U}^2\right]\\
+&amp;= \frac{1}{N}\sum_{n=1}^N\mathbb{E}_{Y^\theta}\left[ Y^2_n\right] - \mathbb{E}_{Y^\theta}\left[ \overline{Y}^2\right]
+\end{aligned}\end{split}\]</div>
+<p>Note that <span class="math notranslate nohighlight">\(\sigma^2 = \mathbb{E}[Y^2] - \mathbb{E}[Y]^2\)</span>, and assume the fact that the MLE of <span class="math notranslate nohighlight">\(\mu\)</span> is unbiased (i.e. <span class="math notranslate nohighlight">\(\mathbb{E}_{Y^\theta}[\overline{Y}^2] = \mu\)</span>) with variance <span class="math notranslate nohighlight">\(\sigma_{\overline{Y}}^2 = \mathbb{E}[\overline{Y}^2] - \mathbb{E}[\overline{Y}]^2\)</span>. We can then rewrite the above as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{Y^\theta}[\sigma^2_{\text{MLE}}] &amp;= \frac{1}{N}\sum_{n=1}^N\mathbb{E}_{Y^\theta}\left[ Y^2_n\right] - \mathbb{E}_{Y^\theta}\left[ \overline{Y}^2\right]\\
+&amp;= (\sigma^2 + \mu^2) - (\sigma_{\overline{Y}}^2 + \mu^2)\\
+&amp;= (\sigma^2 + \mu^2) - \left(\mathrm{Var}\left[\frac{1}{N} \sum_{n=1}^N Y_n\right] + \mu^2\right)\\
+&amp;= (\sigma^2 + \mu^2) - \left(\frac{1}{N^2} \sum_{n=1}^N \mathrm{Var}\left[Y_n\right] + \mu^2\right)\\
+&amp;= (\sigma^2 + \mu^2) - \left(\frac{1}{N}\sigma + \mu^2\right)\\
+&amp;= \frac{N-1}{N}\sigma^2
+\end{aligned}\end{split}\]</div>
+<p>Hence, <span class="math notranslate nohighlight">\(\mathbb{E}_{Y^\theta}[\sigma^2_{\text{MLE}}] \neq \sigma^2\)</span> and so <span class="math notranslate nohighlight">\(\mathbb{E}_{Y^\theta}[\sigma^2_{\text{MLE}}]\)</span> is biased!</p>
+</div>
+</section>
+</section>
+<section id="uncertainty-quantification">
+<h2><span class="section-number">2.6. </span>Uncertainty Quantification<a class="headerlink" href="#uncertainty-quantification" title="Link to this heading">#</a></h2>
+<section id="confidence-intervals">
+<h3>Confidence Intervals<a class="headerlink" href="#confidence-intervals" title="Link to this heading">#</a></h3>
+<p>Since the MLE depends on the sample, it is important to quantify how certain we are about the estimate.</p>
+<p><em><strong>Confidence intervals</strong></em> of estimates <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> are ways of summarizing the sampling distribution by describing it’s coverage. Specifically, a 95% confidence interval for <span class="math notranslate nohighlight">\(\theta\)</span> is a <em><strong>random interval</strong></em> <span class="math notranslate nohighlight">\(\left(L_{\theta_{\text{MLE}}}, U_{\theta_{\text{MLE}}}\right)\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span> are bounds constructed from the estimate <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>, that contains the fixed true parameter <span class="math notranslate nohighlight">\(\theta\)</span> with 95% probability.</p>
+<p>Let <span class="math notranslate nohighlight">\(\delta = \theta_{\text{MLE}} - \theta\)</span> be the distribution of the error of the estimator <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>, then the following is a confidence interval for <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\left[\widehat{\theta} - \delta_{0.25}, \widehat{\theta} + \delta_{0.975}\right]
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\delta_{0.25}, \delta_{0.975}\)</span> are the 2.5% and 97.5% thresholds of <span class="math notranslate nohighlight">\(\delta\)</span> respectively.</p>
+<p>We can take advantage of the asymptotic normality of the MLE and approximate the distribution of <span class="math notranslate nohighlight">\(\delta\)</span> as a Gaussian distribution.</p>
+</section>
+<section id="interpretation-of-confidence-intervals">
+<h3>Interpretation of Confidence Intervals<a class="headerlink" href="#interpretation-of-confidence-intervals" title="Link to this heading">#</a></h3>
+<p>It is very easy to misinterpret confidence intervals!</p>
+<p><strong>A Simplified Rule:</strong> When in doubt, treat the confidence interval just as an <strong>indication of the precision of the measurement.</strong></p>
+<p>If you estimated some quantity in a study with a confidence interval of <span class="math notranslate nohighlight">\([17 - 6, 17 + 6]\)</span> and someone else estimated it with a confidence interval of <span class="math notranslate nohighlight">\([23 - 5, 23 + 5]\)</span>, then there is little reason to think that the two studies are inconsistent.</p>
+<p>On the other hand, if your estimate gives <span class="math notranslate nohighlight">\([17 - 2, 17 + 2]\)</span> and the other estimate is <span class="math notranslate nohighlight">\([23 - 1, 23 + 1]\)</span>, then there is evidence that these studies differ.</p>
+</section>
+<section id="bootstrap-confidence-intervals">
+<h3>Bootstrap Confidence Intervals<a class="headerlink" href="#bootstrap-confidence-intervals" title="Link to this heading">#</a></h3>
+<p>In practice, we may not know how to approximate the sampling distribution of <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>. We can approximate the sampling distribution by <em><strong>bootstraping</strong></em>, i.e. we simulate samples <span class="math notranslate nohighlight">\(X^{\theta}\)</span> with size <span class="math notranslate nohighlight">\(N\)</span> from <span class="math notranslate nohighlight">\(p_{\theta}\)</span> by sampling observations with size <span class="math notranslate nohighlight">\(N\)</span> from the observed data (also with size <span class="math notranslate nohighlight">\(N\)</span>).</p>
+<p>We denote MLE obtained on a bootstrap sample by <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span>. When <span class="math notranslate nohighlight">\(N\)</span> is sufficiently large, <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span> approximates the distribution of <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.</p>
+<p>Thus, we can approximate the 95% confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> using <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span>.</p>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">2.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Optimization</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://www2.econ.iastate.edu/classes/econ500/hallam/documents/Opt_Simple_Multi_000.pdf" rel="noreferrer" target="_blank">Simple Multivariate Optimization</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="http://cs229.stanford.edu/section/cs229-cvxopt.pdf" rel="noreferrer" target="_blank">Convex Optimization Overview</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01-overview.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">1. </span>Overview: Stochastic Methods for Data Analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03-bayesian-modeling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Bayesian Modeling</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-motivating-example">2.1. A Motivating Example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-simple-betting-game">A Simple Betting Game</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estimating-the-bias-of-a-coin">Estimating the “Bias” of a Coin</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-a-coin-toss">2.2. A Statistical Model for a Coin Toss</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-for-a-coin-toss">Likelihood for a Coin Toss</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">2.3. Maximum Likelihood Estimation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-estimation-maximum-likelihood">Parameter Estimation: Maximum Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood">Maximizing Likelihood is Equivalent to Maximizing Log-Likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convex-optimization-constrained-and-unconstrained">2.4. Convex Optimization: Constrained and Unconstrained</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-optimization-types-of-optima">Introduction to Optimization: Types of Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points">Stationary Points</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#characterization-of-local-optima">Characterization of Local Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#characterization-of-global-optima">Characterization of Global Optima</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unconstrained-optimization">Unconstrained Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-univariate-gaussian-distribution">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-and-log-likelihood">Likelihood and log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-of-log-likelihood">Gradient of log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points-of-the-gradient">Stationary points of the gradient</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Example: (Univariate) Gaussian Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#characterize-local-and-global-optima">Characterize local and global optima</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization">Constrained Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constrained-optimization-via-lagrange-multipliers">Constrained Optimization via Lagrange Multipliers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-binomial-distribution">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Likelihood and Log-Likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Gradient of log-likelihood</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-points-of-the-lagrangian">Stationary points of the Lagrangian</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Example: Binomial Distribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#characterize-global-optima">Characterize global optima</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-good-estimator">What Is a Good Estimator?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-mle">2.5. Properties of MLE</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#desiderata-of-estimators">Desiderata of Estimators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Properties of MLE</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-quantification">2.6. Uncertainty Quantification</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-intervals">Confidence Intervals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretation-of-confidence-intervals">Interpretation of Confidence Intervals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bootstrap-confidence-intervals">Bootstrap Confidence Intervals</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">2.7. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

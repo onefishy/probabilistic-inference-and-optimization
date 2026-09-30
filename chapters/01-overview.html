@@ -1,0 +1,1229 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Overview: Stochastic Methods for Data Analysis &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/01-overview';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/01-overview.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Maximum Likelihood Estimation" href="02-maximum-likelihood.html" />
+    <link rel="prev" title="Probabilistic Inference &amp; Optimization" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/01-overview.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/01-overview.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Overview: Stochastic Methods for Data Analysis</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-course-about">1.1. What is this course about?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-model-patterns-in-data">How Do We Model Patterns in Data?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-model">What is a Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-notion-of-error">A Notion of Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-the-overall-error">How do we quantify the overall error?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-fitting">Model Fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-statistical-model">What is a Statistical Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-regression">A Statistical Model for Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-fitness">How Do We Quantify Fitness?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximimum-likelihood-and-minimum-mean-square-error">Maximimum Likelihood and Minimum Mean Square Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-interpretation">Model Interpretation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-bayesian-model">What is a Bayesian Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-inference">Model Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-linear-regression">Bayesian Linear Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-versus-frequentist-uncertainty">Bayesian versus Frequentist Uncertainty</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-hard">Why is This Hard?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-accuracy-enough">Is Accuracy Enough?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-kinds-of-predictive-uncertainty-do-we-want">What Kinds of Predictive Uncertainty Do We Want?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#so-now-you-have-predictive-uncertainties-what-are-you-gonna-do-with-them">So Now You Have Predictive Uncertainties, What Are You Gonna Do With Them?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-explain-decisions-of-machine-learning-models">How Do We Explain Decisions of Machine Learning Models?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-you-communicate-ml-predictions-and-does-it-matter">How Do You Communicate ML Predictions, And Does It Matter?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-interactions-do-we-need-to-think-about-when-we-design-ml-models">What Interactions Do We Need to Think About When We Design ML Models?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-promises-of-human-ai-systems">The Promises of Human + AI Systems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-human-ai-systems">The Perils of Human + AI Systems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benifits-of-machine-learning">The Potential Social Benifits of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-negative-social-impacts-of-machine-learning">The Negative Social Impacts of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-happening">Why Is This Happening?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-problem-solving-frameworks-for-machine-learning">Alternative Problem Solving Frameworks for Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning-much-more-than-accuracy">Machine Learning: Much More Than Accuracy</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">1.2. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">1.3. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-review-of-statistical-modeling-and-scientific-computing">Problem Set: Review of Statistical Modeling and Scientific Computing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">1.4. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="overview-stochastic-methods-for-data-analysis">
+<h1><span class="section-number">1. </span>Overview: Stochastic Methods for Data Analysis<a class="headerlink" href="#overview-stochastic-methods-for-data-analysis" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/EtN-cLMypA4" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="what-is-this-course-about">
+<h2><span class="section-number">1.1. </span>What is this course about?<a class="headerlink" href="#what-is-this-course-about" title="Link to this heading">#</a></h2>
+<section id="how-do-we-model-patterns-in-data">
+<h3>How Do We Model Patterns in Data?<a class="headerlink" href="#how-do-we-model-patterns-in-data" title="Link to this heading">#</a></h3>
+<p>This is a scatter plot of home prices vs square footage of some homes in southern California.</p>
+<figure class="align-center" id="fig-01-fig32">
+<a class="reference internal image-reference" href="../_images/fig32.jpg"><img alt="../_images/fig32.jpg" src="../_images/fig32.jpg" style="width: 354px;" />
+</a>
+</figure>
+<p>Can you see any patterns or trends?</p>
+<p>We see that as <strong>square footage</strong> increases, so does <strong>price</strong>.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/fig32.jpg"><img alt="../_images/fig32.jpg" src="../_images/fig32.jpg" style="width: 354px;" />
+</a>
+</figure>
+<p>But what is a precise, mathematical description of this relationship?</p>
+</section>
+<section id="what-is-a-model">
+<h3>What is a Model?<a class="headerlink" href="#what-is-a-model" title="Link to this heading">#</a></h3>
+<p>Building a model to capture a hypothesized relationship means we predict the value of one group of attributes using another group.</p>
+<p>This prediction problem is called <em><strong>regression</strong></em>, the attribute we are trying to predict (e.g.price) is called the <em><strong>outcome</strong></em> or the <em><strong>target</strong></em>, denoted by <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>The group of attributes (e.g. square footage) we use to make the prediction is called the <em><strong>covariates</strong></em>, denoted by <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>A <em><strong>regression model</strong></em> is a mathematical function, <span class="math notranslate nohighlight">\(f(x)\)</span>, that predicts the target. We denote our prediction by <span class="math notranslate nohighlight">\(\hat{y} = f(x)\)</span>.</p>
+<p>We conjectured that the model for this data is a line: <span class="math notranslate nohighlight">\(\hat{y} = f(x) = w_1x + w_0\)</span>.</p>
+<figure class="align-center" id="fig-01-fig33">
+<a class="reference internal image-reference" href="../_images/fig33.jpg"><img alt="../_images/fig33.jpg" src="../_images/fig33.jpg" style="width: 349px;" />
+</a>
+</figure>
+<p>But which line fits the data best?</p>
+</section>
+<section id="a-notion-of-error">
+<h3>A Notion of Error<a class="headerlink" href="#a-notion-of-error" title="Link to this heading">#</a></h3>
+<p>An <em><strong>absolute residual</strong></em> is the absolute difference between the actual price of a home and the price predicted by the line for a given square footage:
+<div class="math notranslate nohighlight">
+\[
+\mathtt{Residual}_n = y_n - \hat{y}_n
+\]</div>
+</p>
+<figure class="align-center" id="fig-01-fig34">
+<a class="reference internal image-reference" href="../_images/fig34.jpg"><img alt="../_images/fig34.jpg" src="../_images/fig34.jpg" style="width: 354px;" />
+</a>
+</figure>
+</section>
+<section id="how-do-we-quantify-the-overall-error">
+<h3>How do we quantify the overall error?<a class="headerlink" href="#how-do-we-quantify-the-overall-error" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Max absolute deviation)</strong> Count only the biggest “error”
+<div class="math notranslate nohighlight">
+\[
+\max_n |y_n - \hat{y}_n| 
+\]</div>
+</p></li>
+<li><p><strong>(Sum of absolute deviations)</strong> Add up all the “errors”
+<div class="math notranslate nohighlight">
+\[
+\sum_n |y_n - \hat{y}_n| 
+\]</div>
+</p></li>
+<li><p><strong>(Sum of squared errors)</strong> Add up the squares of the “errors”
+<div class="math notranslate nohighlight">
+\[
+\sum_n |y_n - \hat{y}_n|^2 
+\]</div>
+</p></li>
+<li><p><strong>(Mean squared errors)</strong> We can also average the squared “errors”.
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{N}\sum_{n=1}^N |y_n - \hat{y}_n|^2 
+\]</div>
+</p></li>
+</ol>
+<p>Again, <span class="math notranslate nohighlight">\(y_n\)</span> is the observed target, <span class="math notranslate nohighlight">\(\hat{y}_n\)</span> is the predicted target.</p>
+</section>
+<section id="model-fitting">
+<h3>Model Fitting<a class="headerlink" href="#model-fitting" title="Link to this heading">#</a></h3>
+<p><strong>Question:</strong> What do we mean by choosing “best” line, <span class="math notranslate nohighlight">\(\hat{y} = w_1x + w_0\)</span>?</p>
+<p>The <em><strong>model fitting</strong></em> process:</p>
+<ol class="arabic simple">
+<li><p><em>Choose</em> an overall error metric. This metric is called the <em><strong>loss function</strong></em> or <em><strong>training objective</strong></em>:
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(w_1, w_0) = \frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2, \quad\quad \text{(Mean Squared Error Loss)}
+\]</div>
+</p></li>
+<li><p>Set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the loss function is <strong>minimized</strong>:
+<div class="math notranslate nohighlight">
+\[
+\underset{w_0, w_1}{\mathrm{argmin}}\mathcal{L}(w_1, w_0) = \underset{w_0, w_1}{\mathrm{argmin}}\frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2 
+\]</div>
+</p></li>
+<li><p>Choose a method of minimizing the loss function.</p></li>
+</ol>
+<p><strong>Note:</strong> For linear regression, we can minimize <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> analytically. We cannot do this for every model!</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Linear Regression in <code class="docutils literal notranslate"><span class="pre">sklearn</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">**</span><span class="kn">import</span><span class="w"> </span><span class="nn">the</span> <span class="n">LinearRegression</span> <span class="n">model</span> <span class="kn">from</span><span class="w"> </span><span class="nn">the</span> <span class="n">sklearn</span> <span class="n">library</span><span class="o">**</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="o">**</span><span class="n">make</span> <span class="n">an</span> <span class="n">instance</span> <span class="n">of</span> <span class="n">the</span> <span class="n">linear</span> <span class="n">regression</span> <span class="n">model</span><span class="o">**</span>
+<span class="n">regression</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+
+<span class="o">**</span><span class="n">find</span> <span class="n">the</span> <span class="n">coefficients</span> <span class="k">for</span> <span class="n">the</span> <span class="n">line</span> <span class="n">that</span> <span class="n">minimizes</span> <span class="n">mean</span> <span class="n">squared</span> <span class="n">error</span><span class="o">**</span>
+<span class="n">regression</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="what-is-a-statistical-model">
+<h3>What is a Statistical Model?<a class="headerlink" href="#what-is-a-statistical-model" title="Link to this heading">#</a></h3>
+<p>Perhaps our <strong>choice</strong> of an overall error can be less arbitrary if we explain how, we believe, the residual arise.</p>
+<p><strong>Belief:</strong> The theoretical relationship between price and square footage (<span class="math notranslate nohighlight">\(x\)</span>) is given by <span class="math notranslate nohighlight">\(f(x)\)</span>. But, in real-life, due to unpredictable circumstances observed prices (<span class="math notranslate nohighlight">\(y\)</span>) differ from <span class="math notranslate nohighlight">\(f(x)\)</span> by some random amount, <span class="math notranslate nohighlight">\(\epsilon\)</span>, called <em><strong>noise</strong></em>:
+<div class="math notranslate nohighlight">
+\[
+y = f(x) + \epsilon, \quad \epsilon \sim p(\epsilon)
+\]</div>
+</p>
+<p>A <em><strong>statistical model</strong></em> is one that explicitly accounts for uncertainty or randomness.</p>
+</section>
+<section id="a-statistical-model-for-regression">
+<h3>A Statistical Model for Regression<a class="headerlink" href="#a-statistical-model-for-regression" title="Link to this heading">#</a></h3>
+<p>Let us <em>assume</em> that (1) the underlying relationship between price and square footage <span class="math notranslate nohighlight">\(x\)</span> is given by <span class="math notranslate nohighlight">\(f(x) = w_1x + w_0\)</span>; (2) that the observed price <span class="math notranslate nohighlight">\(y\)</span> deviates from <span class="math notranslate nohighlight">\(f(x)\)</span> by a random amount that is independent from <span class="math notranslate nohighlight">\(x\)</span> and is distributed as <span class="math notranslate nohighlight">\(\mathcal{N}(0, 1)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+y = f(x) + \epsilon, \quad \epsilon \overset{\text{iid}}{\sim} \mathcal{N}(0, 1)
+\]</div>
+<p>Note that <span class="math notranslate nohighlight">\(y\)</span> is now a random variable with distribution <span class="math notranslate nohighlight">\(\mathcal{N}(f(x), 1)\)</span>, denoted by <span class="math notranslate nohighlight">\(p(y|x, w_1, w_0)\)</span>.</p>
+</section>
+<section id="how-do-we-quantify-fitness">
+<h3>How Do We Quantify Fitness?<a class="headerlink" href="#how-do-we-quantify-fitness" title="Link to this heading">#</a></h3>
+<p>Given our statistical model, a natural way for quantifying how well <span class="math notranslate nohighlight">\(f(x) = w_1x + w_0\)</span> fits the data is by checking how likely our choice of <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span> makes the observed data, i.e. compute
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(w_1, w_0) = \prod_{n=1}^N p(y_n|x_n, w_1, w_0).
+\]</div>
+
+The function <span class="math notranslate nohighlight">\(\mathcal{L}(w_1, w_0)\)</span> is called the <em><strong>likelihood function</strong></em>.</p>
+<p><strong>Exercise:</strong> suppose we have two models, <span class="math notranslate nohighlight">\(f(x) = 3x + 2\)</span> and <span class="math notranslate nohighlight">\(f(x) = 10 - x\)</span>. Suppose that <span class="math notranslate nohighlight">\(\mathcal{L}(w_1=3, w_0=2) = 10.2\)</span> and <span class="math notranslate nohighlight">\(\mathcal{L}(w_1=-1, w_0=10) = 0.002\)</span>. Which model is a better fit for the data and why?</p>
+</section>
+<section id="id1">
+<h3>Model Fitting<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p><strong>Question:</strong> What do we mean by choosing “best” line, <span class="math notranslate nohighlight">\(\hat{y} = f(x) = w_1x + w_0\)</span>?</p>
+<p>The <em><strong>model fitting</strong></em> process:</p>
+<ol class="arabic simple">
+<li><p><em>Choose</em> a method of estimation for statistical models. For example, set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the likelihood of the data is <strong>maximized</strong>:
+<div class="math notranslate nohighlight">
+\[
+\mathrm{argmax}_{w_0, w_1}\mathcal{L}(w_1, w_0) = \mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0) 
+\]</div>
+</p></li>
+<li><p>Choose a method of computing the estimate. For example, choose a way to maximize the likelihood.</p></li>
+</ol>
+</section>
+<section id="maximimum-likelihood-and-minimum-mean-square-error">
+<h3>Maximimum Likelihood and Minimum Mean Square Error<a class="headerlink" href="#maximimum-likelihood-and-minimum-mean-square-error" title="Link to this heading">#</a></h3>
+<p>Given our statistical model
+<div class="math notranslate nohighlight">
+\[
+y = f(x) + \epsilon, \quad \epsilon \overset{\text{iid}}{\sim} \mathcal{N}(0, 1)
+\]</div>
+
+Maximimizing the likelihood is equivalent to minimizing the mean squared error:
+<div class="math notranslate nohighlight">
+\[
+\mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0) \equiv \mathrm{argmin}_{w_0, w_1}\frac{1}{N}\sum_{i=1}^N |y_i - (w_1x_1 + w_0)|^2 
+\]</div>
+</p>
+<p><em>Hint: note that</em>
+<div class="math notranslate nohighlight">
+\[\prod_{n=1}^Np(y_n|x_n, w_1, w_0) = \frac{1}{\sqrt{2\pi 1}^N} \exp\left\{-\frac{\sum_{i=1}^N(y_n - (w_1x_n + w_0))^2}{2 * 1} \right\}\]</div>
+
+<em>and that</em>
+<div class="math notranslate nohighlight">
+\[\log p(y|x, w_1, w_0) = N\log\left(\frac{1}{\sqrt{2\pi 1}}\right) - \frac{\sum_{i=1}^N(y_n - (w_1x_n + w_0))^2}{2 * 1} \]</div>
+</p>
+</section>
+<section id="model-evaluation">
+<h3>Model Evaluation<a class="headerlink" href="#model-evaluation" title="Link to this heading">#</a></h3>
+<p>After fitting the model (finding coefficients that maximizes the likelihood or that minimizes the loss function), we need to <strong>check the error or residuals of the model</strong>. Why?</p>
+<figure class="align-center" id="fig-01-fig36">
+<a class="reference internal image-reference" href="../_images/fig36.jpg"><img alt="../_images/fig36.jpg" src="../_images/fig36.jpg" style="width: 379px;" />
+</a>
+</figure>
+<p>Working with statistical models gives us an advantage in model evaluation, can you see why?</p>
+</section>
+<section id="model-interpretation">
+<h3>Model Interpretation<a class="headerlink" href="#model-interpretation" title="Link to this heading">#</a></h3>
+<p>In addition to evaluating our model on training and testing data, we must also examine the coefficients themselves. Why?</p>
+<figure class="align-center" id="fig-01-fig35">
+<a class="reference internal image-reference" href="../_images/fig35.jpg"><img alt="../_images/fig35.jpg" src="../_images/fig35.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="what-is-a-bayesian-model">
+<h3>What is a Bayesian Model?<a class="headerlink" href="#what-is-a-bayesian-model" title="Link to this heading">#</a></h3>
+<p>In addition to a statistical model that explains trends <span class="math notranslate nohighlight">\(f(x)\)</span> and observation noise <span class="math notranslate nohighlight">\(\epsilon\)</span>, we also want to incorporate our <strong>prior beliefs</strong> about the model. Finally, we want to obtain a measure of <strong>uncertainty</strong> for our parameter estimates as well as our predictions.</p>
+<p>Our Bayesian model for linear regression:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y &amp;= w_1x + w_0 +\epsilon\\
+\epsilon &amp;\overset{\text{iid}}{\sim} \mathcal{N}(0, 1)\\
+w_1 &amp;\sim p(w_1)\\
+w_0 &amp;\sim p(w_0)\\
+\end{aligned}\end{split}\]</div>
+</p>
+<p>where the prior <span class="math notranslate nohighlight">\(p(w_i)\)</span> may express that we want <span class="math notranslate nohighlight">\(w_i\)</span> to be non-negative and not too large.</p>
+</section>
+<section id="model-inference">
+<h3>Model Inference<a class="headerlink" href="#model-inference" title="Link to this heading">#</a></h3>
+<p>How do we “learn” the parameters in a Bayesian model?</p>
+<p>Baye’s Rule gives us a way to obtain a distribution over <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the data <span class="math notranslate nohighlight">\((x_1, y_1), \ldots, (x_N, y_N)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N) \propto \underbrace{\left(\prod_{n=1}^N p(y_n|x_n, w_1, w_0)\right)}_{\text{How well params fit the data}} \underbrace{p(w_1)p(w_0)}_{\text{How well the params fit priors}}
+\]</div>
+<p>The distirbution <span class="math notranslate nohighlight">\(p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N)\)</span> is called the <em><strong>poseterior</strong></em> and gives the likelihood of a pair of parameters <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the observed data.</p>
+<p>We see that the likelihood score of the parameters under the posterior is influence both by how well the parameters fit the data and how well the parameters fit our prior beliefs.</p>
+</section>
+<section id="bayesian-linear-regression">
+<h3>Bayesian Linear Regression<a class="headerlink" href="#bayesian-linear-regression" title="Link to this heading">#</a></h3>
+<p>When we choose normal priors for the parameters in a linear regression model, for example,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y &amp;=  w_1x + w_0 + \epsilon\\
+\epsilon &amp;\overset{\text{iid}}{\sim} \mathcal{N}(0, 1)\\
+w_1 &amp;\sim \mathcal{N}(0, 0.5)\\
+w_0 &amp;\sim \mathcal{N}(0, 1)\\
+\end{aligned}\end{split}\]</div>
+<p>The posterior <span class="math notranslate nohighlight">\(p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N)\)</span> is again a (multivariate) normal distribution, <span class="math notranslate nohighlight">\(\mathcal{N}(\mu, \Sigma)\)</span>, and we can derive closed form solutions for <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\Sigma\)</span>.</p>
+<p>Why is this observation important?</p>
+</section>
+<section id="bayesian-versus-frequentist-uncertainty">
+<h3>Bayesian versus Frequentist Uncertainty<a class="headerlink" href="#bayesian-versus-frequentist-uncertainty" title="Link to this heading">#</a></h3>
+<p>The main advantage of the Bayesian approach is that rather than obtaining a single “best” estimate of the model parameters, the posterior gives us a distribution over a set of plausible model parameters (with some models being more likely than others).</p>
+<p>The spread of this distribution over plausible models naturally gives us a way to quantify our <strong>uncertainty</strong> over which is the “best” model. When the spread is wide (when many very different models are equally very likely), our uncertainty is high. When the spread is narrow (when all likely models look very similar), our uncertainty is low.</p>
+<p>We can also obtain a sense of uncertainty over models using the non-Bayesian probabilistic model. Typically, we randomly sample sets of training data point from the training data, on each set, we compute the MLE of the model parameters. This process is called <strong>bootstrapping</strong>.</p>
+<p>In the <a class="reference internal" href="#ps-hw0"><span class="std std-ref">problem set at the end of this chapter</span></a> you will compare the uncertainties from the posteriors of Bayesian models with those from bootstrapping maximum likelihood models.</p>
+</section>
+<section id="id2">
+<h3>Model Evaluation<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>With a Bayesian model we get a distribution <span class="math notranslate nohighlight">\(p(w_1, w_0| \text{Data})\)</span> over likely functions rather than a single function <span class="math notranslate nohighlight">\(f(x) = w_1x + w_0\)</span>. How then do we evaluate the “error” of model?</p>
+<p>In the Maximum Likelihood model, we can explicitly check the correctness of our assumptions by checking the distribution of the residuals. How do we criticize a Bayesian model?</p>
+</section>
+<section id="why-is-this-hard">
+<h3>Why is This Hard?<a class="headerlink" href="#why-is-this-hard" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Stating that our goal is to maximize likelihood or minimize MSE is easy. Finding the optimal parameters is often very hard (especially if <span class="math notranslate nohighlight">\(f(x)\)</span> is not linear, but rather, a complex function represented by a neural network).
+<br><br></p></li>
+<li><p>If we choose more “interesting” or “expressive” priors, or if we choose more complex <span class="math notranslate nohighlight">\(f(x)\)</span>, then it is often the case that the posterior cannot be computed in closed form.</p></li>
+</ol>
+<p>Both model fitting and inference requires sophisticated algorithms derived from deep theoretical understanding of the models.</p>
+</section>
+<section id="is-accuracy-enough">
+<h3>Is Accuracy Enough?<a class="headerlink" href="#is-accuracy-enough" title="Link to this heading">#</a></h3>
+<p>We mentioned that we can get predictive uncertainty from maximum likelihood models by bootstrapping and that Bayesian models naturally give us a sense of predictive uncertainty. These are useful properties that are important for real-life applications.</p>
+<p>When machine learning models are applied to safety-critical, risk-adverse domains such as precision health care, financial and criminal justice systems, reliable measurements of a model’s predictive uncertainty may be as crucial as correctness of its predictions.</p>
+<figure class="align-center" id="fig-01-health">
+<a class="reference internal image-reference" href="../_images/health.jpg"><img alt="../_images/health.jpg" src="../_images/health.jpg" style="width: 527px;" />
+</a>
+</figure>
+</section>
+<section id="what-kinds-of-predictive-uncertainty-do-we-want">
+<h3>What Kinds of Predictive Uncertainty Do We Want?<a class="headerlink" href="#what-kinds-of-predictive-uncertainty-do-we-want" title="Link to this heading">#</a></h3>
+<p>Predictive uncertainty helps us quantify risk in down-stream tasks:</p>
+<figure class="align-center" id="fig-01-dosage">
+<a class="reference internal image-reference" href="../_images/dosage.png"><img alt="../_images/dosage.png" src="../_images/dosage.png" style="width: 100%;" />
+</a>
+</figure>
+<p>We also care about the <em><strong>source of uncertainty</strong></em>:</p>
+<figure class="align-center" id="fig-01-dosage2">
+<a class="reference internal image-reference" href="../_images/dosage2.png"><img alt="../_images/dosage2.png" src="../_images/dosage2.png" style="width: 672px;" />
+</a>
+</figure>
+<p>What information about the data/model do we want our uncertainties to capture?</p>
+<p><strong>Epistemic Uncertainty</strong> asks which function fits our data. Epistemic uncertainty arises due to small number of samples across all scenarios. This can be reduced by more samples!</p>
+<p><strong>Aleatoric Uncertainty:</strong> asks what is the level of randomness that underlies the data generation process. This is irreducible.<br><br></p>
+<figure class="align-center" id="fig-01-uncertainty">
+<a class="reference internal image-reference" href="../_images/uncertainty.png"><img alt="../_images/uncertainty.png" src="../_images/uncertainty.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="so-now-you-have-predictive-uncertainties-what-are-you-gonna-do-with-them">
+<h3>So Now You Have Predictive Uncertainties, What Are You Gonna Do With Them?<a class="headerlink" href="#so-now-you-have-predictive-uncertainties-what-are-you-gonna-do-with-them" title="Link to this heading">#</a></h3>
+<p>In <em>Efficient Out-of-Distribution Detection in Digital Pathology Using Multi-Head Convolutional Neural Networks</em> (Linmans et al, Medical Imaging with Deep Learning 2020), the authors train an uncertainty-aware neural network model to detect breast cancer metastasis.</p>
+<p>The epistemic uncertainty is used during test time to detect new types of breast tissue images that were not included in the training data. Classification of these novel types of images can be deferred to a human.</p>
+<p>Unfamiliar types were caught at test time with <strong>AUC of .98</strong>.</p>
+<figure class="align-center" id="fig-01-breastpathq">
+<a class="reference internal image-reference" href="../_images/BreastPathQ.png"><img alt="../_images/BreastPathQ.png" src="../_images/BreastPathQ.png" style="width: 641px;" />
+</a>
+</figure>
+</section>
+<section id="how-do-we-explain-decisions-of-machine-learning-models">
+<h3>How Do We Explain Decisions of Machine Learning Models?<a class="headerlink" href="#how-do-we-explain-decisions-of-machine-learning-models" title="Link to this heading">#</a></h3>
+<p>In order for human decision makers to interact with machine learning models meaningfully, we need these models to be <strong>interpretable</strong>. But explanation complex models is difficult.</p>
+<figure class="align-center" id="fig-01-slide14">
+<a class="reference internal image-reference" href="../_images/slide14.png"><img alt="../_images/slide14.png" src="../_images/slide14.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="how-do-you-communicate-ml-predictions-and-does-it-matter">
+<h3>How Do You Communicate ML Predictions, And Does It Matter?<a class="headerlink" href="#how-do-you-communicate-ml-predictions-and-does-it-matter" title="Link to this heading">#</a></h3>
+<p>In <em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em> (Lee et al, Nature Biomedical Engineering, 2019), the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<figure class="align-center" id="fig-01-shap">
+<a class="reference internal image-reference" href="../_images/shap.png"><img alt="../_images/shap.png" src="../_images/shap.png" style="width: 724px;" />
+</a>
+</figure>
+</section>
+<section id="what-interactions-do-we-need-to-think-about-when-we-design-ml-models">
+<h3>What Interactions Do We Need to Think About When We Design ML Models?<a class="headerlink" href="#what-interactions-do-we-need-to-think-about-when-we-design-ml-models" title="Link to this heading">#</a></h3>
+<p>We tend to think of modeling as a purely mathematical or engineering feat, but in many cases the model has a complex interaction with a human decision maker.</p>
+<p>We also tend to think of the tech and the user as a closed system. but your tech is actually one cog in a complex <strong>social-technical system</strong>, your intended use is just one actor in a web of stakeholders.</p>
+<p>We not only need to worry about the performance of the model, we also need to worry about the performance the combined system of Human + AI.</p>
+<figure class="align-center" id="fig-01-slide13">
+<a class="reference internal image-reference" href="../_images/slide13.png"><img alt="../_images/slide13.png" src="../_images/slide13.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="the-promises-of-human-ai-systems">
+<h3>The Promises of Human + AI Systems<a class="headerlink" href="#the-promises-of-human-ai-systems" title="Link to this heading">#</a></h3>
+<p>In <em>Consistent Estimators for Learning to Defer to an Expert</em> (Mozannar et al, International Conference on Machine Learning, 2020), the authors trains a model that decides when (and how) to classify an input and when to defer the decision to an human expert.</p>
+<p>The joint Human + AI system can be superior to both components.</p>
+<figure class="align-center" id="fig-01-human-ai2">
+<a class="reference internal image-reference" href="../_images/human+ai2.png"><img alt="../_images/human%2Bai2.png" src="../_images/human%2Bai2.png" style="width: 547px;" />
+</a>
+</figure>
+</section>
+<section id="the-perils-of-human-ai-systems">
+<h3>The Perils of Human + AI Systems<a class="headerlink" href="#the-perils-of-human-ai-systems" title="Link to this heading">#</a></h3>
+<p>In <em>How machine-learning recommendations influence clinician treatment selections: the example of antidepressant selection</em> (Jacobs et al, Translational Psychiatry, 2021), the authors found that clinicians interacting with incorrect recommendations paired with simple explanations experienced significant reduction in treatment selection accuracy.</p>
+<figure class="align-center" id="fig-01-reliance">
+<a class="reference internal image-reference" href="../_images/reliance.png"><img alt="../_images/reliance.png" src="../_images/reliance.png" style="width: 471px;" />
+</a>
+</figure>
+<p>Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.</p>
+</section>
+<section id="the-potential-social-benifits-of-machine-learning">
+<h3>The Potential Social Benifits of Machine Learning<a class="headerlink" href="#the-potential-social-benifits-of-machine-learning" title="Link to this heading">#</a></h3>
+<p><em><strong>Artifcial intellegence</strong></em> or <em><strong>machine learning</strong></em> models are becoming increasinglly ubiquitous in modern life. These models have already made meaningful impact on many of the most pressing problems we face today.</p>
+<figure class="align-center" id="fig-01-benifits">
+<a class="reference internal image-reference" href="../_images/benifits.jpeg"><img alt="../_images/benifits.jpeg" src="../_images/benifits.jpeg" style="width: 702px;" />
+</a>
+</figure>
+</section>
+<section id="the-negative-social-impacts-of-machine-learning">
+<h3>The Negative Social Impacts of Machine Learning<a class="headerlink" href="#the-negative-social-impacts-of-machine-learning" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-01-risks">
+<a class="reference internal image-reference" href="../_images/risks.jpeg"><img alt="../_images/risks.jpeg" src="../_images/risks.jpeg" style="width: 631px;" />
+</a>
+</figure>
+</section>
+<section id="why-is-this-happening">
+<h3>Why Is This Happening?<a class="headerlink" href="#why-is-this-happening" title="Link to this heading">#</a></h3>
+<p>Bias in tech is not an algorithmic or math problem; it is a people problem, it is about neglecting the human dimension and inextricably linked with diversity &amp; representation in the ways we approach problem solving.</p>
+<figure class="align-center" id="fig-01-gaps">
+<a class="reference internal image-reference" href="../_images/gaps.jpeg"><img alt="../_images/gaps.jpeg" src="../_images/gaps.jpeg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="alternative-problem-solving-frameworks-for-machine-learning">
+<h3>Alternative Problem Solving Frameworks for Machine Learning<a class="headerlink" href="#alternative-problem-solving-frameworks-for-machine-learning" title="Link to this heading">#</a></h3>
+<p>Machine learning is making a movement away from traditional design frameworks and problem solving methodologies.</p>
+<figure class="align-center" id="fig-01-participate">
+<a class="reference internal image-reference" href="../_images/participate.jpeg"><img alt="../_images/participate.jpeg" src="../_images/participate.jpeg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="machine-learning-much-more-than-accuracy">
+<h3>Machine Learning: Much More Than Accuracy<a class="headerlink" href="#machine-learning-much-more-than-accuracy" title="Link to this heading">#</a></h3>
+<p>Machine learning is much more than engineering for abstract performance metrics. Increasingly the field is grappling with the role digital technology is playing in our entire socio-technical system.</p>
+<p>Machine learning and data science are <strong>interdisciplinary</strong> fields that require people with <strong>diverse skill-sets/backgrounds</strong> to work closely and <strong>cooperatively</strong>.</p>
+<p>There is also increasing calls for machine learning/data science researchers to engage meaningfully with <strong>social, economic, political, cultural and ethical impacts</strong> of their work when embedded in complex human institutions.</p>
+<figure class="align-center" id="fig-01-slide19">
+<a class="reference internal image-reference" href="../_images/slide19.png"><img alt="../_images/slide19.png" src="../_images/slide19.png" style="width: 503px;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">1.2. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>(Fitting Probabilistic Models)</strong> Given a probabilistic model with parameters <span class="math notranslate nohighlight">\(\theta\)</span>, i.e. a model that explicitly accounts for the noise in the data. We learn <span class="math notranslate nohighlight">\(\theta\)</span> that maximizes the likelihood of the observed data.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Sanity Check:</strong> What is the noise model for the binomial model of coin tosses?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Maximizing the Likelihood)</strong> Maximizing the likelihood over <span class="math notranslate nohighlight">\(\theta\)</span> is an <em>optimization problem</em>. In an optimization problem, we by convention turn every maximization problem (e.g. maximize <span class="math notranslate nohighlight">\(g(\theta)\)</span>) into a minimization problem (e.g. minimize <span class="math notranslate nohighlight">\(-g(\theta)\)</span>) and then:</p></li>
+</ol>
+<ul class="simple">
+<li><p>if there are no constraints, we identify the stationary points of the objective function and verify that the objective function is convex. In this case, the stationary points are local min, and every local min is a global min.<br><br></p></li>
+<li><p>if there are constraints, we identify the stationary points of the Lagrangian and verify that the objective function is convex and the equality constraints are affine. In this case, every stationary point is a global min.<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Why MLE)</strong> Why should we learn <span class="math notranslate nohighlight">\(\theta\)</span> to maximize the likelihood? What is the philosophical basis for performing MLE?<br><br></p></li>
+<li><p><strong>(What Are Desirable Properties of Estimators)</strong> If we have a method to produce an estimate <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> of the true model parameters <span class="math notranslate nohighlight">\(\theta\)</span>, what properties would we want from our estimate?</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>(Consistency)</strong></em> What is consistency and why do we, as practitioners, care?</p></li>
+<li><p><em><strong>(Unbiasedness)</strong></em> What is unbiasedness and why do we, as practitioners, care?</p></li>
+<li><p><em><strong>(Minimum Variance)</strong></em> What is minimum variance and why do we, as practitioners, care?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p><strong>(Why Not MLE)</strong> Which properties does MLE have? And which ones does it lack? What does this mean for practiioners using MLE - what do we need to watch out for?<br><br></p></li>
+<li><p><strong>(Uncertainty)</strong> We said that maximize the likelihood gives us one “best” estimate of the model parameters. But how can we get uncertainty on our estimates (e.g. what is bootstrapping)?</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2><span class="section-number">1.3. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-review-of-statistical-modeling-and-scientific-computing">
+<span id="ps-hw0"></span><h3>Problem Set: Review of Statistical Modeling and Scientific Computing<a class="headerlink" href="#problem-set-review-of-statistical-modeling-and-scientific-computing" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="admonition-exercise-part-i-maximum-likelihood-estimators-for-linear-regression admonition">
+<p class="admonition-title">Exercise: Part I: Maximum Likelihood Estimators for Linear Regression</p>
+<p> </p>
+</div>
+<p><em>(Material covered in CS109A or equivalent)</em></p>
+<p>In this problem, you are given a dataset with a single predictor <span class="math notranslate nohighlight">\(X\)</span> representing patient age (in years) and a single outcome <span class="math notranslate nohighlight">\(y\)</span> representing diastolic blood pressure (in mm Hg), and your task is to fit a linear model to the data. The fitted model will be deployed in a hospital setting, where the model predictions will inform patient treatment.</p>
+<p>The dataset is saved as <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code> in CSV (Comma Separated Values) format and can be read using the <code class="docutils literal notranslate"><span class="pre">.read_csv()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> library.</p>
+<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+y &amp;= f(x) + \epsilon = w_1x + w_0 + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.5)
+\end{aligned}\]</div>
+
+where <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>, the <em>parameters</em> of the function <span class="math notranslate nohighlight">\(f\)</span>, are unknown constants.</p>
+<ol class="arabic simple">
+<li><p><strong>(Model Building)</strong> Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(p(y|x, w_1, w_0)\)</span>, for a single observation <span class="math notranslate nohighlight">\((x, y)\)</span>. Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(\prod_{n=1}^N p(y_n|x_n, w_1, w_0)\)</span> for an entire dataset of <span class="math notranslate nohighlight">\(N\)</span> number of observations.</p></li>
+</ol>
+<p><em>Hint: for a given <span class="math notranslate nohighlight">\(x\)</span> and fixed parameters, what is the distribution of <span class="math notranslate nohighlight">\(y\)</span>?</em></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Defining a Learning Objective)</strong> The Maximum Likelihood Estimators (MLE) of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> are defined as
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+w^{\text{MLE}}_1, w^{\text{MLE}}_0 = \underset{w_1, w_0}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n|x_n, w_1, w_0)
+\end{aligned}\]</div>
+
+Show that finding <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> that maximizes the likelihood is equivalent to finding parameters that minimize the Mean Squared Error (MSE) of your model.<br><br>
+<em>Hint: show that maximizing the log likelihood is equivalent to minimizing the MSE.</em></p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Model Fitting)</strong> Analytically derive the formulae for MLE of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>. Describe what information you would need in order <em><strong>prove</strong></em> that the parameters you derived maximizes the likelihood (or minimizes the MSE)?</p></li>
+</ol>
+<p><strong>Optional but Useful:</strong> express your derivation of the MLE in matrix notation (i.e. <a class="reference external" href="https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf" rel="noreferrer" target="_blank">perform matrix calculus</a>).</p>
+<p><em>Hint: this part requires multivariate calculus.</em></p>
+<ol class="arabic simple" start="4">
+<li><p><strong>(Model Evaluation)</strong> Using the <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> class from <code class="docutils literal notranslate"><span class="pre">sklearn.linear_model</span></code>, fit a linear regression model to the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code>. When you call the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> function of <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code>, the default is to find parameters that minimize MSE.</p></li>
+</ol>
+<p>Visualize the linear function you fitted as well as the data in one plot.
+Visualize a histogram of the residuals.</p>
+<p>Interpret the clinical meaning of the parameters <span class="math notranslate nohighlight">\(w_0, w_1\)</span>.</p>
+<p>Using the plots and your interpretation of the model parameters, argue for whether or not your model is appropriate for the data.</p>
+<p><em>Hint: look at the assumptions you’ve made in your modeling process, which assumptions are supported by the data, which are contradicted by the data?</em></p>
+<div class="admonition-exercise-part-ii-bayesian-linear-regression admonition">
+<p class="admonition-title">Exercise: Part II: Bayesian Linear Regression</p>
+<p> </p>
+</div>
+<p><em>(Material covered in CS109 B or equivalent)</em></p>
+<p>In this problem, your task is to perform Bayesian linear regression on the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code>.</p>
+<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y &amp;= f(x) + \epsilon = w_1x + w_0 + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.5)\\
+w_0 &amp;\sim \mathcal{N}(0, 1)\\
+w_1 &amp;\sim \mathcal{N}(0, 0.5)
+\end{aligned}\end{split}\]</div>
+
+In this model, we assume the same likelihood as in Part I, but we also include priors for <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span>: <span class="math notranslate nohighlight">\(p(w_0) = \mathcal{N}(0, 1)\)</span>, <span class="math notranslate nohighlight">\(p(w_1) = \mathcal{N}(0, 0.5)\)</span></p>
+<ol class="arabic simple">
+<li><p><strong>(Inference)</strong> Analytically derive the joint posterior distribution over the parameters. That is, analytically compute<br><br>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) = \frac{\left(\prod_{n=1}^Np(y_n|x_n, w_1, w_0)\right)p(w_1)p(w_0)}{\prod_{n=1}^Np(y_n|x_n)}.\\
+\end{aligned}\end{split}\]</div>
+
+<br><em>Hint: The posterior of a model with a Gaussian (or normal) likelihood and Gaussian priors is yet again Gaussian. This derivation is included in many machine learning textbooks like Machine Learning: a Probabilistic Perspective by Murphy or Pattern Recognition and Machine Learning by Bishop. This derivation also appears online in many course notes - you are welcomed to use any and all available resources.</em></p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Model Interpretation)</strong> Visualize the <em><strong>joint posterior</strong></em> over the parameters, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y, x)\)</span> for the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code> (you may use a scatter plot of samples drawn from the posterior or a contour map/heat map of the pdf). In separate plots, visualize the <em><strong>marginal posterior</strong></em> distribution over each parameter,
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_0\\
+p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_1\\
+\end{aligned}\end{split}\]</div>
+
+Is the information contained in the joint posterior <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span> equivalent to the information contained in the two marginals <span class="math notranslate nohighlight">\(p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n), p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>? That is, what does each distribution tell you?</p></li>
+</ol>
+<p>Compute the variance of the marginal posterior distributions <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span> empirically using samples from <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>. What do the width of these intervals tell you about your confidence in the model’s estimation of the parameters?</p>
+<p><em>Hint: it is not necessary to analytically derive the marginals <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>. Recall that you can perform marginalization of a variable by sampling from the joint distribution and disregarding that variable.</em></p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Prediction)</strong> In Bayesian linear regression, we obtain a distribution over possible parameters given the data, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>, rather than a single <em><strong>point-estimate</strong></em> of the ‘best’ parameters. This means that when we predict an outcome for, say, <span class="math notranslate nohighlight">\(x=2\)</span> we get a distribution over possible values of <span class="math notranslate nohighlight">\(y\)</span> rather than a single <span class="math notranslate nohighlight">\(y\)</span>. The distribution over the predicted <span class="math notranslate nohighlight">\(y\)</span> for a given <span class="math notranslate nohighlight">\(x\)</span> is called the <em><strong>posterior predictive</strong></em>, and is denoted <span class="math notranslate nohighlight">\(p(y|x)\)</span>.</p></li>
+</ol>
+<p>Visualize the <strong>95% posterior predictive interval</strong> (this is the interval that includes 95% of the posterior predictive values) for the training data – this is usually visualized as a shaded tube containing the 95% of the posterior predictive values for each test <span class="math notranslate nohighlight">\(x\)</span>-value.</p>
+<p>What does the 95% posterior predictive interval tell you about the model’s uncertainty in its predictions?</p>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p>You’ve now modeled the same set of data using non-Bayesian and Bayesian regression models. In both paradigms it’s possible to identify a ‘best’ set of model parameters (in the non-Bayesian approach, we compute the MLE; in the Bayesian approach, we can compute the mean or mode of the posterior). For the Bayesian model, we also quantified our uncertainty in the model parameters as well as our uncertainty in the model’s predictions. So which model, if any, should we deploy in real life?</p>
+<p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
+<p>To help you analyze the broader impact of your technology, begin by considering the following questions:</p>
+<p>I. Identify the relevant socio-technical systems</p>
+<ul class="simple">
+<li><p>In what social, political, economic system could the tech be deployed?</p></li>
+<li><p>How would the tech be used in these systems (what role will it take in the decision making processes)?<br><br></p></li>
+</ul>
+<p>II. Identify the stakeholders</p>
+<ul>
+<li><p>Who are the users?</p></li>
+<li><p>Who are the affected communities (are these the users)?</p>
+<p><em><strong>Hint:</strong></em> users are typically decision makers who will use the technology as decision aids (e.g. doctors), whereas affected communities may be folks who are impacted by these decisions but who are not represented in the decision making process (e.g. patients).<br><br></p>
+</li>
+</ul>
+<p>III. What types of harm can this tech do?</p>
+<ul>
+<li><p>What kinds of failures can this tech have?</p></li>
+<li><p>What kinds of direct harm can these failures cause?</p></li>
+<li><p>What kinds of harm can the socio-technical system cause?</p>
+<p><em><strong>Hint:</strong></em> many technical innovations have niche applications, they may sit in a long chain of decision making in a complex system. As such, it may seem, at first glance, that these technologies have no immediate real-life impact. In these cases, it’s helpful to think about the impact of the entire system and then think about how the proposed innovations aid, hamper or change the goals or outcomes of this system.<br><br></p>
+</li>
+</ul>
+<p>IV. What types of good can this tech do?</p>
+<ul class="simple">
+<li><p>What kinds of needs do these users/communities have?</p></li>
+<li><p>What kinds of constraints do these users/communities have?</p></li>
+</ul>
+</div>
+<ol class="arabic simple">
+<li><p><strong>(Impact)</strong> Analyze the broader impact of these two models. Specifically, focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Mitigation)</strong> Which model, if any, would you recommend to deploy? Why?</p></li>
+</ol>
+<p>What information should the ML designer/engineer disclose to the end-users to mitigate potential negative impacts?</p>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">1.4. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Preparatory Readings</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.google.com/presentation/d/1VjzdaCHrzH_3XCTEqoTzTw-8kk5G_spM093JjEN6jOU/edit?usp=sharing" rel="noreferrer" target="_blank">How to Assess the Broader Impact of Technology</a></p></li>
+<li><p><a class="reference external" href="https://docs.google.com/document/d/1MPEOSairUkktoZmX1N8zcIaENjyirt-JgRfSD-HBymk/edit?usp=sharing" rel="noreferrer" target="_blank">How To Read Machine Learning Papers: A Guide</a></p></li>
+</ul>
+<p><strong>Linear Regression</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://www.cs.toronto.edu/~rgrosse/courses/csc321_2017/readings/L02%20Linear%20Regression.pdf" rel="noreferrer" target="_blank">Linear regression</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://www.cs.princeton.edu/courses/archive/fall18/cos324/files/mle-regression.pdf" rel="noreferrer" target="_blank">Linear Regression via Maximization of the Likelihood</a></p></li>
+</ul>
+<p><strong>Bayesian Linear Regression</strong></p>
+<ul class="simple">
+<li><p>(In-Depth) <a class="reference external" href="https://brunaw.com/phd/bayes-regression/report.pdf" rel="noreferrer" target="_blank">Bayesian Linear Regression</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="http://www.biostat.umn.edu/~ph7440/pubh7440/BayesianLinearModelGoryDetails.pdf" rel="noreferrer" target="_blank">Bayesian Linear Model: Gory Details</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Probabilistic Inference &amp; Optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="02-maximum-likelihood.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Maximum Likelihood Estimation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-course-about">1.1. What is this course about?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-model-patterns-in-data">How Do We Model Patterns in Data?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-model">What is a Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-notion-of-error">A Notion of Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-the-overall-error">How do we quantify the overall error?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-fitting">Model Fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-statistical-model">What is a Statistical Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-regression">A Statistical Model for Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-fitness">How Do We Quantify Fitness?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximimum-likelihood-and-minimum-mean-square-error">Maximimum Likelihood and Minimum Mean Square Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-interpretation">Model Interpretation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-bayesian-model">What is a Bayesian Model?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-inference">Model Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-linear-regression">Bayesian Linear Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-versus-frequentist-uncertainty">Bayesian versus Frequentist Uncertainty</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-hard">Why is This Hard?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-accuracy-enough">Is Accuracy Enough?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-kinds-of-predictive-uncertainty-do-we-want">What Kinds of Predictive Uncertainty Do We Want?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#so-now-you-have-predictive-uncertainties-what-are-you-gonna-do-with-them">So Now You Have Predictive Uncertainties, What Are You Gonna Do With Them?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-explain-decisions-of-machine-learning-models">How Do We Explain Decisions of Machine Learning Models?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-you-communicate-ml-predictions-and-does-it-matter">How Do You Communicate ML Predictions, And Does It Matter?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-interactions-do-we-need-to-think-about-when-we-design-ml-models">What Interactions Do We Need to Think About When We Design ML Models?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-promises-of-human-ai-systems">The Promises of Human + AI Systems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-human-ai-systems">The Perils of Human + AI Systems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benifits-of-machine-learning">The Potential Social Benifits of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-negative-social-impacts-of-machine-learning">The Negative Social Impacts of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-happening">Why Is This Happening?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-problem-solving-frameworks-for-machine-learning">Alternative Problem Solving Frameworks for Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning-much-more-than-accuracy">Machine Learning: Much More Than Accuracy</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">1.2. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">1.3. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-review-of-statistical-modeling-and-scientific-computing">Problem Set: Review of Statistical Modeling and Scientific Computing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">1.4. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1145 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>12. Bayesian Latent Variable Models and Variational Inference &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/10-variational-inference';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/10-variational-inference.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="13. Hierarchical Models" href="11-hierarchical-models.html" />
+    <link rel="prev" title="11. Latent Variable Models and MLE" href="09-latent-variable-models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/10-variational-inference.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/10-variational-inference.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Bayesian Latent Variable Models and Variational Inference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-latent-variable-models">12.1. Bayesian Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-in-bayesian-inference">Challenges in Bayesian Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-idea-of-variational-inference">The Idea of Variational Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-design-of-the-variational-objective">The Design of the Variational Objective</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-as-optimization">Variational Inference as Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradients-of-the-elbo">Gradients of the ELBO</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coordinate-ascent-variational-inference">Coordinate Ascent Variational Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-elbo-via-coordinate-ascent">Maximizing the ELBO via Coordinate Ascent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-gaussian-mixture-models">Bayesian Gaussian Mixture Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-for-bayesian-gaussian-mixture-models">Variational Inference for Bayesian Gaussian Mixture Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemenation-of-cavi-for-bayesian-gmm">Implemenation of CAVI for Bayesian GMM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-elbo-during-training">Sanity Check: ELBO During Training</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">12.2. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-understanding-em-and-variational-inference">Problem Set: Understanding EM and Variational Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-bayesian-latent-variable-model">Non-Bayesian Latent Variable Model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-latent-variable-model">Bayesian Latent Variable Model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">12.3. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="bayesian-latent-variable-models-and-variational-inference">
+<h1><span class="section-number">12. </span>Bayesian Latent Variable Models and Variational Inference<a class="headerlink" href="#bayesian-latent-variable-models-and-variational-inference" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/uUF1e7hTFq8" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Bayesian Latent Variable Models</p></li>
+<li><p>Coordinate Ascent Variational Inference</p></li>
+<li><p>Bayesian Gaussian Mixture Models</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="bayesian-latent-variable-models">
+<h2><span class="section-number">12.1. </span>Bayesian Latent Variable Models<a class="headerlink" href="#bayesian-latent-variable-models" title="Link to this heading">#</a></h2>
+<p>Overfitting is an always a concern when using MLE model parameters. We can mitigate the effect of outliers in the data on the model we learn by treating the parameters as random variables and placing priors on them.</p>
+<p>In a latent variable model, maximum liklihood inference treats parameters <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> as unknown constants and produces point-estimates for them. In a Bayesian latent variable model, <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> are random variables and we derive the posterior distribution over them.</p>
+<figure class="align-center" id="fig-10-bayesian-model">
+<a class="reference internal image-reference" href="../_images/bayesian_model.jpg"><img alt="../_images/bayesian_model.jpg" src="../_images/bayesian_model.jpg" style="width: 669px;" />
+</a>
+</figure>
+<p>That is, we want to infer
+<div class="math notranslate nohighlight">
+\[p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N, a, b) = \frac{p(\theta | a)p(\phi|b)\prod_{n}p(Y_n|Z_n, \phi)p(Z_n|\theta)}{\prod_{n} p(Y_n)}.\]</div>
+</p>
+<section id="challenges-in-bayesian-inference">
+<h3>Challenges in Bayesian Inference<a class="headerlink" href="#challenges-in-bayesian-inference" title="Link to this heading">#</a></h3>
+<p>Unfortunately, most Bayesian models with multiple types of random variables (like Bayesian latent variable models) have complex posteriors that do not match known distributions. <em><strong>Exact inference</strong></em> is not possible.</p>
+<p>Sampling from the posterior may not always be the best option because:</p>
+<ol class="arabic simple">
+<li><p>Convergence of samplers may be slow (due to high dimensionality of the distribution or multimodality)<br><br></p></li>
+<li><p>Samplers like Metropolis-Hastings requires evaluating the liklihood <span class="math notranslate nohighlight">\(\prod_n p(Y_n | Z_n, \phi)\)</span> in each iteration, if the observed data is large (<span class="math notranslate nohighlight">\(N\)</span> is in the millions), this computation is expensive.</p></li>
+</ol>
+</section>
+<section id="the-idea-of-variational-inference">
+<h3>The Idea of Variational Inference<a class="headerlink" href="#the-idea-of-variational-inference" title="Link to this heading">#</a></h3>
+<p><strong>Idea: (Approximate Inferenec)</strong> Approximate the hard posterior <span class="math notranslate nohighlight">\(p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N)\)</span> with a distribution <span class="math notranslate nohighlight">\(q\)</span> that is easy to sample from (like a Gaussian). Any computation involving the posterior can now be done with <span class="math notranslate nohighlight">\(q\)</span>.</p>
+<p>This approximation of <span class="math notranslate nohighlight">\(p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N)\)</span> with a distribution <span class="math notranslate nohighlight">\(q\)</span> is called <em><strong>variational inference</strong></em>.</p>
+<figure class="align-center" id="fig-10-variational">
+<a class="reference internal image-reference" href="../_images/variational.jpg"><img alt="../_images/variational.jpg" src="../_images/variational.jpg" style="width: 578px;" />
+</a>
+</figure>
+</section>
+<section id="the-design-of-the-variational-objective">
+<h3>The Design of the Variational Objective<a class="headerlink" href="#the-design-of-the-variational-objective" title="Link to this heading">#</a></h3>
+<p><strong>Goal:</strong> given a target posterior distribution <span class="math notranslate nohighlight">\(p(\psi | Y_1, \ldots, Y_N)\)</span>, <span class="math notranslate nohighlight">\(\psi \in \mathbb{R}^I\)</span> we want to find a distribution <span class="math notranslate nohighlight">\(q(\psi |\lambda^*)\)</span> in a family of distributions <span class="math notranslate nohighlight">\(Q = \{q(\psi |\lambda) | \lambda \in \Lambda \}\)</span> such that <span class="math notranslate nohighlight">\(q(\psi |\lambda^*)\)</span> best approximates <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<p><strong>Design Choices:</strong> we need to choose:</p>
+<p>A. <em><strong>(Variational family)</strong></em> a family <span class="math notranslate nohighlight">\(Q\)</span> of candidate distributions for approximating <span class="math notranslate nohighlight">\(p\)</span>. The members of <span class="math notranslate nohighlight">\(Q\)</span> are called the <em><strong>variational distributions</strong></em>.</p>
+<p><strong>Our Choice:</strong>  we assume that the joint <span class="math notranslate nohighlight">\(q(\psi)\)</span> factorizes completely over each dimension of <span class="math notranslate nohighlight">\(\psi\)</span>, i.e. <span class="math notranslate nohighlight">\(q(\psi)= \prod_{i=1}^I q(\psi_i | \lambda_i)\)</span>. This is called the <em><strong>mean field assumption</strong></em>. What can go wrong with this design choice?</p>
+<p>B. <em><strong>(Divergence measure)</strong></em> a divergence measure to quantify the difference between <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
+<p><strong>Our Choice:</strong>
+<div class="math notranslate nohighlight">
+\[D_{\text{KL}}(q(\psi | \lambda) \| p(\psi | Y_1, \ldots, Y_N)) = \mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left( \frac{q(\psi | \lambda)}{p(\psi | Y_1, \ldots, Y_N)} \right) \right]\]</div>
+
+What can go wrong with this design choice?</p>
+</section>
+<section id="variational-inference-as-optimization">
+<h3>Variational Inference as Optimization<a class="headerlink" href="#variational-inference-as-optimization" title="Link to this heading">#</a></h3>
+<p>We now formalize variational inference for a target <span class="math notranslate nohighlight">\(p(\psi)\)</span>: find <span class="math notranslate nohighlight">\(q(\psi|\lambda^*)\)</span> where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\lambda^* &amp;= \underset{\lambda}{\text{argmin}}\; D_{\text{KL}}(q(\psi|\lambda) \| p(\psi|Y_1, \ldots, Y_N))) \\
+&amp;= \underset{\lambda}{\text{argmin}}\; \mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{q(\psi | \lambda)}{p(\psi|Y_1, \ldots, Y_N))}\right) \right]
+\end{aligned}\end{split}\]</div>
+<p>Recall that for EM, we had proved that minimizing the KL is equivalent to maximizing the ELBO (for which it is easier to compute the gradient). We will do the same here:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{\lambda}{\min}D_{\text{KL}}(q(\psi|\lambda) \| p(\psi|Y_1, \ldots, Y_N))) \overset{\text{equiv}}{\equiv}&amp; \underset{\lambda}{\max} -D_{\text{KL}}(q(\psi|\lambda) \| p(\psi|Y_1, \ldots, Y_N))) \\
+=&amp; \underset{\lambda}{\max} -\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{q(\psi | \lambda)}{p(\psi|Y_1, \ldots, Y_N))} \right)\right] \\
+=&amp; \underset{\lambda}{\max}\underbrace{\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{p(\psi, Y_1, \ldots, Y_N))}{q(\psi | \lambda)} \right)\right]}_{ELBO(\lambda)} \\
+&amp;- \log p(Y_1, \ldots, Y_N).
+\end{aligned}\end{split}\]</div>
+<p>Thus, the variational objective can be rephrased as maximizing the <span class="math notranslate nohighlight">\(ELBO\)</span>.</p>
+</section>
+<section id="gradients-of-the-elbo">
+<h3>Gradients of the ELBO<a class="headerlink" href="#gradients-of-the-elbo" title="Link to this heading">#</a></h3>
+<p>Unfortunately, the ELBO for variational inference of the posterior does not have easy gradients,</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\nabla_{\lambda}\,\underbrace{\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{p(\psi, Y_1, \ldots, Y_N)}{q(\psi | \lambda)} \right)\right]}_{ELBO(\lambda)}.
+\end{aligned}\]</div>
+<p>In particular, the issue is that the gradient taken is with respect to the parameter <span class="math notranslate nohighlight">\(\psi\)</span> of the distribution over which we are taking the expectation - i.e. we cannot push the gradient into the expectation.</p>
+<p>Today we will maximize the <span class="math notranslate nohighlight">\(ELBO\)</span> using coordinate ascent (just as in the case of EM). But you’ll see that <em><strong>coordinate ascent variational inference</strong></em> requires that we perform model specific computations (often in closed form). This restrict the class of Bayesian models for which we can perform variational inference.</p>
+<p>Two of the major development we will cover later in the semester address how to estimate this gradient <strong>efficiently and without bias</strong>.</p>
+</section>
+<section id="coordinate-ascent-variational-inference">
+<h3>Coordinate Ascent Variational Inference<a class="headerlink" href="#coordinate-ascent-variational-inference" title="Link to this heading">#</a></h3>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p><a class="reference download internal" download="" href="../_downloads/892b33ef6130b33ba96ee7e0da126c9b/Lecture_10_derivation.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">derivation</span> <span class="pre">(PDF)</span></code></a></p>
+</div>
+</section>
+<section id="maximizing-the-elbo-via-coordinate-ascent">
+<h3>Maximizing the ELBO via Coordinate Ascent<a class="headerlink" href="#maximizing-the-elbo-via-coordinate-ascent" title="Link to this heading">#</a></h3>
+<p>The coordinate ascent algorithm maximizes an objective function <span class="math notranslate nohighlight">\(ELBO(\lambda)\)</span> by iteratively maximizing over <span class="math notranslate nohighlight">\(\lambda_i\)</span>, holding constant <span class="math notranslate nohighlight">\(\lambda_{-i} = [\lambda_1\; \ldots\; \lambda_{i-1}\; \lambda_{i+1}\; \ldots\; \lambda_{I}]\)</span>.</p>
+<p>The <em><strong>coordinate ascent variational inference algorithm</strong></em>:
+0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\lambda^{(0)}\)</span></p>
+<ol class="arabic">
+<li><p><strong>Coordinate-wise maximization:</strong></p>
+<p>Repeat for <span class="math notranslate nohighlight">\(j=1, \ldots, J\)</span> iterations:</p>
+<p><span class="math notranslate nohighlight">\(\quad\quad\)</span> Cycle thru <span class="math notranslate nohighlight">\(i=1, \ldots, I\)</span> coordinates:</p>
+</li>
+</ol>
+<div class="math notranslate nohighlight">
+\[q(\psi_i | \lambda^{\text{new}}_i) \propto \exp\left\{ \mathbb{E}_{\psi_{-i} \sim q(\psi_{-i} | \lambda^{\text{new}}_{1}, \ldots, \lambda^{\text{new}}_{i-1}, \lambda^{\text{old}}_{i+1}, \ldots, \lambda^{\text{old}}_{I})}\left[\log p(Y_1, \ldots, Y_N, \psi)\right]\right\}.\]</div>
+<p>where <span class="math notranslate nohighlight">\(\psi_{-i} = [\psi_1\; \ldots\; \psi_{i-1}\; \psi_{i+1}\; \ldots\; \psi_{I}]\)</span>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Proof of the Update Rule for <span class="math notranslate nohighlight">\(q(\psi_i | \lambda^{\text{new}}_i)\)</span></p>
+<p>We want to show that <span class="math notranslate nohighlight">\(q(\psi_i | \lambda^{*}_i) \propto \exp\left\{ \mathbb{E}_{\psi_{-i} \sim q(\phi_{-i} | \lambda_{-i})}\left[\log p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})\right]\right\}\)</span>, where</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda^{*}_i = \underset{\lambda_i}{\max}\underbrace{\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{p(\psi, Y_1, \ldots, Y_N))}{q(\psi | \lambda)} \right)\right]}_{ELBO(\lambda)}.
+\]</div>
+<p>To maximize the <span class="math notranslate nohighlight">\(ELBO\)</span>, we will</p>
+<ol class="arabic simple">
+<li><p>use the mean-field assumption to break up the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi \sim q(\psi|\lambda)}\)</span> into an interated expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}\)</span></p></li>
+<li><p>we will rewrite the outer expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\)</span> as a negative KL-divergence</p></li>
+<li><p>we will maximize the negative KL-divergence by setting the two arguments of the divergence equal to each other</p></li>
+</ol>
+<p>For the following, we will use the following notation:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\lambda_{-i} &amp;= [\lambda_1\; \ldots\; \lambda_{i-1}\; \lambda_{i+1}\; \ldots\; \lambda_{I}]\\
+\psi_{-i} &amp;= [\psi_1\; \ldots\; \psi_{i-1}\; \psi_{i+1}\; \ldots\; \psi_{I}]\\
+q(\psi_{-i}|\lambda_{-i}) &amp;= \prod_{j\neq i}q(\psi_{j}|\lambda_{j})\\
+\Psi_{-i} &amp;= \bigcup_{j\neq i} \Psi_j\\
+d\psi_{-1} &amp;= d(\psi_1, \ldots, \psi_{i-1}, \psi_{i+1}, \ldots, \psi_{I})
+\end{aligned}\end{split}\]</div>
+<p><strong>Step 1: Show that <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi \sim q(\psi|\lambda)}[\ldots] = \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}[\ldots] \right]\)</span></strong>
+For step 1, we rewrite the ELBO:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underbrace{\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{p(\psi, Y_1, \ldots, Y_N))}{q(\psi | \lambda)} \right)\right]}_{ELBO(\lambda)} &amp;= \int_{\Psi} \left[ \log \left(\frac{p(Y_1, \ldots, Y_N, \psi)}{q(\psi|\lambda)} \right)\right]q(\psi|\lambda) d\psi\\
+&amp;= \int_{\Psi_i} \int_{\Psi_{-i}} \left[ \log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})p(\psi_{-i})}{q(\psi_{i}|\lambda_{i})q(\psi_{-i}|\lambda_{-i})} \right)\right] q(\psi_{i}|\lambda_{i})q(\psi_{-i}|\lambda_{-i}) d\psi_{-i}d\psi_i\quad (\text{Fubini's Theorem})\\
+&amp;= \int_{\Psi_i} \left[\int_{\Psi_{-i}} \left[ \log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})p(\psi_{-i})}{q(\psi_{i}|\lambda_{i})q(\psi_{-i}|\lambda_{-i})} \right)\right] q(\psi_{-i}|\lambda_{-i}) d\psi_{-i} \right] q(\psi_{i}|\lambda_{i})d\psi_i\\
+&amp;= \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})p(\psi_{-i})}{q(\psi_{i}|\lambda_{i})q(\psi_{-i}|\lambda_{-i})} \right)\right]\right]
+\end{aligned}\end{split}\]</div>
+<p>Now we decompose the ELBO into terms containing <span class="math notranslate nohighlight">\(\lambda_i\)</span>, over which we are going to optimize, and terms not containing <span class="math notranslate nohighlight">\(\lambda_i\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+ELBO(\lambda)&amp;=\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})p(\psi_{-i})}{q(\psi_{i}|\lambda_{i})q(\psi_{-i}|\lambda_{-i})} \right)\right]\right]\\
+&amp;= \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})}{q(\psi_{i}|\lambda_{i})} \right) + \log\left(\frac{p(\psi_{-i})}{q(\psi_{-i}|\lambda_{-i})} \right)\right]\right]\\
+&amp;= \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})}{q(\psi_{i}|\lambda_{i})} \right)\right]\right] + \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log\left(\frac{p(\psi_{-i})}{q(\psi_{-i}|\lambda_{-i})} \right)\right]\right]\\
+&amp;= \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})}{q(\psi_{i}|\lambda_{i})} \right)\right]\right] + \underbrace{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log\left(\frac{p(\psi_{-i})}{q(\psi_{-i}|\lambda_{-i})} \right)\right]}_{\text{constant with respect to }\lambda_i}\\
+\end{aligned}\end{split}\]</div>
+<p>Note that we don’t need to consider the constant term when optimizing with respect to <span class="math notranslate nohighlight">\(\lambda_i\)</span>.</p>
+<p><strong>Step 2: Show that <span class="math notranslate nohighlight">\(\underset{\lambda_i}{\max}\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}[\ldots] \equiv \underset{\lambda_i}{\min} D_{\text{KL}}[\ldots]\)</span></strong>
+We show that maximizing the <span class="math notranslate nohighlight">\(ELBO\)</span> with respect to <span class="math notranslate nohighlight">\(\lambda_{i}\)</span> is equivalent to minimizing a KL-divergence:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{\lambda_i}{\max} ELBO(\lambda) &amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(\frac{p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i})}{q(\psi_{i}|\lambda_{i})} \right)\right]\right]\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right] - \mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log\left(q(\psi_{i}|\lambda_{i})\right)\right]\right]\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right] - \log\left(q(\psi_{i}|\lambda_{i})\right)\right]\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right] - \log\left(q(\psi_{i}|\lambda_{i})\right)\right\}\right)\right]\quad (\text{adding both a log and an exp})\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } {\exp \left\{\log\left(q(\psi_{i}|\lambda_{i})\right)\right\}} \right)\right]\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } {q(\psi_{i}|\lambda_{i})} \right)\right]\\
+&amp;\equiv \underset{\lambda_i}{\min} -\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } {q(\psi_{i}|\lambda_{i})} \right)\right]\\
+&amp;= \underset{\lambda_i}{\min} \underbrace{\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{ q(\psi_{i}|\lambda_{i}) } {\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right]}_{\text{looks like a KL except the denominator is not a distribution}}\quad (\text{using the properties of log})\\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{ \mathcal{Z} q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right],\quad (\mathcal{Z} \text{ normalizes the denominator})\\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{  q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right] +\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log(\mathcal{Z})\right] \\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{  q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right] +\log(\mathcal{Z})\\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{  q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right]\\
+&amp;= \underset{\lambda_i}{\min}D_{\text{KL}} \left[ q(\psi_{i}|\lambda_{i})\| \mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\right].
+\end{aligned}\end{split}\]</div>
+<p><strong>Step 3: Minimize the KL-divergence</strong>
+We see that</p>
+<div class="math notranslate nohighlight">
+\[
+D_{\text{KL}} \left[ q(\psi_{i}|\lambda_{i})\| \mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\right]
+\]</div>
+<p>is minimized when</p>
+<div class="math notranslate nohighlight">
+\[
+q(\psi_{i}|\lambda_{i})\propto \exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}.
+\]</div>
+<p>This is also exactly where the ELBO is maximized.</p>
+<p>We can further rewrite the update rule for <span class="math notranslate nohighlight">\( q(\psi_{i}|\lambda_{i})\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(\psi_{i}|\lambda_{i})&amp;\propto \exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\\
+&amp;= \exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)p(\psi_{-i})\right] - \mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log p(\psi_{-i})\right]\right\}\\
+&amp;= \frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)p(\psi_{-i})\right]\right\}}{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}  \left[\log p(\psi_{-i})\right]\right\}}\\
+&amp;\propto \exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)p(\psi_{-i})\right]\right\}\\
+&amp;= \exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi) \right)\right]\right\}
+\end{aligned}\end{split}\]</div>
+<p>The rational for rewriting the update for <span class="math notranslate nohighlight">\(q(\psi_{i}|\lambda_{i})\)</span> in terms of the joint <span class="math notranslate nohighlight">\(p(Y_1, \ldots, Y_N, \psi)\)</span> is that the joint is easy to compute.</p>
+</div>
+</section>
+<section id="bayesian-gaussian-mixture-models">
+<h3>Bayesian Gaussian Mixture Models<a class="headerlink" href="#bayesian-gaussian-mixture-models" title="Link to this heading">#</a></h3>
+</section>
+<section id="variational-inference-for-bayesian-gaussian-mixture-models">
+<h3>Variational Inference for Bayesian Gaussian Mixture Models<a class="headerlink" href="#variational-inference-for-bayesian-gaussian-mixture-models" title="Link to this heading">#</a></h3>
+<p>We consider a Bayesian model for a mixture of <span class="math notranslate nohighlight">\(K\)</span> number of univariate Gaussians:</p>
+<figure class="align-center" id="fig-10-bayesian-gmm">
+<a class="reference internal image-reference" href="../_images/bayesian_gmm.jpg"><img alt="../_images/bayesian_gmm.jpg" src="../_images/bayesian_gmm.jpg" style="width: 613px;" />
+</a>
+</figure>
+<p>The <em><strong>hyperparameters</strong></em> of the models are <span class="math notranslate nohighlight">\(\pi, \sigma^2, m_0, s^2_0\)</span>, which are constants that must be selected prior to inference. For example, to simplify our computations we selected <span class="math notranslate nohighlight">\(\pi = [1/K, \ldots, 1/K]\)</span>, <span class="math notranslate nohighlight">\(m_0 = 0\)</span>, <span class="math notranslate nohighlight">\(\sigma=1\)</span>.</p>
+<p>We make the mean field assumption – that our variational posterior factorizes completely:</p>
+<div class="math notranslate nohighlight">
+\[q(Z, \mu| m, s^2, \phi) = \prod_{k=1}^K q(\mu_k|m_k, s_k^2) \prod_{n=1}^N q(Z_n|\phi_n).\]</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Coordinate Ascent Variational Inference Updates for Bayesian GMM</p>
+<p>In coordinate ascent variational inference, we update the variational distribution for each variable in turn. For the Bayesian GMM this means:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(Z_n | \phi_n) &amp;\propto \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log p(Y_1, \ldots, Y_N, Z_1, \ldots, Z_N, \mu)\right]\right\}\\
+q(\mu_k | m_k, s_k^2) &amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log p(Y_1, \ldots, Y_N, Z_1, \ldots, Z_N, \mu)\right]\right\}
+\end{aligned}\end{split}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(\mu | m, s^2) &amp;= \prod_{k=1}^K q(\mu_k|m_k, s_k^2),\\
+q(\mu_{-k} | m_{-k}, s_{-k}^2) &amp;= \prod_{j\neq k} q(\mu_j|m_j, s_j^2),\\
+Z &amp;= [Z_1\;\;\ldots\;\; Z_N],\\
+q(Z |\phi) &amp;= \prod_{n=1}^N q(Z_n|\phi_n),\\
+Z_{-n} &amp;= [Z_1\;\;\ldots\;\;Z_{n-1}\;\; Z_{n+1}\;\;\ldots\;\; Z_N],\\
+q(Z_{-n} |\phi_{-n}) &amp;= \prod_{m\neq n} q(Z_m|\phi_m).
+\end{aligned}\end{split}\]</div>
+<p><strong>Update rule for <span class="math notranslate nohighlight">\(q(Z_n | \phi_n)\)</span></strong>
+To update <span class="math notranslate nohighlight">\(q(Z_n | \phi_n)\)</span>, we rewrite <span class="math notranslate nohighlight">\(exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log p(Y_1, \ldots, Y_N, Z_1, \ldots, Z_N, \mu)\right]\right\}\)</span>, dropping all terms that do not involve <span class="math notranslate nohighlight">\(Z_n\)</span> and <span class="math notranslate nohighlight">\(\mu\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(Z_n | \phi_n) &amp;\propto \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log p(Y_1, \ldots, Y_N, Z_1, \ldots, Z_N, \mu)\right]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log \left(\prod_{m=1}^N p(Y_m|\mu, Z_m) p(Z_m)\right)p(\mu)\right]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log \left(\prod_{m=1}^N p(Y_m|\mu, Z_m) p(Z_m)\right)\right] + \log[p(\mu)]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log \left(\prod_{m=1}^N p(Y_m|\mu, Z_m) p(Z_m)\right)\right]\right\} \exp\left\{ \log[p(\mu)]\right\}\\
+&amp;\propto \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log \left(\prod_{m=1}^N p(Y_m|\mu, Z_m) p(Z_m)\right)\right]\right\}\quad\quad (\text{dropped priors on $\mu$})\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\log \left(p(Y_n | \mu, Z_n) p(Z_n) \prod_{m\neq n} p(Y_m|\mu, Z_m) p(Z_m)\right)\right]\right\}\\
+&amp;=  \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[ \log p(Y_n | \mu, Z_n) + \log p(Z_n) + \sum_{m\neq n} \log \left( p(Y_m|\mu, Z_m) p(Z_m)\right) \right]\right\}\\
+&amp;=  \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) + \log p(Z_n)\right] +  \mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\sum_{m\neq n} \log \left( p(Y_m|\mu, Z_m) p(Z_m)\right) \right]\right\}\\
+&amp;=  \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) + \log p(Z_n)\right]\right\} \underbrace{\exp\left\{\mathbb{E}_{\mu \sim q(\mu | m, s^2), Z_{-n} \sim q(Z_{-n} | \phi_{-n})}\left[\sum_{m\neq n} \log \left( p(Y_m|\mu, Z_m) p(Z_m)\right) \right]\right\}}_{\text{constant with respect to $Z_n$}}\\
+&amp;\propto  \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) + \log p(Z_n)\right]\right\} \quad\quad (\text{dropped all terms except for the $n$-th})\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) \right]+ \mathbb{E}_{\mu \sim q(\mu | m, s^2)} \left[\log p(Z_n)\right]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) \right]+ \log p(Z_n)\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) \right]+ \log \frac{1}{K}\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) \right]\right\} \exp\left\{\log \frac{1}{K}\right\}\\
+&amp;\propto \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ \log p(Y_n | \mu, Z_n) \right]\right\}\quad\quad (\text{dropped the prior on $Z_n$})\\
+\end{aligned}\end{split}\]</div>
+<p>The likelihood <span class="math notranslate nohighlight">\(p(Y_n | \mu, Z_n)\)</span> is a normal distribution given the value of <span class="math notranslate nohighlight">\(Z_n\)</span>, we can express this by treating each <span class="math notranslate nohighlight">\(Z_n\)</span> as an indicator variable – a <span class="math notranslate nohighlight">\(K\)</span>-dimensional binary vector with <span class="math notranslate nohighlight">\(Z_{nk}=1\)</span> if <span class="math notranslate nohighlight">\(Y_n\)</span> is in class <span class="math notranslate nohighlight">\(k\)</span> and 0 otherwise. Thus, we can write</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\log p(Y_n | \mu, Z_n) &amp;= \log \prod_{k=1}^K \mathcal{N}(Y_n; \mu_k, 1)^{Z_{nk}}\\
+&amp;= \sum_{k=1}^K Z_{nk} \log \mathcal{N}(Y_n; \mu_k, 1)\\
+&amp;= -\frac{1}{2}\sum_{k=1}^K Z_{nk} (Y_n - \mu_k)^2 + const\\
+\end{aligned}\end{split}\]</div>
+<p>Finally, we can write the update for <span class="math notranslate nohighlight">\(q(Z_n | \phi_n)\)</span> as follows, again dropping all terms not involving <span class="math notranslate nohighlight">\(Z_n\)</span> and <span class="math notranslate nohighlight">\(\mu\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(Z_n | \phi_n) &amp;\propto  \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ -\frac{1}{2}\sum_{k=1}^K Z_{nk} (Y_n - \mu_k)^2 + const\right]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ -\frac{1}{2}\sum_{k=1}^K Z_{nk} (Y_n - \mu_k)^2\right]\right\} \exp\left\{\mathbb{E}_{\mu \sim q(\mu | m, s^2)} \left[const\right]\right\}\\
+&amp;\propto \exp\left\{ \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[ -\frac{1}{2}\sum_{k=1}^K Z_{nk} (Y_n - \mu_k)^2\right]\right\}\\
+&amp;= \exp\left\{  -\frac{1}{2}\sum_{k=1}^K Z_{nk} \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[Y^2_n - 2Y_n\mu_k + \mu_k^2\right]\right\}\\
+&amp;= \exp\left\{  -\frac{1}{2}\sum_{k=1}^K Z_{nk} \left(\mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[Y^2_n\right] - 2Y_n\mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[\mu_k\right] + \mathbb{E}_{\mu \sim q(\mu | m, s^2)}\left[\mu_k^2\right]\right)\right\}\\
+&amp;= \exp\left\{  -\frac{1}{2}\sum_{k=1}^K Z_{nk} \left(Y^2_n - 2Y_nm_k + (m_k + s_k^2)\right)\right\}\\
+&amp;= \exp\left\{  -\sum_{k=1}^K Z_{nk} Y^2_n  +\sum_{k=1}^KZ_{nk}\left( Y_nm_k - \frac{(m_k + s_k^2)}{2}\right) \right\}\\
+&amp;= \exp\left\{  -\sum_{k=1}^K Z_{nk} Y^2_n\right\} \exp\left\{ \sum_{k=1}^KZ_{nk}\left( Y_nm_k - \frac{(m_k + s_k^2)}{2}\right) \right\}\\
+&amp;\propto \exp\left\{\sum_{k=1}^KZ_{nk}\left( Y_nm_k - \frac{(m_k + s_k^2)}{2}\right) \right\}
+\end{aligned}\end{split}\]</div>
+<p>Since <span class="math notranslate nohighlight">\(q(Z_n | \phi_n)\)</span> is a categorical distribution, we can use the above to compute the <span class="math notranslate nohighlight">\(k\)</span>-th component as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\phi_{nk}\propto \exp\left\{ Y_n m_k - \frac{(m_k + s_k^2)}{2} \right\}
+\end{aligned}\]</div>
+<p><strong>Update rule for <span class="math notranslate nohighlight">\(q(\mu_k | m_k, s_k^2)\)</span></strong>
+To update <span class="math notranslate nohighlight">\(q(\mu_k | m_k, s_k^2)\)</span>, we compute:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+q(\mu_k | m_k, s_k^2) &amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log p(Y_1, \ldots, Y_N, \psi)\right]\right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu, Z_n) p(Z_n)\right) p(\mu)\right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu, Z_n) \right) p(\mu)\right]  +  \log \prod_{n=1}^N p(Z_n) \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\left(\prod_{n=1}^N p(Y_n|\mu, Z_n) \right)p(\mu)\right) \right] \right\}  \exp\left\{\log \prod_{m=1}^Mp(Z_m) \right\}\\
+&amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{k=1}^K \prod_{n=1}^N p(Y_n|\mu_k, Z_n) \prod_{k=1}^K p(\mu_k)\right) \right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu_k, Z_n) p(\mu_k) \left(\prod_{j\neq k} \prod_{n=1}^N p(Y_n|\mu_j, Z_n) \prod_{j\neq k} p(\mu_j)\right) \right)\right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu_k, Z_n) p(\mu_k)\right) + \log \left(\prod_{j\neq k} \prod_{n=1}^N p(Y_n|\mu_j, Z_n)  \prod_{j\neq k} p(\mu_j)\right)\right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu_k, Z_n) p(\mu_k)\right)\right] + \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{j\neq k} \prod_{n=1}^N p(Y_n|\mu_j, Z_n)  \prod_{j\neq k} p(\mu_j)\right)\right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi)}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu_k, Z_n) p(\mu_k)\right)\right] \right\} \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q(\mu_{-k}|m_{-k}, s_{-k})}\left[\log \left(\prod_{j\neq k} \prod_{n=1}^N p(Y_n|\mu_j, Z_n)  \prod_{j\neq k} p(\mu_j)\right)\right] \right\}\\
+&amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi)}\left[\log \left(\prod_{n=1}^N p(Y_n|\mu_k, Z_n) p(\mu_k)\right)\right] \right\}
+&amp;=\exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi)}\left[\sum_{n=1}^N \log p(Y_n|\mu_k, Z_n) + \log p(\mu_k)\right] \right\}\\
+&amp;= \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi)}\left[\sum_{n=1}^N \sum_{j=1}^K Z_{nj}\log \mathcal{N}(Y_n; \mu_j, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0)\right] \right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N \sum_{j=1}^K \mathbb{E}_{Z \sim q(Z | \phi)}\left[Z_{nj}\right]\log \mathcal{N}(Y_n; \mu_j, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0) \right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N \sum_{j=1}^K \phi_{nj}\log \mathcal{N}(Y_n; \mu_j, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0) \right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N  \phi_{nk}\log \mathcal{N}(Y_n; \mu_k, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0)  +  \sum_{n=1}^N \sum_{j\neq k} \phi_{nj}\log \mathcal{N}(Y_n; \mu_j, 1) \right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N  \phi_{nk}\log \mathcal{N}(Y_n; \mu_k, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0)\right\}  \exp\left\{\sum_{n=1}^N \sum_{j\neq k} \phi_{nj}\log \mathcal{N}(Y_n; \mu_j, 1) \right\}\\
+&amp;\propto \exp\left\{ \sum_{n=1}^N  \phi_{nk}\log \mathcal{N}(Y_n; \mu_k, 1) + \log \mathcal{N}(\mu_k; 0, s^2_0)\right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N  \phi_{nk} \frac{(y_n-\mu_k)^2}{2} - \frac{\mu_k^2}{2\sigma_0^2} + const\right\}\\
+&amp;= \exp\left\{ \sum_{n=1}^N  \phi_{nk} \frac{(y_n-\mu_k)^2}{2} - \frac{\mu_k^2}{2\sigma_0^2}\right\}\exp\left\{const\right\}\\
+&amp;\propto \exp\left\{ \sum_{n=1}^N  \phi_{nk} \frac{(y_n-\mu_k)^2}{2} - \frac{\mu_k^2}{2\sigma_0^2}\right\}\\
+&amp;= \exp\left\{ \left(\sum_{n=1}^N  \phi_{nk} y_n\right)\mu_k - \frac{1}{2}\left(\sum_{n=1}^N  \phi_{nk} + \frac{1}{\sigma_0^2}\right)\mu^2_k + const\right\}\\
+&amp;= \exp\left\{ \left(\sum_{n=1}^N  \phi_{nk} y_n\right)\mu_k - \frac{1}{2}\left(\sum_{n=1}^N  \phi_{nk} + \frac{1}{\sigma_0^2}\right)\mu^2_k\right\} \exp\left\{ const\right\}\\
+&amp;\propto \exp\left\{ \underbrace{\left(\sum_{n=1}^N  \phi_{nk} y_n\right)}_{A}\mu_k - \underbrace{\frac{1}{2}\left(\sum_{n=1}^N  \phi_{nk} + \frac{1}{\sigma_0^2}\right)}_{B}\mu^2_k\right\} \\
+&amp;= \exp\left\{ - (B\mu_k^2 - A\mu_k)\right\}\\
+&amp;= \exp\left\{ - B\left(\mu_k^2 - \frac{A}{B}\mu_k + \left( \frac{A}{2B}\right)^2 - \left( \frac{A}{2B}\right)^2 \right)\right\}\\
+&amp;= \exp\left\{ - B\left(\mu_k^2 - \frac{A}{2B}\right)^2  - B\left( \frac{A}{2B}\right)^2 \right\}\\
+&amp;= \exp\left\{ - B\left(\mu_k^2 - \frac{A}{2B}\right)^2\right\} \exp\left\{- B\left( \frac{A}{2B}\right)^2 \right\}\\
+&amp;\propto \exp\left\{ - B\left(\mu_k^2 - \frac{A}{2B}\right)^2\right\}
+\end{aligned}\end{split}\]</div>
+<p>Thus, we see that <span class="math notranslate nohighlight">\(q(\mu_k | m_k, s_k^2) \propto \exp\left\{ - B\left(\mu_k^2 - \frac{A}{2B}\right)^2\right\} \)</span> is a Gaussian with mean</p>
+<div class="math notranslate nohighlight">
+\[m_k = \frac{A}{2B} = \frac{\sum_{n=1}^N \phi_{nk} y_n}{\sum_{n=1}^N \phi_{nk} + \frac{1}{\sigma_0^2}},\]</div>
+<p>and variance</p>
+<div class="math notranslate nohighlight">
+\[s^2_k = \frac{1}{2B} = \frac{1}{\sum_{n=1}^N \phi_{nk} + \frac{1}{\sigma_0^2}}.\]</div>
+</div>
+</section>
+<section id="implemenation-of-cavi-for-bayesian-gmm">
+<h3>Implemenation of CAVI for Bayesian GMM<a class="headerlink" href="#implemenation-of-cavi-for-bayesian-gmm" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Generate data</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">pis</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">mus</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span>
+<span class="n">sigmas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">pis</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="n">sigmas</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zs</span><span class="p">])</span>
+
+<span class="c1">#defining the bayesian model</span>
+<span class="n">sigma_sq</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">s_sq_0</span> <span class="o">=</span> <span class="mf">1.</span>
+
+<span class="c1">#initialization for CAVI</span>
+<span class="n">m_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">s_sq_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+
+<span class="c1">#implement coordinate ascent VI</span>
+<span class="n">m_current</span> <span class="o">=</span> <span class="n">m_init</span>
+<span class="n">s_sq_current</span> <span class="o">=</span> <span class="n">s_sq_init</span>
+
+<span class="n">total_iter</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="mf">1e-10</span>
+<span class="n">delta_m</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">delta_s</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#implementation of the ELBO</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">elbo</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">s_sq</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="n">summand_1</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">s_sq</span><span class="p">)</span> <span class="o">-</span> <span class="n">m</span> <span class="o">/</span> <span class="n">s_sq_0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">summand_2</span> <span class="o">=</span> <span class="p">((</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_sq</span> <span class="o">+</span> <span class="n">m</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">phi</span><span class="p">))</span> <span class="o">*</span> <span class="n">phi</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">summand_1</span> <span class="o">+</span> <span class="n">summand_2</span>
+
+<span class="n">ELBOs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total_iter</span> <span class="ow">and</span> <span class="n">delta_m</span> <span class="o">&gt;</span> <span class="n">threshold</span> <span class="ow">and</span> <span class="n">delta_s</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+    <span class="c1">#update q(Z_n)</span>
+    <span class="n">exponent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m_current</span><span class="p">)</span> <span class="o">+</span> <span class="o">-</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">m_current</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">s_sq_current</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">phi_unnormalized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">exponent</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">phi_unnormalized</span> <span class="o">/</span> <span class="n">phi_unnormalized</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="c1">#update mu</span>
+    <span class="n">m_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi</span> <span class="o">*</span> <span class="n">y</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">s_sq_0</span> <span class="o">+</span> <span class="n">phi</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#update s squared </span>
+    <span class="n">s_sq_new</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">s_sq_0</span> <span class="o">+</span> <span class="n">phi</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1">#compute ELBO</span>
+    <span class="n">ELBOs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elbo</span><span class="p">(</span><span class="n">m_new</span><span class="p">,</span> <span class="n">s_sq_new</span><span class="p">,</span> <span class="n">phi</span><span class="p">))</span>
+    
+    <span class="c1">#compute variational parameter change</span>
+    <span class="n">delta_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">m_new</span> <span class="o">-</span> <span class="n">m_current</span><span class="p">)</span>
+    <span class="n">delta_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s_sq_new</span> <span class="o">-</span> <span class="n">s_sq_current</span><span class="p">)</span>
+    
+    <span class="n">m_current</span> <span class="o">=</span> <span class="n">m_new</span>
+    <span class="n">s_sq_current</span> <span class="o">=</span> <span class="n">s_sq_new</span>
+    
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+<span class="c1">#sample from posterior predictive    </span>
+<span class="k">def</span><span class="w"> </span><span class="nf">posterior_predictive_sampling</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">variances</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+    <span class="n">posterior_predictive_samples</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mean</span><span class="p">,</span> <span class="n">variance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">variances</span><span class="p">):</span>
+        <span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">variance</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+        <span class="n">posterior_predictive_samples</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">posterior_samples</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">posterior_predictive_samples</span><span class="p">)</span>
+    
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'histogram of birth weights'</span><span class="p">)</span>
+<span class="n">posterior_predictive_samples</span> <span class="o">=</span> <span class="n">posterior_predictive_sampling</span><span class="p">(</span><span class="n">m_current</span><span class="p">,</span> <span class="n">s_sq_current</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">posterior_predictive_samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'variational posterior predictive'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'GMM for Birth Weights'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/694ff7079b808d909724fc754efb199fafe04b9ff97028d4fb270373e13a1388.png" src="../_images/694ff7079b808d909724fc754efb199fafe04b9ff97028d4fb270373e13a1388.png" />
+</div>
+</div>
+</section>
+<section id="sanity-check-elbo-during-training">
+<h3>Sanity Check: ELBO During Training<a class="headerlink" href="#sanity-check-elbo-during-training" title="Link to this heading">#</a></h3>
+<p>Remember that ploting the posterior predictive against actual data is not always an option (e.g. high-dimensional data).</p>
+<p>A sanity check for that your CAVI algorithm has been implemented correctly is to plot the ELBO (or alternatively, the observed data log-likelihood) over the iterations of the algorithm:</p>
+<div class="math notranslate nohighlight">
+\[
+ELBO(\phi, m, s^2) = \mathbb{E}_{Z, \mu\sim q(Z, \mu | \phi, m, s^2)} \left[\log \left( \frac{p(Y_1, \ldots, Y_N, Z_1, \ldots, Z_N, \mu)}{q(Z, \mu | \phi, m, s^2)}\right) \right]
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ELBOs</span><span class="p">)),</span> <span class="n">ELBOs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'ELBO over iterations of CAVI'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d2b62cc3f2b93daf2cb5dc5d103654263d572e51b3ad8380e6fc0b9c130230a6.png" src="../_images/d2b62cc3f2b93daf2cb5dc5d103654263d572e51b3ad8380e6fc0b9c130230a6.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="exercises">
+<h2><span class="section-number">12.2. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-understanding-em-and-variational-inference">
+<span id="ps-hw5a"></span><h3>Problem Set: Understanding EM and Variational Inference<a class="headerlink" href="#problem-set-understanding-em-and-variational-inference" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># data_df is the dataframe of your data</span>
+<span class="c1"># estimates_df is a numpy array of cancer rate estimates, one for each county</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">data_df</span><span class="p">,</span> <span class="n">estimates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">)</span>
+    <span class="n">bot_kcancer_counties</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'pct_mortality'</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">300</span><span class="p">]</span>
+    <span class="n">top_kcancer_counties</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'pct_mortality'</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:</span><span class="mi">300</span><span class="p">]</span>
+    <span class="n">top_kcancer_counties</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bot_kcancer_counties</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">estimates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">],</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">estimates</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"green"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0003</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>In this problem, we will draw concrete connections between EM and variational inference by applying both methods to a certain class of latent variable models. You’ll need to refer to relevant lecture notes on the derivations of EM and the derivation of the variational inference objective. This is an essay question that requires you to engage with complex derivations at a productive but still high level. No implementation is required.</p>
+<section id="non-bayesian-latent-variable-model">
+<h4>Non-Bayesian Latent Variable Model<a class="headerlink" href="#non-bayesian-latent-variable-model" title="Link to this heading">#</a></h4>
+<p>Recall the class of latent variable models we studied in lecture:</p>
+<figure class="align-center" id="fig-10-hw5-graphical-model">
+<a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 296px;" />
+</a>
+</figure>
+</section>
+<section id="bayesian-latent-variable-model">
+<h4>Bayesian Latent Variable Model<a class="headerlink" href="#bayesian-latent-variable-model" title="Link to this heading">#</a></h4>
+<p>A Bayesian version of the same class of models involve adding priors for the model parameters:</p>
+<figure class="align-center" id="fig-10-hw5-bayesian-model">
+<a class="reference internal image-reference" href="../_images/bayesian_model.jpg"><img alt="../_images/bayesian_model.jpg" src="../_images/bayesian_model.jpg" style="width: 456px;" />
+</a>
+</figure>
+<ol class="arabic simple">
+<li><p><strong>(Comparing ELBOs)</strong> For the above type of Bayesian latent variable model, write down the ELBO for variational inference with a mean field variational family. Compare the variational inference ELBO for the Bayesian model to the expectation maximization ELBO for the non-Bayesian model. What are the differences and similarities between these two ELBOs?</p></li>
+</ol>
+<p>In both EM and variational inference we optimize the ELBO. Compare the update steps in EM to the update steps in Coordinate Ascent Variational Inference, draw a concrete analogy between them.</p>
+<p><em><strong>Hint:</strong></em> To make both ELBO’s comparable, make sure that both are in terms of <span class="math notranslate nohighlight">\(z, y, \theta, \phi\)</span>.
+<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Comparing ELBOs and KL-divergences)</strong> Recall that the original objective of variational inference is to minimize a KL-divergence, we rewrote the objective to be that of maximizing the ELBO. Why is directly minimizing the KL-divergence in the original objective difficult (be specific about wherein the difficulty lies)?</p></li>
+</ol>
+<p>In the derivation of the E-step of EM, we reframed an maximization of the ELBO problem as a minimization of a KL-divergence problem. In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximize (use the instantiation of the E-step for Gaussian Mixture Models in Lecture 7 to help support your answer)?</p>
+<p>In the notes for Lecture 8, we introduce a way to maximize the variational inference ELBO – through coordinate ascent. In the derivation of the updates for coordinate ascent, there is a place where we reframed an maximization of the ELBO problem as an equivalent minimization of a KL-divergence problem. Write down the exact form of this equivalence (the two expressions are separated in the derivation by a bunch of lines, you’ll need to identify both parts that you need). In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximization (use the instantiation of the update for Gaussian Mixture Models in Lecture 8 to help support your answer)?</p>
+<p>Based on this analysis, can you draw some general conclusions about when we’d prefer to minimize the KL-divergence versus when we’d prefer to maximize the ELBO?<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(The Mean Field Assumption and Coordinate Ascent)</strong>  Describe exactly when and how the mean field assumption is used in the derivation of the coordinate ascent updates. <br><br></p></li>
+<li><p><strong>(Generalizability of CAVI)</strong> Summarize what kind of derivations/math is needed in order instantiate Coordinate Ascent Variational Inference (CAVI) for a given new model (look at what we did for Gaussian Mixture Models in Lecture 8 and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using CAVI for Bayesian inference in general. What do these draw backs imply about the practicality of variational inference as an inference method?<br><br></p></li>
+<li><p><strong>(Generalizability of EM)</strong> Summarize what kind of derivations/math is needed in order instantiate Expectation Maximization (EM) for a given new model (look at what we did for Gaussian Mixture Models in Lecture 9 and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using EM for MLE inference in general. What do these draw backs imply about the practicality of EM as an inference method?</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">12.3. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Variational Inference</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://suzyahyah.github.io/bayesian%20inference/machine%20learning/variational%20inference/2019/03/20/CAVI.html" rel="noreferrer" target="_blank">Coordinate Ascent Mean-field Variational Inference (Univariate Gaussian Example)</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="https://arxiv.org/pdf/1601.00670v9.pdf" rel="noreferrer" target="_blank">Variational Inference: A Review for Statisticians</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://www.statlect.com/fundamentals-of-probability/Kullback-Leibler-divergence" rel="noreferrer" target="_blank">Kullback-Leibler divergence</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://www.stat.cmu.edu/~cshalizi/754/2006/notes/lecture-28.pdf" rel="noreferrer" target="_blank">Shannon Entropy and Kullback-Leibler Divergence</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="09-latent-variable-models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">11. </span>Latent Variable Models and MLE</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="11-hierarchical-models.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">13. </span>Hierarchical Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-latent-variable-models">12.1. Bayesian Latent Variable Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#challenges-in-bayesian-inference">Challenges in Bayesian Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-idea-of-variational-inference">The Idea of Variational Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-design-of-the-variational-objective">The Design of the Variational Objective</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-as-optimization">Variational Inference as Optimization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradients-of-the-elbo">Gradients of the ELBO</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coordinate-ascent-variational-inference">Coordinate Ascent Variational Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-elbo-via-coordinate-ascent">Maximizing the ELBO via Coordinate Ascent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-gaussian-mixture-models">Bayesian Gaussian Mixture Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-for-bayesian-gaussian-mixture-models">Variational Inference for Bayesian Gaussian Mixture Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemenation-of-cavi-for-bayesian-gmm">Implemenation of CAVI for Bayesian GMM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-elbo-during-training">Sanity Check: ELBO During Training</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">12.2. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-understanding-em-and-variational-inference">Problem Set: Understanding EM and Variational Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#non-bayesian-latent-variable-model">Non-Bayesian Latent Variable Model</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-latent-variable-model">Bayesian Latent Variable Model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">12.3. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

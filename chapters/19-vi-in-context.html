@@ -1,0 +1,992 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>24. Variational Inference in Context &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/19-vi-in-context';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/19-vi-in-context.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="25. Variational Autoencoders" href="20-variational-autoencoders.html" />
+    <link rel="prev" title="23. Automatic Differentiation" href="18-automatic-differentiation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/19-vi-in-context.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/19-vi-in-context.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Variational Inference in Context</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-evaluate-approximate-inference">24.1. How to Evaluate Approximate Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-good-is-your-variational-approximation-of-the-true-posterior">How Good is Your Variational Approximation of the True Posterior?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-posterior-evaluation-metrics">Alternative Posterior Evaluation Metrics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-improve-approximate-inference">24.2. How to Improve Approximate Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#your-variational-approximation-sucks-can-you-fix-it">Your Variational Approximation Sucks, Can You Fix It?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#are-there-any-good-properties-of-variational-approximations-that-we-are-sure-about">Are There Any Good Properties of Variational Approximations that We Are Sure About?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-inference-for-neural-networks-hard">Why is Inference for Neural Networks Hard?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#it-s-weirder-than-you-can-imagine">It’s Weirder Than You Can Imagine</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#but-why-do-i-care">24.3. But why do I care?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-of-variational-approximation-for-real-down-stream-tasks">Evaluation of Variational Approximation for Real Down-stream Tasks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictiveness-of-the-variational-approximate-posterior">Predictiveness of the Variational Approximate Posterior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-of-variational-approximate-posterior-predictive-uncertainty">Quality of Variational Approximate Posterior Predictive Uncertainty</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#does-a-poor-posterior-approximation-imply-a-poor-posterior-predictive">Does a Poor Posterior Approximation Imply a Poor Posterior Predictive?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-developments-in-deep-bayes">24.4. New Developments in Deep Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-wrong-with-posterior-approximations-for-bnns">What’s Wrong with Posterior Approximations for BNNs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-did-we-learn">What Did We Learn?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-wrong-with-the-predictions-from-mean-field-variational-posteriors-of-bnns">What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relationships-between-deep-ensembles-and-bayesian-neural-networks">Relationships Between Deep Ensembles and Bayesian Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-models-for-uncertainty-quantification">Alternative Models for Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictive-uncertainties-of-alternative-deep-bayesian-models-may-not-be-better">Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-uncertainties-do-we-need-in-deep-learning">What Uncertainties Do We Need in Deep Learning?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">24.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">24.6. New Developments in Deep Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">What’s Wrong with Posterior Approximations for BNNs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">What Did We Learn?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Relationships Between Deep Ensembles and Bayesian Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Alternative Models for Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">What Uncertainties Do We Need in Deep Learning?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">24.7. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="variational-inference-in-context">
+<h1><span class="section-number">24. </span>Variational Inference in Context<a class="headerlink" href="#variational-inference-in-context" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/uzG8gKJOp_w" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>How to Evaluate Approximate Inference</p></li>
+<li><p>How to Improve Approximate Inference</p></li>
+<li><p>Why do I care?</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.numpy.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.scipy.stats.multivariate_normal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mvn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.scipy.stats.norm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">norm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd.misc.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">YouTubeVideo</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="how-to-evaluate-approximate-inference">
+<h2><span class="section-number">24.1. </span>How to Evaluate Approximate Inference<a class="headerlink" href="#how-to-evaluate-approximate-inference" title="Link to this heading">#</a></h2>
+<section id="how-good-is-your-variational-approximation-of-the-true-posterior">
+<h3>How Good is Your Variational Approximation of the True Posterior?<a class="headerlink" href="#how-good-is-your-variational-approximation-of-the-true-posterior" title="Link to this heading">#</a></h3>
+<p><strong>Question:</strong> Why is it hard to check that the variational posterior is a good approximation of the true posterior?</p>
+<p>You can’t simply visualize the true posterior, since it’s 1) high dimensional, 2) intractable to sample form.</p>
+<p><strong>Question:</strong> What if we computed the KL-divergence between the true posterior and the varaitional approximation?</p>
+<p><a class="reference external" href="https://arxiv.org/abs/1910.04102" rel="noreferrer" target="_blank">“Practical Posterior Error Bounds from Variational Objectives”</a>: Unfortunately, even when the KL-divergence between <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> is effectively zero, the difference between the means and variances of <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> can be <strong>arbitrarily large</strong>. That is, a small KL-divergence doesn’t capture our intuition about what it means for two distributions to be similar.</p>
+</section>
+<section id="alternative-posterior-evaluation-metrics">
+<h3>Alternative Posterior Evaluation Metrics<a class="headerlink" href="#alternative-posterior-evaluation-metrics" title="Link to this heading">#</a></h3>
+<p>In <a class="reference external" href="https://arxiv.org/abs/1802.02538" rel="noreferrer" target="_blank">“Yes, But Did It Work: Evaluating Variational Inference”</a>, the authors proposes two alternative posterior evaluation metrics:</p>
+<p><strong>1. The Pareto Smoothed Importance Sampling Diagnostic</strong>: If the variational approximation <span class="math notranslate nohighlight">\(q\)</span> is very different than <span class="math notranslate nohighlight">\(p\)</span>, then the importance sampling MC estimate of <span class="math notranslate nohighlight">\(\mathbb{E}_{p(\theta|\text{Data})}\left[ f(\theta) \right]\)</span>,
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{p(\theta|\text{Data})}\left[ f(\theta) \right] \approx \frac{1}{S}\sum_{s=1}^S \frac{p(\theta|\text{Data})}{q(\theta)} f(\theta_s),\; \theta_s \sim q(\theta)
+\]</div>
+
+will have very high variance, due to the fact that the importance weights <span class="math notranslate nohighlight">\(\frac{p(\theta|\text{Data})}{q(\theta)}\)</span> will be very heterogeneous. Thus, methods of smoothing the weights, like <em><strong>Pareto Smoothed Importance Sampling (PSIS)</strong></em> will have poor performance. The efficacy of PSIS can be used as a diagnostic tool for testing if <span class="math notranslate nohighlight">\(q\)</span> is similar to <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<p><strong>2. The Variational Simulation-Based Calibration (VSBC) Diagnostic</strong>: Given a Bayesian model <span class="math notranslate nohighlight">\(p(y, \theta) = p(y|\theta) p(\theta)\)</span>, if your variational inference proceedure is good at approximating the posterior <span class="math notranslate nohighlight">\(p(\theta|y)\)</span> then it should do well for most sets of data that is generated from the model <span class="math notranslate nohighlight">\(p(y, \theta)\)</span>.</p>
+<p>We generate <span class="math notranslate nohighlight">\(M\)</span> sets of synthetic data from <span class="math notranslate nohighlight">\(p(y, \theta)\)</span>. For each set of the data we approximate the posterior <span class="math notranslate nohighlight">\(q_m(\theta)\)</span>. We then perform a calibration test on each variational approximation. This will reveal if your variational inference procedure is biased - produces approximation that are consistently flawed in some specific way.</p>
+</section>
+</section>
+<section id="how-to-improve-approximate-inference">
+<h2><span class="section-number">24.2. </span>How to Improve Approximate Inference<a class="headerlink" href="#how-to-improve-approximate-inference" title="Link to this heading">#</a></h2>
+<section id="your-variational-approximation-sucks-can-you-fix-it">
+<h3>Your Variational Approximation Sucks, Can You Fix It?<a class="headerlink" href="#your-variational-approximation-sucks-can-you-fix-it" title="Link to this heading">#</a></h3>
+<p>The current research on improving variational inference can be categorize by which <strong>design choice</strong> each work tries to improve:</p>
+<p><strong>1. Choice of Divergence:</strong> In <a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html"><span class="doc">Lab 5</span></a>, you explored the draw-backs of fitting an approximate posterior <span class="math notranslate nohighlight">\(q\)</span> to the true posterior <span class="math notranslate nohighlight">\(p\)</span> using KL-divergence. There are a huge number of works that explore performing variational inference using other types of divergences, for example: <br>
+<span class="math notranslate nohighlight">\(\quad\)</span> <strong>a.</strong> <a class="reference external" href="https://arxiv.org/abs/1511.03243" rel="noreferrer" target="_blank">“Black-box <span class="math notranslate nohighlight">\(\alpha\)</span>-divergence Minimization”</a><br>
+<span class="math notranslate nohighlight">\(\quad\)</span> <strong>b.</strong> <a class="reference external" href="https://arxiv.org/abs/1608.04471" rel="noreferrer" target="_blank">“Stein Variational Gradient Descent”</a></p>
+<p><strong>2. Choice of Variational Family:</strong> In the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>, you’ve seen that even for a simple Bayesian linear regression model, the model parameters were corrlated in the posterior. In <a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html"><span class="doc">Lab 8</span></a>, you’ve seen that minimizing the KL-divergence to fit an isotropic Gaussian means that you can only capture one mode in the posterior. There are a huge number of works that explore using different types of variational families:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span> <strong>a.</strong> <a class="reference external" href="https://arxiv.org/abs/1505.05770" rel="noreferrer" target="_blank">“Variational Inference with Normalizing Flows”</a><br>
+<span class="math notranslate nohighlight">\(\quad\)</span> <strong>b.</strong> <a class="reference external" href="https://arxiv.org/abs/1511.06499" rel="noreferrer" target="_blank">“The Variational Gaussian Process”</a><br></p>
+<p><strong>3. Choice of Optimization Procedure:</strong> Even if your divergence measure and variational family are well-chosen, the optimization objective can still be non-convex! This means that your optimization procedure might return a <span class="math notranslate nohighlight">\(q\)</span> that is a only local-optimum. There are a large number of works that address how to jump out of local optima using SGD and some works that specifically address the optimization challenges of variational inference:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span> <strong>a.</strong> <a class="reference external" href="https://arxiv.org/abs/1705.08931" rel="noreferrer" target="_blank">“Proximity Variational Inference”</a></p>
+</section>
+<section id="are-there-any-good-properties-of-variational-approximations-that-we-are-sure-about">
+<h3>Are There Any Good Properties of Variational Approximations that We Are Sure About?<a class="headerlink" href="#are-there-any-good-properties-of-variational-approximations-that-we-are-sure-about" title="Link to this heading">#</a></h3>
+<p>In <a class="reference external" href="https://arxiv.org/abs/1705.03439" rel="noreferrer" target="_blank">“Frequentist Consistency of Variational Bayes”</a>, the authors prove that under <strong>certain assumptions</strong> on <span class="math notranslate nohighlight">\(p(\theta)\)</span> and <span class="math notranslate nohighlight">\(p(y|\theta)\)</span>:</p>
+<ol class="arabic simple">
+<li><p>as the number of observation increases, the variational approximation converges (in Total Variation distance) to the <span class="math notranslate nohighlight">\(q\)</span> that minimizes the KL-divergence to a normal distribution centered at the ground truth parameters <span class="math notranslate nohighlight">\(\theta_{\text{true}}\)</span> that generated the data.<br><br></p></li>
+<li><p>the mean of the variational approximation is consistent and asymptoptically normal.</p></li>
+</ol>
+<p>Unfortunately, the assumptions required by the theorems <strong>do not hold for neural network likelihood models</strong>.</p>
+</section>
+<section id="why-is-inference-for-neural-networks-hard">
+<h3>Why is Inference for Neural Networks Hard?<a class="headerlink" href="#why-is-inference-for-neural-networks-hard" title="Link to this heading">#</a></h3>
+<p>Research on the likelihoods (and hence posteriors) of neural networks are beginning to give us ways of visualizing these high-dimensional functions using low-dimensional (3D) projections. <a class="reference external" href="https://losslandscape.com" rel="noreferrer" target="_blank">Loss Landsacapes</a> represents some of the latest efforts at visualization:</p>
+<figure class="align-center" id="fig-19-loss">
+<a class="reference internal image-reference" href="../_images/loss.jpg"><img alt="../_images/loss.jpg" src="../_images/loss.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="it-s-weirder-than-you-can-imagine">
+<h3>It’s Weirder Than You Can Imagine<a class="headerlink" href="#it-s-weirder-than-you-can-imagine" title="Link to this heading">#</a></h3>
+<p>In <a class="reference external" href="https://arxiv.org/pdf/1910.03867.pdf" rel="noreferrer" target="_blank">“Loss Landscape Sightseeing with Multi-Point Optimization”</a>, the authors show that neural network likelihoods (and thus posteriors) are so complicated that you can find a 2-D projection that can create any pattern you want:</p>
+<figure class="align-center" id="fig-19-loss2">
+<a class="reference internal image-reference" href="../_images/loss2.jpg"><img alt="../_images/loss2.jpg" src="../_images/loss2.jpg" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>The lesson</strong>: take every low-dimensional visualization with a grain of salt (i.e. it far from accurately represents the entire landscape).</p>
+</section>
+</section>
+<section id="but-why-do-i-care">
+<h2><span class="section-number">24.3. </span>But why do I care?<a class="headerlink" href="#but-why-do-i-care" title="Link to this heading">#</a></h2>
+<section id="evaluation-of-variational-approximation-for-real-down-stream-tasks">
+<h3>Evaluation of Variational Approximation for Real Down-stream Tasks<a class="headerlink" href="#evaluation-of-variational-approximation-for-real-down-stream-tasks" title="Link to this heading">#</a></h3>
+<p>In practice, you may only care about the quality of your posterior approximation in so far as it affects model performance on your down-stream task. So what do we want from our machine learning or statistical models, especially when they are used in safety, or fairness critical applications (e.g. personalized medicine, health-care resource allocation, criminal justic systems)?</p>
+<p>Most of us in the community agree that we want models that <em>1)</em> makes accurate predictions <em>2)</em> gives realistic estimates of its prective uncertainty. So that the model can be held-accountable by humans in the system. There are a number of subcomunities in ML that focus on studying the social impact of machine learning models as well as how to design models whose negative impact can be mitigated.</p>
+<p><strong>a.</strong> <a class="reference external" href="https://arxiv.org/pdf/1606.06565.pdf" rel="noreferrer" target="_blank">“Concrete Problems in AI Safety”</a><br>
+<strong>b.</strong> <a class="reference external" href="https://papers.nips.cc/paper/7853-predict-responsibly-improving-fairness-and-accuracy-by-learning-to-defer.pdf" rel="noreferrer" target="_blank">“Predict Responsibly: Improving Fairness and Accuracy by Learning to Defer”</a></p>
+</section>
+<section id="predictiveness-of-the-variational-approximate-posterior">
+<h3>Predictiveness of the Variational Approximate Posterior<a class="headerlink" href="#predictiveness-of-the-variational-approximate-posterior" title="Link to this heading">#</a></h3>
+<p>We can check the predictiveness of our varational approximation of the posterior by sampling models from the posterior and then making predictions using these models by sampling from the likelihood. We then check that these predictions align well with observed data by:</p>
+<ol class="arabic simple">
+<li><p><strong>Visualization:</strong> visualizing the posterior predictive against the observed data. <em>This is generally impossible for high dimensional data.</em><br><br></p></li>
+<li><p><strong>Log Marginal Data Likelihood:</strong> we compute the expected value of the log likelihood of the test data under our approximate posterior. <em>Log likelihood is only useful for comparing two different models, given a single model it is hard to say if a log likelihood value is “good enough”.</em><br><br></p></li>
+<li><p><strong>Expected Mean Square Error and Accuracy:</strong> we compute the expected MSE (for regression) or accuracy (for classification) on test data under our approximate posterior. <em>While these metric frames model quality in concrete task related terms, they are each misleading when the data contains outliers or imbalanced classes.</em></p></li>
+</ol>
+</section>
+<section id="quality-of-variational-approximate-posterior-predictive-uncertainty">
+<h3>Quality of Variational Approximate Posterior Predictive Uncertainty<a class="headerlink" href="#quality-of-variational-approximate-posterior-predictive-uncertainty" title="Link to this heading">#</a></h3>
+<p>We’ve argued in this course that good predictive uncertainty must involve an accurate assessment of both <em><strong>epistemic</strong></em> and <em><strong>aleatoric</strong></em> uncertainty. Since each type of uncertainty requires a different risk-management action in the down-stream task.</p>
+<figure class="align-center" id="fig-19-posterior-pred">
+<a class="reference internal image-reference" href="../_images/posterior_pred.jpg"><img alt="../_images/posterior_pred.jpg" src="../_images/posterior_pred.jpg" style="width: 100%;" />
+</a>
+</figure>
+<p>Unfortunately, there isn’t a single good statistical metric for assessing the quality of the uncertainty of a model. “Good” epstemic uncertainty is especially hard to quantify. Rather than looking for statistical tests of uncertainty, some in the ML community advocate for assessing model uncertainty with respect to a set of benchmark down-stream tasks: <a class="reference external" href="https://github.com/OATML/bdl-benchmarks" rel="noreferrer" target="_blank">Bayesian Deep Learning Benchmarks</a></p>
+</section>
+<section id="does-a-poor-posterior-approximation-imply-a-poor-posterior-predictive">
+<h3>Does a Poor Posterior Approximation Imply a Poor Posterior Predictive?<a class="headerlink" href="#does-a-poor-posterior-approximation-imply-a-poor-posterior-predictive" title="Link to this heading">#</a></h3>
+<p>You’ve seen in the <a class="reference internal" href="14-hamiltonian-monte-carlo.html#ps-hw7"><span class="std std-ref">Chapter 18 problem set</span></a> that even with an HMC sampler that is far from converged, you were able to produce posterior predictives that aligned well with the data and had good epistemic and aleatoric uncertainty. In fact, a number of works are showing that by capturing a little piece (if it is the right piece) of the true posterior of a BNN, you are able to capture most of the variation you want in the posterior predictive.</p>
+<p>In <a class="reference external" href="https://arxiv.org/pdf/1907.07504.pdf" rel="noreferrer" target="_blank">“Subspace Inference for Bayesian Deep Learning”</a>, the authors provide toy examples where one obtains a posterior predictive distribution with good epistemic and aleatoric uncertainty by reducing a high dimensional parameter space to 2-dimensions and performing inference in the 2-dimensional subspace:</p>
+<figure class="align-center" id="fig-19-posterior-pred2">
+<a class="reference internal image-reference" href="../_images/posterior_pred2.jpg"><img alt="../_images/posterior_pred2.jpg" src="../_images/posterior_pred2.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="new-developments-in-deep-bayes">
+<h2><span class="section-number">24.4. </span>New Developments in Deep Bayes<a class="headerlink" href="#new-developments-in-deep-bayes" title="Link to this heading">#</a></h2>
+<section id="what-s-wrong-with-posterior-approximations-for-bnns">
+<h3>What’s Wrong with Posterior Approximations for BNNs<a class="headerlink" href="#what-s-wrong-with-posterior-approximations-for-bnns" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Jiayu Yao, Soumya Ghosh, Finale Doshi-Velez)</strong></em></p>
+<p><strong>The motivation:</strong> Frequently, we introduce a new approximate inference method for BNNs based on our intuition of what properties of the true posterior are important to include in our approximate posterior. We then measure the <em><strong>log-likelihood</strong></em> of our learned model on test data.</p>
+<p><strong>The idea:</strong> We evaluate the ability of a number of state-of-the-art approximate inference methods for BNN on synthetic data that can be visualized to see if various custom approximations of the posterior translates to desirable posterior predictives.</p>
+<p>We also test if the commonly used evaluation metrics, like test log-likelihood, can distinguish high quality posterior predictves from poor quality ones.</p>
+<p><em><strong>From:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1906.09686.pdf" rel="noreferrer" target="_blank">Quality of Uncertainty Quantification for Bayesian Neural Network Inference</a></p>
+</section>
+<section id="what-did-we-learn">
+<h3>What Did We Learn?<a class="headerlink" href="#what-did-we-learn" title="Link to this heading">#</a></h3>
+<p><strong>Take-away:</strong> Metric like test log-likelihood measures how well the approximate posterior predictive aligns with the data, not how well it approximate the true posterior predictive.</p>
+<figure class="align-center" id="fig-19-cubic-compare">
+<a class="reference internal image-reference" href="../_images/cubic_compare.png"><img alt="../_images/cubic_compare.png" src="../_images/cubic_compare.png" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> Training with data gaps and evaluating test likelihood can only catch problems if the true function is complex in these gaps.</p>
+<figure class="align-center" id="fig-19-complex-compare">
+<a class="reference internal image-reference" href="../_images/complex_compare.png"><img alt="../_images/complex_compare.png" src="../_images/complex_compare.png" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> Inference methods that specialize in approximating specific properties in the posterior do not necessarily produce desirable posterior predictives.</p>
+</section>
+<section id="what-s-wrong-with-the-predictions-from-mean-field-variational-posteriors-of-bnns">
+<h3>What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?<a class="headerlink" href="#what-s-wrong-with-the-predictions-from-mean-field-variational-posteriors-of-bnns" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Beau Coker, Finale Doshi-Velez)</strong></em></p>
+<p>The problem with mean-field VI for BNNs isn’t just with the variance. In <a class="reference external" href="https://arxiv.org/pdf/2106.07052.pdf" rel="noreferrer" target="_blank">Wide Mean-Field Variational Bayesian Neural Networks Ignore the Data</a>. we show that as the network width becomes wider, the posterior predictive mean ignores the data completely and learns a constant (flat) function!</p>
+<figure class="align-center" id="fig-19-widebnn">
+<a class="reference internal image-reference" href="../_images/widebnn.png"><img alt="../_images/widebnn.png" src="../_images/widebnn.png" style="width: 518px;" />
+</a>
+</figure>
+<p>The fact that the posterior predictive mean of mean-field variational posteriors of wide BNNs <em><strong>underfit</strong></em> the data has been observed empirically in <a class="reference external" href="https://arxiv.org/abs/1801.06230" rel="noreferrer" target="_blank">Overpruning in Variational Bayesian Neural Networks</a>.</p>
+</section>
+<section id="relationships-between-deep-ensembles-and-bayesian-neural-networks">
+<h3>Relationships Between Deep Ensembles and Bayesian Neural Networks<a class="headerlink" href="#relationships-between-deep-ensembles-and-bayesian-neural-networks" title="Link to this heading">#</a></h3>
+<p>Althhough we’ve been thinking about ensembles and Bayesian models as belonging to a dichotomy (frequentist vs Bayesian statistics), in papers like <a class="reference external" href="https://openreview.net/pdf?id=BJlahxHYDS" rel="noreferrer" target="_blank">Conservative Uncertainty Estimation By Fitting Prior Networks</a> and <a class="reference external" href="https://arxiv.org/abs/2106.11642" rel="noreferrer" target="_blank">Repulsive Deep Ensembles are Bayesian</a>, we see that ensembles and Bayesian models have a deep relationship.</p>
+<p><strong>Take-away:</strong> In fact, some ensembles can be interpreted as collections of samples from a corresponding Bayesian model!</p>
+</section>
+<section id="alternative-models-for-uncertainty-quantification">
+<h3>Alternative Models for Uncertainty Quantification<a class="headerlink" href="#alternative-models-for-uncertainty-quantification" title="Link to this heading">#</a></h3>
+<p>Although mean-field VI is touted as a fast way of performing inference on BNNs, they are still hard to scale to truly large networks. For this reason, alternative deep Bayesian models have been gaining popularity. <strong>Neural Linear Models</strong> is a model that learns deterministic weights for an NN except for the last layer, where we place priors and perform exact Bayesian inference:</p>
+<figure class="align-center" id="fig-19-unknown-20">
+<a class="reference internal image-reference" href="../_images/Unknown-20.png"><img alt="../_images/Unknown-20.png" src="../_images/Unknown-20.png" style="width: 100%;" />
+</a>
+</figure>
+<p><em><strong>From:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/2006.11695.pdf" rel="noreferrer" target="_blank">Learned Uncertainty-Aware (LUNA) Bases for Bayesian Regression using Multi-Headed Auxiliary Networks</a></p>
+</section>
+<section id="predictive-uncertainties-of-alternative-deep-bayesian-models-may-not-be-better">
+<h3>Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better<a class="headerlink" href="#predictive-uncertainties-of-alternative-deep-bayesian-models-may-not-be-better" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Sujay Thakur, Cooper Lorsung, Yaniv Yacoby, Finale Doshi-Velez)</strong></em></p>
+<p>In <a class="reference external" href="https://arxiv.org/pdf/2006.11695.pdf" rel="noreferrer" target="_blank">Learned Uncertainty-Aware (LUNA) Bases for Bayesian Regression using Multi-Headed Auxiliary Networks</a>, we show that the posterior predictive uncertainty of NLMs are not what we might want. The problem has a lot to do with how we typically train neural networks.</p>
+<figure class="align-center" id="fig-19-unknown-18">
+<a class="reference internal image-reference" href="../_images/Unknown-18.png"><img alt="../_images/Unknown-18.png" src="../_images/Unknown-18.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="what-uncertainties-do-we-need-in-deep-learning">
+<h3>What Uncertainties Do We Need in Deep Learning?<a class="headerlink" href="#what-uncertainties-do-we-need-in-deep-learning" title="Link to this heading">#</a></h3>
+<p>More and more folks in the Deep Bayes community is coming to the conclusion that the quality of uncertainty estimation can only be assessed in reference to a specific down-stream task, e.g. active learning, continual learning, Bayesian optimization, out of distribution detection, learning to defer (rejection learning), model interpretation etc.</p>
+<figure class="align-center" id="fig-19-bayesopt">
+<a class="reference internal image-reference" href="../_images/bayesopt.png"><img alt="../_images/bayesopt.png" src="../_images/bayesopt.png" style="width: 360px;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> There is no universal definition of or metric for “good” uncertainty - “good” uncertainty is uncertainty that is useful for the task.</p>
+<p><strong>Take-away:</strong> Uncertainty estimation that is good for one task might be bad for another!</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">24.5. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>What did we observe in the <a class="reference internal" href="17-black-box-vi.html#ps-hw8"><span class="std std-ref">Chapter 22 problem set</span></a>? We setup a BNN with 1 hidden layer and 5 hidden nodes.</p>
+<ol class="arabic simple">
+<li><p>Did your HMC converge? Do you feel confident that you can get it to converge?</p>
+<ul class="simple">
+<li><p>Did the posterior samples give you desirable predictive uncertainty?<br><br></p></li>
+</ul>
+</li>
+<li><p>Did your BBVI optimize the ELBO fully? How do you know that you’ve optimized your ELBO fully?</p>
+<ul class="simple">
+<li><p>Did the variational posterior give you desirable predictive uncertainty?<br><br></p></li>
+</ul>
+</li>
+<li><p>When the network is large, do you believe that either HMC or mean-field Gaussian VI will give you a good approximation of the posterior?</p>
+<ul class="simple">
+<li><p>Do we necessarily need a good approximation of the posterior to get desirable uncertainty?<br><br></p></li>
+</ul>
+</li>
+<li><p><strong>The Training Wheels are Off!</strong> When doing machine learning in the wild, no one knows the “right answer”, your metrics are not absolute, the only thing you can rely on is your intuition (which is you internalizing the theory you’ve learned as well as your hands-on experience working with these models).</p>
+<ul class="simple">
+<li><p>How can we know that our HMC has no bugs in it?</p></li>
+<li><p>How can we know that our BBVI has no bugs in it?</p></li>
+<li><p>How can we know that we’ve fully optimized anything (e.g. the ELBO) through gradient descent?</p></li>
+<li><p>What are the impediments to BBVI optimizing fully? I.e. what do we tune to improve performance?</p></li>
+<li><p>What are the impediments to HMC mixing? I.e. what do we tune to improve performance? <br><br></p></li>
+</ul>
+</li>
+<li><p><strong>What this class is not:</strong> This class is not a one-stop for all the tools you need to be a fluent practitioner of in-demand state-of-the art machine learning. It’s normal that:</p>
+<ul class="simple">
+<li><p>You still don’t feel like you’re comfortable impplementing all the models from scratch and deploying it in real-life conditions.
+You should <strong>not</strong> be comfortable now, but you will be with practice in the future (you’re getting some of that practice with the project)!</p></li>
+<li><p>You don’t remember everything from the class, and that as time passes, you seem to forget more.
+You’ll forget many if not most facts, but when you re-learn these facts, understanding will come more easily and with more depth.<br><br></p></li>
+</ul>
+</li>
+<li><p><strong>What is this class:</strong> This class is a map or atlas and paints a broad landscape of modern-day probabilistic machine learning. Using the structure of this class you can better organize and process new ML knowledge.</p></li>
+</ol>
+<p>This class is a foundation for you to build on, future classes in ML <strong>will</strong> reference these models, techniques and concepts:
+- Reinforcement learning (Harvard)
+- Causal inference (Harvard)
+- ML for Healthcare (MIT)
+- Neural Processing (Harvard)
+- Special Topics in ML (Harvard)
+- Interpretable ML (Harvard)
+- AI for Social Good (Harvard)</p>
+</section>
+<section id="id1">
+<h2><span class="section-number">24.6. </span>New Developments in Deep Bayes<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>What’s Wrong with Posterior Approximations for BNNs<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Jiayu Yao, Soumya Ghosh, Finale Doshi-Velez)</strong></em></p>
+<p><strong>The motivation:</strong> Frequently, we introduce a new approximate inference method for BNNs based on our intuition of what properties of the true posterior are important to include in our approximate posterior. We then measure the <em><strong>log-likelihood</strong></em> of our learned model on test data.</p>
+<p><strong>The idea:</strong> We evaluate the ability of a number of state-of-the-art approximate inference methods for BNN on synthetic data that can be visualized to see if various custom approximations of the posterior translates to desirable posterior predictives.</p>
+<p>We also test if the commonly used evaluation metrics, like test log-likelihood, can distinguish high quality posterior predictves from poor quality ones.</p>
+<p><em><strong>From:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1906.09686.pdf" rel="noreferrer" target="_blank">Quality of Uncertainty Quantification for Bayesian Neural Network Inference</a></p>
+</section>
+<section id="id3">
+<h3>What Did We Learn?<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p><strong>Take-away:</strong> Metric like test log-likelihood measures how well the approximate posterior predictive aligns with the data, not how well it approximate the true posterior predictive.</p>
+<figure class="align-center" id="fig-19-summary-cubic-compare">
+<a class="reference internal image-reference" href="../_images/cubic_compare.png"><img alt="../_images/cubic_compare.png" src="../_images/cubic_compare.png" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> Training with data gaps and evaluating test likelihood can only catch problems if the true function is complex in these gaps.</p>
+<figure class="align-center" id="fig-19-summary-complex-compare">
+<a class="reference internal image-reference" href="../_images/complex_compare.png"><img alt="../_images/complex_compare.png" src="../_images/complex_compare.png" style="width: 100%;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> Inference methods that specialize in approximating specific properties in the posterior do not necessarily produce desirable posterior predictives.</p>
+</section>
+<section id="id4">
+<h3>What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Beau Coker, Finale Doshi-Velez)</strong></em></p>
+<p>The problem with mean-field VI for BNNs isn’t just with the variance. In <a class="reference external" href="https://arxiv.org/pdf/2106.07052.pdf" rel="noreferrer" target="_blank">Wide Mean-Field Variational Bayesian Neural Networks Ignore the Data</a>. we show that as the network width becomes wider, the posterior predictive mean ignores the data completely and learns a constant (flat) function!</p>
+<figure class="align-center" id="fig-19-summary-widebnn">
+<a class="reference internal image-reference" href="../_images/widebnn.png"><img alt="../_images/widebnn.png" src="../_images/widebnn.png" style="width: 518px;" />
+</a>
+</figure>
+<p>The fact that the posterior predictive mean of mean-field variational posteriors of wide BNNs <em><strong>underfit</strong></em> the data has been observed empirically in <a class="reference external" href="https://arxiv.org/abs/1801.06230" rel="noreferrer" target="_blank">Overpruning in Variational Bayesian Neural Networks</a>.</p>
+</section>
+<section id="id5">
+<h3>Relationships Between Deep Ensembles and Bayesian Neural Networks<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>Althhough we’ve been thinking about ensembles and Bayesian models as belonging to a dichotomy (frequentist vs Bayesian statistics), in papers like <a class="reference external" href="https://openreview.net/pdf?id=BJlahxHYDS" rel="noreferrer" target="_blank">Conservative Uncertainty Estimation By Fitting Prior Networks</a> and <a class="reference external" href="https://arxiv.org/abs/2106.11642" rel="noreferrer" target="_blank">Repulsive Deep Ensembles are Bayesian</a>, we see that ensembles and Bayesian models have a deep relationship.</p>
+<p><strong>Take-away:</strong> In fact, some ensembles can be interpreted as collections of samples from a corresponding Bayesian model!</p>
+</section>
+<section id="id6">
+<h3>Alternative Models for Uncertainty Quantification<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>Although mean-field VI is touted as a fast way of performing inference on BNNs, they are still hard to scale to truly large networks. For this reason, alternative deep Bayesian models have been gaining popularity. <strong>Neural Linear Models</strong> is a model that learns deterministic weights for an NN except for the last layer, where we place priors and perform exact Bayesian inference:</p>
+<figure class="align-center" id="fig-19-summary-unknown-20">
+<a class="reference internal image-reference" href="../_images/Unknown-20.png"><img alt="../_images/Unknown-20.png" src="../_images/Unknown-20.png" style="width: 100%;" />
+</a>
+</figure>
+<p><em><strong>From:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/2006.11695.pdf" rel="noreferrer" target="_blank">Learned Uncertainty-Aware (LUNA) Bases for Bayesian Regression using Multi-Headed Auxiliary Networks</a></p>
+</section>
+<section id="id7">
+<h3>Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p><em><strong>(joint work with Sujay Thakur, Cooper Lorsung, Yaniv Yacoby, Finale Doshi-Velez)</strong></em></p>
+<p>In <a class="reference external" href="https://arxiv.org/pdf/2006.11695.pdf" rel="noreferrer" target="_blank">Learned Uncertainty-Aware (LUNA) Bases for Bayesian Regression using Multi-Headed Auxiliary Networks</a>, we show that the posterior predictive uncertainty of NLMs are not what we might want. The problem has a lot to do with how we typically train neural networks.</p>
+<figure class="align-center" id="fig-19-summary-unknown-18">
+<a class="reference internal image-reference" href="../_images/Unknown-18.png"><img alt="../_images/Unknown-18.png" src="../_images/Unknown-18.png" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="id8">
+<h3>What Uncertainties Do We Need in Deep Learning?<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>More and more folks in the Deep Bayes community is coming to the conclusion that the quality of uncertainty estimation can only be assessed in reference to a specific down-stream task, e.g. active learning, continual learning, Bayesian optimization, out of distribution detection, learning to defer (rejection learning), model interpretation etc.</p>
+<figure class="align-center" id="fig-19-summary-bayesopt">
+<a class="reference internal image-reference" href="../_images/bayesopt.png"><img alt="../_images/bayesopt.png" src="../_images/bayesopt.png" style="width: 360px;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> There is no universal definition of or metric for “good” uncertainty - “good” uncertainty is uncertainty that is useful for the task.</p>
+<p><strong>Take-away:</strong> Uncertainty estimation that is good for one task might be bad for another!</p>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">24.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Approximate Inference for Deep Bayesian Models</strong></p>
+<ul class="simple">
+<li><p>(Using an Alternate Divergence Measure for VI) <a class="reference external" href="https://arxiv.org/pdf/1511.03243.pdf" rel="noreferrer" target="_blank">Black-Box α-Divergence Minimization</a></p></li>
+<li><p>(Using an Alternate Variational Family) <a class="reference external" href="https://arxiv.org/pdf/1505.05770.pdf" rel="noreferrer" target="_blank">Variational Inference with Normalizing Flows</a></p></li>
+<li><p>(Approximating the Posterior in a Subspace) <a class="reference external" href="http://auai.org/uai2019/proceedings/papers/435.pdf" rel="noreferrer" target="_blank">Subspace Inference for Bayesian Deep Learning</a></p></li>
+</ul>
+<p><strong>Evaluating Approximate Inference for Deep Bayesian Models</strong></p>
+<ul class="simple">
+<li><p>(Why are BNN Posteriors So Difficult?) <a class="reference external" href="https://arxiv.org/pdf/1712.09913.pdf" rel="noreferrer" target="_blank">Visualizing the Loss Landscape of Neural Nets</a></p></li>
+<li><p>(How to Evaluate the Epistemic Uncertainty of Approximate Posteriors of BNNs) <a class="reference external" href="https://arxiv.org/pdf/1906.09686.pdf" rel="noreferrer" target="_blank">Quality of Uncertainty Quantification for Bayesian Neural Network Inference</a></p></li>
+<li><p>(Hard Limitations of Mean-Field VI for BNNs) <a class="reference external" href="https://arxiv.org/pdf/1909.00719.pdf" rel="noreferrer" target="_blank">On the Expressiveness of Approximate Inference in Bayesian Neural Networks</a></p></li>
+</ul>
+<p><strong>Alternate Models for Deep Bayesian Networks</strong></p>
+<ul class="simple">
+<li><p>(Neural Linear Models) <a class="reference external" href="https://arxiv.org/pdf/2006.11695.pdf" rel="noreferrer" target="_blank">Learned Uncertainty-Aware (LUNA) Bases for Bayesian</a></p></li>
+<li><p>(Manifold Gaussian Processes) <a class="reference external" href="https://arxiv.org/pdf/1402.5876.pdf" rel="noreferrer" target="_blank">Manifold Gaussian Processes for Regression</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="18-automatic-differentiation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">23. </span>Automatic Differentiation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="20-variational-autoencoders.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">25. </span>Variational Autoencoders</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-evaluate-approximate-inference">24.1. How to Evaluate Approximate Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-good-is-your-variational-approximation-of-the-true-posterior">How Good is Your Variational Approximation of the True Posterior?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-posterior-evaluation-metrics">Alternative Posterior Evaluation Metrics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-improve-approximate-inference">24.2. How to Improve Approximate Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#your-variational-approximation-sucks-can-you-fix-it">Your Variational Approximation Sucks, Can You Fix It?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#are-there-any-good-properties-of-variational-approximations-that-we-are-sure-about">Are There Any Good Properties of Variational Approximations that We Are Sure About?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-inference-for-neural-networks-hard">Why is Inference for Neural Networks Hard?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#it-s-weirder-than-you-can-imagine">It’s Weirder Than You Can Imagine</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#but-why-do-i-care">24.3. But why do I care?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-of-variational-approximation-for-real-down-stream-tasks">Evaluation of Variational Approximation for Real Down-stream Tasks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictiveness-of-the-variational-approximate-posterior">Predictiveness of the Variational Approximate Posterior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-of-variational-approximate-posterior-predictive-uncertainty">Quality of Variational Approximate Posterior Predictive Uncertainty</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#does-a-poor-posterior-approximation-imply-a-poor-posterior-predictive">Does a Poor Posterior Approximation Imply a Poor Posterior Predictive?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-developments-in-deep-bayes">24.4. New Developments in Deep Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-wrong-with-posterior-approximations-for-bnns">What’s Wrong with Posterior Approximations for BNNs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-did-we-learn">What Did We Learn?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-wrong-with-the-predictions-from-mean-field-variational-posteriors-of-bnns">What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relationships-between-deep-ensembles-and-bayesian-neural-networks">Relationships Between Deep Ensembles and Bayesian Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-models-for-uncertainty-quantification">Alternative Models for Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictive-uncertainties-of-alternative-deep-bayesian-models-may-not-be-better">Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-uncertainties-do-we-need-in-deep-learning">What Uncertainties Do We Need in Deep Learning?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">24.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">24.6. New Developments in Deep Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">What’s Wrong with Posterior Approximations for BNNs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">What Did We Learn?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">What’s Wrong with the Predictions from Mean-Field Variational Posteriors of BNNs?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Relationships Between Deep Ensembles and Bayesian Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Alternative Models for Uncertainty Quantification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Predictive Uncertainties of Alternative Deep Bayesian Models May Not be Better</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">What Uncertainties Do We Need in Deep Learning?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">24.7. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

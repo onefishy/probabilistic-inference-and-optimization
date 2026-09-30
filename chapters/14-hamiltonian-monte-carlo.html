@@ -1,0 +1,1551 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>18. Hamiltonian Monte Carlo &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/14-hamiltonian-monte-carlo';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/14-hamiltonian-monte-carlo.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="19. Parallel Tempering and Stochastic HMC" href="15-parallel-tempering-sghmc.html" />
+    <link rel="prev" title="17. Applications and Broader Impact: Optimization" href="impact-4-optimization.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/14-hamiltonian-monte-carlo.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/14-hamiltonian-monte-carlo.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Hamiltonian Monte Carlo</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-generalized-linear-models">18.1. Hierarchical Generalized Linear Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-linear-models">Generalized Linear Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation">Kidney Cancer Dataset: Pooling vs Fully Independent Estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer">A Hierarchical Generalized Linear Model for Kidney Cancer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-as-optimization">18.2. Sampling as Optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-is-metropolis-hastings-efficient">When is Metropolis Hastings Efficient?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-is-metropolis-hastings-inefficient">When is Metropolis Hastings Inefficient?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-connection-between-energy-and-density-functions">The Connection Between Energy and Density Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-connection-between-optimization-and-sampling">The Connection Between Optimization and Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles">Gradient Descent with Random Momentum: Simulating Mechanics of Moving Particles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-by-physical-simulation">Sampling by Physical Simulation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">18.3. Hamiltonian Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-motion-as-differential-equations">Hamiltonian Motion as Differential Equations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-exact-integration">Hamiltonian Monte Carlo: with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#correctness-of-hmc-with-exact-integration">Correctness of HMC with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-sympletic-integrators">Approximating Flows: Sympletic Integrators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-adjusting-for-error">Approximating Flows: Adjusting for Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-the-leap-frog-integrator">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-with-leap-frog-integrator-in-action">HMC with Leap Frog Integrator in Action</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-summary">Hamiltonian Monte Carlo: Summary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-for-multimodal-distributions">HMC for Multimodal Distributions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">18.4. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Hamiltonian Monte Carlo: with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequently-asked-questions-about-hmc">18.5. Frequently Asked Questions About HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#commonly-asked-questions-about-hmc">Commonly Asked Questions About HMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">18.6. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-hamiltonian-monte-carlo-for-bayesian-logistic-regression">Problem Set: Hamiltonian Monte Carlo for Bayesian Logistic Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-for-bayesian-logistic-regression-models">Inference for Bayesian Logistic Regression Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">18.7. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="hamiltonian-monte-carlo">
+<h1><span class="section-number">18. </span>Hamiltonian Monte Carlo<a class="headerlink" href="#hamiltonian-monte-carlo" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/h-iPz_PtAY0" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Hierachical Generalized Linear Models</p></li>
+<li><p>Sampling as Optimization</p></li>
+<li><p>Hamiltonian Monte Carlo</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">YouTubeVideo</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="hierarchical-generalized-linear-models">
+<h2><span class="section-number">18.1. </span>Hierarchical Generalized Linear Models<a class="headerlink" href="#hierarchical-generalized-linear-models" title="Link to this heading">#</a></h2>
+<section id="generalized-linear-models">
+<h3>Generalized Linear Models<a class="headerlink" href="#generalized-linear-models" title="Link to this heading">#</a></h3>
+<p>We can add covariates to all the other common statistical models of data <span class="math notranslate nohighlight">\(Y^{(n)} \sim p(Y^{(n)}|\theta^{(n)})\)</span>!</p>
+<p>The general scheme is:</p>
+<ol class="arabic simple">
+<li><p>Set <span class="math notranslate nohighlight">\(\mathbb{E}[Y^{(n)}] = \theta^{(n)} = g(\mathbf{w}^\top \mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g\)</span> is typically a non-linear function called the <em><strong>link function</strong></em></p></li>
+</ol>
+<p><em>Note:</em> in literature, <span class="math notranslate nohighlight">\(g^{-1}\)</span> is called the link function.<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p>Set the variance according to how the variance of <span class="math notranslate nohighlight">\(p(Y^{(n)}|\theta^{(n)})\)</span> depends on <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\mathrm{Var}[Y^{(n)}] = \phi f(\theta^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(\phi\)</span> is a constant.</p></li>
+</ol>
+<p>These models are called <em><strong>generalized linear models</strong></em>. Logistic regression is so called because <span class="math notranslate nohighlight">\(g^{-1}\)</span> is the <em><strong>logistic function</strong></em>.</p>
+</section>
+<section id="kidney-cancer-dataset-pooling-vs-fully-independent-estimation">
+<h3>Kidney Cancer Dataset: Pooling vs Fully Independent Estimation<a class="headerlink" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation" title="Link to this heading">#</a></h3>
+<p>Rather than modeling the total incidents of kidney cancer, we collect information for each individual in each county. We can explain how the cancer rate depends on demogaphics.
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{(n)} &amp;= \text{sigm}\left(\mathbf{w}^\top\mathbf{X}^{(n)}\right)\\
+Y^{(n)} &amp;\sim Ber(\theta^{(n)})
+\end{aligned}\end{split}\]</div>
+
+<strong>1.</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> is the cancer status of <span class="math notranslate nohighlight">\(n\)</span>-th individual<br>
+<strong>2.</strong> <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span> include income, level of education, access to preventative care, cost of living etc<br>
+<strong>3.</strong> <span class="math notranslate nohighlight">\(\theta^{(n)}\)</span> is the underlying cancer rate for the <span class="math notranslate nohighlight">\(n\)</span>-th individual.</p>
+<p><strong>Pooled Estimation:</strong> In the above model, we pooled the data across all counties. We implicitly assume that the cancer rate <span class="math notranslate nohighlight">\(\theta^{(n)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> in the <strong>same way for every individual</strong>.
+<div class="math notranslate nohighlight">
+\[
+\text{Prob}[Y^{n} = 1 | \mathbf{X}^{(n)}] = \text{sigm}\left(-1 * \text{income} + 2 * \text{BMI} + \ldots\right)
+\]</div>
+
+<strong>Independent Estimation:</strong>
+Alternatively, we can estimate a <span class="math notranslate nohighlight">\(\mathbf{w}^{(c)}\)</span> for each county <span class="math notranslate nohighlight">\(c\)</span>, fully independently:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
+Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
+\end{aligned}\end{split}\]</div>
+
+We implicitly assume that the way <span class="math notranslate nohighlight">\(\theta^{(n, c)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> <strong>varies for every county independently</strong>.
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\text{Prob}[Y^{(n, 1)} = 1 | \mathbf{X}^{(n, 1)}] &amp;= \text{sigm}\left(0.1 * \text{income} - 0.2 * \text{BMI} + \ldots\right)\\
+\text{Prob}[Y^{(n, 100)} = 1 | \mathbf{X}^{(n, 100)}] &amp;= \text{sigm}\left(-1 * \text{income} + 2 * \text{BMI} + \ldots\right)
+\end{aligned}\end{split}\]</div>
+</p>
+</section>
+<section id="kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">
+<h3>Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models<a class="headerlink" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models" title="Link to this heading">#</a></h3>
+<p><strong>Bayesian Model:</strong> Instead of assuming that the cancer rates in differen counties are fully independent. We can assume that the rates are <strong>similar but differ from each other stochastically</strong>.
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{w}^{(c)} &amp;\sim p(\mathbf{w} | \phi)\\
+\theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
+Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
+\end{aligned}\end{split}\]</div>
+</p>
+<p>where <span class="math notranslate nohighlight">\(\phi\)</span> is the set of hyperparameters of this model (i.e. you have to specify it). The prior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \phi)\)</span> expresses our belief that <span class="math notranslate nohighlight">\(\theta^{(n, c)}\)</span>’s are similar.</p>
+<p><strong>Hierachical Model:</strong> Rather than choosing <span class="math notranslate nohighlight">\(\phi\)</span> arbitrarily, we can <strong>infer <span class="math notranslate nohighlight">\(\phi\)</span> from the data</strong> by putting a prior on it.
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\phi &amp; \sim p(\phi| a)\\
+\mathbf{w}^{(c)} &amp;\sim p(\mathbf{w} | \phi)\\
+\theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
+Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
+\end{aligned}\end{split}\]</div>
+
+where <span class="math notranslate nohighlight">\(a\)</span> is the set of hyperparameters of this model (i.e. you have to specify it).</p>
+</section>
+<section id="a-hierarchical-generalized-linear-model-for-kidney-cancer">
+<h3>A Hierarchical Generalized Linear Model for Kidney Cancer<a class="headerlink" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer" title="Link to this heading">#</a></h3>
+<p>If we wanted to build an explanatory model for the regional differences in how cancer rate depends on demographic factors, we might want to consider a <em><strong>hierarchical generalized linear model</strong></em> as below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\sigma_{\mathbf{w}}^2 &amp;\sim exp(1.5)\\
+\mu &amp;\sim \mathcal{N}(0, \mathbf{I})\\
+\mathbf{w}^{(c)} &amp;\sim \mathcal{N}(\mu, \sigma_{\mathbf{w}}^2 \mathbf{I})\\
+\theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
+Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
+\end{aligned}\end{split}\]</div>
+<p>The key object of interest for this model is the posterior</p>
+<div class="math notranslate nohighlight">
+\[p(\mu, \sigma_{\mathbf{w}}^2, \{\mathbf{w}^{(c)}\}_{c}, \{\mathbf{\theta}^{(n, c)}\}_{n, c}\, |\, \{Y_{n, c}\}_{n, c}).\]</div>
+<p>Since there is no closed for this posterior, we must sample from it.</p>
+<p><strong>Question:</strong> Should we expect that sampling from the posterior of these hierarchical models to be easy? What happened with your sampler in the <a class="reference internal" href="11-hierarchical-models.html#ps-hw5b"><span class="std std-ref">Chapter 13 problem set</span></a>?</p>
+</section>
+</section>
+<section id="sampling-as-optimization">
+<h2><span class="section-number">18.2. </span>Sampling as Optimization<a class="headerlink" href="#sampling-as-optimization" title="Link to this heading">#</a></h2>
+<section id="when-is-metropolis-hastings-efficient">
+<h3>When is Metropolis Hastings Efficient?<a class="headerlink" href="#when-is-metropolis-hastings-efficient" title="Link to this heading">#</a></h3>
+<p>Come up with a rule for what kinds of proposals get accepted. How many proposals will generally satisfy this rule?</p>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/mh_gaussian.mp4" type="video/mp4"></video></p>
+</section>
+<section id="when-is-metropolis-hastings-inefficient">
+<h3>When is Metropolis Hastings Inefficient?<a class="headerlink" href="#when-is-metropolis-hastings-inefficient" title="Link to this heading">#</a></h3>
+<p>Come up with a rule for what kinds of proposals get accepted. How many proposals will generally satisfy this rule?</p>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/mh_donut.mp4" type="video/mp4"></video></p>
+</section>
+<section id="the-connection-between-energy-and-density-functions">
+<h3>The Connection Between Energy and Density Functions<a class="headerlink" href="#the-connection-between-energy-and-density-functions" title="Link to this heading">#</a></h3>
+<p>In <em><strong>simulated annealing</strong></em> we turn the objective function <span class="math notranslate nohighlight">\(U(q)\)</span> into a pdf <span class="math notranslate nohighlight">\(\pi(q)\)</span>, but with higher mass where <span class="math notranslate nohighlight">\(U\)</span> has lower values. This is the <em><strong>Gibbs distribution</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi(q) = \frac{1}{Z}\exp\left\{ -\frac{U(q)}{T}\right\},\;\; T \text{ is a constant}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(Z\)</span> is the normalizing constant of the exponential part. The Gibbs distribution has a physical interpretation: <span class="math notranslate nohighlight">\(\pi(q)\)</span> is the likelihood of being in state <span class="math notranslate nohighlight">\(q\)</span> given the energy <span class="math notranslate nohighlight">\(U(q)\)</span> of state <span class="math notranslate nohighlight">\(q\)</span> and the temperature <span class="math notranslate nohighlight">\(T\)</span>. For now, we set <span class="math notranslate nohighlight">\(T=1\)</span>.</p>
+<p>Using the same relationship, we can turn a probability distribution into an energy function
+<div class="math notranslate nohighlight">
+\[
+U(q) = - \log \pi(q).
+\]</div>
+</p>
+<p><strong>Motto:</strong> negative gradient of the energy function points to the direct of steepest decrease in <span class="math notranslate nohighlight">\(U\)</span> and the <strong>steepest increase</strong> in <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+</section>
+<section id="the-connection-between-optimization-and-sampling">
+<h3>The Connection Between Optimization and Sampling<a class="headerlink" href="#the-connection-between-optimization-and-sampling" title="Link to this heading">#</a></h3>
+<p>If we wanted to sample from high density regions of <span class="math notranslate nohighlight">\(\pi\)</span>, why don’t we turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q) = - \log \pi(q)\)</span> and use gradient descent to find the valleys of <span class="math notranslate nohighlight">\(U\)</span> (and hence modes of <span class="math notranslate nohighlight">\(\pi\)</span>)?</p>
+<p>Why isn’t gradient descent on <span class="math notranslate nohighlight">\(U\)</span> a valid way to sample from <span class="math notranslate nohighlight">\(\pi\)</span>?</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_energy_gibbs</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Energy Function - look for min'</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Probability Density Function - look for max'</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">4</span> <span class="o">+</span> <span class="mi">1</span><span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_energy_gibbs</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8221596e70c64cb05b8887fa1c4613479e6fc444cc035ff777e3c9b87f50b5eb.png" src="../_images/8221596e70c64cb05b8887fa1c4613479e6fc444cc035ff777e3c9b87f50b5eb.png" />
+</div>
+</div>
+</section>
+<section id="gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles">
+<h3>Gradient Descent with Random Momentum: Simulating Mechanics of Moving Particles<a class="headerlink" href="#gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles" title="Link to this heading">#</a></h3>
+<p>To randomly sample from <span class="math notranslate nohighlight">\(\pi\)</span> we need to perform gradient-baesed descent on <span class="math notranslate nohighlight">\(U\)</span> with some randomness to make sure we move around. But we need to make sure this randomness is controlled (i.e. doesn’t overwhelm the information in the gradient).</p>
+<p>What if we performed gradient descent with an initial random momentum? That is, we simulated the way a particle with mass would move on the graph of <span class="math notranslate nohighlight">\(U\)</span> if we started its motion with a push (an intitial direction and magnitude of force):</p>
+<p><strong>I.</strong> at first, the particle would tend to travel in the direction of the initialization<br>
+<strong>II.</strong> eventually, gravity will pull it towards the minima (it will perform gradient descent)</p>
+<figure class="align-center" id="fig-14-rollercoaster">
+<a class="reference internal image-reference" href="../_images/rollercoaster.png"><img alt="../_images/rollercoaster.png" src="../_images/rollercoaster.png" style="width: 450px;" />
+</a>
+</figure>
+</section>
+<section id="sampling-by-physical-simulation">
+<h3>Sampling by Physical Simulation<a class="headerlink" href="#sampling-by-physical-simulation" title="Link to this heading">#</a></h3>
+<p>We can now sketch a sampler of <span class="math notranslate nohighlight">\(\pi\)</span> based on the simulations physical explorations of the graph of it’s energy function <span class="math notranslate nohighlight">\(U\)</span>:</p>
+<ol class="arabic simple">
+<li><p>start at a random <span class="math notranslate nohighlight">\(q\)</span>, pick a mass <span class="math notranslate nohighlight">\(M\)</span></p></li>
+<li><p>repeat:</p></li>
+<li><p>start at the current sample <span class="math notranslate nohighlight">\(q_{\text{current}}\)</span></p></li>
+<li><p>pick a random momentum vector (random direction and magnitude of force)</p></li>
+<li><p>simulate, for a period of <span class="math notranslate nohighlight">\(T\)</span> seconds, the movement of a particle with mass <span class="math notranslate nohighlight">\(M\)</span> moving on the graph of <span class="math notranslate nohighlight">\(U\)</span> with this momentum</p></li>
+<li><p>the <span class="math notranslate nohighlight">\(q\)</span>-coordinate(s) of where the particle lands at the <span class="math notranslate nohighlight">\(T\)</span>-th second is the new sample <span class="math notranslate nohighlight">\(q_{\text{new}}\)</span></p></li>
+<li><p>set <span class="math notranslate nohighlight">\(q_{\text{current}}\leftarrow q_{\text{new}}\)</span></p></li>
+</ol>
+<figure class="align-center" id="fig-14-gibbs">
+<a class="reference internal image-reference" href="../_images/gibbs.jpg"><img alt="../_images/gibbs.jpg" src="../_images/gibbs.jpg" style="width: 431px;" />
+</a>
+</figure>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/hmc_donut.mp4" type="video/mp4"></video></p>
+</section>
+</section>
+<section id="id1">
+<h2><span class="section-number">18.3. </span>Hamiltonian Monte Carlo<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="hamiltonian-motion-as-differential-equations">
+<h3>Hamiltonian Motion as Differential Equations<a class="headerlink" href="#hamiltonian-motion-as-differential-equations" title="Link to this heading">#</a></h3>
+<p>What does it mean to simulate the movement of a particle on the graph of <span class="math notranslate nohighlight">\(U\)</span>? It means to exchange potential energy (height) with kinetic energy (related to speed) in a way that obeys the <em><strong>conservation of total energy</strong></em>.</p>
+<p>A physical properties of system with position <span class="math notranslate nohighlight">\(q(t)\)</span> and momentum <span class="math notranslate nohighlight">\(p(t)\)</span> is described by a function <span class="math notranslate nohighlight">\(H(q, p)\)</span> called the <em><strong>Hamiltonian</strong></em>. We will always choose a Hamiltonian that decomposes as the sum of potential and kinetic energy as follows:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\underbrace{H(q, p)}_{\text{total}} = \underbrace{U(q(t))}_{\text{potential}} + \underbrace{K(p(t))}_{\text{kinetic}}
+\end{aligned}\]</div>
+
+How the system <span class="math notranslate nohighlight">\((q, p)\)</span> changes over time is described by the partial derivatives of <span class="math notranslate nohighlight">\(H\)</span>:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\frac{dq}{dt} = \underbrace{\frac{\partial H}{\partial p}}_{\text{function of $t$}},\quad\quad \frac{dp}{dt} = \underbrace{-\frac{\partial H}{\partial q}}_{\text{function of $t$}}
+\end{aligned}\]</div>
+
+This forms a system of <em><strong>differential equations</strong></em> – equations describing the derivatives/gradients of a function. We call this a <em><strong>Hamiltonian system</strong></em>.</p>
+<p>Say the system is at <span class="math notranslate nohighlight">\((q_0, p_0)\)</span> at time <span class="math notranslate nohighlight">\(t=0\)</span>, the system’s state at time <span class="math notranslate nohighlight">\(t = T\)</span> is given by <strong>integrating</strong> the differential equations from <span class="math notranslate nohighlight">\(t=0\)</span> to <span class="math notranslate nohighlight">\(t=T\)</span> and solving for constants based on <span class="math notranslate nohighlight">\(q(0) = q_0\)</span>, <span class="math notranslate nohighlight">\(p(0) = p_0\)</span>. The map <span class="math notranslate nohighlight">\(\phi(T)\)</span> transforming the state <span class="math notranslate nohighlight">\((q_0, p_0)\)</span> to the state at <span class="math notranslate nohighlight">\((q_T, p_T)\)</span> is called the <em><strong>flow</strong></em> of the Hamiltonian system. The principle of conservation of total energy says that <span class="math notranslate nohighlight">\(H(q, p)\)</span> is constant along every point <span class="math notranslate nohighlight">\(q_t, p_t\)</span> on every flow.</p>
+</section>
+<section id="hamiltonian-monte-carlo-with-exact-integration">
+<h3>Hamiltonian Monte Carlo: with Exact Integration<a class="headerlink" href="#hamiltonian-monte-carlo-with-exact-integration" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>. We fix <span class="math notranslate nohighlight">\(t = T\)</span>.</p>
+<ol class="arabic simple" start="0">
+<li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
+<li><p>repeat:</p></li>
+<li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
+<span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp\{-K(p)\}\)</span>.</p></li>
+<li><p>(<strong>simulate movment</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
+<li><p>accept <span class="math notranslate nohighlight">\(q^{(current)}\)</span> as a new sample: <span class="math notranslate nohighlight">\(q^{(current)} \leftarrow q^{(\text{time }T)}\)</span>.</p></li>
+</ol>
+<p><strong>Questions:</strong> is this a correct way to sample from <span class="math notranslate nohighlight">\(\pi\)</span>? But isn’t the integration in Step B hard?</p>
+</section>
+<section id="correctness-of-hmc-with-exact-integration">
+<h3>Correctness of HMC with Exact Integration<a class="headerlink" href="#correctness-of-hmc-with-exact-integration" title="Link to this heading">#</a></h3>
+<p>Two important properties of Hamiltonian dynamics:</p>
+<p>I. (<strong>Reversibility</strong>) The flow <span class="math notranslate nohighlight">\(\phi(T)\)</span> of a Hamiltonian system is one-to-one and onto for every interval length <span class="math notranslate nohighlight">\(T\)</span>, i.e. given <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span> we can compute the point of origin <span class="math notranslate nohighlight">\((q^{(\text{time }0)}, p^{(\text{time }0)})\)</span>.</p>
+<p>II. (<strong>Volume Preserving</strong>) It’s easy to verify that the vector field of a Hamiltonian system is divergence free, which will imply that the flow <span class="math notranslate nohighlight">\(\phi(T)\)</span> is volume preserving – if <span class="math notranslate nohighlight">\(A\subset \mathbb{R}^D\)</span> has volume <span class="math notranslate nohighlight">\(V\)</span> then the image of <span class="math notranslate nohighlight">\(A\)</span> under <span class="math notranslate nohighlight">\(\phi(T)\)</span> has volume <span class="math notranslate nohighlight">\(V\)</span>.</p>
+<p>The above two properties imply detailed balance for HMC with respect to the joint distribution (see readings):
+<div class="math notranslate nohighlight">
+\[\pi(q, p) = \frac{1}{Z} \exp\{-H(q, p) \}.\]</div>
+
+But we can rewrite the joint distribution <span class="math notranslate nohighlight">\(\pi(q, p)\)</span>:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned} 
+\pi(q, p) = \frac{1}{Z} \exp\{-U(q) - K(p) \} &amp;= \exp\{-U(q)\} \frac{1}{Z}\exp\{-K(p)\}\\
+&amp;= \exp\{\log(\pi(q)) \} \frac{1}{Z}\exp\{-K(p)\}\\
+&amp;= \pi(q)\frac{1}{Z}\exp\{-K(p)\}
+\end{aligned}\end{split}\]</div>
+
+That is, <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are independent. Hence, sampling from <span class="math notranslate nohighlight">\(\pi(q, p)\)</span> and ignoring <span class="math notranslate nohighlight">\(p\)</span> gives us samples from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<p><strong>Question:</strong> What about irreducibility and aperiodicity?</p>
+</section>
+<section id="approximating-flows-sympletic-integrators">
+<h3>Approximating Flows: Sympletic Integrators<a class="headerlink" href="#approximating-flows-sympletic-integrators" title="Link to this heading">#</a></h3>
+<p>Simulating Hamiltonian dynamics for a time period of length <span class="math notranslate nohighlight">\(T\)</span>, using the flow <span class="math notranslate nohighlight">\(\phi(T)\)</span>, requires that we integrate the equations in the Hamiltonian system with respect to <span class="math notranslate nohighlight">\(t\)</span>,
+<div class="math notranslate nohighlight">
+\[\frac{dq}{dt} = \frac{\partial H}{\partial p}, \quad\quad \frac{dp}{dt} = -\frac{\partial H}{\partial q}\]</div>
+
+This is generally intractable to do analytically! In HMC, we approximate the dynamics by:</p>
+<ol class="arabic simple">
+<li><p>discretizing the time period <span class="math notranslate nohighlight">\([0, T]\)</span> into <span class="math notranslate nohighlight">\(L\)</span> chunks each with length <span class="math notranslate nohighlight">\(\epsilon\)</span>.</p></li>
+<li><p><strong>approximating</strong> the flow for a time period of length <span class="math notranslate nohighlight">\(\epsilon\)</span>.</p></li>
+</ol>
+<p>A common method of approximating the flow is called the <em><strong>leap-frog integrator</strong></em>. This integrator has the special property of being <strong>reversible</strong> and <strong>volume-preserving</strong>.</p>
+<p>This means that replacing exact Hamiltonian dynmaics in HMC with the leap-frog integration will not obviously ruin detailed balance!</p>
+</section>
+<section id="approximating-flows-adjusting-for-error">
+<h3>Approximating Flows: Adjusting for Error<a class="headerlink" href="#approximating-flows-adjusting-for-error" title="Link to this heading">#</a></h3>
+<p>But the approximation is not exact! The longer the time period <span class="math notranslate nohighlight">\(\epsilon\)</span> the more error in the approximation. The more steps in your simulation (i.e. the longer <span class="math notranslate nohighlight">\(T\)</span> is) the more these errors will accumulate. To ensure the correctness of the sampling, <strong>we need to add a Metropolis-Hastings step</strong> so that we can potentially reject the sample from the approximation.</p>
+<figure class="align-center" id="fig-14-integrator">
+<a class="reference internal image-reference" href="../_images/integrator.jpg"><img alt="../_images/integrator.jpg" src="../_images/integrator.jpg" style="width: 607px;" />
+</a>
+</figure>
+</section>
+<section id="hamiltonian-monte-carlo-with-the-leap-frog-integrator">
+<h3>Hamiltonian Monte Carlo: with the Leap Frog Integrator<a class="headerlink" href="#hamiltonian-monte-carlo-with-the-leap-frog-integrator" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>.</p>
+<p><strong>0.</strong> start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span><br></p>
+<p><strong>1.</strong> repeat:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><strong>A.</strong> (<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
+<span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp(-K(p))\)</span>.<br></p>
+<p><span class="math notranslate nohighlight">\(\quad\)</span><strong>B.</strong> (<strong>simulate movement</strong>) simulate Hamiltonian motion for <span class="math notranslate nohighlight">\(L\)</span> steps each with time interval <span class="math notranslate nohighlight">\(\epsilon\)</span>, using the leap-frog integrator. <br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>a.</strong> Repeat for T - 1 times, for <span class="math notranslate nohighlight">\(p^{(\text{step } 0)} = p^{(current)}\)</span>, <span class="math notranslate nohighlight">\(q^{(\text{step } 0)} = q^{(current)}\)</span>:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>i.</strong> (<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1/2)} \leftarrow  p^{(\text{step } t)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t)})\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>ii.</strong>* (<strong>full-step update for position</strong>) <span class="math notranslate nohighlight">\(q^{(\text{step } t + 1)} \leftarrow q^{(\text{step } t)} + \epsilon \frac{\partial K}{\partial p}(p^{(\text{step } t + 1/2}))\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>iii.</strong> (<strong>half-step update for momentum</strong>)<span class="math notranslate nohighlight">\(p^{(\text{step } t + 1)} \leftarrow  p^{(\text{step } t + 1/2)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t + 1)})\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>b.</strong> (<strong>reverse momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } T)} \leftarrow -p^{(\text{step } T)}\)</span><br></p>
+<p><span class="math notranslate nohighlight">\(\quad\)</span><strong>C.</strong>(<strong>correction for simulation error</strong>) implement Metropolis-Hasting accept mechanism: <br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>a.</strong> compute <span class="math notranslate nohighlight">\(\alpha = \min\left(1, \exp\left\{H(q^{(current)}, p^{(current)}) - H(q^{(\text{step } T)}, p^{(\text{step } T)})\right\} \right)\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>b.</strong> sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span>, if <span class="math notranslate nohighlight">\(U \leq \alpha\)</span> then accept, else keep old sample</p>
+</section>
+<section id="hmc-with-leap-frog-integrator-in-action">
+<h3>HMC with Leap Frog Integrator in Action<a class="headerlink" href="#hmc-with-leap-frog-integrator-in-action" title="Link to this heading">#</a></h3>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/hmc_donut.mp4" type="video/mp4"></video></p>
+</section>
+<section id="hamiltonian-monte-carlo-summary">
+<h3>Hamiltonian Monte Carlo: Summary<a class="headerlink" href="#hamiltonian-monte-carlo-summary" title="Link to this heading">#</a></h3>
+<p>Given a target distribution <span class="math notranslate nohighlight">\(\pi\)</span>, we</p>
+<ol class="arabic simple">
+<li><p>turn <span class="math notranslate nohighlight">\(\pi(q)\)</span> into a potential energy function <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>.</p></li>
+<li><p>generate samples <span class="math notranslate nohighlight">\(\{ q_s\}\)</span> by approximately simulating Hamiltonian dynamics for a particle (i.e. realistic movement on the graph of <span class="math notranslate nohighlight">\(U(q)\)</span>) with random intialization.</p></li>
+<li><p>for each sample we need to accept based on a Metropolis-Hastings mechanism because the simulation is not exact.</p></li>
+</ol>
+<p><strong>Design choices:</strong></p>
+<ol class="arabic simple">
+<li><p>(<strong>Advanced</strong>) kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span> – needs to be one such that you can easily sample from its Gibbs distribuion <span class="math notranslate nohighlight">\(\frac{1}{Z} \exp(-K(p))\)</span>.</p></li>
+<li><p>(<strong>Advanced</strong>) integrator to approximate Hamiltonian flow – this needs to be volume-preserving and reversible.</p></li>
+<li><p>(<strong>Everyone</strong>) number and size of discrete time steps for discrete integrators.</p></li>
+</ol>
+<p>What happens when the step sizes are large and we take many steps? What happens when the step sizes are tiny and we take few?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Example: Euclidean-Gaussian Kinetic Energy</p>
+<p>Let <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution so that <span class="math notranslate nohighlight">\(U(q) = -\log(\pi(q))\)</span> defines our potential energy function. Let’s choose the mass of this system to be a matrix <span class="math notranslate nohighlight">\(M = m \mathbf{I}_{D\times D}\)</span>. Then the <em><strong>Euclidea-Guassian kinetic energy</strong></em> function is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+K(p) = \frac{1}{2} p^\top M^{-1} p + \frac{1}{2}\log|M| + \frac{D}{2} \log(2\pi)
+\]</div>
+<p>The Gibbs distribution for <span class="math notranslate nohighlight">\(K(p)\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\pi(p) = \frac{1}{Z}\exp\{-K(p)\} = \frac{1}{Z} \frac{1}{(2\pi)^{D/2}|M|^{1/2}} \exp\left\{-\frac{1}{2}p^\top M^{-1} p\right\}
+\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\exp\{-K(p)\}\)</span> is the pdf of the normal distribution <span class="math notranslate nohighlight">\(\mathcal{N}(0, M)\)</span>, it already integrates to 1, and hence <span class="math notranslate nohighlight">\(Z =1\)</span>.</p>
+<p>Now, the partial derivatives of <span class="math notranslate nohighlight">\(H(q, p) = U(q) + K(P)\)</span> with respect to <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{\partial U}{\partial q} &amp;= - \frac{\frac{\partial}{\partial q}\pi(q)}{\pi(q)}\\
+\frac{\partial K}{\partial p} &amp;= \frac{1}{m} p
+\end{aligned}\end{split}\]</div>
+<p>Thus, HMC with the above choices becomes</p>
+<ol class="arabic simple" start="0">
+<li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
+<li><p>repeat:</p></li>
+<li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
+<span class="math notranslate nohighlight">\(p^{(current)} \sim \mathcal{N}(0, M)\)</span>.</p></li>
+<li><p>(<strong>simulate movement</strong>) simulate Hamiltonian motion for <span class="math notranslate nohighlight">\(L\)</span> steps each with time interval <span class="math notranslate nohighlight">\(\epsilon\)</span>, using the leap-frog integrator.
+1. Repeat for T - 1 times, for <span class="math notranslate nohighlight">\(p^{(\text{step } 0)} = p^{(current)}\)</span>, <span class="math notranslate nohighlight">\(q^{(\text{step } 0)} = q^{(current)}\)</span>:</p>
+<ol class="arabic simple">
+<li><p>(<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1/2)} \leftarrow  p^{(\text{step } t)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t)})\)</span></p></li>
+<li><p>(<strong>full-step update for momentum</strong>) <span class="math notranslate nohighlight">\(q^{(\text{step } t + 1)} \leftarrow q^{(\text{step } t)} + \epsilon \frac{1}{m} p^{(\text{step } t + 1/2)}\)</span></p></li>
+<li><p>(<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1)} \leftarrow  p^{(\text{step } t + 1/2)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t + 1)})\)</span></p></li>
+</ol>
+</li>
+<li><p>(<strong>reverse momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } T)} \leftarrow -p^{(\text{step } T)}\)</span></p></li>
+<li><p>(<strong>correction for simulation error</strong>) implement Metropolis-Hasting accept mechanism:
+1. compute <span class="math notranslate nohighlight">\(\alpha = \min\left(1, \exp\left\{H(q^{(current)}, p^{(current)}) - H(q^{(\text{step } T)}, p^{(\text{step } T)})\right\} \right)\)</span>
+2. sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span>, if <span class="math notranslate nohighlight">\(U \leq \alpha\)</span> then accept, else keep old sample</p></li>
+</ol>
+</div>
+</section>
+<section id="hmc-for-multimodal-distributions">
+<h3>HMC for Multimodal Distributions<a class="headerlink" href="#hmc-for-multimodal-distributions" title="Link to this heading">#</a></h3>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/hmc_multimodal.mp4" type="video/mp4"></video></p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">18.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions
+<div class="math notranslate nohighlight">
+\[
+U(q) = - \log \pi(q), \quad \pi(q) = \frac{1}{Z}\exp\left\{ \frac{-U(q)}{T}\right\},\; T=1
+\]</div>
+
+This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<section id="id2">
+<h3>Hamiltonian Monte Carlo: with Exact Integration<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>. We fix <span class="math notranslate nohighlight">\(t = T\)</span>.</p>
+<ol class="arabic simple" start="0">
+<li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
+<li><p>repeat:</p></li>
+<li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
+<span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp\{-K(p)\}\)</span>.</p></li>
+<li><p>(<strong>simulate movment</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
+<li><p>accept <span class="math notranslate nohighlight">\(q^{(current)}\)</span> as a new sample: <span class="math notranslate nohighlight">\(q^{(current)} \leftarrow q^{(\text{time }T)}\)</span>.<br><br></p></li>
+</ol>
+<figure class="align-center" id="fig-14-summary-skate">
+<a class="reference internal image-reference" href="../_images/skate.jpg"><img alt="../_images/skate.jpg" src="../_images/skate.jpg" style="width: 100%;" />
+</a>
+</figure>
+<p><br><br></p>
+</section>
+<section id="id3">
+<h3>Hamiltonian Monte Carlo: with the Leap Frog Integrator<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>.</p>
+<p><strong>0.</strong> start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span><br></p>
+<p><strong>1.</strong> repeat:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><strong>A.</strong> (<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
+<span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp(-K(p))\)</span>.<br></p>
+<p><span class="math notranslate nohighlight">\(\quad\)</span><strong>B.</strong> (<strong>simulate movement</strong>) simulate Hamiltonian motion for <span class="math notranslate nohighlight">\(L\)</span> steps each with time interval <span class="math notranslate nohighlight">\(\epsilon\)</span>, using the leap-frog integrator. <br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>a.</strong> Repeat for T - 1 times, for <span class="math notranslate nohighlight">\(p^{(\text{step } 0)} = p^{(current)}\)</span>, <span class="math notranslate nohighlight">\(q^{(\text{step } 0)} = q^{(current)}\)</span>:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>i.</strong> (<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1/2)} \leftarrow  p^{(\text{step } t)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t)})\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>ii.</strong>* (<strong>full-step update for position</strong>) <span class="math notranslate nohighlight">\(q^{(\text{step } t + 1)} \leftarrow q^{(\text{step } t)} + \epsilon \frac{\partial K}{\partial p}(p^{(\text{step } t + 1/2}))\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>iii.</strong> (<strong>half-step update for momentum</strong>)<span class="math notranslate nohighlight">\(p^{(\text{step } t + 1)} \leftarrow  p^{(\text{step } t + 1/2)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t + 1)})\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>b.</strong> (<strong>reverse momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } T)} \leftarrow -p^{(\text{step } T)}\)</span><br></p>
+<p><span class="math notranslate nohighlight">\(\quad\)</span><strong>C.</strong> (<strong>correction for simulation error</strong>) implement Metropolis-Hasting accept mechanism: <br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>a.</strong> compute <span class="math notranslate nohighlight">\(\alpha = \min\left(1, \exp\left\{H(q^{(current)}, p^{(current)}) - H(q^{(\text{step } T)}, p^{(\text{step } T)})\right\} \right)\)</span><br>
+<span class="math notranslate nohighlight">\(\quad\)</span><span class="math notranslate nohighlight">\(\quad\)</span><strong>b.</strong> sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span>, if <span class="math notranslate nohighlight">\(U \leq \alpha\)</span> then accept, else keep old sample<br><br></p>
+<figure class="align-center" id="fig-14-summary-hamiltonian">
+<a class="reference internal image-reference" href="../_images/hamiltonian.jpg"><img alt="../_images/hamiltonian.jpg" src="../_images/hamiltonian.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="frequently-asked-questions-about-hmc">
+<h2><span class="section-number">18.5. </span>Frequently Asked Questions About HMC<a class="headerlink" href="#frequently-asked-questions-about-hmc" title="Link to this heading">#</a></h2>
+<section id="commonly-asked-questions-about-hmc">
+<h3>Commonly Asked Questions About HMC<a class="headerlink" href="#commonly-asked-questions-about-hmc" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Question:</strong> HMC seems complicated, do I really need to use it?<br>
+<strong>Answer:</strong> Yes.</p></li>
+</ol>
+<p>For complex models of interest (non-conjugate, hierarchical, latent variable) HMC is the least complicated sampler you can use to perform reliable inference.<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>Question:</strong> Ok, but can I treat the theory as a black-box, i.e. can I just press some <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> button?<br>
+<strong>Answer:</strong> No.</p></li>
+</ol>
+<p>HMC (like all samplers) must be tuned. That is, for many models and datasets, <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> will not have good performance. You need the theory to tell you which design choices need to be adjusted and in what way.</p>
+<p>In class, everyone struggled with finding <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> documentation on how to compare models using WAIC and <strong>no one caught the <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> error about the WAIC computation</strong>:</p>
+<blockquote>
+<div><p>/root/venv/lib/python3.7/site-packages/arviz/stats/stats.py:1460: UserWarning: For one or more samples the posterior variance of the log predictive densities exceeds 0.4. This could be indication of WAIC starting to fail. <br>
+See <a class="reference external" href="http://arxiv.org/abs/1507.04544" rel="noreferrer" target="_blank">http://arxiv.org/abs/1507.04544</a> for details</p>
+</div></blockquote>
+<p>Practitioner’s rely on black-box machine learning tools to analyze data and rely on complex ML metrics (like the WAIC) to assess the validity of their analysis. The insights resulting from this process gets translated into policies that potentially effect millions.</p>
+<p>What should/can a practitioner do when not only their models fail but their metrics ALSO fail?<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p><strong>Question:</strong> But I don’t need to implement it since <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> has already done so, right?<br>
+<strong>Answer:</strong> Wrong.</p></li>
+</ol>
+<p>You need to implement HMC. Because <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> is not going to scale well for Bayesian inference for models with neural network likelihoods and large datasets. <br><br></p>
+<ol class="arabic simple" start="4">
+<li><p><strong>Question:</strong> Why don’t you just GIVE ME YOUR IMPLEMENTATION OF HMC!!!!!!<br>
+<strong>Answer:</strong> It won’t help.</p></li>
+</ol>
+<p>The main problem with HMC isn’t with implementing the leap-frog steps, it’s the way you define your energy functions.</p>
+<p>Last year, many groups chose to copy a version of HMC from somewhere random online, this group of people had the MOST trouble with debugging when trying to RUN HMC on different models: debugging other people’s code can be way harder than your own (I swear I’m not lying)!<br><br></p>
+<ol class="arabic simple" start="5">
+<li><p><strong>Question:</strong> We worked so hard to derive HMC, it had better be the bestest sampler and can be applied to any Bayesian model for any dataset, right?<br>
+<strong>Answer:</strong> No.</p></li>
+</ol>
+<p>HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see this weeks readings). Futhermore, HMC <strong>does not scale well to large datasets</strong>.</p>
+<ul class="simple">
+<li><p>HMC can still fail to mix!</p>
+<ul>
+<li><p>You still need to check for convergence and run multiple chains etc!</p></li>
+</ul>
+</li>
+<li><p>HMC still will struggle to find multiple modes in the posterior!</p>
+<ul>
+<li><p>Possible solution: parallel tempering</p></li>
+</ul>
+</li>
+<li><p>Each leap-frog step in HMC requires computing the gradient over the ENTIRE dataset!</p>
+<ul>
+<li><p>Possibile solution: Stochastic Gradient HMC
+<strong>Note:</strong> we lose asymptotic correctness!<br><br></p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="6">
+<li><p><strong>Question:</strong> What is the broader impact of HMC?</p></li>
+</ol>
+</section>
+</section>
+<section id="exercises">
+<h2><span class="section-number">18.6. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-hamiltonian-monte-carlo-for-bayesian-logistic-regression">
+<span id="ps-hw7"></span><h3>Problem Set: Hamiltonian Monte Carlo for Bayesian Logistic Regression<a class="headerlink" href="#problem-set-hamiltonian-monte-carlo-for-bayesian-logistic-regression" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">autograd.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd.misc.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">adam</span><span class="p">,</span> <span class="n">sgd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">scipy</span> <span class="k">as</span> <span class="n">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_openml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_random_state</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymc3</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymc3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_decision_boundary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">poly_degree</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shaded</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    plot_decision_boundary plots the training data and the decision boundary of the classifier.</span>
+<span class="sd">    input:</span>
+<span class="sd">       x - a numpy array of size N x 2, each row is a patient, each column is a biomarker</span>
+<span class="sd">       y - a numpy array of length N, each entry is either 0 (no cancer) or 1 (cancerous)</span>
+<span class="sd">       models - an array of classification models</span>
+<span class="sd">       ax - axis to plot on</span>
+<span class="sd">       poly_degree - the degree of polynomial features used to fit the model</span>
+<span class="sd">       test_points - test data</span>
+<span class="sd">       shaded - whether or not the two sides of the decision boundary are shaded</span>
+<span class="sd">    returns: </span>
+<span class="sd">       ax - the axis with the scatter plot</span>
+<span class="sd">    </span>
+<span class="sd">    '''</span>
+    <span class="c1"># Plot data</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'class 1'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'class 0'</span><span class="p">)</span>
+    
+    <span class="c1"># Create mesh</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Predict on mesh points</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">poly_degree</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">polynomial_features</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="n">poly_degree</span><span class="p">,</span> <span class="n">include_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">polynomial_features</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">alpha_line</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alpha_line</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.5</span>
+        
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>  
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+        <span class="c1"># Plot decision surface</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shaded</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'bwr'</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="n">linewidths</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha_line</span><span class="p">)</span>
+        
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">if</span> <span class="n">test_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_points</span><span class="p">)):</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">test_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'test data'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+        
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="mf">5.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'x_1'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'x_2'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Bayesian_logistic_regression</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">slopes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intercept</span> <span class="o">=</span> <span class="n">intercept</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slopes</span> <span class="o">=</span> <span class="n">slopes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slopes</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slopes</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intercept</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="inference-for-bayesian-logistic-regression-models">
+<h4>Inference for Bayesian Logistic Regression Models<a class="headerlink" href="#inference-for-bayesian-logistic-regression-models" title="Link to this heading">#</a></h4>
+<p>In <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>, we studied the problem of how to evaluate the classification probabilites outputed by a Logistic Regression model using calibration plots. Calibration plots are computed using observed data (data that is part of or similar to our training set). In this problem set, we evaluate the usefulness of the predictive uncertainties Logistic Regression models and Bayesian Logistic Regression models for test data that are dissimilar to our training data. These test data points are called <em><strong>out of distribution (OOD) points</strong></em>. Just as in the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we want the predictive uncertainties from our models to help us distinguish <em><strong>in-distribution</strong></em> test data (test data that are similar to data on which we trained our model) and OOD test data. Again, in many safety-critical applications of ML, we want human-experts to override model decisions if the model is operating on extremely unfamiliar data.</p>
+<div class="admonition-exercise-part-i-interpreting-the-classification-probabilites-of-logistic-regression-as-uncertainties admonition">
+<p class="admonition-title">Exercise: Part I: Interpreting the Classification Probabilites of Logistic Regression as Uncertainties</p>
+<p> </p>
+</div>
+<p><strong>Exercise 1: (Classifying OOD MNIST Digits)</strong> In <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>, we interpreted the output of a Logistic Regression model - the classification probability - as an indicator of the confidence of the model when it is classifying a specific data point (e.g. when the probability is close to 0.5, we say that the model is not confident in classifying the data point as class 1 or 0). Explain why this is a reasonable interpretation of the classification probability.</p>
+<p>In this Exercise, build a Logistic Regression model to distinguish between digital images of handwritten digits (this is the MNIST dataset):</p>
+<p><code class="docutils literal notranslate"> <span class="pre">LogisticRegression(C=1.,</span> <span class="pre">penalty='l2',</span> <span class="pre">solver='saga',</span> <span class="pre">tol=0.1)</span></code></p>
+<p>For simplicity, we only look at images of digits: 1 and 6.</p>
+<p>In this dataset, the classes are balanced (we take 600 images of each digit). Report the accuracy of your trained classifier, based on this, decide whether or not this is a good model.</p>
+<p>Next, for the predefined set of six test images,
+<code class="docutils literal notranslate"><span class="pre">test_point_1</span></code>, …, <code class="docutils literal notranslate"><span class="pre">test_point_6</span></code>,
+report the classification probabiliy for each image under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test images.</p>
+<p>So is this classifier a good model? Does your analysis of the model’s performance via its predictive accuracy agree with your analysis of the model’s performance via its predictive uncertainties? Conclude whether or not you would feel comfortable using this model in a real-life setting?</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load data from https://www.openml.org/d/554</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">fetch_openml</span><span class="p">(</span><span class="s1">'mnist_784'</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_X_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pick out two classes of digits: 1, 6 and take a subset of samples</span>
+<span class="n">X_subset</span> <span class="o">=</span> <span class="n">X</span><span class="p">[((</span><span class="n">y</span> <span class="o">==</span> <span class="s1">'1'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="s1">'6'</span><span class="p">))][</span><span class="mi">0</span><span class="p">:</span><span class="mi">600</span><span class="p">]</span>
+<span class="n">y_subset</span> <span class="o">=</span> <span class="n">y</span><span class="p">[((</span><span class="n">y</span> <span class="o">==</span> <span class="s1">'1'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="s1">'6'</span><span class="p">))][</span><span class="mi">0</span><span class="p">:</span><span class="mi">600</span><span class="p">]</span>
+
+<span class="c1"># Encode the label '1' with y=1, and the label '6' with y=0</span>
+<span class="n">y_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="s1">'1'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">y_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="s1">'6'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">y_subset</span> <span class="o">=</span> <span class="n">y_subset</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Randomize our data</span>
+<span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">permutation</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">X_subset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">X_subset</span> <span class="o">=</span> <span class="n">X_subset</span><span class="p">[</span><span class="n">permutation</span><span class="p">]</span>
+<span class="n">y_subset</span> <span class="o">=</span> <span class="n">y_subset</span><span class="p">[</span><span class="n">permutation</span><span class="p">]</span>
+<span class="n">X_subset</span> <span class="o">=</span> <span class="n">X_subset</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">X_subset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize some samples from the training dataset</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test images for evaluating your classifier</span>
+<span class="n">test_point_1</span> <span class="o">=</span> <span class="n">X_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">test_point_2</span> <span class="o">=</span> <span class="n">X_subset</span><span class="p">[</span><span class="n">y_subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">test_point_3</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="s1">'3'</span><span class="p">][</span><span class="mi">20</span><span class="p">]</span>
+<span class="n">test_point_4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="p">))</span>
+<span class="n">test_point_5</span> <span class="o">=</span> <span class="n">test_point_2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="p">))</span> <span class="o">-</span> <span class="n">test_point_1</span>
+<span class="n">test_point_6</span> <span class="o">=</span> <span class="n">test_point_2</span> <span class="o">+</span> <span class="n">test_point_1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize some samples from the test dataset</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_1</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 1'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_2</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 2'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_3</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 3'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_4</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 4'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_5</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 5'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_point_6</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray_r</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'test image 6'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p><strong>Exercise 2: (Classifying OOD Data for a Toy Dataset)</strong> In this Exercise, build a Logistic Regression model to distinguish between two classes in our toy classification dataset:</p>
+<p><code class="docutils literal notranslate"> <span class="pre">LogisticRegression(C=1.,</span> <span class="pre">penalty='l2',</span> <span class="pre">solver='saga',</span> <span class="pre">tol=0.1)</span></code></p>
+<p>In this dataset, the classes are balanced (we have 100 points in each class). Report the accuracy of your trained classifier, based on this, decide whether or not this is a good model.</p>
+<p>Next, for the predefined set of test points,
+<code class="docutils literal notranslate"><span class="pre">test_points</span></code>,
+report the classification probabiliy for each test point under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test points, identify which of these test points are in-distribution and which ones are OOD.</p>
+<p>Relate your analysis of the behaviour of Logistic Regression on this toy dataset to its performance on MNIST. Can you come up with some hypotheses for exactly when the classification probability indicates an inappropriate amount of certainty when predicting on test points?</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate a toy dataset for classification</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">class_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">samples</span><span class="p">)</span>
+<span class="n">class_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">samples</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">class_0</span><span class="p">,</span> <span class="n">class_1</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define test data points</span>
+<span class="n">test_points</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize our test data points</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'class 1'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'class 0'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_points</span><span class="p">)):</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">test_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'test data'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'x_1'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'x_2'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'toy classification data with test data points'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="admonition-exercise-part-ii-interpreting-the-uncertainties-of-bayesian-logistic-regression admonition">
+<p class="admonition-title">Exercise: Part II: Interpreting the Uncertainties of Bayesian Logistic Regression</p>
+<p><strong>Exercise 3: (Classifying OOD Data for a Toy Dataset with Bayesian Logistic Regression)</strong>
+In Exercise 2 and 3, we examined one source of uncertainty from a logistic model: the classification probability. There is another source of uncertainty: uncertainty over the model itself (which decision boundaries can fit the dataset).</p>
+<p>Use your own implementation of HMC (see the algorithm earlier in this chapter) to sample from the posterior of the following Bayesian Logistic Regression model for our toy dataset:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+w_i &amp;\sim \mathcal{N}(0, 10)\\
+Y^{(n)} &amp;\sim Ber(\text{sigm}(w_2 X_1^{(n)} + w_1 X_2^{(n)} + w_0))
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(w_i\)</span>, <span class="math notranslate nohighlight">\(Y^{(n)}\)</span>, <span class="math notranslate nohighlight">\(X_i^{(n)}\)</span> are real scalar valued random variables, and where the data consists of the observations <span class="math notranslate nohighlight">\((x_1^{(n)}, x_2^{(n)}, y^{(n)})\)</span> in our toy dataset <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.</p>
+<p>We suggest using the following settings for your HMC:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#initialize the position vector for HMC sampling with the weights of the trained neural network</span>
+<span class="n">position_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">logistic</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">logistic</span><span class="o">.</span><span class="n">intercept_</span><span class="p">))</span>
+<span class="n">position_init</span> <span class="o">=</span> <span class="n">position_init</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="c1">#leap-frog step size</span>
+<span class="n">step_size</span> <span class="o">=</span> <span class="mf">1e-1</span>
+<span class="c1">#leap-frog steps</span>
+<span class="n">leapfrog_steps</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1">#number of total samples after burn-in</span>
+<span class="n">total_samples</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="c1">#percentage of samples to burn</span>
+<span class="n">burn_in</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="c1">#thinning factor</span>
+<span class="n">thinning_factor</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">logistic.coef_</span></code> and <code class="docutils literal notranslate"><span class="pre">logistic.intercept_</span></code> are the learned parameters of your <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Logistic regression model you trained in Exercise 3.</p>
+<p>Visualize the decision boundaries corresponding to the posterior samples from your Bayesian Logistic Regression model (see <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>). What do the distribution of decision boundaries tell you about the model’s predictive uncertainties for each of the test points (particularly the OOD points)?</p>
+</div>
+<p><strong>Exercise 4: (Epistemic Uncertainty from Bayesian Logistic Regression)</strong> Since the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span> is a distribution over multiple models (i.e. decision boundaries) and each model outputs a classification probability for each test data point, the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span> defines a distribution of classification probabilities for each test point. The variance of the distribution over classification probabilities is one way of quantifying the amount of <em><strong>epistemic uncertainty</strong></em> - uncertainty due to lack of observed training data - of the model at a particular test point.</p>
+<p>Estimate the average epistemic uncertainty, under the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span>, of the data points in the toy data set, then estimate the epistemic uncertainty of each test data point. Interpret these uncertainties, in particular, explain to what extend can the epistemic uncertainties of this Bayesian Logistic Regression model be used to distinguish in-distribution points from OOD points.</p>
+<p>Relate the amount of epistemic uncertainty at a particular data point to the decision boundaries in the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span>. Using this geometric relationship, explain whether or not the epistemic uncertainties of our Bayesian Logistic Regression model is capable of distinguishing <strong>all</strong> possible OOD points.</p>
+<p><strong>Exercise 5: (Classifying OOD Data for a Toy Dataset with Bayesian Non-linear Logistic Regression)</strong>
+Just as we can cast Bayesian Non-linear Regression as a non-linear transformation of the data followed by Bayesian Linear Regression, we can perform Bayesian Logistic Regression with non-linear decision boundaries by first applying a non-linear feature map to the data and then fitting a Bayesian Logistic Regression model on the features.</p>
+<p>Perform Bayesian Logistic Regression using a degree 2 polynomial feature map, <span class="math notranslate nohighlight">\(\phi\)</span>, on the toy dataset. Use your own implementation of HMC (see the algorithm earlier in this chapter) to sample from the posterior of the following Bayesian Logistic Regression model for our toy dataset:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{w} &amp;\sim \mathcal{N}(0, 10\, \mathbf{I})\\
+Y^{(n)} &amp;\sim Ber(\text{sigm}(\mathbf{w}^\top \phi(\mathbf{X}^{(n)}) ))
+\end{aligned}\end{split}\]</div>
+<p>Visualize the decision boundaries corresponding to the samples in the posterior. Are the epistemic uncertainties of this Bayesian model able to distinguish in-distribution test points from OOD ones? Relate the amount of epistemic uncertainty at a particular data point to the decision boundaries in the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span>. Using this geometric relationship, explain whether or not the epistemic uncertainties of our Bayesian Logistic Regression model is capable of distinguishing <strong>all</strong> possible OOD points.</p>
+<p><strong>Exercise 6: (Classifying OOD Data for a Toy Dataset with Bootstrap Non-linear Logistic Regression)</strong> Perform bootstrap Logistic Regression using a degree 2 polynomial feature map, <span class="math notranslate nohighlight">\(\phi\)</span>, on the toy dataset. Obtain 100 bootstrap Logistic Regression models:
+<code class="docutils literal notranslate"><span class="pre">LogisticRegression(C=1.,</span> <span class="pre">penalty='l2',</span> <span class="pre">solver='saga',</span> <span class="pre">tol=0.1)</span></code>.</p>
+<p>Visualize the decision boundaries corresponding to the samples in the bootstrap ensemble. Are the epistemic uncertainties of this ensemble able to distinguish in-distribution test points from OOD ones? Relate the amount of epistemic uncertainty at a particular data point to the decision boundaries of the models in the ensemble. Using this geometric relationship, explain whether or not the epistemic uncertainties of our bootstrap ensemble is capable of distinguishing <strong>all</strong> possible OOD points.</p>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p><strong>Exercise 7: (The Need for Useful Uncertainties in Classification)</strong> Explain why OOD detection may be crucial for classifiers deployed in risk-adverse applications. Be concrete: choose a real-life domain application, identify the affected communities and the real-life consequences of an incorrect classification, explain <em>exactly</em> how OOD detection can help mitigate the risk of an incorrect classification. Feel free to use the following list of articles to help construct your answer.</p>
+<p><strong>Reference:</strong></p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://www.nytimes.com/2018/02/09/technology/facial-recognition-race-artificial-intelligence.html" rel="noreferrer" target="_blank">Facial Recognition Is Accurate, if You’re a White Guy</a></p></li>
+<li><p><a class="reference external" href="https://techcrunch.com/2019/01/29/ibm-builds-a-more-diverse-million-face-dataset-to-help-reduce-bias-in-ai/" rel="noreferrer" target="_blank">IBM Builds a More Diverse Million-Face Dataset to Help Reduce Bias in AI</a></p></li>
+<li><p><a class="reference external" href="https://www.nytimes.com/2020/06/24/technology/facial-recognition-arrest.html" rel="noreferrer" target="_blank">Wrongfully Accused by an Algorithm</a></p></li>
+<li><p><a class="reference external" href="https://www.pnas.org/content/pnas/early/2020/05/19/1919012117.full.pdf" rel="noreferrer" target="_blank">Gender imbalance in medical imaging datasets produces biased classifiers for computer-aided diagnosis</a></p></li>
+</ol>
+<p><strong>Exercise 8: (Comparing Bayesian and Frequnetist Epistemic Uncertainties)</strong> In the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we saw that the epistemic uncertainties of frequentist and Bayesian uncertainties can be desirable or undesirable depending on the number of observations and the choices of hyperparameters (e.g. polynomial degree, variance of the prior in the Bayesian model, regularization strength of the models in the ensemble). For Bayesian and frequentist ensembles of classifiers, based on empirical results above, conjecture which factors affect the quality of epistemic uncertainties of Bayesian and bootstrap ensemble classifiers, respectively. Support your answer with what we know about the properties of Logistic Regression models.</p>
+<p>In order to obtain epistemic uncertainties that can distinguish in-distribution and OOD points, what settings of hyperparameters do we need for Bayesian and bootstrap ensemble classifiers, respectively?</p>
+<p><strong>Exercise 10: (Is OOD Detection Enough for Risk Adverse Applications?)</strong> In the risk adverse real-life application you identified in Exercise 1, is accurate OOD detection enough to mitigate unwanted outcomes of deploying our model? That is, when classifiers are used in real-life applications where incorrect predictions can have disasterous consequence, what specific failure modes can these models experience? Are all of these failure modes addressed by proper detection of OOD inputs?</p>
+</div>
+</section>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">18.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Hamiltonian Monte Carlo</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://arxiv.org/pdf/1701.02434.pdf" rel="noreferrer" target="_blank">A Conceptual Introduction to Hamiltonian Monte Carlo</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="https://arxiv.org/pdf/1206.1901.pdf" rel="noreferrer" target="_blank">MCMC using Hamiltonian dynamics</a></p></li>
+</ul>
+<p><strong>For Nice Visualizations of HMC Samplers</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://elevanth.org/blog/2017/11/28/build-a-better-markov-chain/" rel="noreferrer" target="_blank">Markov Chains: Why Walk When You Can Flow?</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="http://arogozhnikov.github.io/2016/12/19/markov_chain_monte_carlo.html" rel="noreferrer" target="_blank">Hamiltonian Monte Carlo explained</a></p></li>
+</ul>
+<p><strong>For those really interested in rigor</strong></p>
+<ul class="simple">
+<li><p>(Advanced) <a class="reference external" href="https://arxiv.org/pdf/1711.05337.pdf" rel="noreferrer" target="_blank">Geometric integrators and the Hamiltonian Monte Carlo method</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://arxiv.org/pdf/1705.00166.pdf" rel="noreferrer" target="_blank">On the convergence of Hamiltonian Monte Carlo</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="impact-4-optimization.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">17. </span>Applications and Broader Impact: Optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="15-parallel-tempering-sghmc.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">19. </span>Parallel Tempering and Stochastic HMC</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-generalized-linear-models">18.1. Hierarchical Generalized Linear Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-linear-models">Generalized Linear Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation">Kidney Cancer Dataset: Pooling vs Fully Independent Estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer">A Hierarchical Generalized Linear Model for Kidney Cancer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-as-optimization">18.2. Sampling as Optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-is-metropolis-hastings-efficient">When is Metropolis Hastings Efficient?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-is-metropolis-hastings-inefficient">When is Metropolis Hastings Inefficient?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-connection-between-energy-and-density-functions">The Connection Between Energy and Density Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-connection-between-optimization-and-sampling">The Connection Between Optimization and Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles">Gradient Descent with Random Momentum: Simulating Mechanics of Moving Particles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-by-physical-simulation">Sampling by Physical Simulation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">18.3. Hamiltonian Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-motion-as-differential-equations">Hamiltonian Motion as Differential Equations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-exact-integration">Hamiltonian Monte Carlo: with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#correctness-of-hmc-with-exact-integration">Correctness of HMC with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-sympletic-integrators">Approximating Flows: Sympletic Integrators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-adjusting-for-error">Approximating Flows: Adjusting for Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-the-leap-frog-integrator">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-with-leap-frog-integrator-in-action">HMC with Leap Frog Integrator in Action</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-summary">Hamiltonian Monte Carlo: Summary</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-for-multimodal-distributions">HMC for Multimodal Distributions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">18.4. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Hamiltonian Monte Carlo: with Exact Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequently-asked-questions-about-hmc">18.5. Frequently Asked Questions About HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#commonly-asked-questions-about-hmc">Commonly Asked Questions About HMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">18.6. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-hamiltonian-monte-carlo-for-bayesian-logistic-regression">Problem Set: Hamiltonian Monte Carlo for Bayesian Logistic Regression</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-for-bayesian-logistic-regression-models">Inference for Bayesian Logistic Regression Models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">18.7. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

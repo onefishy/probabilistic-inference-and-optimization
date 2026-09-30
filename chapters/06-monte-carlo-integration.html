@@ -1,0 +1,1516 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Monte Carlo Integration &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/06-monte-carlo-integration';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/06-monte-carlo-integration.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Markov Chain Monte Carlo" href="07-mcmc.html" />
+    <link rel="prev" title="6. Sampling for Posterior Simulation" href="05-sampling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/06-monte-carlo-integration.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/06-monte-carlo-integration.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Monte Carlo Integration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">7.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics-of-monte-carlo-integration">7.2. Basics of Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-monte-carlo-estimation-of-integrals">Naive Monte Carlo Estimation of Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-consistency-and-unbiasedness-of-monte-carlo-estimators">The Consistency and Unbiasedness of Monte Carlo Estimators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-variance-and-error-of-monte-carlo-estimators">The Variance and Error of Monte Carlo Estimators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-control-variates">7.3. Variance Reduction: Control Variates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-baseline-for-variance-of-monte-carlo-estimates">A Baseline for Variance of Monte Carlo Estimates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-control-variates">The General Idea of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-of-control-variates">Variance of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-nitty-gritty-of-control-variates">The Nitty Gritty of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-control-variates">Example: Control Variates</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-stratified-sampling">7.4. Variance Reduction: Stratified Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-stratified-sampling">The General Idea of Stratified Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-stratified-sampling-monte-carlo-estimator">The Stratified Sampling Monte Carlo Estimator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-stratified-sampling">Example: Stratified Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-importance-sampling">7.5. Variance Reduction: Importance Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-importance-sampling">The General Idea of Importance Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-of-importance-sampling">Variance of Importance Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-nitty-gritty-of-importance-sampling-the-design-of-q">The Nitty Gritty of Importance Sampling: the Design of <span class="math notranslate nohighlight">\(q\)</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-importance-sampling">Example: Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-monte-carlo-integration">7.6. Summary of Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Monte Carlo Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-for-monte-carlo-integration">Variance Reduction for Monte Carlo Integration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-monte-carlo-estimation-of-arbitrary-integrals">7.7. Application: Monte Carlo Estimation of Arbitrary Integrals</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-definite-integrals">Arbitrary Definite Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rewriting-an-arbitrary-definite-integral-as-an-expectation">Rewriting an Arbitrary Definite Integral as an Expectation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-you-factor-the-integrand-f">How Do You Factor the Integrand <span class="math notranslate nohighlight">\(f\)</span>?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">7.8. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">7.9. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-sampling-and-monte-carlo-integration">Problem Set: Sampling and Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-description">Problem Description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">7.10. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="monte-carlo-integration">
+<h1><span class="section-number">7. </span>Monte Carlo Integration<a class="headerlink" href="#monte-carlo-integration" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/aZ5dGdG3OhY" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Basics of Monte Carlo Simulation</p></li>
+<li><p>Variance Reduction: Control Variates</p></li>
+<li><p>Variance Reduction: Stratified Sampling</p></li>
+<li><p>Variance Reduction: Importance Sampling</p></li>
+<li><p>Application: Monte Carlo Estimation of Arbitrary Integrals</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="motivation">
+<h2><span class="section-number">7.1. </span>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
+<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[\theta] = \int_\Theta \theta\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S \theta_s,\, \theta_s \sim p(\theta | Y)
+\]</div>
+</p>
+<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected vaue of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y)
+\]</div>
+</p>
+<p><strong>Question:</strong> But is this estimate consistent? Unbiased? Of minimal variance?</p>
+</section>
+<section id="basics-of-monte-carlo-integration">
+<h2><span class="section-number">7.2. </span>Basics of Monte Carlo Integration<a class="headerlink" href="#basics-of-monte-carlo-integration" title="Link to this heading">#</a></h2>
+<section id="naive-monte-carlo-estimation-of-integrals">
+<h3>Naive Monte Carlo Estimation of Integrals<a class="headerlink" href="#naive-monte-carlo-estimation-of-integrals" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(I\)</span> denote the integral
+<div class="math notranslate nohighlight">
+\[\mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta\]</div>
+
+and let <span class="math notranslate nohighlight">\(\widehat{I}\)</span> denote the approximation
+<div class="math notranslate nohighlight">
+\[\frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y).\]</div>
+</p>
+<p>We call <span class="math notranslate nohighlight">\(\widehat{I}\)</span> the <em><strong>Monte Carlo estimate</strong></em> of <span class="math notranslate nohighlight">\(I\)</span>.</p>
+<p>In general, <em><strong>Monte Carlo integration</strong></em> is the process of estimating a deterministic quantity (an integral) using a procedure involving stochasticity (sampling).</p>
+</section>
+<section id="the-consistency-and-unbiasedness-of-monte-carlo-estimators">
+<h3>The Consistency and Unbiasedness of Monte Carlo Estimators<a class="headerlink" href="#the-consistency-and-unbiasedness-of-monte-carlo-estimators" title="Link to this heading">#</a></h3>
+<p>Recall that the <strong>Strong Law of Large Numbers</strong> says that the sampling mean of <span class="math notranslate nohighlight">\(S\)</span> iid random variables converges to the theoretical mean, with probability 1, as <span class="math notranslate nohighlight">\(S\to \infty\)</span>. This means that</p>
+<div class="math notranslate nohighlight">
+\[
+\lim_{S\to\infty} \frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y) \;= \;\mathbb{E}_{\theta|Y}\left[f(\theta) \right]
+\]</div>
+<p>with probability 1. Hence, the Monte Carlo Estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is <em><strong>consistent</strong></em>.</p>
+<p>The expected value of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta_S}[\widehat{I}]\, = \, \mathbb{E}_{\theta_S}\left[\frac{1}{S}\sum_{s=1}^S f(\theta_s)\right] = \, \frac{1}{S}\sum_{s=1}^S \mathbb{E}_{\theta_s}\left[f(\theta_s)\right] = \frac{1}{S} \sum_{s=1}^S I = I,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_s \sim p(\theta | Y)\)</span>. Hence, the Monte Carlo Estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is <em><strong>unbiased</strong></em>.</p>
+</section>
+<section id="the-variance-and-error-of-monte-carlo-estimators">
+<h3>The Variance and Error of Monte Carlo Estimators<a class="headerlink" href="#the-variance-and-error-of-monte-carlo-estimators" title="Link to this heading">#</a></h3>
+<p>The variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is given by
+<div class="math notranslate nohighlight">
+\[
+\mathrm{Var}\left[\widehat{I} \right] = \mathrm{Var} \left[ \frac{1}{S} \sum_{s=1}^{S} f(\theta_S) \right] = \frac{1}{S^2} \sum_{s=1}^{S} \mathrm{Var}\left[ f(\theta_S)\right] = \frac{\mathrm{Var}\left[ f(\theta)\right]}{S},
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\theta_S\)</span>, <span class="math notranslate nohighlight">\(\theta \sim p(\theta|Y)\)</span>. Plainly put, <strong>the variance of the estimator is reduced when the number of samples <span class="math notranslate nohighlight">\(S\)</span> is large and the variance <span class="math notranslate nohighlight">\(\sigma_f^2\)</span> of <span class="math notranslate nohighlight">\(f(\theta)\)</span> is low</strong>.</p>
+<p>The <strong>Centeral Limit Theorem</strong> says that the difference between sample mean and the theoretical mean of iid random variables will approach a normal distribution as <span class="math notranslate nohighlight">\(N\to \infty\)</span>. For us, this means that the error of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> has a roughly normal distribution:</p>
+<div class="math notranslate nohighlight">
+\[
+p\left( \widehat{I} - I\right) \to \mathcal{N}\left(0, \frac{\sigma_f^2}{S} \right), \; N \to \infty
+\]</div>
+<p>Again, this says that, to reduce the error of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> we can increase the number of samples <span class="math notranslate nohighlight">\(S\)</span> or decrease the variance <span class="math notranslate nohighlight">\(\sigma_f^2\)</span> of <span class="math notranslate nohighlight">\(f(\theta)\)</span>.</p>
+</section>
+</section>
+<section id="variance-reduction-control-variates">
+<h2><span class="section-number">7.3. </span>Variance Reduction: Control Variates<a class="headerlink" href="#variance-reduction-control-variates" title="Link to this heading">#</a></h2>
+<section id="a-baseline-for-variance-of-monte-carlo-estimates">
+<h3>A Baseline for Variance of Monte Carlo Estimates<a class="headerlink" href="#a-baseline-for-variance-of-monte-carlo-estimates" title="Link to this heading">#</a></h3>
+<p>The variance of the naive Monte Carlo estimate <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathrm{Var}\left[ \widehat{I}\right] &amp;= \frac{1}{S}\mathrm{Var}\left[ f(\theta)\right]\\ 
+&amp;= \frac{1}{S}\mathbb{E}_{\theta|Y}\left[\left( f(\theta) - \mathbb{E}_{\theta|Y}\left[ f(\theta)\right]\right)^2\right]\\
+&amp;= \frac{1}{S}\mathbb{E}_{\theta|Y}\left[ f(\theta)^2 \right] - \mathbb{E}_{\theta|Y}\left[ f(\theta)\right]^2\\
+&amp;= \frac{1}{S}\left(\int_\Theta f(\theta)^2 p(\theta|Y)d\theta  - I^2\right)
+\end{aligned}\end{split}\]</div>
+</p>
+<p>We’ll compare the variance of alternative estimator to the above when checking for variance reduction.</p>
+<p><strong>Note:</strong> The variance of <span class="math notranslate nohighlight">\(f(\theta)\)</span> depends on <em>both</em> the variance of <span class="math notranslate nohighlight">\(\theta\)</span> and the amount of variation in the function <span class="math notranslate nohighlight">\(f\)</span>. <strong>Functions that change a great amount over the domain will have a high variance and functions that are flat will have a low variance.</strong></p>
+</section>
+<section id="the-general-idea-of-control-variates">
+<h3>The General Idea of Control Variates<a class="headerlink" href="#the-general-idea-of-control-variates" title="Link to this heading">#</a></h3>
+<p>Based on our realization that “flat” functions have lower variance, we will try to engineer “flat” functions that allow use to compute the integral of <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<p><strong>Observation:</strong> For a given function <span class="math notranslate nohighlight">\(f(X)\)</span>, if <span class="math notranslate nohighlight">\(h\)</span> is a function of <span class="math notranslate nohighlight">\(X\)</span> that correlates with <span class="math notranslate nohighlight">\(f\)</span>, then <span class="math notranslate nohighlight">\(f(X)-h(X)\)</span> will have lower variance.</p>
+<figure class="align-center" id="fig-06-control">
+<a class="reference internal image-reference" href="../_images/control.jpg"><img alt="../_images/control.jpg" src="../_images/control.jpg" style="width: 644px;" />
+</a>
+</figure>
+</section>
+<section id="variance-of-control-variates">
+<h3>Variance of Control Variates<a class="headerlink" href="#variance-of-control-variates" title="Link to this heading">#</a></h3>
+<p>Fix a function <span class="math notranslate nohighlight">\(f(\theta)\)</span>, <span class="math notranslate nohighlight">\(\theta\sim p(\theta|Y)\)</span>. Let <span class="math notranslate nohighlight">\(h(\theta)\)</span> be a function with known mean <span class="math notranslate nohighlight">\(\mu_h = \mathbb{E}_{\theta|Y}[h(\theta)]\)</span> and such that <span class="math notranslate nohighlight">\(h(\theta)\)</span> is correlated with <span class="math notranslate nohighlight">\(f(\theta)\)</span>. We call <span class="math notranslate nohighlight">\(h\)</span> the <em><strong>control variate</strong></em> for <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<p>We define the <em><strong>control variate Monte Carlo estimate</strong></em> of <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> to be</p>
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{control}} = \frac{1}{S}\sum^S_{s=1} f(\theta_s) - c(h(\theta_s) - \mu_h)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_s \sim p(\theta|Y)\)</span>, <span class="math notranslate nohighlight">\(c\)</span> is our choice of a constant.</p>
+<p>The variance of this estimator is:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{\widehat{I}_{\text{control}}}^2 = \frac{1}{S} \left(\sigma^2_f + c^2 \sigma_h^2 - 2c * \mathbf{cov}[f(\theta), h(\theta)]\right)
+\]</div>
+<p>Thus, we see that when <span class="math notranslate nohighlight">\(\mathbf{cov}[f(\theta), h(\theta)] \neq 0\)</span> there is hope for variance reduction, i.e. <span class="math notranslate nohighlight">\(\sigma_{\widehat{I}_{\text{control}}}^2 &lt;\sigma_{f}^2/S\)</span>!</p>
+<p><strong>Exercise:</strong> check that <span class="math notranslate nohighlight">\(\widehat{I}_{\text{control}}\)</span> is consistent and unbiased! Derive <span class="math notranslate nohighlight">\(\sigma_{\widehat{I}_{\text{control}}}^2\)</span>!</p>
+</section>
+<section id="the-nitty-gritty-of-control-variates">
+<h3>The Nitty Gritty of Control Variates<a class="headerlink" href="#the-nitty-gritty-of-control-variates" title="Link to this heading">#</a></h3>
+<p>Using control variate Monte Carlo requires that we:</p>
+<ol class="arabic simple">
+<li><p>choose a control variate <span class="math notranslate nohighlight">\(h\)</span> with known mean and who is correlated with <span class="math notranslate nohighlight">\(f\)</span>.</p></li>
+<li><p>choose a constant <span class="math notranslate nohighlight">\(c\)</span>.</p></li>
+</ol>
+<p>Typically, we want to choose an <span class="math notranslate nohighlight">\(h\)</span> that follows to the trends of <span class="math notranslate nohighlight">\(f\)</span> that is easy to integrate.</p>
+<p>The value of <span class="math notranslate nohighlight">\(c\)</span> that minimizes <span class="math notranslate nohighlight">\(\sigma_{\widehat{I}_{\text{control}}}^2\)</span> is
+<div class="math notranslate nohighlight">
+\[
+c^* = \frac{\mathbf{cov}[f(\theta), h(\theta)]}{\sigma_h^2}.
+\]</div>
+</p>
+<p>In case <span class="math notranslate nohighlight">\(\mathbf{cov}[f(\theta), h(\theta)]^2\)</span> and <span class="math notranslate nohighlight">\(\sigma_h^2\)</span> are difficult to compute analytically, they can be empirically estimated from the samples.</p>
+<p>When we choose the optimal <span class="math notranslate nohighlight">\(c = c^*\)</span>, the variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{control}}\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{\widehat{I}_{\text{control}}}^2 = \frac{1}{S}\left(1 - \frac{\mathbf{cov}[f(\theta), h(\theta)]}{\sigma_h^2\sigma_f^2}\right)\sigma_f^2 \sigma^2_{\widehat{I}_{\text{control}}} = \frac{1}{S}(1 - \rho_{f, h})\sigma_f^2,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\rho_{f, h}\)</span> is the correlation between the outputs of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(h\)</span>. Hence, the more <span class="math notranslate nohighlight">\(h\)</span> is correlated with the ouput the greater the variance reduction.</p>
+</section>
+<section id="example-control-variates">
+<h3>Example: Control Variates<a class="headerlink" href="#example-control-variates" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. Let the control variate be <span class="math notranslate nohighlight">\(h(\theta) = -0.2 \theta^3\)</span>. We aim to estimate:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
+\]</div>
+</p>
+<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with the control variate:
+<div class="math notranslate nohighlight">
+\[\widehat{I}_{\text{control}} = \frac{1}{S} \sum_{s=1}^S \left(f(\theta_s) - 1.5(h(\theta_s) - \mu_h)\right),\]</div>
+
+for <span class="math notranslate nohighlight">\(S = 100\)</span> and where
+<div class="math notranslate nohighlight">
+\[
+\mu_h = \mathbb{E}_{\theta|Y}[h(\theta)] = \frac{1}{20}\int_{0}^{20} h(\theta) d\theta = -400.
+\]</div>
+</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of trials to run (for computing variance of estimators)</span>
+<span class="n">total_trials</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="c1">#total number of samples</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1">#list of monte carlo estimates</span>
+<span class="n">monte_carlo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1">#list of control variate estimates</span>
+<span class="n">control_variate</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#definition of the monte carlo integrand</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="c1">#definition of the control variate</span>
+<span class="n">h</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+<span class="c1">#definition of the control variate mc integrand</span>
+<span class="n">control_mc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">400</span><span class="p">)</span>
+
+<span class="c1">#estimate the integral </span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_trials</span><span class="p">):</span>
+    <span class="c1">#sample theta's</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="c1">#compute the MC estimate</span>
+    <span class="n">monte_carlo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="c1">#compute the control variate MC estimate</span>
+    <span class="n">control_variate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">control_mc</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    
+<span class="n">mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">monte_carlo</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">control_mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">control_variate</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">':'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'control variate'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">control_mc</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'control variate integrand'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of f and control variate'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'theta'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a449d72d2b5b60ff42c9cec2e396ddb5ac73408a32b91396a0f72a1109ff1c25.png" src="../_images/a449d72d2b5b60ff42c9cec2e396ddb5ac73408a32b91396a0f72a1109ff1c25.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'variance of monte carlo estimate:'</span><span class="p">,</span> <span class="n">mc_variance</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of control variate monte carlo estimate:'</span><span class="p">,</span> <span class="n">control_mc_variance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>variance of monte carlo estimate: 2177.441459671328
+variance of control variate monte carlo estimate: 52.49658213225613
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="variance-reduction-stratified-sampling">
+<h2><span class="section-number">7.4. </span>Variance Reduction: Stratified Sampling<a class="headerlink" href="#variance-reduction-stratified-sampling" title="Link to this heading">#</a></h2>
+<section id="the-general-idea-of-stratified-sampling">
+<h3>The General Idea of Stratified Sampling<a class="headerlink" href="#the-general-idea-of-stratified-sampling" title="Link to this heading">#</a></h3>
+<p>Again, based on our realization that “flat” functions have lower variance, we will try to partition the domain of <span class="math notranslate nohighlight">\(f\)</span> into regions where <span class="math notranslate nohighlight">\(f\)</span> is relatively “flat”. We estimate the integral on each piece of the partition then sum over the pieces.</p>
+<figure class="align-center" id="fig-06-strata">
+<a class="reference internal image-reference" href="../_images/strata.jpg"><img alt="../_images/strata.jpg" src="../_images/strata.jpg" style="width: 644px;" />
+</a>
+</figure>
+</section>
+<section id="the-stratified-sampling-monte-carlo-estimator">
+<h3>The Stratified Sampling Monte Carlo Estimator<a class="headerlink" href="#the-stratified-sampling-monte-carlo-estimator" title="Link to this heading">#</a></h3>
+<p>Fix a function <span class="math notranslate nohighlight">\(f(\theta)\)</span>, where <span class="math notranslate nohighlight">\(\theta\)</span> is a random variable over the domain <span class="math notranslate nohighlight">\(\Theta\)</span> whose pdf is <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>. Then the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> can be decomposed as
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int f(x)p(x) dx = \sum_{m=1}^M \int_{\Theta_m} f(\theta) p(\theta) d\theta
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\bigcup_{m=1}^M\Theta_m = \Theta\)</span> and <span class="math notranslate nohighlight">\(\Theta_m \cap \Theta_{m'} = \emptyset\)</span> if <span class="math notranslate nohighlight">\(m\neq m'\)</span>.</p>
+<p>To make <span class="math notranslate nohighlight">\(p(\theta)\)</span> a pdf over <span class="math notranslate nohighlight">\(\Theta_{m'}\)</span> we need to normalize it, i.e.
+<div class="math notranslate nohighlight">
+\[
+\frac{p(\theta)}{w_m},\quad w_m = \int_{\Theta_m} p(\theta)d\theta.
+\]</div>
+
+We can then rewrite the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> again
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \sum_{m=1}^M \int_{\Theta_m} w_m f(\theta) \left(\frac{p(\theta)}{w_m}\right) d\theta = \sum_{m=1}^M w_m \mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)],
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\mathbb{1}_{\Theta_m}\)</span> is the indicator function for the set <span class="math notranslate nohighlight">\(\Theta_m\)</span>.</p>
+<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. Let <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> be the Monte Carlo estimate of <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)]\)</span> estimated with <span class="math notranslate nohighlight">\(S_m = w_m * S\)</span> samples, the <em><strong>stratified sampling Monte Carlo estimator</strong></em> is
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
+\]</div>
+
+since <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_m\right]\)</span> is lower than <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}\right]\)</span>, we hope that <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_{\text{SS}}\right]\)</span> is also lower.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: The Nitty Gritty of Stratified Sampling: Variance Reduction</p>
+<p>The stratified sampling Monte Carlo is unbiased. Note that</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \sum_{m=1}^M \mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta) | \text{strata}=m]\; \mathrm{Pr}[\text{strata}=m] =  \sum_{m=1}^M w_m\,\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta) | \text{strata}=m].
+\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> is an unbiased estimator of <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta) | \text{strata}=m]\)</span>, we have that</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}\left[\widehat{I}_{\text{SS}}\right] = w_m \sum_{m=1}^M \mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}\left[\widehat{I}_m\right] = \mathbb{E}_{\theta|Y}[f(\theta)].
+\]</div>
+<p>The variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{SS}}\)</span> can be computed as</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{Var}\left[\widehat{I}_{\text{SS}}\right] = \sum_{m=1}^M w_m^2\,\mathrm{Var}\left[ \widehat{I}_m \right] = \sum_{m=1}^M w_m^2 \frac{\sigma^2_m}{S_m},
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma_m\)</span> is the variance of <span class="math notranslate nohighlight">\(f(\theta)\)</span> over <span class="math notranslate nohighlight">\(\Theta_m\)</span>. Again, conditioning on selecting the <span class="math notranslate nohighlight">\(m\)</span>-th stratum, we can show that</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{Var}\left[\widehat{I}\right] =  \mathrm{Var}\left[\widehat{I}_{\text{SS}}\right] + \frac{1}{S} \sum_{m=1}^M w_m\left(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta) | \text{strata}=m] - \mathbb{E}_{\theta|Y}[f(\theta)]\right)^2\geq \mathrm{Var}\left[\widehat{I}_{\text{SS}}\right],
+\]</div>
+<p>with equality holding only when the strata have identical mean.</p>
+</div>
+</section>
+<section id="example-stratified-sampling">
+<h3>Example: Stratified Sampling<a class="headerlink" href="#example-stratified-sampling" title="Link to this heading">#</a></h3>
+<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
+\]</div>
+</p>
+<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with stratified sampling:</p>
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{SS}} = \sum_{m=1}^M \frac{1}{S_m} \sum_{s_m=1}^{S_m} w_m f(\theta_{s_m}),\; \theta_{s_m} \sim U(t_{m-1}, t_{m}),
+\]</div>
+<p>for sample sizes
+<div class="math notranslate nohighlight">
+\[
+[13, 20, 9, 10, 15, 32],
+\]</div>
+</p>
+<p>where the number <span class="math notranslate nohighlight">\(M\)</span> of strata is 10, <span class="math notranslate nohighlight">\(w_m = \frac{t_m - t_{m-1}}{20}\)</span>, and where the end points of the strata is given by</p>
+<div class="math notranslate nohighlight">
+\[
+[0, 2.75, 6.8, 8.6, 10.6, 13.6, 20.].
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define the end points of the strata</span>
+<span class="n">strata</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.75</span><span class="p">,</span> <span class="mf">6.8</span><span class="p">,</span> <span class="mf">8.6</span><span class="p">,</span> <span class="mf">10.6</span><span class="p">,</span> <span class="mf">13.6</span><span class="p">,</span> <span class="mf">20.</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">stratus</span> <span class="ow">in</span> <span class="n">strata</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">stratus</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">':'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of f and strata'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'theta'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4e4ad09cc82d81572df04a512bb0d51320932d94f65af5e38646560f86c91d53.png" src="../_images/4e4ad09cc82d81572df04a512bb0d51320932d94f65af5e38646560f86c91d53.png" />
+</div>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of trials to run (for computing variance of estimators)</span>
+<span class="n">total_trials</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="c1">#weights</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[(</span><span class="n">strata</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">strata</span><span class="p">[</span><span class="n">m</span><span class="p">])</span> <span class="o">/</span> <span class="mf">20.</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">strata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="c1">#sample sizes</span>
+<span class="n">S</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">w</span><span class="p">]</span>
+
+<span class="n">stratified_estimates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">monte_carlo</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#repeat the estimate for many trials:</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_trials</span><span class="p">):</span>
+    <span class="c1">#compute the monte carlo estimate</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">S</span><span class="p">))</span>
+    <span class="n">monte_carlo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    
+    <span class="c1">#compute the stratified sampling monte carlo estimate</span>
+    <span class="n">sum_over_strata</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">strata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">strata</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">strata</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+        <span class="c1">#compute the mc estimator for the mth stratus</span>
+        <span class="n">stratus_estimate</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">sum_over_strata</span> <span class="o">+=</span> <span class="n">stratus_estimate</span>
+        
+    <span class="n">stratified_estimates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sum_over_strata</span><span class="p">))</span>
+
+<span class="n">mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">monte_carlo</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">stratified_mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">stratified_estimates</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'variance of monte carlo estimate:'</span><span class="p">,</span> <span class="n">mc_variance</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of stratified monte carlo estimate:'</span><span class="p">,</span> <span class="n">stratified_mc_variance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>variance of monte carlo estimate: 2131.79723836582
+variance of stratified monte carlo estimate: 379.4187342386133
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="variance-reduction-importance-sampling">
+<h2><span class="section-number">7.5. </span>Variance Reduction: Importance Sampling<a class="headerlink" href="#variance-reduction-importance-sampling" title="Link to this heading">#</a></h2>
+<section id="the-general-idea-of-importance-sampling">
+<h3>The General Idea of Importance Sampling<a class="headerlink" href="#the-general-idea-of-importance-sampling" title="Link to this heading">#</a></h3>
+<p>The idea behind importance sampling is very similar to that of rejection sampling: we tackle the problem where the posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> is typically hard to sample from. Instead,</p>
+<ol class="arabic simple">
+<li><p>we approximate <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> with an easy distribution <span class="math notranslate nohighlight">\(q(\theta)\)</span> and sample <span class="math notranslate nohighlight">\(\theta_1, \ldots, \theta_S\)</span> from <span class="math notranslate nohighlight">\(q\)</span>. <br><br></p></li>
+<li><p>rather than rejecting some of the samples, we evaluate <span class="math notranslate nohighlight">\(f\)</span> on all the samples, and then weight <span class="math notranslate nohighlight">\(f(\theta_s)\)</span> based on how likely is <span class="math notranslate nohighlight">\(\theta_s\)</span> to be from <span class="math notranslate nohighlight">\(p\)</span> vs <span class="math notranslate nohighlight">\(q\)</span>. That is, we estimate <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)] \approx\frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s)\)</span>, <span class="math notranslate nohighlight">\(\theta_s \sim q(\theta)\)</span>. <strong>Why is this a good idea?</strong></p></li>
+</ol>
+<figure class="align-center" id="fig-06-importance">
+<a class="reference internal image-reference" href="../_images/importance.jpg"><img alt="../_images/importance.jpg" src="../_images/importance.jpg" style="width: 402px;" />
+</a>
+</figure>
+</section>
+<section id="variance-of-importance-sampling">
+<h3>Variance of Importance Sampling<a class="headerlink" href="#variance-of-importance-sampling" title="Link to this heading">#</a></h3>
+<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. The <em><strong>importance sampling Monte Carlo estimator</strong></em> is
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s), \; \theta_s \sim q(\theta_s)
+\]</div>
+
+We call <span class="math notranslate nohighlight">\(q\)</span> is the <em><strong>importance distribution</strong></em>, <span class="math notranslate nohighlight">\(p\)</span> the <em><strong>nominal distribution</strong></em> and <span class="math notranslate nohighlight">\(\frac{p(\theta_s|Y)}{q(\theta_s)}\)</span> the <em><strong>importance weight</strong></em>.</p>
+<p>We can show that <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> is unbiased and consistent using the following fact (assuming <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> have the same support):</p>
+<div class="math notranslate nohighlight">
+\[
+I = \mathbb{E}_{\theta \sim p(\theta|Y)}\left[f(\theta)\right] = \int_\Theta \frac{p(\theta|Y)}{q(\theta)}f(\theta) q(\theta) d\theta= \mathbb{E}_{\theta \sim q(\theta)}\left[\frac{p(\theta|Y)}{q(\theta)}f(\theta)\right].
+\]</div>
+<p>We can directly calculate the variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> to be <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_{\text{IS}}\right] = \frac{\sigma^2_q}{S}\)</span>,
+where <span class="math notranslate nohighlight">\(\sigma^2_q\)</span> is the variance of <span class="math notranslate nohighlight">\(\frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma^2_q = \int_\Theta f^2(\theta)p(\theta|Y)\frac{p(\theta|Y)}{q(\theta)} d\theta - I^2 = \int_\Theta\frac{\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2}{q(\theta)} d\theta.
+\]</div>
+<p>For comparison, <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}\right] = \frac{1}{S}\left(\int_\Theta f(\theta)^2 p(\theta|Y)d\theta  - I^2\right)\)</span>. So, we hope to get a variance reduction if <span class="math notranslate nohighlight">\(\frac{p(\theta|Y)}{q(\theta)} &lt;1\)</span> when <span class="math notranslate nohighlight">\(f(\theta)^2 p(\theta|Y)\)</span> is large.</p>
+</section>
+<section id="the-nitty-gritty-of-importance-sampling-the-design-of-q">
+<h3>The Nitty Gritty of Importance Sampling: the Design of <span class="math notranslate nohighlight">\(q\)</span><a class="headerlink" href="#the-nitty-gritty-of-importance-sampling-the-design-of-q" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(When <span class="math notranslate nohighlight">\(q=0\)</span>)</strong> if <span class="math notranslate nohighlight">\(q(\theta_0)=0\)</span> but <span class="math notranslate nohighlight">\(p(\theta_0|Y) \neq 0\)</span> for some <span class="math notranslate nohighlight">\(\theta_0\)</span> then <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> will be biased, since sampling from <span class="math notranslate nohighlight">\(q\)</span> can never simulate sampling from <span class="math notranslate nohighlight">\(p\)</span> even after reweighting.<br><br></p></li>
+<li><p><strong>(When <span class="math notranslate nohighlight">\(q\approx 0\)</span>)</strong> related, if <span class="math notranslate nohighlight">\(q(\theta_0)\)</span> is very small (esp. when <span class="math notranslate nohighlight">\(q(\theta_0) &lt; p(\theta_0|Y)\)</span>) then it is unlikely that your samples will include <span class="math notranslate nohighlight">\(\theta_0\)</span>. Hence, <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> will be biased. <strong>If you’ve never see snow, you can’t prepare for it!</strong><br><br></p></li>
+<li><p><strong>(Again, when <span class="math notranslate nohighlight">\(q\approx 0\)</span>)</strong> recall that <span class="math notranslate nohighlight">\(\sigma^2_q = \int_\Theta\frac{\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2}{q(\theta)}\)</span>. For smaller <span class="math notranslate nohighlight">\(\sigma^2_q\)</span>, we want <span class="math notranslate nohighlight">\(\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2\approx 0\)</span>, i.e. <span class="math notranslate nohighlight">\(q\propto f(\theta)p(\theta|Y)\)</span>. But where <span class="math notranslate nohighlight">\(q(\theta) \approx 0\)</span>, <span class="math notranslate nohighlight">\(\sigma^2_q\)</span> can be large even when <span class="math notranslate nohighlight">\(\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2\)</span> is small.<br><br></p></li>
+<li><p><strong>(Heterogenous weights)</strong> when <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are very dissimlar, the weights will either be near 0 or huge. Say we have one sample with weight 0 and one with weight 999, how many samples are we effectively simulating from <span class="math notranslate nohighlight">\(p\)</span>? A way to measure the “quality” of the samples from <span class="math notranslate nohighlight">\(q\)</span> in estimating <span class="math notranslate nohighlight">\(I\)</span>, is through the <em><strong>effective sample size</strong></em>.</p></li>
+</ol>
+<p>When we have <span class="math notranslate nohighlight">\(100\)</span> samples from <span class="math notranslate nohighlight">\(q\)</span> but ESS is 10, then essentially your IS estimate of <span class="math notranslate nohighlight">\(I\)</span> is as good as as Monte Carlo estimate with 10 samples from <span class="math notranslate nohighlight">\(p\)</span>.</p>
+</section>
+<section id="example-importance-sampling">
+<h3>Example: Importance Sampling<a class="headerlink" href="#example-importance-sampling" title="Link to this heading">#</a></h3>
+<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
+\]</div>
+</p>
+<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with importance sampling, with the importance distribution being <span class="math notranslate nohighlight">\(\mathcal{N}(12, 3)\)</span>:
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{IS}} = \sum_{s=1}^S  \frac{1/20 * \mathbb{1}_{[0, 20]}}{\mathcal{N}(\theta_s; 12, 3)}\, f(\theta_{s}),\; \theta_{s} \sim \mathcal{N}(12, 3),
+\]</div>
+
+for sample size <span class="math notranslate nohighlight">\(S=100\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#normal pdf</span>
+<span class="n">normal</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">3</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+<span class="c1">#visualize nominal and importance distributions</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="mi">20</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'nominal distribution'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'theta'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">normal</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'importance distribution'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'theta'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/041461f6d3a38daa3e03776af41e53b85c0eff0d614b2e7820f310306be84227.png" src="../_images/041461f6d3a38daa3e03776af41e53b85c0eff0d614b2e7820f310306be84227.png" />
+</div>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of trials to run (for computing variance of estimators)</span>
+<span class="n">total_trials</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="c1">#sample sizes</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">is_estimates</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">monte_carlo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">importance_weights</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#repeat the estimate for many trials:</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_trials</span><span class="p">):</span>
+    <span class="c1">#compute the monte carlo estimate</span>
+    <span class="c1">#sample from p</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#evaluate f at samples of p</span>
+    <span class="n">monte_carlo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    
+    <span class="c1">#compute the IS sampling monte carlo estimate</span>
+    <span class="c1">#sample from importance distribution q</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#compute importance weight of each sample</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span> <span class="k">else</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">normal</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">theta</span><span class="p">])</span>
+    <span class="c1">#count the number of weights that are zero (i.e. samples that are impossible under p)</span>
+    <span class="n">importance_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">weights</span><span class="o">==</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="c1">#compute the IS estimate</span>
+    <span class="n">is_estimates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">weights</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="n">mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">monte_carlo</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">is_mc_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">is_estimates</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'variance of monte carlo estimate:'</span><span class="p">,</span> <span class="n">mc_variance</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of IS monte carlo estimate:'</span><span class="p">,</span> <span class="n">is_mc_variance</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>variance of monte carlo estimate: 2171.4928181500945
+variance of IS monte carlo estimate: 815108574708675.2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'average numnber of zero importance weight:'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">importance_weights</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>average numnber of zero importance weight: 0.394
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary-of-monte-carlo-integration">
+<h2><span class="section-number">7.6. </span>Summary of Monte Carlo Integration<a class="headerlink" href="#summary-of-monte-carlo-integration" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>Monte Carlo Integration<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Last week we studied ways of <em><strong>sampling</strong></em> from an arbitrary distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span>:</p>
+<ul class="simple">
+<li><p><strong>Inverse CDF Sampling:</strong> when the inverse of the CDF of <span class="math notranslate nohighlight">\(p\)</span> can be computed</p></li>
+<li><p><strong>Rejection Sampling:</strong> when a good substitute distribution for <span class="math notranslate nohighlight">\(p\)</span> can be found</p></li>
+<li><p><strong>Gibbs Sampling:</strong> when the conditionals of a multivariate distribution are simple</p></li>
+</ul>
+<p>Samples from <span class="math notranslate nohighlight">\(p(\theta)\)</span> can be used to estimate the expected value of any function of <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\underbrace{\mathbb{E}_{\theta\sim p(\theta)}\left[ f(\theta)\right]}_{I} = \int_{\Theta} f(\theta) p(\theta) d\theta \approx \underbrace{\frac{1}{S} \sum_{s=1}^S f(\theta_s),\; \theta_s \sim p(\theta)}_{\widehat{I}}
+\]</div>
+<p>We call <span class="math notranslate nohighlight">\(\widehat{I}\)</span> the <em><strong>Monte Carlo estimate</strong></em> of <span class="math notranslate nohighlight">\(I\)</span>. We proved that:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\widehat{I}\)</span> is consistent and unbiased</p></li>
+<li><p>The variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is <span class="math notranslate nohighlight">\(\frac{\sigma_f}{S}\)</span>, where <span class="math notranslate nohighlight">\(\sigma_f = \mathrm{Var}\left[f(\theta) \right]\)</span></p></li>
+</ul>
+<p>What do these two properties of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> tell us to do if we want better estimates of <span class="math notranslate nohighlight">\(I\)</span>?</p>
+</section>
+<section id="variance-reduction-for-monte-carlo-integration">
+<h3>Variance Reduction for Monte Carlo Integration<a class="headerlink" href="#variance-reduction-for-monte-carlo-integration" title="Link to this heading">#</a></h3>
+<p>We can reduce the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> by increasing the sample size <span class="math notranslate nohighlight">\(S\)</span>. But this is not always practical. <strong>Why?</strong></p>
+<p>We studied three ways of reducing the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> by reducing the variance of the function inside the expectation:</p>
+<ol class="arabic simple">
+<li><p><strong>Control Variates:</strong> find a function <span class="math notranslate nohighlight">\(h\)</span> that captures the trend of <span class="math notranslate nohighlight">\(f\)</span>:
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{control}} = \frac{1}{S}\sum^S_{s=1} f(\theta_s) - c(h(\theta_s) - \mu_h), \; \theta_s \sim p(\theta)
+\]</div>
+</p></li>
+<li><p><strong>Stratified Sampling:</strong> Split the domain <span class="math notranslate nohighlight">\(\Theta\)</span> into <span class="math notranslate nohighlight">\(m\)</span> pieces (strata):
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
+\]</div>
+
+where <span class="math notranslate nohighlight">\(w_m = \int_{\Theta_m} p(\theta)d\theta\)</span>, and <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> is the MC estimate over the <span class="math notranslate nohighlight">\(m\)</span>-th strata</p></li>
+<li><p><strong>Importance Sampling:</strong> choose a <span class="math notranslate nohighlight">\(q\)</span> that places more weight where <span class="math notranslate nohighlight">\(f(\theta)\)</span> has high variance and <span class="math notranslate nohighlight">\(p\)</span> is more likely to produce samples:
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s),\; \theta_s \sim q(\theta).
+\]</div>
+</p></li>
+</ol>
+<p><strong>For each method:</strong>  What are the design choices you need to make? Where is the variance reduction coming from? Why is it hard to achieve?</p>
+</section>
+</section>
+<section id="application-monte-carlo-estimation-of-arbitrary-integrals">
+<h2><span class="section-number">7.7. </span>Application: Monte Carlo Estimation of Arbitrary Integrals<a class="headerlink" href="#application-monte-carlo-estimation-of-arbitrary-integrals" title="Link to this heading">#</a></h2>
+<section id="arbitrary-definite-integrals">
+<h3>Arbitrary Definite Integrals<a class="headerlink" href="#arbitrary-definite-integrals" title="Link to this heading">#</a></h3>
+<p>We formulated Monte Carlo estimation as a way to approximate the expected value of functions of random variables. However, given a function of deterministic variables, <span class="math notranslate nohighlight">\(f(x)\)</span>, we can rewrite the integral</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{\Omega} f(x) dx,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(x\in\mathbb{R}^D\)</span> and <span class="math notranslate nohighlight">\(\Omega \subseteq \mathbb{R}^D\)</span>, like an expectation</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{\Omega} f(x) dx = \int_{\Omega} g(x)h(x) dx,
+\]</div>
+<p>if we can factor <span class="math notranslate nohighlight">\(f\)</span> as <span class="math notranslate nohighlight">\(f(x) = g(x)h(x)\)</span>.</p>
+<p>The rewritten integral looks a lot like the expectation of <span class="math notranslate nohighlight">\(g(X)\)</span> where the pdf of <span class="math notranslate nohighlight">\(X\)</span> is <span class="math notranslate nohighlight">\(h(X)\)</span>. The only problem is that <span class="math notranslate nohighlight">\(h(x)\)</span> is not necessarily a pdf!</p>
+</section>
+<section id="rewriting-an-arbitrary-definite-integral-as-an-expectation">
+<h3>Rewriting an Arbitrary Definite Integral as an Expectation<a class="headerlink" href="#rewriting-an-arbitrary-definite-integral-as-an-expectation" title="Link to this heading">#</a></h3>
+<p>We want to rewrite the following expression as an expectation:
+<div class="math notranslate nohighlight">
+\[
+\int_{\Omega} f(x) dx = \int_{\Omega} g(x)h(x) dx.
+\]</div>
+
+Let <span class="math notranslate nohighlight">\(V\)</span> denote the integral of <span class="math notranslate nohighlight">\(h\)</span> over <span class="math notranslate nohighlight">\(\Omega\)</span>:
+<div class="math notranslate nohighlight">
+\[
+V = \int_{\Omega} h(x)dx.
+\]</div>
+
+Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \frac{1}{V}h(x)dx = 1\)</span>. Hence, <span class="math notranslate nohighlight">\(\frac{1}{V}h(x)\)</span> is a valid pdf over <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
+<p>Then we can write:
+<div class="math notranslate nohighlight">
+\[
+\int_{\Omega} f(x) dx = \int_{\Omega} \left(Vg(x)\right)\left(\frac{1}{V}h(x)\right)dx.
+\]</div>
+</p>
+<p>We recognize the above integral as an expectation, and hence can estimated using Monte Carlo methods:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{X\sim \frac{1}{V}h(X)}[Vg(X)] \approx V\sum_{s=1}^S g(X_s),\; X_s\sim \frac{1}{V}h(X).
+\]</div>
+</p>
+</section>
+<section id="how-do-you-factor-the-integrand-f">
+<h3>How Do You Factor the Integrand <span class="math notranslate nohighlight">\(f\)</span>?<a class="headerlink" href="#how-do-you-factor-the-integrand-f" title="Link to this heading">#</a></h3>
+<p>Once we factor <span class="math notranslate nohighlight">\(f(x)\)</span> as <span class="math notranslate nohighlight">\(f(x) = g(x)h(x)\)</span>, then we can rewrite the integral of <span class="math notranslate nohighlight">\(f\)</span> (over <span class="math notranslate nohighlight">\(\Omega\)</span>) as an expectation</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{\Omega} f(x) dx = \int_{\Omega} \left(Vg(x)\right)\left(\frac{1}{V}h(x)\right)dx = \mathbb{E}_{X\sim \frac{1}{V}h(X)}[Vg(X)].
+\]</div>
+<p>But how does one choose <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span>? Two simple things to keep in mind:</p>
+<ol class="arabic simple">
+<li><p>since we need to sample from <span class="math notranslate nohighlight">\(h\)</span>, we need to choose <span class="math notranslate nohighlight">\(h\)</span> such that it is easily approximated by distributions from which we know how to sample.</p></li>
+<li><p>since the variance of the Monte Carlo estimator depends on <span class="math notranslate nohighlight">\(g\)</span>, we should choose <span class="math notranslate nohighlight">\(g\)</span> to be relatively flat (so that the output of <span class="math notranslate nohighlight">\(g\)</span> has low variance).</p></li>
+</ol>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">7.8. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
+<li><p><em><strong>(Marginal Data Log-Likelihood: Secretely Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
+\end{aligned}\]</div>
+<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>Integration Requires Sampling!</strong> Monte Carlo Integration</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Recognize your integral as an expectation:</strong> <div class="math notranslate nohighlight">
+\[\int_\Theta \underbrace{p(\mathbf{y}^*_m | \theta)}_{\text{$f(\theta)$}}\underbrace{p(\theta| \text{Data})}_{\text{pdf of $\theta$}} d\theta = \mathbb{E}_{\theta\sim p(\theta|\text{Data})}\left[ p(\mathbf{y}^*_m | \theta)\right]\]</div>
+</p></li>
+<li><p><strong>Approximate the expectation (theoretical mean) with sampling mean:</strong> <div class="math notranslate nohighlight">
+\[\underbrace{\mathbb{E}_{\theta\sim p(\theta|\text{Data})}\left[ p(\mathbf{y}^*_m | \theta)\right]}_{I} \approx \underbrace{\frac{1}{S}\sum_{s=1}^S p(\mathbf{y}^*_m | \theta_s),\, \theta_s \sim p(\theta | Y)}_{\widehat{I}}\]</div>
+
+Why is this valid again? That is, what are the desirable properties of the estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span>?</p></li>
+<li><p><strong>Reduce the variance of estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span>:</strong> What are the two factors contributing to the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span>?</p>
+<ul>
+<li><p><em>Control Variates:</em></p>
+<ul>
+<li><p>Need to choose <span class="math notranslate nohighlight">\(h(\theta)\)</span> such that …?</p></li>
+<li><p>Need to choose constant <span class="math notranslate nohighlight">\(c\)</span></p></li>
+<li><p>Then <span class="math notranslate nohighlight">\(
+\widehat{I}_{\text{control}} = \frac{1}{S}\sum^S_{s=1} f(\theta_s) - c(h(\theta_s) - \mu_h)
+\)</span></p></li>
+<li><p>How do I get the greatest variance reduction? Why is it hard to achieve? <br><br></p></li>
+</ul>
+</li>
+<li><p><em>Stratified Sampling:</em></p>
+<ul>
+<li><p>Need to choose the strata, e.g. a way to break up the domain of <span class="math notranslate nohighlight">\(\theta\)</span>, such that …?</p></li>
+<li><p>Need to renormalize <span class="math notranslate nohighlight">\(p\)</span> so it’s a pdf over each stratum
+<div class="math notranslate nohighlight">
+\[
+\frac{p(\theta)}{w_m},\quad w_m = \int_{\Theta_m} p(\theta)d\theta.
+\]</div>
+</p></li>
+<li><p>Estimate the integral <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)]\)</span> on each stratum  estimated with <span class="math notranslate nohighlight">\(S_m = w_m * S\)</span> samples</p></li>
+<li><p>Piece together the integral over the entire domain of <span class="math notranslate nohighlight">\(\theta\)</span>
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
+\]</div>
+</p></li>
+</ul>
+</li>
+<li><p><em>Importance Sampling:</em></p>
+<ul>
+<li><p>Need to choose importance distribution <span class="math notranslate nohighlight">\(q(\theta)\)</span> such that …?</p></li>
+<li><p>Sample from your importance distribution and then, instead of trashing samples unlikely under <span class="math notranslate nohighlight">\(p\)</span>, we down-weight their importance in the Monte Carlo sum
+<div class="math notranslate nohighlight">
+\[\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \underbrace{\frac{p(\theta_s|Y)}{q(\theta_s)}}_{\text{Importance Weight}}f(\theta_s), \; \theta_s \sim q(\theta_s)\]</div>
+</p></li>
+<li><p>Why do we need importance sampling? Why is it hard to achieve variance reduction with importance sampling?</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="exercises">
+<h2><span class="section-number">7.9. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-sampling-and-monte-carlo-integration">
+<span id="ps-hw3"></span><h3>Problem Set: Sampling and Monte Carlo Integration<a class="headerlink" href="#problem-set-sampling-and-monte-carlo-integration" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="problem-description">
+<h4>Problem Description<a class="headerlink" href="#problem-description" title="Link to this heading">#</a></h4>
+<p>Let <span class="math notranslate nohighlight">\(X\)</span> be a random variable with distribution described by the following pdf:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+f_X(x) = \begin{cases}
+\frac{1}{12}(x-1), &amp;1\leq x\leq 3\\
+-\frac{1}{12}(x-5), &amp;3&lt; x\leq 5\\
+\frac{1}{6}(x-5), &amp;5&lt; x\leq 7\\
+-\frac{1}{6}(x-9), &amp;7&lt; x\leq 9\\
+0, &amp;otherwise
+\end{cases}
+\end{split}\]</div>
+<p>Let <span class="math notranslate nohighlight">\(h\)</span> be the following function of the random variable <span class="math notranslate nohighlight">\(X\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+h(x) = 7 * \mathrm{exp}\left\{\frac{(x-4)^2}{-2}\right\} + 3 * \mathrm{exp}\left\{\frac{(x-8)^2}{-2 * 0.7^2}\right\}
+\]</div>
+<p>Our goal is to compute the expected value of <span class="math notranslate nohighlight">\(h(X)\)</span>:
+<div class="math notranslate nohighlight">
+\[
+I = \mathbb{E}_{X\sim f_X}\left[h(X)\right] = \int_{\Omega} h(x) f_X(x)dx,
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\Omega\)</span> is the domain of <span class="math notranslate nohighlight">\(f_X\)</span>.</p>
+<div class="admonition-exercise-part-i-implement-some-monte-carlo-estimates admonition">
+<p class="admonition-title">Exercise: Part I. Implement Some Monte Carlo Estimates</p>
+<p>Approximate <span class="math notranslate nohighlight">\(\mathbb{E}_{X\sim f_X}[h(X)]\)</span> using the Monte Carlo integration methods and your choice of a reasonable fixed <span class="math notranslate nohighlight">\(S\)</span> (for rejection sampling, this means run the algorithm <span class="math notranslate nohighlight">\(S\)</span> times):</p>
+<ol class="arabic simple">
+<li><p><em><strong>Inverse CDF Sampling</strong></em> and naive Monte Carlo estimation.<br><br></p></li>
+<li><p><em><strong>Rejection Sampling</strong></em> and naive Monte Carlo estimation, using each of the following</p></li>
+</ol>
+<ul class="simple">
+<li><p>a uniform proposal distribution</p></li>
+<li><p>a normal proposal distribution</p></li>
+</ul>
+<p>and your choice of reasonable parameters for the proposal distributions.<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p><em><strong>Importance Sampling</strong></em> using each of the following</p></li>
+</ol>
+<ul class="simple">
+<li><p>a uniform importance distribution</p></li>
+<li><p>a normal importance distribution</p></li>
+</ul>
+<p>and your choice of reasonable parameters for the importance distributions.<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><em><strong>Stratified Sampling</strong></em> using 4 strata, whose end points are given by
+<div class="math notranslate nohighlight">
+\[
+[1, 3, 5, 7, 9].
+\]</div>
+
+Use inverse cdf sampling on each stratum.</p></li>
+</ol>
+</div>
+<div class="admonition-exercise-part-ii-debug-your-samplers admonition">
+<p class="admonition-title">Exercise: Part II. Debug Your Samplers</p>
+<ol class="arabic simple">
+<li><p>Visualize the pdf <span class="math notranslate nohighlight">\(f_X\)</span> as well as samples obtained from Inverse CDF Sampling and Rejection Sampling (for both proposal distributions). It’s probably better to make separate plots for each set of samples.</p></li>
+</ol>
+<p>What does the comparison say about the quality of your samples? In particular, which sampler (and which proposal distribution) produces “better” samples? Is this surprising – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p>
+<p><strong>Hint:</strong> you might find it helpful to visualize the proposal distributions along with <span class="math notranslate nohighlight">\(f_X\)</span> in your analysis of rejection sampling.<br><br></p>
+<ol class="arabic" start="2">
+<li><p>Visualize the distribution of the importance weights (one for each importance distribution).</p>
+<p>Is the weight distribution surprising – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p>
+<p>What do these importance weights tell you about the quality of your importance sampling estimate?</p>
+<p><strong>Hint:</strong> you might find it helpful to visualize the importnce distributions along with <span class="math notranslate nohighlight">\(f_X\)</span> and <span class="math notranslate nohighlight">\(h\)</span> in your analysis of importance sampling.<br><br></p>
+</li>
+<li><p>Visualize the distribution of all the samples across strata. Is the distribution what you expect – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p></li>
+</ol>
+</div>
+<div class="admonition-exercise-part-iii-variance-reduction admonition">
+<p class="admonition-title">Exercise: Part III: Variance Reduction</p>
+<ol class="arabic simple">
+<li><p>Compute the sample variance of the four Monte Carlo estimates in Part I. Based on the discussions in lecture, which sampling methods (and proposal/importance distributions) is expected, in principle, to resulted in lower variances? How well do your results align with these expectations?<br><br></p></li>
+<li><p>Based on your experiments, would you feel comfortable concluding which type of Monte Carlo estimate will <strong>generally</strong> have the lowest variance? Why or why not?</p></li>
+</ol>
+</div>
+</section>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">7.10. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Monte Carlo Integration</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://www.math.chalmers.se/Stat/Grundutb/CTH/tms150/1415/MC_20141008.pdf" rel="noreferrer" target="_blank">Monte Carlo Integration</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://statweb.stanford.edu/~owen/reports/seis.pdf" rel="noreferrer" target="_blank">Safe and Effective Importance Sampling</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05-sampling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>Sampling for Posterior Simulation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="07-mcmc.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>Markov Chain Monte Carlo</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">7.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics-of-monte-carlo-integration">7.2. Basics of Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-monte-carlo-estimation-of-integrals">Naive Monte Carlo Estimation of Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-consistency-and-unbiasedness-of-monte-carlo-estimators">The Consistency and Unbiasedness of Monte Carlo Estimators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-variance-and-error-of-monte-carlo-estimators">The Variance and Error of Monte Carlo Estimators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-control-variates">7.3. Variance Reduction: Control Variates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-baseline-for-variance-of-monte-carlo-estimates">A Baseline for Variance of Monte Carlo Estimates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-control-variates">The General Idea of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-of-control-variates">Variance of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-nitty-gritty-of-control-variates">The Nitty Gritty of Control Variates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-control-variates">Example: Control Variates</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-stratified-sampling">7.4. Variance Reduction: Stratified Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-stratified-sampling">The General Idea of Stratified Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-stratified-sampling-monte-carlo-estimator">The Stratified Sampling Monte Carlo Estimator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-stratified-sampling">Example: Stratified Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-importance-sampling">7.5. Variance Reduction: Importance Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-general-idea-of-importance-sampling">The General Idea of Importance Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-of-importance-sampling">Variance of Importance Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-nitty-gritty-of-importance-sampling-the-design-of-q">The Nitty Gritty of Importance Sampling: the Design of <span class="math notranslate nohighlight">\(q\)</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-importance-sampling">Example: Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-monte-carlo-integration">7.6. Summary of Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Monte Carlo Integration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variance-reduction-for-monte-carlo-integration">Variance Reduction for Monte Carlo Integration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-monte-carlo-estimation-of-arbitrary-integrals">7.7. Application: Monte Carlo Estimation of Arbitrary Integrals</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-definite-integrals">Arbitrary Definite Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rewriting-an-arbitrary-definite-integral-as-an-expectation">Rewriting an Arbitrary Definite Integral as an Expectation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-you-factor-the-integrand-f">How Do You Factor the Integrand <span class="math notranslate nohighlight">\(f\)</span>?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">7.8. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">7.9. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-sampling-and-monte-carlo-integration">Problem Set: Sampling and Monte Carlo Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-description">Problem Description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">7.10. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1219 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Lab 1: Review of Scientific Computing in Python &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'labs/lab-01-scientific-computing';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/labs/lab-01-scientific-computing.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lab 2: Posterior and Posterior Predictive Simulation" href="lab-02-posterior-simulation.html" />
+    <link rel="prev" title="27. Applications and Broader Impact: Bayesian Deep Learning" href="../chapters/impact-6-bayesian-deep-learning.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../chapters/16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapters/impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Flabs/lab-01-scientific-computing.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/labs/lab-01-scientific-computing.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lab 1: Review of Scientific Computing in Python</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-data">What is Data?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-does-data-come-from">Where Does Data Come From?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-data-look-like">What Does Data Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What Does Data Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-is-your-data-represented-and-stored">How is your data represented and stored?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-attributes-in-tabular-data">Types of Attributes in Tabular Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-the-data-any-good">Is the data any good?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-the-data-data-visualization">Exploring the Data: Data Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-data-visualization">Why Data Visualization?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Why Data Visualization?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-data-visualization-good-for">What is Data Visualization Good For?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">What is Data Visualization Good For?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-data-visualization">Types of Data Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-distributions">Visualizing Distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Visualizing Distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-relationships">Visualizing Relationships</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-comparisons-of-subgroups">Visualizing Comparisons of Subgroups</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypothese">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-tools">Computational Tools</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-for-the-course">Tools for the Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupyter-or-colab-notebooks"><code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> or <code class="docutils literal notranslate"><span class="pre">colab</span></code> Notebooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-colab-notebook-look-like">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-python">Learning <code class="docutils literal notranslate"><span class="pre">python</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-reading-and-manipulating-data"><code class="docutils literal notranslate"><span class="pre">pandas</span></code>: Reading and Manipulating Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas"><code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-series"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-dataframes"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> DataFrames</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-data-with-pandas">Reading Data with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-data-exploration-with-pandas">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-data-manipulation-with-pandas">Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-numerical-computation"><code class="docutils literal notranslate"><span class="pre">numpy</span></code>: Numerical Computation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-arrays"><code class="docutils literal notranslate"><span class="pre">numpy</span></code> Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-arrays">1D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">2D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-2d-arrays">Indexing 2D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-arrays">Filtering Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-linalg-module">The <code class="docutils literal notranslate"><span class="pre">numpy.linalg</span></code> Module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-random-module">The <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> Module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matplotlib-visualization"><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualiztaion-with-matplotlib">Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-types-of-visualizations">Common Types of Visualizations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-simulation-of-statistical-models">Exercise: Simulation of Statistical Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-of-usps-package-processing-time">Model of USPS Package Processing Time</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lab-1-review-of-scientific-computing-in-python">
+<h1>Lab 1: Review of Scientific Computing in Python<a class="headerlink" href="#lab-1-review-of-scientific-computing-in-python" title="Link to this heading">#</a></h1>
+<p>This lab is adapted from AM207 (Harvard). Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this lab</p>
+<ol class="arabic simple">
+<li><p>What Is Data?</p></li>
+<li><p>Exploring Data: Data Visualization</p></li>
+<li><p>Computational Tools</p></li>
+</ol>
+</div>
+<section id="what-is-data">
+<h2>What is Data?<a class="headerlink" href="#what-is-data" title="Link to this heading">#</a></h2>
+</section>
+<section id="where-does-data-come-from">
+<h2>Where Does Data Come From?<a class="headerlink" href="#where-does-data-come-from" title="Link to this heading">#</a></h2>
+<p><strong>Internal sources:</strong> already collected by or is part of the overall data collection of you organization.</p>
+<p><strong>Existing External Sources:</strong> available in ready to read format from an outside source for free or for a fee.</p>
+<p><strong>External Sources Requiring Collection Efforts:</strong> available from external source but acquisition requires special processing.</p>
+</section>
+<section id="what-does-data-look-like">
+<h2>What Does Data Look Like?<a class="headerlink" href="#what-does-data-look-like" title="Link to this heading">#</a></h2>
+<p>Simple or atomic data:</p>
+<ul class="simple">
+<li><p><strong>Numeric:</strong> integers, floats</p></li>
+<li><p><strong>Boolean:</strong> binary or true false values</p></li>
+<li><p><strong>Strings:</strong> sequence of symbols</p></li>
+</ul>
+</section>
+<section id="id1">
+<h2>What Does Data Look Like?<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>Compound, composed of a bunch of atomic types:</p>
+<ul>
+<li><p><strong>Date and time:</strong> compound value with a specific structure</p></li>
+<li><p><strong>Lists:</strong> a list is a sequence of values</p></li>
+<li><p><strong>Dictionaries:</strong> collections of key-value pairs, a pair of values <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">:</span> <span class="pre">y</span></code>, where x is usually a string called key representing the “name” of the value, and y is a value of any type.</p>
+<p><strong>Example:</strong> Student record</p>
+<ul class="simple">
+<li><p>First: Weiwei</p></li>
+<li><p>Last: Pan</p></li>
+<li><p>Nationality: USA</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="how-is-your-data-represented-and-stored">
+<h2>How is your data represented and stored?<a class="headerlink" href="#how-is-your-data-represented-and-stored" title="Link to this heading">#</a></h2>
+<p>Data formats:</p>
+<ul class="simple">
+<li><p><strong>Tabular Data:</strong> a dataset that is a two-dimensional table, where each row typically represents a single data record, and each column represents one type of measurement (csv, xlsx etc.).</p></li>
+<li><p><strong>Structured Data:</strong> each data record is presented in a form of a, possibly complex and multi-tiered, dictionary (json, xml etc.)</p></li>
+<li><p><strong>Semistructured Data:</strong> not all records are represented by the same set of keys or some data records are not represented using the key-value pair structure.</p></li>
+</ul>
+</section>
+<section id="tabular-data">
+<h2>Tabular Data<a class="headerlink" href="#tabular-data" title="Link to this heading">#</a></h2>
+<p>In tabular data, each row or <em><strong>observation</strong></em> represents a set of measurements of a single object or event.</p>
+<figure class="align-center" id="fig-lab1-fig2">
+<img alt="../_images/fig2.jpg" src="../_images/fig2.jpg" />
+</figure>
+<p>Each type of measurement is an <em><strong>attribute</strong></em> of the data. The number of attributes is the <em><strong>dimension</strong></em> of the data.</p>
+</section>
+<section id="types-of-attributes-in-tabular-data">
+<h2>Types of Attributes in Tabular Data<a class="headerlink" href="#types-of-attributes-in-tabular-data" title="Link to this heading">#</a></h2>
+<p>It’s vital to distinguish between classes of attributes based on the type of values they take on.</p>
+<ul>
+<li><p><strong>Quantitative attribute:</strong> a real valued number whose values can be ordered.</p>
+<p><strong>Example:</strong> Height is a quantitative attribute
+<br><br></p>
+</li>
+<li><p><strong>Categorical attribute:</strong> a real valued or string with no inherent order among the values.</p>
+<p><strong>Example:</strong> “What kind of pet you have” is a categorical attribute</p>
+</li>
+</ul>
+</section>
+<section id="is-the-data-any-good">
+<h2>Is the data any good?<a class="headerlink" href="#is-the-data-any-good" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Missing values:</strong> how do we fill in?</p></li>
+<li><p><strong>Wrong values:</strong> how can we detect and correct?</p></li>
+<li><p><strong>Messy format:</strong> how can we convert structured or semistructured data into tabular data?</p></li>
+<li><p><strong>Not usable:</strong> what if the data cannot answer the question posed?</p></li>
+</ul>
+</section>
+<section id="exploring-the-data-data-visualization">
+<h2>Exploring the Data: Data Visualization<a class="headerlink" href="#exploring-the-data-data-visualization" title="Link to this heading">#</a></h2>
+</section>
+<section id="why-data-visualization">
+<h2>Why Data Visualization?<a class="headerlink" href="#why-data-visualization" title="Link to this heading">#</a></h2>
+<p>If I tell you that the average score for the final examis: 7.64/15.</p>
+<p>What does that suggest?</p>
+</section>
+<section id="id2">
+<h2>Why Data Visualization?<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>If I then show you the following graph, what does it suggest?</p>
+<figure class="align-center" id="fig-lab1-fig7">
+<a class="reference internal image-reference" href="../_images/fig7.jpg"><img alt="../_images/fig7.jpg" src="../_images/fig7.jpg" style="width: 385px;" />
+</a>
+</figure>
+</section>
+<section id="what-is-data-visualization-good-for">
+<h2>What is Data Visualization Good For?<a class="headerlink" href="#what-is-data-visualization-good-for" title="Link to this heading">#</a></h2>
+<p>Analyze:</p>
+<ul class="simple">
+<li><p>Identify hidden patterns and trends</p></li>
+<li><p>Help formulate/test hypothese</p></li>
+<li><p>Help determine the next step in analysis/modeling</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>What is Data Visualization Good For?<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>Communicate:</p>
+<ul class="simple">
+<li><p>Present information and ideas succinctly</p></li>
+<li><p>Provide evidence and support</p></li>
+<li><p>Influence and persuade</p></li>
+</ul>
+</section>
+<section id="types-of-data-visualization">
+<h2>Types of Data Visualization<a class="headerlink" href="#types-of-data-visualization" title="Link to this heading">#</a></h2>
+<p>What do you want your visualization to show about your data?</p>
+<ul class="simple">
+<li><p><strong>Distribution:</strong> how a variable or variables in the dataset distribute over a range of possible values.</p></li>
+<li><p><strong>Relationship:</strong> how the values of multiple variables in the dataset relate</p></li>
+<li><p><strong>Composition:</strong> how the dataset breaks down into subgroups</p></li>
+<li><p><strong>Comparison:</strong> how trends in multiple variable or datasets compare</p></li>
+</ul>
+</section>
+<section id="visualizing-distributions">
+<h2>Visualizing Distributions<a class="headerlink" href="#visualizing-distributions" title="Link to this heading">#</a></h2>
+<p>A <em><strong>histogram</strong></em> is a way to visualize how a <strong>quantitative</strong> attribute is distributed across certain values.</p>
+<figure class="align-center" id="fig-lab1-fig8">
+<a class="reference internal image-reference" href="../_images/fig8.jpg"><img alt="../_images/fig8.jpg" src="../_images/fig8.jpg" style="width: 684px;" />
+</a>
+</figure>
+<p><strong>Note:</strong> Trends in histograms are sensitive to number of bins.</p>
+</section>
+<section id="id4">
+<h2>Visualizing Distributions<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>A <em><strong>bar chart</strong></em> is a way to visualize how a <strong>categorical</strong> attribute is distributed across certain values.</p>
+<figure class="align-center" id="fig-lab1-fig4">
+<a class="reference internal image-reference" href="../_images/fig4.jpg"><img alt="../_images/fig4.jpg" src="../_images/fig4.jpg" style="width: 341px;" />
+</a>
+</figure>
+</section>
+<section id="visualizing-relationships">
+<h2>Visualizing Relationships<a class="headerlink" href="#visualizing-relationships" title="Link to this heading">#</a></h2>
+<p>A <em><strong>scatter plot</strong></em> is a way to visualize the relationship between two different attributes.</p>
+<figure class="align-center" id="fig-lab1-fig9">
+<a class="reference internal image-reference" href="../_images/fig9.jpg"><img alt="../_images/fig9.jpg" src="../_images/fig9.jpg" style="width: 381px;" />
+</a>
+</figure>
+</section>
+<section id="visualizing-comparisons-of-subgroups">
+<h2>Visualizing Comparisons of Subgroups<a class="headerlink" href="#visualizing-comparisons-of-subgroups" title="Link to this heading">#</a></h2>
+<p>Plotting multiple histograms or curves on the same axes is a way to visualize how different subgroups of data compare.</p>
+<p><strong>For example:</strong> the following are the blood-glucose distributions of three subgroups within the dataset.</p>
+<figure class="align-center" id="fig-lab1-fig10">
+<a class="reference internal image-reference" href="../_images/fig101.jpg"><img alt="../_images/fig101.jpg" src="../_images/fig101.jpg" style="width: 523px;" />
+</a>
+</figure>
+</section>
+<section id="generating-hypothese">
+<h2>Generating Hypothese<a class="headerlink" href="#generating-hypothese" title="Link to this heading">#</a></h2>
+<p>We can see that birth weight is positively correlated with femur length.</p>
+<figure class="align-center" id="fig-lab1-fig11">
+<a class="reference internal image-reference" href="../_images/fig11.jpg"><img alt="../_images/fig11.jpg" src="../_images/fig11.jpg" style="width: 583px;" />
+</a>
+</figure>
+<p>Can we describe exactly how they are correlated?</p>
+</section>
+<section id="id5">
+<h2>Generating Hypothese<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>We can see that types of iris seem to be distinguished by petal and sepal lengths.</p>
+<figure class="align-center" id="fig-lab1-fig12">
+<a class="reference internal image-reference" href="../_images/fig12.jpg"><img alt="../_images/fig12.jpg" src="../_images/fig12.jpg" style="width: 387px;" />
+</a>
+</figure>
+<p>Can we predict the type of iris given petal and sepal lengths?</p>
+</section>
+<section id="computational-tools">
+<h2>Computational Tools<a class="headerlink" href="#computational-tools" title="Link to this heading">#</a></h2>
+</section>
+<section id="tools-for-the-course">
+<h2>Tools for the Course<a class="headerlink" href="#tools-for-the-course" title="Link to this heading">#</a></h2>
+<p>In all computation in this course, we will be using <code class="docutils literal notranslate"><span class="pre">python</span></code>, for which there are many robust and well documented libraries for machine learning and data science.</p>
+<p>Specifically, we will use
+0. <a class="reference external" href="https://www.anaconda.com/distribution/#download-section" rel="noreferrer" target="_blank"><code class="docutils literal notranslate"><span class="pre">Jupyter</span> <span class="pre">notebook</span></code></a> - a web-based interactive development environment for Jupyter notebooks, code, and data.</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://colab.research.google.com/" rel="noreferrer" target="_blank"><code class="docutils literal notranslate"><span class="pre">colab</span> <span class="pre">notebook</span></code></a> - a Google web app for creating interactive document containing text, equations, live code and outputs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for reading and manipulating data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for data visualization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for manipulating numeric data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library with many machine learning models</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">keras</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for deep learning</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">autograd</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for automatic differentiation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pymc3</span></code> - a python library for performing sampling based inference on models</p></li>
+</ol>
+</section>
+<section id="jupyter-or-colab-notebooks">
+<h2><code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> or <code class="docutils literal notranslate"><span class="pre">colab</span></code> Notebooks<a class="headerlink" href="#jupyter-or-colab-notebooks" title="Link to this heading">#</a></h2>
+</section>
+<section id="what-does-colab-notebook-look-like">
+<h2>What Does Colab Notebook Look Like?<a class="headerlink" href="#what-does-colab-notebook-look-like" title="Link to this heading">#</a></h2>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">https://colab.research.google.com/</span></code></p>
+<figure class="align-center" id="fig-lab1-fig13">
+<a class="reference internal image-reference" href="../_images/fig13.jpg"><img alt="../_images/fig13.jpg" src="../_images/fig13.jpg" style="width: 458px;" />
+</a>
+</figure>
+</section>
+<section id="id6">
+<h2>What Does Colab Notebook Look Like?<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>Each notebook consists of blocks of cells. Each cell can be of two types:  (1) rich text (Markdown) cells or (2) code cells.</p>
+<figure class="align-center" id="fig-lab1-fig14">
+<a class="reference internal image-reference" href="../_images/fig14.jpg"><img alt="../_images/fig14.jpg" src="../_images/fig14.jpg" style="width: 555px;" />
+</a>
+</figure>
+</section>
+<section id="id7">
+<h2>What Does Colab Notebook Look Like?<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>Code is executed by an “computational engine” called the <em><strong>kernel</strong></em> (IPython). The output of the code is displayed directly below..</p>
+<figure class="align-center" id="fig-lab1-fig15">
+<a class="reference internal image-reference" href="../_images/fig15.jpg"><img alt="../_images/fig15.jpg" src="../_images/fig15.jpg" style="width: 558px;" />
+</a>
+</figure>
+</section>
+<section id="id8">
+<h2>What Does Colab Notebook Look Like?<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>Each cell can be executed independently, but once a block of code is executed, it lives in the memory of the kernel.</p>
+<figure class="align-center" id="fig-lab1-fig16">
+<a class="reference internal image-reference" href="../_images/fig16.jpg"><img alt="../_images/fig16.jpg" src="../_images/fig16.jpg" style="width: 448px;" />
+</a>
+</figure>
+</section>
+<section id="learning-python">
+<h2>Learning <code class="docutils literal notranslate"><span class="pre">python</span></code><a class="headerlink" href="#learning-python" title="Link to this heading">#</a></h2>
+<p>The course website contains readings, cheatsheets and tutorials for mastering general <code class="docutils literal notranslate"><span class="pre">python</span></code> programming as well as using <code class="docutils literal notranslate"><span class="pre">python</span></code> libraries for data manipulation/visualization.</p>
+<p><strong>Tips for learning a programmming language:</strong></p>
+<ol class="arabic simple">
+<li><p>Don’t read code line by line (at first)</p></li>
+<li><p>Copy as much as possible (learn patterns and templates)</p></li>
+<li><p>Don’t be afriad to play (trial and error)</p></li>
+<li><p>Read documentation!</p></li>
+</ol>
+</section>
+<section id="pandas-reading-and-manipulating-data">
+<h2><code class="docutils literal notranslate"><span class="pre">pandas</span></code>: Reading and Manipulating Data<a class="headerlink" href="#pandas-reading-and-manipulating-data" title="Link to this heading">#</a></h2>
+</section>
+<section id="pandas">
+<h2><code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#pandas" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> provides ways of storing tabular data along with labels on the rows and columns.</p>
+<p>To use any <code class="docutils literal notranslate"><span class="pre">python</span></code> library, we must include the line</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+<p>After which we may use any function or object in this library using for example, <code class="docutils literal notranslate"><span class="pre">pd.Series()</span></code>.</p>
+</section>
+<section id="pandas-series">
+<h2><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series<a class="headerlink" href="#pandas-series" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series object stores a 1D array of data with an index object (labels).</p>
+<figure class="align-center" id="fig-lab1-fig21">
+<a class="reference internal image-reference" href="../_images/fig21.jpg"><img alt="../_images/fig21.jpg" src="../_images/fig21.jpg" style="width: 635px;" />
+</a>
+</figure>
+</section>
+<section id="id9">
+<h2><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">pandas</span></code> series has a <code class="docutils literal notranslate"><span class="pre">.values</span></code> and an <code class="docutils literal notranslate"><span class="pre">.index</span></code> attribute.</p>
+<figure class="align-center" id="fig-lab1-fig22">
+<a class="reference internal image-reference" href="../_images/fig22.jpg"><img alt="../_images/fig22.jpg" src="../_images/fig22.jpg" style="width: 624px;" />
+</a>
+</figure>
+</section>
+<section id="pandas-dataframes">
+<h2><code class="docutils literal notranslate"><span class="pre">pandas</span></code> DataFrames<a class="headerlink" href="#pandas-dataframes" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">pandas</span></code> DataFrame object stores a 2D table of data with column and row index object (labels).</p>
+<figure class="align-center" id="fig-lab1-fig23">
+<a class="reference internal image-reference" href="../_images/fig23.jpg"><img alt="../_images/fig23.jpg" src="../_images/fig23.jpg" style="width: 393px;" />
+</a>
+</figure>
+<p>Each column in the data frame is a series.</p>
+</section>
+<section id="reading-data-with-pandas">
+<h2>Reading Data with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#reading-data-with-pandas" title="Link to this heading">#</a></h2>
+<p>We can import tabular data in a csv file into a data frame:</p>
+<figure class="align-center" id="fig-lab1-fig24">
+<a class="reference internal image-reference" href="../_images/fig24.jpg"><img alt="../_images/fig24.jpg" src="../_images/fig24.jpg" style="width: 396px;" />
+</a>
+</figure>
+</section>
+<section id="basic-data-exploration-with-pandas">
+<h2>Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#basic-data-exploration-with-pandas" title="Link to this heading">#</a></h2>
+<p>We should start by checking how large is the data.</p>
+<p>We do this by checking the shape of the DataFrame.</p>
+<figure class="align-center" id="fig-lab1-fig26">
+<a class="reference internal image-reference" href="../_images/fig26.jpg"><img alt="../_images/fig26.jpg" src="../_images/fig26.jpg" style="width: 631px;" />
+</a>
+</figure>
+</section>
+<section id="id10">
+<h2>Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<p>We should start by getting a rough sense of what’s in the data.</p>
+<figure class="align-center" id="fig-lab1-fig25">
+<a class="reference internal image-reference" href="../_images/fig25.jpg"><img alt="../_images/fig25.jpg" src="../_images/fig25.jpg" style="width: 462px;" />
+</a>
+</figure>
+</section>
+<section id="id11">
+<h2>Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.head()</span></code> function returns the first <code class="docutils literal notranslate"><span class="pre">N</span></code> rows of your data frame!</p>
+<figure class="align-center" id="fig-lab1-fig27">
+<a class="reference internal image-reference" href="../_images/fig27.jpg"><img alt="../_images/fig27.jpg" src="../_images/fig27.jpg" style="width: 459px;" />
+</a>
+</figure>
+</section>
+<section id="id12">
+<h2>Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">.describe()</span></code> function returns the descriptive stats for each numeric column as a data frame object!</p>
+<figure class="align-center" id="fig-lab1-fig28">
+<a class="reference internal image-reference" href="../_images/fig28.jpg"><img alt="../_images/fig28.jpg" src="../_images/fig28.jpg" style="width: 426px;" />
+</a>
+</figure>
+</section>
+<section id="basic-data-manipulation-with-pandas">
+<h2>Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#basic-data-manipulation-with-pandas" title="Link to this heading">#</a></h2>
+<p>Accessing a column by label:</p>
+<figure class="align-center" id="fig-lab1-fig29">
+<a class="reference internal image-reference" href="../_images/fig29.jpg"><img alt="../_images/fig29.jpg" src="../_images/fig29.jpg" style="width: 287px;" />
+</a>
+</figure>
+</section>
+<section id="id13">
+<h2>Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code><a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<p>Accessing columns by criteria (<em><strong>filtering</strong></em>):</p>
+<figure class="align-center" id="fig-lab1-fig31">
+<a class="reference internal image-reference" href="../_images/fig31.jpg"><img alt="../_images/fig31.jpg" src="../_images/fig31.jpg" style="width: 535px;" />
+</a>
+</figure>
+</section>
+<section id="numpy-numerical-computation">
+<h2><code class="docutils literal notranslate"><span class="pre">numpy</span></code>: Numerical Computation<a class="headerlink" href="#numpy-numerical-computation" title="Link to this heading">#</a></h2>
+</section>
+<section id="numpy-arrays">
+<h2><code class="docutils literal notranslate"><span class="pre">numpy</span></code> Arrays<a class="headerlink" href="#numpy-arrays" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> is a package for scientific computation.</p>
+<p>Notably, it provides an multi-dimensional array object which optimizes storing and manipulating data.</p>
+<p>Each array has a shape, recorded as a tuple <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">m,</span> <span class="pre">...)</span></code>.</p>
+<figure class="align-center" id="fig-lab1-numpy">
+<a class="reference internal image-reference" href="../_images/numpy.jpg"><img alt="../_images/numpy.jpg" src="../_images/numpy.jpg" style="width: 421px;" />
+</a>
+</figure>
+</section>
+<section id="d-arrays">
+<h2>1D Arrays<a class="headerlink" href="#d-arrays" title="Link to this heading">#</a></h2>
+<p>Creating 1D arrays:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">my_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">my_array</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4,)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Computing summary statistic for 1D arrays:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'mean: </span><span class="si">{}</span><span class="s1">, std: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_array</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">my_array</span><span class="o">.</span><span class="n">std</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean: 2.5, std: 1.118033988749895
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id14">
+<h2>2D Arrays<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>Creating 2D arrays:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="n">my_array</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1, 2],
+       [3, 4]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_array</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(2, 2)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="indexing-2d-arrays">
+<h2>Indexing 2D Arrays<a class="headerlink" href="#indexing-2d-arrays" title="Link to this heading">#</a></h2>
+<p>The element at the n-th row and the m-th column is indexed as <code class="docutils literal notranslate"><span class="pre">[n,</span> <span class="pre">m]</span></code>. Just like lists, you can also get multiple array values at a time:</p>
+<figure class="align-center" id="fig-lab1-np-index">
+<a class="reference internal image-reference" href="../_images/np_index.jpg"><img alt="../_images/np_index.jpg" src="../_images/np_index.jpg" style="width: 583px;" />
+</a>
+</figure>
+</section>
+<section id="filtering-arrays">
+<h2>Filtering Arrays<a class="headerlink" href="#filtering-arrays" title="Link to this heading">#</a></h2>
+<p>You can get values from an array that satisfy a bunch of criteria!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_array</span> <span class="o">==</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ True, False],
+       [False, False]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_array</span><span class="p">[(</span><span class="n">my_array</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">my_array</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1, 2])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-numpy-linalg-module">
+<h2>The <code class="docutils literal notranslate"><span class="pre">numpy.linalg</span></code> Module<a class="headerlink" href="#the-numpy-linalg-module" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">numpy</span></code> linear algebra functions provide implementation standard linear algebra algorithms:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">A</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.03414634 -0.00406504]
+ [-0.00487805  0.02439024]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-numpy-random-module">
+<h2>The <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> Module<a class="headerlink" href="#the-numpy-random-module" title="Link to this heading">#</a></h2>
+<p>The functions in <code class="docutils literal notranslate"><span class="pre">random</span></code> simulate sample from different statistical distributions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sample</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.36111975])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sample</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.96233174, 0.57055047]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="matplotlib-visualization">
+<h2><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization<a class="headerlink" href="#matplotlib-visualization" title="Link to this heading">#</a></h2>
+</section>
+<section id="data-visualiztaion-with-matplotlib">
+<h2>Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code><a class="headerlink" href="#data-visualiztaion-with-matplotlib" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> is a plotting library, the <code class="docutils literal notranslate"><span class="pre">pyplot</span></code> module contains a set of functions especially useful for generating a wide range of visualizations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span> <span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'orange'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/55f79176fe64d3505a61eaba5f7a9ee5777b254d58f7ec41335b302d893749ea.png" src="../_images/55f79176fe64d3505a61eaba5f7a9ee5777b254d58f7ec41335b302d893749ea.png" />
+</div>
+</div>
+</section>
+<section id="common-types-of-visualizations">
+<h2>Common Types of Visualizations<a class="headerlink" href="#common-types-of-visualizations" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="fig-lab1-plt-fn">
+<a class="reference internal image-reference" href="../_images/plt_fn.jpg"><img alt="../_images/plt_fn.jpg" src="../_images/plt_fn.jpg" style="width: 592px;" />
+</a>
+</figure>
+</section>
+<section id="exercise-simulation-of-statistical-models">
+<h2>Exercise: Simulation of Statistical Models<a class="headerlink" href="#exercise-simulation-of-statistical-models" title="Link to this heading">#</a></h2>
+</section>
+<section id="model-of-usps-package-processing-time">
+<h2>Model of USPS Package Processing Time<a class="headerlink" href="#model-of-usps-package-processing-time" title="Link to this heading">#</a></h2>
+<p>In this problem we want to model how much time it takes an USPS package processing system to process packages that arrive in a day.</p>
+<p><strong>Assumptions:</strong></p>
+<ol class="arabic simple">
+<li><p>packages arrive randomly in any given hour according to a Poisson distribution. That is, the number of packages <span class="math notranslate nohighlight">\(N\)</span> is distributed as <span class="math notranslate nohighlight">\(Poi(\lambda)\)</span>, with <span class="math notranslate nohighlight">\(\lambda = 3\)</span>.</p></li>
+<li><p>each package has a randomn size <span class="math notranslate nohighlight">\(S\)</span> (measured in <span class="math notranslate nohighlight">\(in^3\)</span>) and weight <span class="math notranslate nohighlight">\(W\)</span> (measured in pounds) jointly distributed as <span class="math notranslate nohighlight">\(\mathcal{N}\left([120, 4], \left[\begin{array}{cc} 1.5&amp; 1\\ 1 &amp; 1.5 \end{array} \right] \right)\)</span>.</p></li>
+<li><p>processing time <span class="math notranslate nohighlight">\(T\)</span> (in seconds) for each package is given by <span class="math notranslate nohighlight">\(T = 60 + 0.6 W + 0.2 S + \epsilon\)</span>, <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 5)\)</span>.</p></li>
+</ol>
+<p><strong>Tasks:</strong></p>
+<ol class="arabic simple">
+<li><p>Compute the expected total weight and size of packages that arrive over a single day. Compute the expected average weight and size of packages that arrive over a single day.</p></li>
+<li><p>Compute the expected number of packages that arrives in a single day.</p></li>
+<li><p>Compute the expected processing time of a single package.</p></li>
+<li><p>Compute the expected processing time of all packages over a single day.</p></li>
+</ol>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./labs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../chapters/impact-6-bayesian-deep-learning.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">27. </span>Applications and Broader Impact: Bayesian Deep Learning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lab-02-posterior-simulation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lab 2: Posterior and Posterior Predictive Simulation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-data">What is Data?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-does-data-come-from">Where Does Data Come From?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-data-look-like">What Does Data Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What Does Data Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-is-your-data-represented-and-stored">How is your data represented and stored?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-attributes-in-tabular-data">Types of Attributes in Tabular Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-the-data-any-good">Is the data any good?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-the-data-data-visualization">Exploring the Data: Data Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-data-visualization">Why Data Visualization?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Why Data Visualization?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-data-visualization-good-for">What is Data Visualization Good For?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">What is Data Visualization Good For?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-data-visualization">Types of Data Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-distributions">Visualizing Distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Visualizing Distributions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-relationships">Visualizing Relationships</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-comparisons-of-subgroups">Visualizing Comparisons of Subgroups</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypothese">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-tools">Computational Tools</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-for-the-course">Tools for the Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupyter-or-colab-notebooks"><code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> or <code class="docutils literal notranslate"><span class="pre">colab</span></code> Notebooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-colab-notebook-look-like">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">What Does Colab Notebook Look Like?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-python">Learning <code class="docutils literal notranslate"><span class="pre">python</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-reading-and-manipulating-data"><code class="docutils literal notranslate"><span class="pre">pandas</span></code>: Reading and Manipulating Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas"><code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-series"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> Series</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-dataframes"><code class="docutils literal notranslate"><span class="pre">pandas</span></code> DataFrames</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-data-with-pandas">Reading Data with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-data-exploration-with-pandas">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Basic Data Exploration with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-data-manipulation-with-pandas">Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Basic Data Manipulation with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-numerical-computation"><code class="docutils literal notranslate"><span class="pre">numpy</span></code>: Numerical Computation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-arrays"><code class="docutils literal notranslate"><span class="pre">numpy</span></code> Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-arrays">1D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">2D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-2d-arrays">Indexing 2D Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-arrays">Filtering Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-linalg-module">The <code class="docutils literal notranslate"><span class="pre">numpy.linalg</span></code> Module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-random-module">The <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> Module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matplotlib-visualization"><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualiztaion-with-matplotlib">Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-types-of-visualizations">Common Types of Visualizations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-simulation-of-statistical-models">Exercise: Simulation of Statistical Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-of-usps-package-processing-time">Model of USPS Package Processing Time</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1178 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Bayesian versus Frequentist Inference &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/04-bayesian-vs-frequentist';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/04-bayesian-vs-frequentist.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Applications and Broader Impact: Foundations of Inference" href="impact-1-foundations.html" />
+    <link rel="prev" title="3. Bayesian Modeling" href="03-bayesian-modeling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/04-bayesian-vs-frequentist.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/04-bayesian-vs-frequentist.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Bayesian versus Frequentist Inference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-bayesian-modeling">4.1. Review of Bayesian Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modeling-process">The Bayesian Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-update">Bayesian Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components-of-bayesian-inference">Components of Bayesian Inference</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-conjugate-and-non-conjugate-models">4.2. Examples of Conjugate and Non-Conjugate Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-variance">Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-model">The Bayesian Model</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-mean">Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">The Bayesian Model</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-unknown-mean-and-variance">Bayesian Model for (Univariate) Gaussian Likelihood with Unknown Mean and Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-conjugate-models">Non-Conjugate Models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connections-with-frequentist-inference">4.3. Connections with Frequentist Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimates-from-the-posterior">Point Estimates from the Posterior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimates-can-be-misleading">Point Estimates Can Be Misleading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-of-posterior-point-estimates-and-mle">Comparison of Posterior Point Estimates and MLE</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-example-revisited-yet-again">The Coin Toss Example: Revisited Yet Again</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#law-of-large-numbers-for-bayesian-inference">Law of Large Numbers for Bayesian Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-comparisons">Computational Comparisons</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">4.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">4.5. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-bayesian-versus-frequentist-inference">Problem Set: Bayesian versus Frequentist Inference</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">4.6. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="bayesian-versus-frequentist-inference">
+<h1><span class="section-number">4. </span>Bayesian versus Frequentist Inference<a class="headerlink" href="#bayesian-versus-frequentist-inference" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/623wr7QsXWA" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Review of Bayesian Modeling</p></li>
+<li><p>Examples of Conjugate and Non-Conjugate Models</p></li>
+<li><p>Connections to Frequentist Inference</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="review-of-bayesian-modeling">
+<h2><span class="section-number">4.1. </span>Review of Bayesian Modeling<a class="headerlink" href="#review-of-bayesian-modeling" title="Link to this heading">#</a></h2>
+<section id="the-bayesian-modeling-process">
+<h3>The Bayesian Modeling Process<a class="headerlink" href="#the-bayesian-modeling-process" title="Link to this heading">#</a></h3>
+<p>In order to make statements about <span class="math notranslate nohighlight">\(Y\)</span>, the outcome, and <span class="math notranslate nohighlight">\(\theta\)</span>, parameters of the distribution generating the data, we form the joint distribution over both variables and use the various marginals/conditional distributions to reason about <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<ol class="arabic simple">
+<li><p>we form the <em><strong>joint distribution</strong></em> over both variables <span class="math notranslate nohighlight">\(p(Y, \theta) = p(Y | \theta) p(\theta)\)</span>.</p></li>
+<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,
+<div class="math notranslate nohighlight">
+\[
+p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
+\]</div>
+
+where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p></li>
+<li><p>before any data is observed, we can simulate data by using our prior
+<div class="math notranslate nohighlight">
+\[
+p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
+\]</div>
+
+where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p></li>
+<li><p>after observing data, we can simulate new data simliar to the observed data by using our posterior
+<div class="math notranslate nohighlight">
+\[
+p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
+\]</div>
+
+where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p></li>
+</ol>
+</section>
+<section id="bayesian-update">
+<h3>Bayesian Update<a class="headerlink" href="#bayesian-update" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-04-bayes">
+<a class="reference internal image-reference" href="../_images/bayes.jpg"><img alt="../_images/bayes.jpg" src="../_images/bayes.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="model-evaluation">
+<h3>Model Evaluation<a class="headerlink" href="#model-evaluation" title="Link to this heading">#</a></h3>
+<p>How do we know that our Bayesian model is a good fit for the data?</p>
+<ol class="arabic simple">
+<li><p><strong>(Log-likelihood)</strong> We can compute the marginal log-likelihood of the data under our posterior. That is, give a set of test data <span class="math notranslate nohighlight">\(\{y^*_1, \ldots, y^*_M\}\)</span>, compute<br><br>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\log \prod_{m=1}^M p(\mathbf{y}^*_m | \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \text{Data}) = \sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
+\end{aligned}\]</div>
+
+<br>This is simply called the <strong>log-likelihood</strong> of the data under the Bayesian model.<br><br></p></li>
+<li><p><strong>(Posterior Predictive Check)</strong> We can also compare the synthetic data generated from our posterior predictive:</p></li>
+<li><p>sample from the posterior <span class="math notranslate nohighlight">\(\theta_s \sim p(\theta | Y)\)</span></p></li>
+<li><p>plug the posterior samples into the likelihood, and sample synthetic data from the likelihood <span class="math notranslate nohighlight">\(Y_s \sim p(Y | \theta_s)\)</span>.</p></li>
+</ol>
+<p>We can then compare the synthetic data from the posterior predictive to the observed data.</p>
+</section>
+<section id="components-of-bayesian-inference">
+<h3>Components of Bayesian Inference<a class="headerlink" href="#components-of-bayesian-inference" title="Link to this heading">#</a></h3>
+<p>We see that in order to evaluate Bayesian models we need to be able to perform two tasks:</p>
+<ol class="arabic simple">
+<li><p>integration over the posterior (required by log-likelihood)</p></li>
+<li><p>sampling from the posterior (required by the posterior predictive check).</p></li>
+</ol>
+<p>Both requirements becomes easier if know the closed form expression for the posterior, e.g. if the prior is conjugate to the likelihood.</p>
+</section>
+</section>
+<section id="examples-of-conjugate-and-non-conjugate-models">
+<h2><span class="section-number">4.2. </span>Examples of Conjugate and Non-Conjugate Models<a class="headerlink" href="#examples-of-conjugate-and-non-conjugate-models" title="Link to this heading">#</a></h2>
+<section id="bayesian-model-for-univariate-gaussian-likelihood-with-known-variance">
+<h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance<a class="headerlink" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-variance" title="Link to this heading">#</a></h3>
+<section id="the-bayesian-model">
+<h4>The Bayesian Model<a class="headerlink" href="#the-bayesian-model" title="Link to this heading">#</a></h4>
+<p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with <span class="math notranslate nohighlight">\(\sigma^2\)</span> known. We place a normal prior on <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\mu\sim\mathcal{N}(m, s^2)\)</span>.</p>
+<p><strong>Question:</strong> is our choice of prior appropriate?</p>
+</section>
+</section>
+<section id="id1">
+<h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\mu|Y)\)</span> is then:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\mu | Y) = \frac{p(Y| \mu)p(\mu)}{p(Y)} = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{1}{\sqrt{2\pi s^2}} \mathrm{exp} \left\{-\frac{(m - \mu)^2}{2s^2}\right\}}^{\text{prior}}}{p(Y)}
+\end{aligned}\]</div>
+</p>
+<p>We can simplify the posterior as:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(\mu | Y) &amp;= const *\frac{\mathrm{exp} \left\{ -\frac{s^2(Y - \mu)^2 + \sigma^2(m - \mu)^2}{2s^2\sigma^2}\right\}}{p(Y)} \\
+&amp;= const *\mathrm{exp} \left\{ \frac{s^2Y^2 + \sigma^2m^2}{\sigma^2 s^2}\right\}\mathrm{exp} \left\{ -\frac{(s^2 + \sigma^2)\mu^2 - 2(s^2Y + \sigma^2m)\mu}{2s^2\sigma^2}\right\}\\
+&amp;= const* \mathrm{exp} \left\{ -\frac{\left(\mu - \frac{s^2Y + \sigma^2m}{s^2 + \sigma^2} \right)^2}{2s^2\sigma^2}\right\}\quad \text{(Completing the square)}
+\end{aligned}\end{split}\]</div>
+
+Thus, we see that the posterior is a normal distribution, <span class="math notranslate nohighlight">\(\mathcal{N}\left(\frac{s^2Y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right)\)</span>.</p>
+</section>
+<section id="bayesian-model-for-univariate-gaussian-likelihood-with-known-mean">
+<h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean<a class="headerlink" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-mean" title="Link to this heading">#</a></h3>
+<section id="id2">
+<h4>The Bayesian Model<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
+<p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with <span class="math notranslate nohighlight">\(\mu\)</span> known. We place an inverse-gamma prior on <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\sim IG(\alpha, \beta)\)</span>.</p>
+<p><strong>Question:</strong> is our choice of prior appropriate?</p>
+</section>
+</section>
+<section id="id3">
+<h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\sigma^2|Y)\)</span> is then:
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\sigma^2 | Y) = \frac{p(Y| \sigma^2)p(\sigma^2)}{p(Y)} = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{\beta^\alpha}{\Gamma(\alpha)} \left( \sigma^2\right)^{-\alpha -1}\mathrm{exp} \left\{-\frac{\beta}{\sigma^2}\right\}}^{\text{prior}}}{p(Y)}
+\end{aligned}\]</div>
+</p>
+<p>We can simplify the posterior as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\sigma^2 | Y) &amp;= const * \left( \sigma^2\right)^{-(\alpha + 0.5) -1}\mathrm{exp} \left\{-\frac{\frac{(Y-\mu)^2}{2} + \beta}{\sigma^2}\right\}
+\end{aligned}\]</div>
+<p>Thus, we see that the posterior is an inverse gamma distribution, <span class="math notranslate nohighlight">\(IG\left(\alpha + 0.5, \frac{(Y-\mu)^2}{2} + \beta\right)\)</span>.</p>
+</section>
+<section id="bayesian-model-for-univariate-gaussian-likelihood-with-unknown-mean-and-variance">
+<h3>Bayesian Model for (Univariate) Gaussian Likelihood with Unknown Mean and Variance<a class="headerlink" href="#bayesian-model-for-univariate-gaussian-likelihood-with-unknown-mean-and-variance" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with both parameters unknown. We place a normal prior on <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\mu\sim\mathcal{N}(m, s^2)\)</span>, and an inverse-gamma prior on <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\sim IG(\alpha, \beta)\)</span>.</p>
+<p>The posterior <span class="math notranslate nohighlight">\(p(\sigma^2|Y)\)</span> is then:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\mu, \sigma^2 | Y)  = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{1}{\sqrt{2\pi s^2}} \mathrm{exp} \left\{-\frac{(m - \mu)^2}{2s^2}\right\}}^{\text{prior on $\mu$}}\overbrace{\frac{\beta^\alpha}{\Gamma(\alpha)} \left( \sigma^2\right)^{-\alpha -1}\mathrm{exp} \left\{-\frac{\beta}{\sigma^2}\right\}}^{\text{prior on $\sigma^2$}}}{p(Y)}
+\end{aligned}\]</div>
+<p>Can the posterior be simplified so that we recognize the form of the distribution?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Bayesian Model for Poisson Likelihood</p>
+<p><strong>The Bayesian Model</strong>
+With the kidney cancer dataset in mind, let <span class="math notranslate nohighlight">\(Y\sim Poi(N\theta)\)</span>, where <span class="math notranslate nohighlight">\(N\)</span> is the total population and <span class="math notranslate nohighlight">\(\theta\)</span> is the underlying cancer rate. We place a gamma prior on <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\theta \sim Ga(\alpha, \beta)\)</span>.</p>
+<p><strong>Question:</strong> is our choice of prior appropriate?</p>
+<p><strong>Inference</strong>
+The posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> is then:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\theta | Y) = \frac{p(Y| \theta)p(\theta)}{p(Y)} = \frac{\overbrace{\frac{(N\theta)^Y}{Y!} \mathrm{exp} \left\{-N\theta\right\}}^{\text{likelihood}} \overbrace{\frac{\beta^\alpha}{\Gamma(\alpha)} \left( \theta\right)^{\alpha -1}\mathrm{exp} \left\{-\beta\theta\right\}}^{\text{prior}}}{p(Y)}
+\end{aligned}\]</div>
+<p>We can simplify the posterior as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\theta | Y) &amp;= const * \theta^{\alpha + Y - 1}\mathrm{exp}\left\{-(N+ \beta)\theta \right\}
+\end{aligned}\]</div>
+<p>Thus, we see that the posterior is a gamma distribution, <span class="math notranslate nohighlight">\(Ga\left(\alpha + Y, N + \beta\right)\)</span>.</p>
+</div>
+</section>
+<section id="non-conjugate-models">
+<h3>Non-Conjugate Models<a class="headerlink" href="#non-conjugate-models" title="Link to this heading">#</a></h3>
+<p>We know that conjugate priors yield closed-form expressions for the posterior. In all our examples, these posteriors have been both easy to sample from and easy to integrate over. That is, we can evaluate our Bayesian models: can compute the log-likelihood of the data and perform posterior predictive checks.</p>
+<p>So why would we ever consider non-conjugate priors?</p>
+<p>Suppose that <span class="math notranslate nohighlight">\(Y\sim \mathcal{N}(\mu, 2)\)</span> represent the height of a person randomly selected from a population. Would the conjugate prior <span class="math notranslate nohighlight">\(\mu\sim \mathcal{N}(5.7, 1)\)</span> be appropriate for this application?</p>
+<p>If we wanted to use the prior <span class="math notranslate nohighlight">\(\mu \sim Ga(5.7, 1)\)</span>, would we be able to derive a closed form expression for the posterior?</p>
+</section>
+</section>
+<section id="connections-with-frequentist-inference">
+<h2><span class="section-number">4.3. </span>Connections with Frequentist Inference<a class="headerlink" href="#connections-with-frequentist-inference" title="Link to this heading">#</a></h2>
+<section id="point-estimates-from-the-posterior">
+<h3>Point Estimates from the Posterior<a class="headerlink" href="#point-estimates-from-the-posterior" title="Link to this heading">#</a></h3>
+<p>If you absolutely wanted to derive a point estimate for the parameters <span class="math notranslate nohighlight">\(\theta\)</span> in the likelihood from your Bayesian model, there are two common ways to do it:</p>
+<ol class="arabic simple">
+<li><p><em><strong>the posterior mean</strong></em>
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{post mean}} = \mathbb{E}_{\theta\sim p(\theta|Y)}\left[ \theta|Y \right] = \int \theta p(\theta|Y) d\theta
+\]</div>
+</p></li>
+<li><p><em><strong>the posterior mode</strong></em> or <em><strong>maximum a posterior (MAP)</strong></em> estimate
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MAP}} = \mathrm{argmax}_{\theta} p(\theta|Y)
+\]</div>
+</p></li>
+</ol>
+<p><strong>Question:</strong> is it better to summarize the entire posterior using a point estimate? I.e. why should we keep the posterior distribution around?</p>
+</section>
+<section id="point-estimates-can-be-misleading">
+<h3>Point Estimates Can Be Misleading<a class="headerlink" href="#point-estimates-can-be-misleading" title="Link to this heading">#</a></h3>
+<p>The posterior mode can be an atypical point:</p>
+<figure class="align-center" id="fig-04-map">
+<a class="reference internal image-reference" href="../_images/map.jpg"><img alt="../_images/map.jpg" src="../_images/map.jpg" style="width: 250px;" />
+</a>
+</figure>
+<p>The posterior mean can be an unlikely point:</p>
+<figure class="align-center" id="fig-04-mean">
+<a class="reference internal image-reference" href="../_images/mean.jpg"><img alt="../_images/mean.jpg" src="../_images/mean.jpg" style="width: 432px;" />
+</a>
+</figure>
+</section>
+<section id="comparison-of-posterior-point-estimates-and-mle">
+<h3>Comparison of Posterior Point Estimates and MLE<a class="headerlink" href="#comparison-of-posterior-point-estimates-and-mle" title="Link to this heading">#</a></h3>
+<p><strong>Beta-Binomial Model for Coin Flips</strong></p>
+<ul class="simple">
+<li><p>Likelihood: <span class="math notranslate nohighlight">\(Bin(N, \theta)\)</span></p></li>
+<li><p>Prior: <span class="math notranslate nohighlight">\(Beta(\alpha, \beta)\)</span></p></li>
+<li><p>MLE: <span class="math notranslate nohighlight">\(\frac{Y}{N}\)</span></p></li>
+<li><p>MAP: <span class="math notranslate nohighlight">\(\frac{Y + \alpha - 1}{N + \alpha + \beta - 2}\)</span></p></li>
+<li><p>Posterior Mean: <span class="math notranslate nohighlight">\(\frac{Y + \alpha}{N + \alpha + \beta}\)</span></p></li>
+</ul>
+<p><strong>Question:</strong> What is the effect of the prior on the posterior point estimates? Imagine if <span class="math notranslate nohighlight">\(Y=10\)</span>, <span class="math notranslate nohighlight">\(N=11\)</span>, <span class="math notranslate nohighlight">\(\alpha=100\)</span>, <span class="math notranslate nohighlight">\(\beta=300\)</span>. What if <span class="math notranslate nohighlight">\(Y=1,000\)</span>, <span class="math notranslate nohighlight">\(N=11,000\)</span>, <span class="math notranslate nohighlight">\(\alpha=1\)</span>, <span class="math notranslate nohighlight">\(\beta=3\)</span>?</p>
+</section>
+<section id="the-coin-toss-example-revisited-yet-again">
+<h3>The Coin Toss Example: Revisited Yet Again<a class="headerlink" href="#the-coin-toss-example-revisited-yet-again" title="Link to this heading">#</a></h3>
+<p>Recall that one way to prevent the MLE from overfitting is to add <em><strong>regularization terms</strong></em>:
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE Reg}} = \frac{Y + \alpha}{N + \beta}.
+\]</div>
+
+This is very similar to the MAP and posterior mean estimates:</p>
+<ul class="simple">
+<li><p>MAP: <span class="math notranslate nohighlight">\(\frac{Y + \alpha - 1}{N + \alpha + \beta - 2}\)</span></p></li>
+<li><p>Posterior Mean: <span class="math notranslate nohighlight">\(\frac{Y + \alpha}{N + \alpha + \beta}\)</span></p></li>
+</ul>
+<p>In fact, we have see that one effect of adding a prior is that it <strong>regularizes</strong> our inference about <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p><strong>Question:</strong> What happens to the MAP and posterior mean estimates as <span class="math notranslate nohighlight">\(N\)</span> (and hence <span class="math notranslate nohighlight">\(Y\)</span>) becomes very large?</p>
+<div class="math notranslate nohighlight">
+\[
+\lim_{N\to \infty} \frac{Y + \alpha - 1}{N + \alpha + \beta - 2} = ?
+\]</div>
+</section>
+<section id="law-of-large-numbers-for-bayesian-inference">
+<h3>Law of Large Numbers for Bayesian Inference<a class="headerlink" href="#law-of-large-numbers-for-bayesian-inference" title="Link to this heading">#</a></h3>
+<p>In general, in Bayesian inference we are <strong>less interested asymptotic behavior</strong>. But the properties of the asymptotic distribution of the posterior can be useful.</p>
+<p><strong>Theorem: (Berstein-von Mises</strong>)</p>
+<p>“Under some conditions, as <span class="math notranslate nohighlight">\(N\to \infty\)</span> the posterior distribution converges to a Gaussian distribution centred at the MLE with covariance matrix given by a function of the Fisher information matrix at the true population parameter value.”</p>
+<p><strong>Consequences</strong></p>
+<ol class="arabic simple">
+<li><p>The posterior point estimates approach the MLE, with large samples sizes. <br><br></p></li>
+<li><p>It may be valid to approximate the posterior with a Gaussian, with large samples sizes. This will become a very important idea during the second half of the course!</p></li>
+</ol>
+</section>
+<section id="computational-comparisons">
+<h3>Computational Comparisons<a class="headerlink" href="#computational-comparisons" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Computation of the MLE is an optimization problem.</strong> Although difficult, there are many established methods for performing optimization (even when the objective function is not convex – i.e. many local optima).</p></li>
+</ol>
+<p>More importantly, there are algorithms to perform general, automatic optimization (e.g. gradient descent) on a large class of functions – that is, we do not need to artisanally solve an optimization problem for each statistical model.<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>Computation of the posterior (thus far) is an process of choosing the right priors and noting that the posterior distribution is of the same type as the prior.</strong> The derivation is simple so long as we use conjugate priors. But many intuitively appropriate priors (like the inverse gamma and normal priors for a univariate gaussian) are not conjugate. In those cases, it becomes intractable to</p></li>
+</ol>
+<ul class="simple">
+<li><p>compute posterior mean</p></li>
+<li><p>simulate samples from the posterior (and hence simulate samples from the posterior predictive)</p></li>
+</ul>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">4.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>What is the Bayesian modeling processing?</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>(Model Definition)</strong> Define the joint model over the data and the model parameters <span class="math notranslate nohighlight">\(p(y, \theta)\)</span>. For this, you need to <em><strong>choose</strong></em>:</p>
+<ul>
+<li><p>the <em><strong>likelihood</strong></em> <span class="math notranslate nohighlight">\(p(y|\theta)\)</span>, e.g. <span class="math notranslate nohighlight">\(y \sim \mathcal{N}(\theta, 2)\)</span></p></li>
+<li><p>then <em><strong>prior</strong></em> <span class="math notranslate nohighlight">\(p(\theta)\)</span>, e.g. <span class="math notranslate nohighlight">\(\theta \sim \mathcal{N}(0, 1)\)</span></p></li>
+</ul>
+</li>
+<li><p><strong>(Model Inference)</strong> Learn the best <em><strong>distribution</strong></em> over models that fits your data, <span class="math notranslate nohighlight">\(p(\theta|y) = \frac{p(y|\theta)p(\theta)}{p(y)}\)</span>.</p></li>
+<li><p><strong>(Model Evaluation)</strong> Why is model evaluation hard? How do you evaluate a <em><strong>distribution</strong></em> over models, especially if we’re not doing regression (i.e. we have no covariates)?</p>
+<ul>
+<li><p>Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. <em><strong>sample from the posterior predictive</strong></em>.</p></li>
+<li><p>Compute the marginal <em><strong>log-likelihood</strong></em> of the data (train or test) over the posterior: <span class="math notranslate nohighlight">\(\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta\)</span><br><br></p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>Why is any of this hard?</p></li>
+</ol>
+<ul class="simple">
+<li><p>How do we choose a prior?</p></li>
+<li><p>How do we compute the posterior distribution? From Piazza: “is there a standard procedure?”</p></li>
+<li><p>How do we sample from the posterior predictive?</p></li>
+<li><p>How do we compute the log-likelihood?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>Remember we said that we can get uncertainties from frequentist approaches to modeling too: by bootstrapping! There are even more connections between frequentist and Bayesian approaches:</p></li>
+</ol>
+<ul class="simple">
+<li><p>Regularization of MLEs can be interpreted as posterior modes of Bayesian models! I.e. regularization terms correspond to (sometimes complex) priors!</p></li>
+<li><p>If we want to mimic the frequentist approach of giving one best model we can reduce the posterior to a <em><strong>point estimate</strong></em>, what is wrong with this approach?</p></li>
+<li><p><strong>(Asymptotic Behavior)</strong> For sufficiently nice likelihoods, as the number of observations approach infinity, the posterior distribution approaches a Gaussian distribution with mean (and mode) centered at the MLE!</p></li>
+<li><p><strong>Wait, why do I care about the connections between frequentist and Bayesian approaches again?</strong></p></li>
+</ul>
+</section>
+<section id="exercises">
+<h2><span class="section-number">4.5. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-bayesian-versus-frequentist-inference">
+<span id="ps-hw2"></span><h3>Problem Set: Bayesian versus Frequentist Inference<a class="headerlink" href="#problem-set-bayesian-versus-frequentist-inference" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">multivariate_normal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_posterior_samples</span><span class="p">(</span><span class="n">prior_var</span><span class="p">,</span> <span class="n">noise_var</span><span class="p">,</span> <span class="n">x_matrix</span><span class="p">,</span> <span class="n">y_matrix</span><span class="p">,</span> <span class="n">x_test_matrix</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''Function to generate posterior predictive samples for Bayesian linear regression model'''</span>
+    <span class="n">prior_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">prior_var</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">prior_precision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">prior_variance</span><span class="p">)</span>
+
+    <span class="n">joint_precision</span> <span class="o">=</span> <span class="n">prior_precision</span> <span class="o">+</span> <span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">)</span> <span class="o">/</span> <span class="n">noise_var</span>
+    <span class="n">joint_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">joint_precision</span><span class="p">)</span>
+    <span class="n">joint_mean</span> <span class="o">=</span> <span class="n">joint_variance</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="n">noise_var</span>
+
+    <span class="c1">#sampling 100 points from the posterior</span>
+    <span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">joint_mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">joint_variance</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+
+    <span class="c1">#take posterior predictive samples</span>
+    <span class="n">posterior_predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">,</span> <span class="n">x_test_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> 
+    <span class="n">posterior_predictive_samples</span> <span class="o">=</span> <span class="n">posterior_predictions</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_var</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">posterior_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">posterior_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">posterior_predictive_samples</span> <span class="o">=</span> <span class="n">posterior_predictive_samples</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span> <span class="o">*</span> <span class="n">posterior_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">posterior_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">posterior_predictions</span><span class="p">,</span> <span class="n">posterior_predictive_samples</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''Function for generating toy regression data'''</span>
+    <span class="c1">#training x</span>
+    <span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">number_of_points</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">number_of_points</span><span class="p">)))</span>
+    <span class="c1">#function relating x and y</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+    <span class="c1">#y is equal to f(x) plus gaussian noise</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">number_of_points</span><span class="p">)</span>
+    <span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span> <span class="n">x_train</span><span class="p">))))))</span>
+    <span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="admonition-exercise-part-i-maximum-likelihood-estimators-for-polynomial-regression admonition">
+<p class="admonition-title">Exercise: Part I: Maximum Likelihood Estimators for Polynomial Regression</p>
+<p>In this problem, you are given a function, <code class="docutils literal notranslate"><span class="pre">generate_data</span></code>, to generate toy datasets with a single predictor <span class="math notranslate nohighlight">\(X\)</span> representing patient age (normalized) and a single outcome <span class="math notranslate nohighlight">\(y\)</span> representing diastolic blood pressure (normalized and rescaled), and your task is to fit polynomial models to the data. That is, assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+y &amp;= f(x) + \epsilon = w_0 + w_1x + w_2x^2 + \ldots + w_Dx^D + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.3)
+\end{aligned}\]</div>
+<p>where the <span class="math notranslate nohighlight">\(w_d\)</span>, the <em>parameters</em> of the function <span class="math notranslate nohighlight">\(f\)</span>, are unknown constants, and the degree <span class="math notranslate nohighlight">\(D\)</span> is a hyperparameter.</p>
+<p>You’ll notice that in these datasets, the test input is sampled from a different distribution that the training input: the training input has a gap, there are no training input values in [-0.5, 0.5], where as the test input are sampled across [-1, 1]. This change of the distributions over the <span class="math notranslate nohighlight">\(x\)</span>-values between training and test is called <strong>covariate shift</strong>.</p>
+<p>These toy datasets simulate a very common problem in machine learning: models are fitted on training data, but during deployment they are given data dissimlar to the training data (i.e. the model encounters covariate shift). As such, you should treat <code class="docutils literal notranslate"><span class="pre">x_train</span></code>, <code class="docutils literal notranslate"><span class="pre">y_train</span></code> as data available during model development and evaluation, and <code class="docutils literal notranslate"><span class="pre">x_test</span></code> as data you encounter during model deployment.</p>
+<p>The goal in this assignment is to explore how to manage the risk of a deployed model under covariate shift. The ideas developed in this assignment will become a major focus in the latter part of the course and the foundation of an active area of current research.</p>
+</div>
+<ol class="arabic simple">
+<li><p><strong>(Effect of Model Complexity)</strong> Generate a toy dataset with 40 observations (set the parameter <code class="docutils literal notranslate"><span class="pre">number_of_points=20</span></code> for <code class="docutils literal notranslate"><span class="pre">generate_data</span></code>, since twice the number of <code class="docutils literal notranslate"><span class="pre">number_of_points</span></code> will be generated), then  visualize the fit of MLE polynomial models, with degrees <span class="math notranslate nohighlight">\(D = [1, 3, 5, 10, 15, 20, 50, 100]\)</span> - you should train on <code class="docutils literal notranslate"><span class="pre">x_train</span></code> and <strong>visualize by predicting on <code class="docutils literal notranslate"><span class="pre">x_test</span></code> provided by the data generating function (<code class="docutils literal notranslate"><span class="pre">x_test</span></code> is a larger set of test points that includes <code class="docutils literal notranslate"><span class="pre">x_train</span></code>)</strong>. You’ll need to be thoughtful about your visualization so that these different models can be visually compared in a meaningful way. <br><br>
+Discuss the effect of the choice of polynomial degree on the fit of the model (concretely describe why certaint choices are unideal in the context of the problem).</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Model Selection)</strong> Later in the course, we will study a number of metrics commonly used for selecting between different MLE models. All of these metric essentially encode Occam’s Razor: select the minimal complexity of model that satisfies some pre-determined modeling goal. <br><br>
+For now, a very simple method for selecting the optimal degree is via cross-validation (by bootstrap):</p></li>
+<li><p>randomly sample two datasets, <code class="docutils literal notranslate"><span class="pre">x_train</span></code>, <code class="docutils literal notranslate"><span class="pre">x_valid</span></code>, from the data generating function: one for training and one for validation. Fit an MLE  polynomial model of degree <span class="math notranslate nohighlight">\(d\)</span> on the training data and evaluate its performance on the validation data. Over <span class="math notranslate nohighlight">\(S\)</span> number of such randomly sampled pairs of datasets, average the model’s validation performance.</p></li>
+<li><p>plot the validation score as a function of model complexity, the polynomial degree <span class="math notranslate nohighlight">\(d\)</span>.</p></li>
+<li><p>based on the plot, select the the minimal degree that achieves a high average validation performance (i.e. look for the ‘elbow’ of the plot).</p></li>
+</ol>
+<p>Explain why performing model selection by cross-validation mitigates the risk of choosing an undesirable polynomial (identified in Problem 1)?<br><br>
+Implement model selection by cross-validation for the toy dataset generated in Problem 1 using MSE as your performance metric and select an optimal degree from <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Uncertainty Estimation)</strong> As you have seen in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>, we often use the bootstrap predictive uncertainty of MLE models as an indicator of our confidence in the model’s output. Increasingly, in practice, decisions making are deferred to human experts when the model’s predictive uncertainty is too high. <br><br>
+Given your understanding of the dataset (<code class="docutils literal notranslate"><span class="pre">x_train</span></code> and <code class="docutils literal notranslate"><span class="pre">x_test</span></code>), describe what the model uncertainty <em><strong>should</strong></em> ideally look like across the input space (i.e. if you plotted the model uncertainty as a function of <span class="math notranslate nohighlight">\(x\)</span>, what would it look like)? Justify your answer: consider the context of the problem - the test input has undergone covariate shift and is dissmilar to the training input, what kind of uncertainty would help you mitigate risk under this condition?<br><br>
+A common practice for estimating predictive uncertainty is to fit a large number of (bootstrap) models on the training data (this collection of models is called an <strong>ensemble</strong>), then, at an input <span class="math notranslate nohighlight">\(x\)</span>, use the variance of the ensemble predictions to estimate the uncertainty at <span class="math notranslate nohighlight">\(x\)</span>. Plot the 95% predictive interval of 200 bootstrap MLE polynomial models for each degree <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>, arrange your plots as  subplots in a single figure. For which polynomial degree do you obtain the predictive uncertainty that is most ideal (according to your description above)? Is this the degree you selected in Problem 2? Explain why you would or would not expect the optimal degree in Problem 2 to yield the most ideal uncertainty estimate.<br><br>
+Make the same plots the 95% predictive intervals for degrees <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>, with models fitted on larger training datasets - set <code class="docutils literal notranslate"><span class="pre">number_of_points</span></code> to 50, 100, 500, 1000 (arrange all these plots in a single figure). What is happening to the predictions of the ensemble in the training data rich region? What is happening to the predictions of the ensemble in the training data poor region? Are these expected behaviours (relate what you see in both cases to the asymptotic properties of MLE)?
+<br><br>
+When the training data is abundant (<code class="docutils literal notranslate"><span class="pre">number_of_points=1000</span></code>), are any of the 95% predictive intervals ideal (according to your description above)? What does this imply about the feasibility of using the variance of the ensemble predictions to estimate predictive uncertainty at an input <span class="math notranslate nohighlight">\(x\)</span>?</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p><strong>(Effect of Regularization)</strong> In practice, MLE models are nearly always trained with regularization (since they tend to overfit to the training data). Here, we will explore the effect of adding <span class="math notranslate nohighlight">\(\ell_2\)</span> regularization to our MLE polynomial models (that is, use the <code class="docutils literal notranslate"><span class="pre">Ridge</span></code> regression model from <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> after augmenting your input with polynomial features). <br><br>
+For a toy dataset with 40 observations (<code class="docutils literal notranslate"><span class="pre">number_of_points=20</span></code>), plot the 95% predictive intervals for degrees <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span> and regularization strengths <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">[5e-3,</span> <span class="pre">1e-2,</span> <span class="pre">1e-1,</span> <span class="pre">1e0,</span> <span class="pre">1e1]</span></code> (you should organize these plots in a grid).<br><br>
+Describe the effect of regularization on the bootstrap uncertainties. Looking at these results, are the goals of <span class="math notranslate nohighlight">\(\ell_2\)</span> regularization and obtaining useful predictive uncertatinty estimation neccessarily well-aligned?</p></li>
+</ol>
+<div class="admonition-exercise-part-ii-bayesian-polynomial-regression admonition">
+<p class="admonition-title">Exercise: Part II: Bayesian Polynomial Regression</p>
+<p>In this problem, your task is to perform Bayesian polynomial regression on the toy datasets in Part I. That is, assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y &amp;= f(x) + \epsilon = w_0 + w_1x + w_2x^2 + \ldots + w_Dx^D + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.3)\\
+w_d &amp;\sim \mathcal{N}(0, \alpha)
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha\)</span> is a hyperparameter and must be fixed before modeling and inference begins.</p>
+</div>
+<ol class="arabic simple">
+<li><p><strong>(Bayesian Kernel Regression)</strong> Just as we can treat a polynomial regression model like a multi-linear regression model after <em><strong>transforming</strong></em> the input data by adding polynomial features. We can treat Bayesian polynomial regression like Bayesian linear regression on top of the transformed inputs. Formally, the map that takes an input <span class="math notranslate nohighlight">\(\mathbf{x}_n \in \mathbb{R}^{D'}\)</span> and transforms it into a new input <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n) \in \mathbb{R}^{D}\)</span> is called a <strong>feature map</strong>, <span class="math notranslate nohighlight">\(\phi: \mathbb{R}^{D'} \to \mathbb{R}^{D}\)</span>, for 1-dimensional input <span class="math notranslate nohighlight">\(x \in \mathbb{R}\)</span>, the polynomial feature map of degree <span class="math notranslate nohighlight">\(D\)</span> is defined by
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\\\phi: \mathbb{R} &amp;\to \mathbb{R}^D\\
+x &amp;\mapsto [1, x, x^2, \ldots, x^D]\\
+\end{aligned}\end{split}\]</div>
+
+<br> Thus, we can write rewrite Bayesian polynomial regression as
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\\y &amp;= \mathbf{w}^\top \mathbf{x} + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.3)\\
+\mathbf{w} &amp;\sim \mathcal{N}(0, \alpha I_{D\times D})\\
+\end{aligned}\end{split}\]</div>
+
+<br>Denote the <span class="math notranslate nohighlight">\(N\times D\)</span> matrix of transformed inputs by <span class="math notranslate nohighlight">\(\Phi\)</span>, where the <span class="math notranslate nohighlight">\(n\)</span>-th row of the matrix is the <span class="math notranslate nohighlight">\(n\)</span>-th input <span class="math notranslate nohighlight">\(\mathbf{x}_n\)</span> transformed by the feature map, <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n)\)</span>. Using this notation, write out the closed form for the posterior for Bayesian polynomial regression in terms of <span class="math notranslate nohighlight">\(\Phi\)</span> (you don’t need to rederive anything, just make the appropriate substitutions in the formula you derived in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>).</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Effect of Model Complexity)</strong> For Bayesian kernel regression, you need to pre-determine the number of features (i.e. <span class="math notranslate nohighlight">\(D\)</span>) and the hyperparameter <span class="math notranslate nohighlight">\(\alpha\)</span> in the prior. For a toy dataset with 40 observations (set number_of_points=20), visualize the 95% posterior predictive interval for <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span> and <span class="math notranslate nohighlight">\(\alpha = [0.1, 1, 5, 10, 100]\)</span> (arrange these visualizations in a grid), using Bayesian polynomial regression.
+<br><br>
+Based on your visualizaion, describe in intuitive terms what is the role of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(D\)</span> in determining the shape of the posterior predictive uncertainty.
+<br><br>
+<em><strong>Hint:</strong></em> Read Problem 3 before implementing Problem 2, you can implement both at the same time.
+<br><br>
+<strong>Extra Credit:</strong> When the feature map <span class="math notranslate nohighlight">\(\phi\)</span> is a general (usually non-linear transformation), applying Bayesian linear regression on the transformed input is called <strong>Bayesian Kernel Regression</strong>. Choose your own non-linear feature map <span class="math notranslate nohighlight">\(\phi: \mathbb{R} \to \mathbb{R}^5\)</span> and visualize the 95% posterior predictive interval of the Bayesian kernel regression for your choice of <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span>, <span class="math notranslate nohighlight">\(\alpha = [0.1, 1, 5, 10, 100]\)</span>. Compare the visualization to the that for Bayesian polynomial regression. Does the posterior predictive of your Bayesian kernel regression capture important properties of the posterior predictive of the Bayesian polynomial regression model?
+<br><br>
+<strong>Note:</strong> we highly recommend that you implement the following feature map:
+<br><br>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\phi: \mathbb{R}^{D'} &amp;\to \mathbb{R}^D\\
+\mathbf{x} &amp;\mapsto \left[\sqrt{\frac{2}{D}} \cos(w_1^\top x + b_1), \ldots, \sqrt{\frac{2}{D}} \cos(w_D^\top x + b_D)\right]
+\end{aligned}\end{split}\]</div>
+
+<br>where <span class="math notranslate nohighlight">\(b_d \sim [0, 2\pi]\)</span> and <span class="math notranslate nohighlight">\(w_d \sim \mathcal{N}(0, \beta I_{D'\times D'})\)</span> need to be randomly sampled and fixed before modeling and inference. For this exercise, we suggest setting <span class="math notranslate nohighlight">\(\beta=10\)</span>. The features generated by <span class="math notranslate nohighlight">\(\phi\)</span> are called <strong>Random Fourier Features</strong>. As the number of features <span class="math notranslate nohighlight">\(D\)</span> tends to infinity, the resulting Bayesian kernel regression model tends to an important type of Bayesian (nonparametric) model called Gaussian Process model. We will revisit the connection between Bayesian kernel regression and Gaussian processes in the latter part of the course.</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Model Evaluation and Uncertainty Estimation)</strong> Remember that a direct visual comparision of the 95% predictive interval against the training data is impractical! Rather, to evaluate the fit of the Bayesian model on the observed data, we evaluate the marginal log-likelihood of the data under the posterior. Given a test set <span class="math notranslate nohighlight">\(\{(\mathbf{x}^*_m, \mathbf{y}^*_m)\}\)</span>, the log posterior predictive likelihood or, simply, the <strong>log-likelihood</strong> is computed as:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\\ \log \prod_{m=1}^M p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data})\\
+&amp;= \sum_{m=1}^M \log \int_\mathbf{w} p(\mathbf{y}^*_m | \mathbf{x}^*_m, \mathbf{w}) p(\mathbf{w}| \text{Data}) d\mathbf{w}
+\end{aligned}\end{split}\]</div>
+
+<br>i.e. the log-likelihood at a single observation <span class="math notranslate nohighlight">\((\mathbf{x}^*_m, \mathbf{y}^*_m)\)</span> is the log of the likelihood of the observation <em><strong>averaged over all models in the posterior</strong></em>.
+<br><br>
+For Bayesian linear regression, with posterior <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_N, \Sigma_N)\)</span> we have that
+<div class="math notranslate nohighlight">
+\[
+p(y^*_m | x^*_m, \text{Data}) = \mathcal{N}(\mu^\top\mathbf{x}^*_m, \sigma^2 + (\mathbf{x}^*_m)^\top\Sigma_N\mathbf{x}^*_m)
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the variance of the observation noise.
+<br><br>
+For each choice of <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> in Problem 2, compute the log-likelihood of the training data. Examine a models with the higher log-likelihoods and a few with lower log-likelihoods, what is the relationship between log-likelihood and predictive uncertainty? In particular, does a higher log-likelihood indicate “better” predictive uncertainty?</p></li>
+</ol>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
+<p>To help you analyze the broader impact of your technology, begin by considering the following questions:</p>
+<p>I. Identify the relevant socio-technical systems</p>
+<ul class="simple">
+<li><p>In what social, political, economic system could the tech be deployed?</p></li>
+<li><p>How would the tech be used in these systems (what role will it take in the decision making processes)?<br><br></p></li>
+</ul>
+<p>II. Identify the stakeholders</p>
+<ul>
+<li><p>Who are the users?</p></li>
+<li><p>Who are the affected communities (are these the users)?</p>
+<p><em><strong>Hint:</strong></em> users are typically decision makers who will use the technology as decision aids (e.g. doctors), whereas affected communities may be folks who are impacted by these decisions but who are not represented in the decision making process (e.g. patients).<br><br></p>
+</li>
+</ul>
+<p>III. What types of harm can this tech do?</p>
+<ul>
+<li><p>What kinds of failures can this tech have?</p></li>
+<li><p>What kinds of direct harm can these failures cause?</p></li>
+<li><p>What kinds of harm can the socio-technical system cause?</p>
+<p><em><strong>Hint:</strong></em> many technical innovations have niche applications, they may sit in a long chain of decision making in a complex system. As such, it may seem, at first glance, that these technologies have no immediate real-life impact. In these cases, it’s helpful to think about the impact of the entire system and then think about how the proposed innovations aid, hamper or change the goals or outcomes of this system.<br><br></p>
+</li>
+</ul>
+<p>IV. What types of good can this tech do?</p>
+<ul class="simple">
+<li><p>What kinds of needs do these users/communities have?</p></li>
+<li><p>What kinds of constraints do these users/communities have?</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><strong>(Impact)</strong>  Analyze the broader impact of these polynomial models. Focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
+</ol>
+<p>Specifically address how predictive uncertainty can impact decision making when the models are deployed.</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Bayesian versus Frequentist Uncertainty)</strong> Compare the types of predictive uncertainties that are generated by Bayesian models and ensembles. Characterize the advantages and disadvantages of bootstrap uncertainties from an ensemble. Describe an situation where it would be better to compute bootstrap uncertainties rather than posterior predictive uncertainties from a Bayesian model.</p></li>
+</ol>
+<p><em><strong>Hint:</strong></em> For example, consider situations where the data is scarce versus situations where the data is abundant; consider situations where clinicians can provide guidance on model selection using domain expertise versus situations where we would not know how patterns in the data would extrapolate to new populations of patients.</p>
+<p>Characterize the advantages and disadvantages of posterior predictive uncertainties from a Bayesian model. Describe an application where it is better to use these uncertainties rather than bootstrap uncertainties from an ensemble.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Measuring Uncertainty)</strong> From your experiments, are any of the model evaluation metrics consdiered in this assignment (MSE, log-likelihood) appropriate for evaluating the quality of predictive uncertainty far away from the training data, that is, if we are concerned about the performance of models under covariate shift should we use these metrics to perform model selection?</p></li>
+</ol>
+<p>Do our commonly used “best practices” of training machine learning models help or hamper our ability to train models with useful predictive uncertainties?</p>
+<p>What would be a good metric for measuring uncertainty? How would you define “good” uncertainty in the first place?</p>
+<p><em><strong>Hint:</strong></em> Can you formulate a definition of “good” uncertainty without referencing a specific down-stream task?</p>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">4.6. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Bayesian versus Frequentist Inference</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://ocw.mit.edu/courses/mathematics/18-05-introduction-to-probability-and-statistics-spring-2014/readings/MIT18_05S14_Reading20.pdf" rel="noreferrer" target="_blank">Comparison of Frequentist and Bayesian Inference</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://ocw.mit.edu/courses/mathematics/18-443-statistics-for-applications-fall-2006/lecture-notes/lecture3.pdf" rel="noreferrer" target="_blank">Properties of MLE: consistency, asymptotic normality, Fisher information</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://jwmi.github.io/ASM/1-FrequentistEvaluations.pdf" rel="noreferrer" target="_blank">Consistency, asymptotic normality, and coverage</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03-bayesian-modeling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Bayesian Modeling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="impact-1-foundations.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Applications and Broader Impact: Foundations of Inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-bayesian-modeling">4.1. Review of Bayesian Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modeling-process">The Bayesian Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-update">Bayesian Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components-of-bayesian-inference">Components of Bayesian Inference</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-conjugate-and-non-conjugate-models">4.2. Examples of Conjugate and Non-Conjugate Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-variance">Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-model">The Bayesian Model</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-mean">Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">The Bayesian Model</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-model-for-univariate-gaussian-likelihood-with-unknown-mean-and-variance">Bayesian Model for (Univariate) Gaussian Likelihood with Unknown Mean and Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-conjugate-models">Non-Conjugate Models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connections-with-frequentist-inference">4.3. Connections with Frequentist Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimates-from-the-posterior">Point Estimates from the Posterior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimates-can-be-misleading">Point Estimates Can Be Misleading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-of-posterior-point-estimates-and-mle">Comparison of Posterior Point Estimates and MLE</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-example-revisited-yet-again">The Coin Toss Example: Revisited Yet Again</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#law-of-large-numbers-for-bayesian-inference">Law of Large Numbers for Bayesian Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-comparisons">Computational Comparisons</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">4.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">4.5. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-bayesian-versus-frequentist-inference">Problem Set: Bayesian versus Frequentist Inference</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">4.6. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

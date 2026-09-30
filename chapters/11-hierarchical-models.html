@@ -1,0 +1,1768 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>13. Hierarchical Models &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/11-hierarchical-models';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/11-hierarchical-models.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="14. Applications and Broader Impact: Latent Variables and Variational Inference" href="impact-3-latent-variables.html" />
+    <link rel="prev" title="12. Bayesian Latent Variable Models and Variational Inference" href="10-variational-inference.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/11-hierarchical-models.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/11-hierarchical-models.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Hierarchical Models</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-statistical-modeling">13.1. Review of Statistical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far-models">What We Can Do So Far: Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far-inference">What We Can Do So Far: Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-can-we-not-do">What Can We Not Do?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happens-after-inference">What Happens After Inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modeling-process">The Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-predictive-distributions">Evaluating the Predictive Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-data-log-likelihood">Interpreting the Data Log-Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-and-quantifying-uncertainty">Evaluating and Quantifying Uncertainty</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-hierarchical-models">13.2. Motivation for Hierarchical Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-binomial-model-for-movie-rankings">A Binomial Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-beta-binomial-model-for-movie-rankings">A Beta-Binomial Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings">Credible Intervals for Movies with the Most and the Least Number of Ratings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model">Emprirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-moments-for-empirical-bayes-ml-ii">Method of Moments for Empirical Bayes (ML-II)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-and-shrinkage">Empirical Bayes and Shrinkage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-models-and-empirical-bayes">13.3. Hierarchical Models and Empirical Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-model-for-movie-rankings">A Hierarchical Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii">Point Estimate Approximations of Inference in Hierachical Models (MAP-II)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">13.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">13.5. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-modeling-kidney-cancer-data">Problem Set: Modeling Kidney Cancer Data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">13.6. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="hierarchical-models">
+<h1><span class="section-number">13. </span>Hierarchical Models<a class="headerlink" href="#hierarchical-models" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/asgSnGXf3YI" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#--------  movie_stats</span>
+<span class="c1"># A function that extracts the number of likes and total number of ratings for a movie</span>
+<span class="c1"># Input: </span>
+<span class="c1">#      movie_name (an optional parameter containing the exact name of the movie)</span>
+<span class="c1">#      movie_name_contains (an optional parameter containing a portion of the name of the movie)</span>
+<span class="c1"># Returns: </span>
+<span class="c1">#      total_ratings (the total number of ratings for a movie)</span>
+<span class="c1">#      likes (the total number of likes for a movie)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">movie_stats</span><span class="p">(</span><span class="n">movie_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">movie_name_contains</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    
+    <span class="c1">#If given an exact movie name:</span>
+    <span class="k">if</span> <span class="n">movie_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>        
+        <span class="c1">#Find the index of the movie, by name, in the "names" dataframe</span>
+        <span class="n">movie_index</span> <span class="o">=</span> <span class="n">names_df</span><span class="p">[</span><span class="n">names_df</span><span class="p">[</span><span class="s1">'movie_name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">movie_name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#Get the id for the movie in the "names" dataframe</span>
+        <span class="n">movie_id</span> <span class="o">=</span> <span class="n">names_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movie_index</span><span class="p">,</span> <span class="s1">'movie_id'</span><span class="p">]</span>
+        <span class="c1">#Get all ratings for the movie, by id, in the "ratings" dataframe</span>
+        <span class="n">ratings_for_movie</span> <span class="o">=</span> <span class="n">ratings_df</span><span class="p">[</span><span class="n">ratings_df</span><span class="p">[</span><span class="s1">'movie_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">movie_id</span><span class="p">]</span>
+        <span class="c1">#Count the total number of ratings</span>
+        <span class="n">total_ratings</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratings_for_movie</span><span class="p">)</span>
+        <span class="c1">#Count the likes (the 1's)</span>
+        <span class="n">likes</span> <span class="o">=</span> <span class="n">ratings_for_movie</span><span class="p">[</span><span class="s1">'rating'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    
+    <span class="c1">#Otherwise, if given a partial movie name:</span>
+    <span class="k">elif</span> <span class="n">movie_name_contains</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#Find the index of the movie, by name, in the "names" dataframe</span>
+        <span class="n">movie_index</span> <span class="o">=</span> <span class="n">names_df</span><span class="p">[</span><span class="n">names_df</span><span class="p">[</span><span class="s1">'movie_name'</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">movie_name_contains</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#Get the id for the movie in the "names" dataframe</span>
+        <span class="n">movie_id</span> <span class="o">=</span> <span class="n">names_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movie_index</span><span class="p">,</span> <span class="s1">'movie_id'</span><span class="p">]</span>
+        <span class="c1">#Get all ratings for the movie, by id, in the "ratings" dataframe</span>
+        <span class="n">ratings_for_movie</span> <span class="o">=</span> <span class="n">ratings_df</span><span class="p">[</span><span class="n">ratings_df</span><span class="p">[</span><span class="s1">'movie_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">movie_id</span><span class="p">]</span>
+        <span class="c1">#Count the total number of ratings</span>
+        <span class="n">total_ratings</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratings_for_movie</span><span class="p">)</span>
+        <span class="c1">#Count the likes (the 1's)</span>
+        <span class="n">likes</span> <span class="o">=</span> <span class="n">ratings_for_movie</span><span class="p">[</span><span class="s1">'rating'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">total_ratings</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">likes</span> <span class="o">=</span> <span class="mf">0.</span>
+    
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">total_ratings</span><span class="p">),</span> <span class="n">likes</span>
+
+<span class="c1">#--------  plot_beta_prior</span>
+<span class="c1"># A function to visualize a beta pdf on a set of axes</span>
+<span class="c1"># Input: </span>
+<span class="c1">#      a (parameter controlling shape of beta prior)</span>
+<span class="c1">#      b (parameter controlling shape of beta prior)</span>
+<span class="c1">#      color (color of beta pdf)</span>
+<span class="c1">#      ax (axes on which to plot pdf)</span>
+<span class="c1"># Returns: </span>
+<span class="c1">#      ax (axes with plot of beta pdf)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_beta_prior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+    
+    <span class="c1">#Create a beta-distributed random variable with shape a, b</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="c1">#Create values from 0 to 1</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="c1">#Plot the beta pdf for values from 0 to 1</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rv</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s1">'-'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'a='</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="s1">', b='</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="c1">#Set title, legend etc</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Beta prior with a='</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="s1">', b='</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="c1">#--------  sample_posterior</span>
+<span class="c1"># A function that samples points from the posterior over a movie's </span>
+<span class="c1"># likability, given a binomial likelihood function and beta prior</span>
+<span class="c1"># Input: </span>
+<span class="c1">#      a (parameter controlling shape of beta prior)</span>
+<span class="c1">#      b (parameter controlling shape of beta prior)</span>
+<span class="c1">#      likes (the number of likes in likelihood)</span>
+<span class="c1">#      ratings (total number of ratings in likelihood)</span>
+<span class="c1">#      n_samples (number of samples to take from posterior)</span>
+<span class="c1"># Returns: </span>
+<span class="c1">#      post_samples (a array of points from the posterior)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_posterior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">ratings</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
+    <span class="c1">#Samples points from a beta distribution </span>
+    <span class="c1">#(the posterior of a binomial likelihood and a beta prior is a beta distribution!)</span>
+    <span class="n">post_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">likes</span><span class="p">,</span> <span class="n">b</span> <span class="o">+</span> <span class="n">ratings</span> <span class="o">-</span> <span class="n">likes</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">post_samples</span>
+
+
+<span class="c1">#--------  find_mode</span>
+<span class="c1"># A function that approximates the mode of a distribution given a sample from the distribution</span>
+<span class="c1"># Input: </span>
+<span class="c1">#      values (samples from the distribution)</span>
+<span class="c1">#      num_bins (number of bins to use in approximating histogram)</span>
+<span class="c1"># Returns: </span>
+<span class="c1">#      mode (the approximate mode of the distribution)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_mode</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">num_bins</span><span class="p">):</span>
+    
+    <span class="c1">#Make an approximation (histogram) of the distribution using the samples</span>
+    <span class="n">bins</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">)</span>
+    <span class="c1">#Find the bin in the histogram with the max height</span>
+    <span class="n">max_height_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+    <span class="c1">#Find the sample corresponding to the bin with the max height (the mode)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">max_height_index</span><span class="p">]</span> <span class="o">+</span> <span class="n">edges</span><span class="p">[</span><span class="n">max_height_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.</span>
+    
+    <span class="k">return</span> <span class="n">mode</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_priors_with_posteriors</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">beta_shapes</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">):</span>
+    <span class="c1">#Start the index of the current subplot at 0</span>
+    <span class="n">ax_ind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#Iterate through all the shapes</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">beta_shapes</span><span class="p">:</span>
+        <span class="c1">#Plot the beta pdf for a particular shape</span>
+        <span class="n">plot_beta_prior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ax_ind</span><span class="p">])</span>
+        <span class="c1">#Increment the subplot index</span>
+          
+        <span class="c1">#Draw samples from the posterior corresponding to a particular beta prior</span>
+        <span class="n">post_samples</span> <span class="o">=</span> <span class="n">sample_posterior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+        <span class="c1">#Approximate the posterior with a histogram of these samples</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax_ind</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="c1">#Find the approximate mode of the posterior</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">find_mode</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="c1">#Plot the mode as a vertical line</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax_ind</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Posterior mode'</span><span class="p">)</span>
+
+        <span class="c1">#Set title, legends etc</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax_ind</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Posterior, with Beta prior (a=</span><span class="si">{}</span><span class="s1">, b=</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax_ind</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+        <span class="c1">#Increment the subplot index</span>
+        <span class="n">ax_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Review of Statistical Modeling</p></li>
+<li><p>Motivation for Hierarchical Models</p></li>
+<li><p>Hierarchical Models and Empirical Bayes</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">logsumexp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="review-of-statistical-modeling">
+<h2><span class="section-number">13.1. </span>Review of Statistical Modeling<a class="headerlink" href="#review-of-statistical-modeling" title="Link to this heading">#</a></h2>
+<section id="what-we-can-do-so-far-models">
+<h3>What We Can Do So Far: Models<a class="headerlink" href="#what-we-can-do-so-far-models" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Likelihood Models with Observed Variables)</strong> When we have observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>, we can model <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> as a random variable <span class="math notranslate nohighlight">\(Y_{\text{Obs}} \sim p(Y |\theta)\)</span> with a known distribution <span class="math notranslate nohighlight">\(p\)</span>.</p></li>
+</ol>
+<ul class="simple">
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a label, we can model it as a <em>Categorical</em> or <em>Bernoulli</em> variable</p></li>
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a count, we can model it as a <em>Binomial</em>, <em>Multinomial</em> or <em>Poisson</em></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is continuous, we can model it as a <em>Gaussian</em>, <em>Exponential</em>, <em>Dirichlet</em> etc<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Likelihood Models with Latent Variables)</strong>  When we also have unobserved data <span class="math notranslate nohighlight">\(Z_{\text{Latent}}\)</span>, we can model <span class="math notranslate nohighlight">\(Z_{\text{Latent}}\)</span> and <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> jointly <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, Z_{\text{Latent}}| \theta)\)</span>.<br><br></p></li>
+<li><p><strong>(Bayesian Models)</strong>  When we are being Bayesian, we <em>assume</em> a prior for <span class="math notranslate nohighlight">\(\theta\)</span>, encoding our knowledge and uncertainty about <span class="math notranslate nohighlight">\(\theta\)</span>. We model parameters and data jointly <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, \theta)\)</span> or <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, Z_{\text{Latent}}, \theta)\)</span>.</p></li>
+</ol>
+</section>
+<section id="what-we-can-do-so-far-inference">
+<h3>What We Can Do So Far: Inference<a class="headerlink" href="#what-we-can-do-so-far-inference" title="Link to this heading">#</a></h3>
+<p>We can make statements about <span class="math notranslate nohighlight">\(\theta\)</span> by performing:</p>
+<p><strong>I.</strong> <em><strong>Maximum Likelihood Estimation:</strong></em> for likelihood models, we compute a fixed value <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> that maximizes the likelihood of the observed data <span class="math notranslate nohighlight">\(Y\)</span>.</p>
+<p><strong>II.</strong> <em><strong>Bayesian Inference:</strong></em> for Bayesian models, we compute the posterior distribution <span class="math notranslate nohighlight">\(p(\theta| Y)\)</span>.</p>
+<p>We choose an <em><strong>inference algorithm or method</strong></em> to perform inference:</p>
+<p><strong>I.</strong> <em><strong>Maximum Likelihood Estimation:</strong></em> <br>
+<strong>A.</strong> For <em>models with observed variables</em>, we <em>analytically</em> solve an unconstrained or contrained optimization problem to obtain <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.<br>
+<strong>B.</strong> For <em>latent variable models</em>, we use <em><strong>expectation maximization</strong></em> to approximately find <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.</p>
+<p><strong>II.</strong> <em><strong>Bayesian Inference:</strong></em> <br>
+<strong>A.</strong> If the prior and likelihood are <em><strong>conjugate</strong></em>, <em>analytically</em> derive the posterior distribution<br>
+<strong>B.</strong> If the posterior distribution does not have a known form, sample from it using a <em><strong>sampler</strong></em>.<br>
+<strong>C.</strong> If the posterior distribution does not have a known form, approximate it using <em><strong>variational inference</strong></em>.</p>
+</section>
+<section id="what-can-we-not-do">
+<h3>What Can We Not Do?<a class="headerlink" href="#what-can-we-not-do" title="Link to this heading">#</a></h3>
+<p><strong>1.</strong> (<em><strong>Regression Models</strong></em>) We don’t have any models where some observed variables <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> depend on other observed variables <span class="math notranslate nohighlight">\(X_{\text{Obs}}\)</span>, i.e. none of our models have covariates that we condition on.</p>
+<p><strong>2.</strong> (<em><strong>Gradient Descent Methods</strong></em>) Analytically optimizing the log-likelihood is not always possible, and when possible it is extremely annoying to do by hand.
+<em>Can we find a way to black-box optimize any objective function?</em></p>
+<p><strong>3.</strong> (<em><strong>Hamiltonian Monte Carlo</strong></em>) MCMC samplers can be extremely inefficient in high-dimensions where the samplers struggle to find area of high mass in the target distribution.
+<em>Can we build a proposal distribution with an indicator of where the target distribution mass is located?</em></p>
+<p><strong>4.</strong> (<em><strong>Black-box Variational Inference etc</strong></em>) Variational inference sounds like a great idea but maximizing the ELBO using coordinate ascent is an artisenal process that requires a massive amount of derivations per model.
+<em>Can we find an algorithm to compute/estimate the gradient of the ELBO that is model independent? Can we perform black-box variational inference?</em></p>
+</section>
+<section id="what-happens-after-inference">
+<h3>What Happens After Inference?<a class="headerlink" href="#what-happens-after-inference" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Predictive Evaluation)</strong> In practice, we do not know the true model <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>! Thus, <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> cannot be evaluated by comparison to <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>.</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> we compute <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> on multiple bootstrap samples of the data; for each <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> we sample <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta_{\text{MLE}})\)</span>. We compare these samples with observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em> we sample <span class="math notranslate nohighlight">\(\theta\)</span>’s from the posterior, for each <span class="math notranslate nohighlight">\(\theta\sim p(\theta |Y_{\text{Obs}})\)</span> we sample <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta)\)</span>. We compare these <em><strong>posterior predictive samples</strong></em> with the observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Uncertainty Evaluation)</strong> Before making decisions with real-life consequence based on your model, you should check the precision of your estimate or uncertainty of you model.</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> repeat the MLE computation on many bootstrap samples of <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>. Compute the confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> and the predictive interval for <span class="math notranslate nohighlight">\(Y\)</span>. These intervals indicate <em>precision</em>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em> Compute credible intervals for the posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> and the predictive intervals of the posterior predictive. These intervals indicate <em>model uncertainty</em>.</p></li>
+</ul>
+</section>
+<section id="the-modeling-process">
+<h3>The Modeling Process<a class="headerlink" href="#the-modeling-process" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-11-modeling">
+<a class="reference internal image-reference" href="../_images/modeling.jpg"><img alt="../_images/modeling.jpg" src="../_images/modeling.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="evaluating-the-predictive-distributions">
+<h3>Evaluating the Predictive Distributions<a class="headerlink" href="#evaluating-the-predictive-distributions" title="Link to this heading">#</a></h3>
+<p>How well does the predictive distribution of bootstrapped MLE models or the posterior predictive of a Bayesian model capture the actual observed data?</p>
+<p>We cannot, in general, perform visual chekcks (i.e. plot the predictive and the data). To quantify how well a predictive distribution aligns with the actual data we can compute:</p>
+<ol class="arabic simple">
+<li><p>The KL-divergence between actual data (<em><strong>empirical distirbution</strong></em>) and our predictive distribution.</p></li>
+<li><p>The log-likelihood of the actual data.</p></li>
+</ol>
+<p><strong>A.</strong> For MLE models: we can compute <span class="math notranslate nohighlight">\(\log p(Y^{\text{Obs}}| \theta_{\text{MLE}})\)</span> for each bootstrap <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and then average the log-likelihood over the number of bootstraps. If there are multiple observations, we would sum the individual log-likelihoods at the end.<br><br></p>
+<p><strong>B.</strong> For Bayesian models: we evaluate the <strong>log-likelihood</strong>, i.e the likelihood of the observed data under the posterior predictive,<br />
+<div class="math notranslate nohighlight">
+\[
+  \log \prod_{n=1}^N \int_{\Theta} p(Y^{\text{Obs}}_n | \theta) p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N) d\theta \approx \sum_{n=1}^N\log \frac{1}{S} \sum_{s=1}^S p(Y^{\text{Obs}}_n | \theta_s), 
+  \]</div>
+
+where <span class="math notranslate nohighlight">\(\theta_s\sim p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N)\)</span></p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## generate training data</span>
+<span class="c1">#number of points in each of the two segments of the domain</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1">#training x</span>
+<span class="n">x_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)))</span>
+<span class="n">x_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+<span class="c1">#output noise variance</span>
+<span class="n">y_var</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="c1">#function relating x and y</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>  <span class="mf">0.01</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+<span class="c1">#y is equal to f(x) plus gaussian noise</span>
+<span class="n">y_1</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x_1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">y_2</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x_2</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+
+<span class="c1">#prior variance for the bayesian model</span>
+<span class="n">prior_var</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1">## generate testing data</span>
+<span class="c1">#nubmer of testing points</span>
+<span class="n">N_test</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1">#testing x</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N_test</span><span class="p">)</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">N_test</span><span class="p">)</span>
+
+<span class="c1">#total number of bootstrap estimates of the MLE</span>
+<span class="n">trials</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1">#set up for polynomial (deg 7) regression</span>
+<span class="n">linear_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">mle_vs_bayesian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">prior_var</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="c1">#transform training x: add polynomial features</span>
+    <span class="n">x_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="c1">#transform x_test: add polynomial features</span>
+    <span class="n">x_test_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="c1">#Gaussian log pdf</span>
+    <span class="n">gaussian_log_pdf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma_sq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">sigma_sq</span><span class="p">)</span>
+    
+    <span class="c1">##fit mle on multiple bootstraps</span>
+    <span class="n">log_likelihood</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y_predict</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trials</span><span class="p">):</span>
+        <span class="c1">#create bootstrap sample from data</span>
+        <span class="n">x_bootstrap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1">#add polynomial features</span>
+        <span class="n">x_bootstrap_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_bootstrap</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="c1">#compute MLE for the coefficients/parameters of the polynomial model </span>
+        <span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_bootstrap_poly</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x_bootstrap</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">N</span><span class="p">))</span>
+        <span class="c1">#predict on x_test using your MLE model</span>
+        <span class="n">prediction</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test_poly</span><span class="p">)</span>
+        <span class="n">y_predict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prediction</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">N_test</span><span class="p">))</span>
+        <span class="c1">#compute log-likelihood of test data</span>
+        <span class="n">log_likelihood</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gaussian_log_pdf</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">y_predict</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_predict</span><span class="p">)</span>
+    <span class="n">log_likelihood</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    
+    <span class="c1">#compute the 95 percentiles of the predictions</span>
+    <span class="n">ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_predict</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_predict</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'train data'</span><span class="p">)</span>
+    <span class="c1">#ax[0].scatter(x_test, y_test, color='black', s=10, alpha=0.5, label='test data')</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"avg train log-likelihood: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'predictive distribution for </span><span class="si">{}</span><span class="s1"> bootstrap estimates of the MLE'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trials</span><span class="p">))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+    
+    <span class="c1">#number of samples from the posterior</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">trials</span>
+    <span class="c1">#add a column of one's representing the bias</span>
+    <span class="n">x_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x_poly</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">x_poly</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))))</span>
+    <span class="c1">#add a column of one's representing the bias</span>
+    <span class="n">x_test_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x_test_poly</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">x_test_poly</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))))</span>
+    <span class="c1">#reshape y into 2D array</span>
+    <span class="n">y_matrix</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">prior_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">prior_var</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">prior_precision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">prior_variance</span><span class="p">)</span>
+
+    <span class="n">joint_precision</span> <span class="o">=</span> <span class="n">prior_precision</span> <span class="o">+</span> <span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_var</span>
+    <span class="n">joint_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">joint_precision</span><span class="p">)</span>
+    <span class="n">joint_mean</span> <span class="o">=</span> <span class="n">joint_variance</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_matrix</span><span class="p">))</span> <span class="o">/</span> <span class="n">y_var</span>
+
+    <span class="c1">#sampling S points from the posterior</span>
+    <span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">joint_mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">joint_variance</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#sampling S points from the posterior predictive</span>
+    <span class="n">y_predict_noiseless</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_test_matrix</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">posterior_samples</span><span class="p">])</span>
+    <span class="n">y_predict_bayes</span> <span class="o">=</span> <span class="n">y_predict_noiseless</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">N_test</span><span class="p">))</span>
+    
+    <span class="n">log_likelihood_bayes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#compute log likelihood for the test data</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)):</span>
+        <span class="n">log_likelihood_bayes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">gaussian_log_pdf</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">y_predict_noiseless</span><span class="p">[:,</span> <span class="n">n</span><span class="p">])))</span>
+    <span class="n">log_likelihood_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">log_likelihood_bayes</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+
+    <span class="c1">#compute the 95 percentiles of the posterior predictives</span>
+    <span class="n">ub_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_predict_bayes</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">lb_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_predict_bayes</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'train data'</span><span class="p">)</span>
+    <span class="c1">#ax[1].scatter(x_test, y_test, color='black', s=10, alpha=0.5, label='test data')</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">ub_bayes</span><span class="p">,</span> <span class="n">lb_bayes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"test log-likelihood: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">log_likelihood_bayes</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'posterior predictive distribution of bayesian regression model with prior variance of </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prior_var</span><span class="p">))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+</section>
+<section id="interpreting-the-data-log-likelihood">
+<h3>Interpreting the Data Log-Likelihood<a class="headerlink" href="#interpreting-the-data-log-likelihood" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">prior_var</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">mle_vs_bayesian</span><span class="p">(</span><span class="n">x_2</span><span class="p">,</span> <span class="n">y_2</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">prior_var</span><span class="o">=</span><span class="n">prior_var</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/db68f11b3f4df709f86cb32efb91a72f9bd51397062760a2f80e920f7e35ac2e.png" src="../_images/db68f11b3f4df709f86cb32efb91a72f9bd51397062760a2f80e920f7e35ac2e.png" />
+</div>
+</div>
+</section>
+<section id="evaluating-and-quantifying-uncertainty">
+<h3>Evaluating and Quantifying Uncertainty<a class="headerlink" href="#evaluating-and-quantifying-uncertainty" title="Link to this heading">#</a></h3>
+<p>How do we know our model uncertainties (confidence intervals, credible intervals, predcitive intervals, posterior predictive intervals) are any good? What information about the data/model do we want our uncertainties to capture?</p>
+<p><strong>Epistemic Uncertainty:</strong> uncertainty due to small number of samples across all scenarios. This can be reduced by more samples!</p>
+<p><strong>Aleatoric Uncertainty:</strong> uncertainty due to the underlying randomness of the data generation process. This cannot be reduced no matter what.</p>
+<p>Can we use log-likelihood of as a metric for the quality of predictive uncertainty?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">mle_vs_bayesian</span><span class="p">(</span><span class="n">x_1</span><span class="p">,</span> <span class="n">y_1</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">prior_var</span><span class="o">=</span><span class="n">prior_var</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7b5f6bae397a1306421cf70f012567ffee715de0706c6898f12ba190d13a8bf5.png" src="../_images/7b5f6bae397a1306421cf70f012567ffee715de0706c6898f12ba190d13a8bf5.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="motivation-for-hierarchical-models">
+<h2><span class="section-number">13.2. </span>Motivation for Hierarchical Models<a class="headerlink" href="#motivation-for-hierarchical-models" title="Link to this heading">#</a></h2>
+<section id="a-binomial-model-for-movie-rankings">
+<h3>A Binomial Model for Movie Rankings<a class="headerlink" href="#a-binomial-model-for-movie-rankings" title="Link to this heading">#</a></h3>
+<p>We model the number of likes <span class="math notranslate nohighlight">\(Y_n\)</span> received by the <span class="math notranslate nohighlight">\(n\)</span>-th movie as a binomial variable <span class="math notranslate nohighlight">\(Y_n | \theta_n\sim Bin(R_n, \theta_n)\)</span>, where <span class="math notranslate nohighlight">\(R_n\)</span> is the number of times the <span class="math notranslate nohighlight">\(n\)</span>-th movies was rated and <span class="math notranslate nohighlight">\(\theta_n\)</span> is the “likeability” of the movie.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratings_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'../data/dataset_4_ratings.txt'</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">)</span>
+<span class="n">ratings_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>user_id</th>
+      <th>movie_id</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22.0</td>
+      <td>377.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>62.0</td>
+      <td>257.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>95.0</td>
+      <td>546.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>38.0</td>
+      <td>95.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>63.0</td>
+      <td>277.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">names_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'../data/dataset_4_movie_names.txt'</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">'|'</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s2">"ISO-8859-1"</span><span class="p">)</span>
+<span class="n">names_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>movie_id</th>
+      <th>movie_name</th>
+      <th>release_date</th>
+      <th>Unnamed: 3</th>
+      <th>link</th>
+      <th>Unnamed: 5</th>
+      <th>Unnamed: 6</th>
+      <th>Unnamed: 7</th>
+      <th>Unnamed: 8</th>
+      <th>Unnamed: 9</th>
+      <th>...</th>
+      <th>Unnamed: 15</th>
+      <th>Unnamed: 16</th>
+      <th>Unnamed: 17</th>
+      <th>Unnamed: 18</th>
+      <th>Unnamed: 19</th>
+      <th>Unnamed: 20</th>
+      <th>Unnamed: 21</th>
+      <th>Unnamed: 22</th>
+      <th>Unnamed: 23</th>
+      <th>Unnamed: 24</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>Toy Story (1995)</td>
+      <td>01-Jan-1995</td>
+      <td>NaN</td>
+      <td>http://us.imdb.com/M/title-exact?Toy%20Story%2...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>GoldenEye (1995)</td>
+      <td>01-Jan-1995</td>
+      <td>NaN</td>
+      <td>http://us.imdb.com/M/title-exact?GoldenEye%20(...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>Four Rooms (1995)</td>
+      <td>01-Jan-1995</td>
+      <td>NaN</td>
+      <td>http://us.imdb.com/M/title-exact?Four%20Rooms%...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>Get Shorty (1995)</td>
+      <td>01-Jan-1995</td>
+      <td>NaN</td>
+      <td>http://us.imdb.com/M/title-exact?Get%20Shorty%...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>Copycat (1995)</td>
+      <td>01-Jan-1995</td>
+      <td>NaN</td>
+      <td>http://us.imdb.com/M/title-exact?Copycat%20(1995)</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 25 columns</p>
+</div></div></div>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Make a list of movie names and their ratings info</span>
+<span class="n">likability_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#Iterate through all the movie names</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names_df</span><span class="p">[</span><span class="s1">'movie_name'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+    <span class="c1">#Get ratings info for movie</span>
+    <span class="n">total_ratings</span><span class="p">,</span> <span class="n">likes</span> <span class="o">=</span> <span class="n">movie_stats</span><span class="p">(</span><span class="n">movie_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="c1">#Add movie info to our list</span>
+    <span class="n">likability_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">likes</span> <span class="o">/</span> <span class="n">total_ratings</span><span class="p">))</span>
+
+<span class="c1">#Sort our list of movie info by like-percentage, in descending order</span>
+<span class="n">sorted_likability</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">likability_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+<span class="c1">#Get the movies with top like-percentage</span>
+<span class="n">top_movies</span> <span class="o">=</span> <span class="n">sorted_likability</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Print results of ranking</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Top 10 Movies'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'****************************'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">movie</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">likable</span> <span class="ow">in</span> <span class="n">top_movies</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="s1">':'</span><span class="p">,</span> <span class="n">likable</span><span class="p">,</span> <span class="s1">'(</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Top 10 Movies
+****************************
+French Twist (Gazon maudit) (1995) : 1.0 (2.0/2.0)
+Exotica (1994) : 1.0 (2.0/2.0)
+Three Colors: Red (1994) : 1.0 (12.0/12.0)
+Three Colors: White (1994) : 1.0 (8.0/8.0)
+Shawshank Redemption, The (1994) : 1.0 (39.0/39.0)
+Brother Minister: The Assassination of Malcolm X (1994) : 1.0 (1.0/1.0)
+Carlito's Way (1993) : 1.0 (4.0/4.0)
+Robert A. Heinlein's The Puppet Masters (1994) : 1.0 (2.0/2.0)
+Horseman on the Roof, The (Hussard sur le toit, Le) (1995) : 1.0 (2.0/2.0)
+Wallace &amp; Gromit: The Best of Aardman Animation (1996) : 1.0 (6.0/6.0)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-beta-binomial-model-for-movie-rankings">
+<h3>A Beta-Binomial Model for Movie Rankings<a class="headerlink" href="#a-beta-binomial-model-for-movie-rankings" title="Link to this heading">#</a></h3>
+<p>We model the number of likes <span class="math notranslate nohighlight">\(Y_n\)</span> received by the <span class="math notranslate nohighlight">\(n\)</span>-th movie as a binomial variable <span class="math notranslate nohighlight">\(Y_n | \theta_n\sim Bin(R_n, \theta_n)\)</span>, we model our prior beliefs and uncertainty about <span class="math notranslate nohighlight">\(\theta\)</span> using a beta distribution <span class="math notranslate nohighlight">\(\theta_n \sim Beta(\alpha, \beta)\)</span>.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#A list of beta distribution shapes to try out</span>
+<span class="n">beta_shapes</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">)]</span>
+<span class="c1">#Length of the list of shapes</span>
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">beta_shapes</span><span class="p">)</span>
+
+<span class="c1">#Get the name of the first movie in the top 25 list</span>
+<span class="n">movie_name</span> <span class="o">=</span> <span class="n">top_movies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1">#Get the ratings info for the first movie in the top 25 list</span>
+<span class="n">likes</span> <span class="o">=</span> <span class="n">top_movies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">total_ratings</span> <span class="o">=</span> <span class="n">top_movies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">likability</span> <span class="o">=</span> <span class="n">top_movies</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="c1">#Number of samples to use when approximating our posterior</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="mi">10000</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">movie_name</span><span class="p">,</span> <span class="n">likability</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">))</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_priors_with_posteriors</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">beta_shapes</span><span class="p">,</span> <span class="n">likes</span><span class="p">,</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>    
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>French Twist (Gazon maudit) (1995): 1.0 (2.0/2.0)
+</pre></div>
+</div>
+<img alt="../_images/424ed69d18317a3711f888f6666db383a2c878aadb3b830836a9a8cb19af8572.png" src="../_images/424ed69d18317a3711f888f6666db383a2c878aadb3b830836a9a8cb19af8572.png" />
+</div>
+</div>
+</section>
+<section id="credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings">
+<h3>Credible Intervals for Movies with the Most and the Least Number of Ratings<a class="headerlink" href="#credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#paramters of our beta prior</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="c1">#sort our list of movie info by like-percentage, in descending order</span>
+<span class="n">sorted_total_ratings</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">likability_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+
+<span class="n">top_n</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1">##function to compute and plot the credible intervals for the movies with the most number of ratings</span>
+<span class="c1">##and the movies with the least number of ratings</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_credible_intervals</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">movie_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">top_n</span><span class="p">):</span>
+        <span class="c1">#compute the credible intervals of the movies with the most number of ratings</span>
+        <span class="n">post_samples</span> <span class="o">=</span> <span class="n">sample_posterior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">S</span><span class="p">)</span>
+        <span class="n">ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">)</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+        <span class="n">movie_names</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        
+        <span class="c1">#plot the credible intervals</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'credible interval of most rated'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">mean</span><span class="p">],</span> <span class="p">[</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'posterior mean of most rated'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE most rated'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">mean</span><span class="p">],</span> <span class="p">[</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="n">top_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">)</span>
+        
+        <span class="c1">#compute the credible intervals of the movies with the least number of ratings</span>
+        <span class="n">post_samples</span> <span class="o">=</span> <span class="n">sample_posterior</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">1</span><span class="p">],</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">2</span><span class="p">],</span> <span class="n">S</span><span class="p">)</span>
+        <span class="n">ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">)</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
+        <span class="n">movie_names</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">0</span><span class="p">]))</span>
+        
+        <span class="c1">#plot the credible intervals</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'credible interval of least rated'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">mean</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'posterior mean of least rated'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE least rated'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">mean</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sorted_total_ratings</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="o">-</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">i</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">)</span>
+
+            
+        <span class="c1">#compute the MLE of the pooled data</span>
+        <span class="n">total_likes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">rating</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">rating</span> <span class="ow">in</span> <span class="n">sorted_total_ratings</span><span class="p">])</span>
+        <span class="n">total_ratings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">rating</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">rating</span> <span class="ow">in</span> <span class="n">sorted_total_ratings</span><span class="p">])</span>
+            
+        <span class="n">movie_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">movie_names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">total_likes</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">total_ratings</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE of pooled data'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">top_n</span><span class="p">,</span> <span class="n">top_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">movie_names</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_credible_intervals</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/49e75dff41d443cc2bf6b612700d7671e332c0bb880299cfdbba0bbc8ddbff6e.png" src="../_images/49e75dff41d443cc2bf6b612700d7671e332c0bb880299cfdbba0bbc8ddbff6e.png" />
+</div>
+</div>
+</section>
+<section id="emprirical-bayes-ml-ii-for-the-beta-binomial-model">
+<h3>Emprirical Bayes (ML-II) For the Beta-Binomial Model<a class="headerlink" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model" title="Link to this heading">#</a></h3>
+<p>Since the prior has a significant impact on the posterior when the number of ratings is small, we want to choose a prior that is appropriate for the data.</p>
+<p><strong>Idea:</strong> choose the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> for the beta prior such that the expected likelihood of the data, over <span class="math notranslate nohighlight">\(\theta_n \sim Beta(\alpha, \beta)\)</span>, is maximized:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(Y_1, \ldots, Y_N| \alpha, \beta) = \prod_{n=1}^N \int_0^1 Bin(Y_n|R_n, \theta_n) Beta(\theta_n|\alpha, \beta)d\theta_n = \prod_{n=1}^N {R_n \choose Y_n}\frac{B(\alpha + Y_n, \beta + R_n - Y_n)}{B(\alpha, \beta)}
+\end{aligned}\]</div>
+<p>where <span class="math notranslate nohighlight">\(B\)</span> is the beta function. The marginal likelihood of the data <span class="math notranslate nohighlight">\(p(Y_1, \ldots, Y_N| a, b)\)</span> is called <em><strong>evidence</strong></em>.</p>
+<p>This method of choosing the hyperparameters of the prior based on the data is called <em><strong>empirical Bayes</strong></em> or <em><strong>type-II maximum likelihood</strong></em>.</p>
+<p><strong>Question:</strong> doens’t this violate the principle of choosing the prior independent of the data?</p>
+</section>
+<section id="method-of-moments-for-empirical-bayes-ml-ii">
+<h3>Method of Moments for Empirical Bayes (ML-II)<a class="headerlink" href="#method-of-moments-for-empirical-bayes-ml-ii" title="Link to this heading">#</a></h3>
+<p>Since each marginal <span class="math notranslate nohighlight">\(p(Y_n| \alpha, \beta)\)</span> is a Beta-Binomial distribution, we know its first two moments:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}\left[Y_n\right] &amp;=  R_n \frac{\alpha}{\alpha + \beta}\\
+\text{Var}\left[Y_n\right] &amp;= \frac{R_n \alpha\beta}{(\alpha + \beta)^2}\frac{\alpha + \beta + R_n}{\alpha + \beta + 1}
+\end{aligned}\end{split}\]</div>
+<p>Now we can make the simplyfying approximations that the <span class="math notranslate nohighlight">\(Y_n\)</span>’s are iid data from the <em>same</em> binomial, i.e. all have the same moments as above. Then we can use empirical moments to approximate the theoretical moments and solve for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\widehat{\mathbb{E}}\left[\frac{Y_n}{R_n}\right] &amp;=  \frac{\alpha}{\alpha + \beta}\\
+\widehat{\text{Var}}\left[\frac{Y_n}{R_n}\right] &amp;= \frac{\alpha\beta}{\overline{R}_n (\alpha + \beta)^2}\frac{\alpha + \beta + \overline{R}_n}{\alpha + \beta + 1}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\widehat{\mathbb{E}}\)</span> is sample mean and <span class="math notranslate nohighlight">\(\widehat{\text{Var}}\)</span> is sample variance and <span class="math notranslate nohighlight">\(\overline{R}_n\)</span> is the average total number of ratings.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">rating</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">rating</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">rating</span> <span class="ow">in</span> <span class="n">sorted_total_ratings</span><span class="p">])</span>
+<span class="n">variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">([</span><span class="n">rating</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">rating</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="k">for</span> <span class="n">rating</span> <span class="ow">in</span> <span class="n">sorted_total_ratings</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">R_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">rating</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">rating</span> <span class="ow">in</span> <span class="n">sorted_total_ratings</span><span class="p">])</span>
+
+<span class="n">alpha_eb</span> <span class="o">=</span> <span class="mf">0.897869</span>
+<span class="n">beta_eb</span> <span class="o">=</span> <span class="mf">0.912247</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+</section>
+<section id="empirical-bayes-and-shrinkage">
+<h3>Empirical Bayes and Shrinkage<a class="headerlink" href="#empirical-bayes-and-shrinkage" title="Link to this heading">#</a></h3>
+<p>Computing the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> of the beta prior on <span class="math notranslate nohighlight">\(\theta\)</span> from the data, allows the ratings rich movies to influence the prior of ratings poor movies, since all movies contribute to the empirical Bayes estimate.</p>
+<p>As a result, the estimates from ratings poor movies tend to <em><strong>shrink</strong></em> towards the population mean more so than ratings rich movies.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_credible_intervals</span><span class="p">(</span><span class="n">alpha_eb</span><span class="p">,</span> <span class="n">beta_eb</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c53c80ce267227574a7e5d7a419aa5a3b312ab3d8495259ed738cd96c171c942.png" src="../_images/c53c80ce267227574a7e5d7a419aa5a3b312ab3d8495259ed738cd96c171c942.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="hierarchical-models-and-empirical-bayes">
+<h2><span class="section-number">13.3. </span>Hierarchical Models and Empirical Bayes<a class="headerlink" href="#hierarchical-models-and-empirical-bayes" title="Link to this heading">#</a></h2>
+<section id="a-hierarchical-model-for-movie-rankings">
+<h3>A Hierarchical Model for Movie Rankings<a class="headerlink" href="#a-hierarchical-model-for-movie-rankings" title="Link to this heading">#</a></h3>
+<p>We model the number of likes <span class="math notranslate nohighlight">\(Y_n\)</span> received by the <span class="math notranslate nohighlight">\(n\)</span>-th movie as a binomial variable <span class="math notranslate nohighlight">\(Y_n|\theta_n\sim Bin(R_n, \theta_n)\)</span>, we model our prior beliefs and uncertainty about <span class="math notranslate nohighlight">\(\theta\)</span> using a beta distribution <span class="math notranslate nohighlight">\(\theta_n \sim Beta(\alpha, \beta)\)</span>; finally, we model our uncertainty about <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> using uniform distributions <span class="math notranslate nohighlight">\(\alpha, \beta\sim U(0.5, 100)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\alpha, \beta &amp;\sim U(0.5, 100)\\
+\theta_n | \alpha, \beta &amp;\sim Beta(\alpha, \beta)\\
+Y_n|\theta_n &amp;\sim Bin(R_n, \theta_n)
+\end{aligned}\end{split}\]</div>
+<p>This is an example of a <em><strong>hierarchical model</strong></em> – a model with multiple layers of unknown variables.</p>
+<p>There are overlaps between hierarchical models and latent variable models. Generally, we want the hiearchy in a <em><strong>hierarchical model</strong></em> to express scientifically meaningful conditional relationships. In <em><strong>latent variable models</strong></em> we want the latent variable to represent unknown aspects of the data rather than unknown parameters of our model.</p>
+</section>
+<section id="point-estimate-approximations-of-inference-in-hierachical-models-map-ii">
+<h3>Point Estimate Approximations of Inference in Hierachical Models (MAP-II)<a class="headerlink" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii" title="Link to this heading">#</a></h3>
+<p>The posterior of the hierarchical model for movie ratings is <span class="math notranslate nohighlight">\(p(\alpha, \beta, \theta_1, \ldots, \theta_N | Y_1, \ldots, Y_N)\)</span>, but since we know how <span class="math notranslate nohighlight">\(\theta_n\)</span> is conditioned on <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>, it is often easier to marginalize out <span class="math notranslate nohighlight">\(\theta_n\)</span> and work with <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>.</p>
+<p>The central idea is that by infering the posterior <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>, <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are influenced by the entire data set and thus ratings poor movies can <em><strong>borrow statistical strength</strong></em> from ratings rich movies through the way <span class="math notranslate nohighlight">\(\theta_n\)</span> depends on <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>.</p>
+<p>However, performing full Bayesian inference on hierarchical models can be difficult. Thus, we can make a point estimate approximation of <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\alpha^*, \beta^* = \text{argmax}_{\alpha, \beta} p(\alpha, \beta |Y_1, \ldots, Y_N).\]</div>
+<p>When we perform the usual Bayesian inference on <span class="math notranslate nohighlight">\(p(Y_n|\theta_n)p(\theta_n|\alpha^*, \beta^*)\)</span>, this is called the <em><strong>type-II MAP method</strong></em>.</p>
+<p>But when <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are uniform random varibles, the above becomes:</p>
+<div class="math notranslate nohighlight">
+\[\alpha^*, \beta^* = \text{argmax}_{\alpha, \beta} p(Y_1, \ldots, Y_N |\alpha, \beta),\]</div>
+<p>When we perform the usual Bayesian inference on <span class="math notranslate nohighlight">\(p(Y_n|\theta_n)p(\theta_n|\alpha^*, \beta^*)\)</span>, this is just our empirical Bayes or type-II MLE method!</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">13.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>The questions we ask today are “When should we be Bayesian? How Bayesian should we be?”</p>
+<p>Consider the kidney cancer data set from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>:
+We posit that the observed number of cases of kidney cancer, <span class="math notranslate nohighlight">\(y_j\)</span>, for the <span class="math notranslate nohighlight">\(j\)</span>-th county (with total population <span class="math notranslate nohighlight">\(n_j\)</span>) is a Poisson random variable that depends on the true underlying cancer rate, <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+y_j | \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N
+\end{aligned}\]</div>
+<ol class="arabic simple">
+<li><p><strong>(The MLE Model)</strong> Why not use MLE estimates of <span class="math notranslate nohighlight">\(\theta\)</span>?
+<span class="math notranslate nohighlight">\(
+\theta_{\text{MLE}} = \frac{y_j}{n_j}
+\)</span></p></li>
+</ol>
+<figure class="align-center" id="fig-11-summary-cancer">
+<a class="reference internal image-reference" href="../_images/cancer.png"><img alt="../_images/cancer.png" src="../_images/cancer.png" style="width: 544px;" />
+</a>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p><strong>(The Bayesian Model)</strong> Why not use choose an arbitrary prior for <span class="math notranslate nohighlight">\(\theta\)</span> or choose a different prior per county?</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j | \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j &amp;\sim Gamma(\alpha, \beta), \quad j = 1, \ldots, N
+\end{aligned}\end{split}\]</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>(The Empirical Bayes Model)</strong> Why should we choose <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> using <em><strong>type-II MLE</strong></em> or <em><strong>empirical Bayes</strong></em>?
+<strong>Idea:</strong> choose the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> for the beta prior such that the <em><strong>evidence</strong></em>, is maximized:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\alpha_{\text{MLE-II}}, \beta_{\text{MLE-II}} = \text{argmax}_{\alpha, \beta} p(Y_1, \ldots, Y_N| \alpha, \beta) = \text{argmax}_{\alpha, \beta} \prod_{j=1}^J \int_0^1 Poisson(Y_j; 5 \cdot n_j \cdot \theta_j) Gamma(\theta_j; \alpha, \beta)d\theta_j
+\end{aligned}\]</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>(The Hierarchical Bayes Model)</strong> Why should we choose to use a <em><strong>hierarchical Bayes model</strong></em>?</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j | \alpha, \beta &amp;\sim Gamma(\alpha, \beta), \quad j = 1, \ldots, N\\
+\alpha &amp;\sim Gamma(a, b)\\
+\beta &amp;\sim Gamma(c, d)
+\end{aligned}\end{split}\]</div>
+<figure class="align-center" id="fig-11-summary-shrinkage">
+<a class="reference internal image-reference" href="../_images/shrinkage.png"><img alt="../_images/shrinkage.png" src="../_images/shrinkage.png" style="width: 544px;" />
+</a>
+</figure>
+<ol class="arabic simple" start="5">
+<li><p><strong>(Broader Impact)</strong> Why should we care so much about which model to choose?</p></li>
+</ol>
+<ul class="simple">
+<li><p>Which downstream decisions might be affected by the predictions of this model and how? So what if I underestimate cancer rates? So what if I overestimate?</p></li>
+<li><p>Which counties are affected by the overfitting tendencies of MLE?</p></li>
+<li><p>Which counties are affected by a poor choice of prior?</p></li>
+<li><p>Who lives in these counties?</p></li>
+<li><p>If your model negatively affects individual lives, would the negative effects be random or exacerbate systemic inequalities?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="6">
+<li><p><strong>(The Small Data within Big Data Problem)</strong> The small data with big data problem is everywhere in machine learning. It might appear under names like “cohort imbalance”, “sampling bias”.</p></li>
+</ol>
+<ul>
+<li><p>Health care: women, people of non-european descent, folks without insurance (and primary care) etc are extremely underrepresented</p></li>
+<li><p>What can go wrong with modeling data with an underrepresented cohort?</p>
+<figure class="align-center" id="fig-11-summary-cohort">
+<a class="reference internal image-reference" href="../_images/cohort.jpg"><img alt="../_images/cohort.jpg" src="../_images/cohort.jpg" style="width: 521px;" />
+</a>
+</figure>
+</li>
+<li><p>Why can’t you just collect more data? <br><br></p></li>
+</ul>
+<ol class="arabic simple" start="7">
+<li><p><strong>(Why Should Engineers and ML Researchers Care About Broader Impact?)</strong> Is it your responsibility as an engineer to care about broader impact? To what extent is this your responsibility?</p></li>
+</ol>
+<ul class="simple">
+<li><p>If you’re just an engineer in a long ML pipeline in an industry setting, how much should you care about broader impact? Don’t company have a legal and ethics department that handles all that?</p></li>
+<li><p>If you’re just a in-house attorney or social scientist at a tech company, what properties of MLE, Bayesian, Empirical Bayes and Hierarchical Bayes models should you know?</p></li>
+</ul>
+</section>
+<section id="exercises">
+<h2><span class="section-number">13.5. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-modeling-kidney-cancer-data">
+<span id="ps-hw5b"></span><h3>Problem Set: Modeling Kidney Cancer Data<a class="headerlink" href="#problem-set-modeling-kidney-cancer-data" title="Link to this heading">#</a></h3>
+<p>In this problem, we will continue to work with the US Kidney Cancer Data set, <code class="docutils literal notranslate"><span class="pre">kcancer.csv</span></code>. This is a dataset of kidney cancer frequencies across the US over 5 years on a per county basis.</p>
+<p><strong>In this problem set, we focus on comparing different types of models for this data set.</strong></p>
+<div class="admonition-exercise-part-i-empirical-bayes admonition">
+<p class="admonition-title">Exercise: Part I: Empirical Bayes</p>
+<p>Let <span class="math notranslate nohighlight">\(N\)</span> be the number of counties; let <span class="math notranslate nohighlight">\(y_j\)</span> the number of kidney cancer case for the <span class="math notranslate nohighlight">\(j\)</span>-th county, <span class="math notranslate nohighlight">\(n_j\)</span> the population of the <span class="math notranslate nohighlight">\(j\)</span>-county and <span class="math notranslate nohighlight">\(\theta_j\)</span> be the underlying kidney cancer rate for that county. The following is a Bayesian model for our data:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j | \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j &amp;\sim Gamma(\alpha, \beta), \quad j = 1, \ldots, N
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are hyper-parameters of the model.</p>
+<ol class="arabic simple">
+<li><p><strong>(Visualize the raw cancer rates)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. What can you say about the counties with the highest and lowest raw cancer rates.<br><br></p></li>
+<li><p><strong>(Empirical Bayes)</strong> Using Empirical Bayes and moment matching, choose values for the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> based on your data. Use these values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> to obtain posterior distributions for each county.</p></li>
+</ol>
+<p><em><strong>Hint:</strong></em> You’ll first need to derive the fact that the <em><strong>evidence</strong></em> for a Poisson-Gamma model has a Negative Binomial distribution.<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Posterior Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the posterior mean cancer rate estimates vs the county population size, highlight these means in green.</p></li>
+</ol>
+<p>Using the scatter plot, explain why using the posterior means (from our model) to estimate cancer rates is preferable to studying the raw rates themselves.</p>
+</div>
+<div class="admonition-exercise-part-ii-hierarchical-bayes admonition">
+<p class="admonition-title">Exercise: Part II: Hierarchical Bayes</p>
+<p>Rather than choosing fixed constants for the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>, following the Bayesian philosophy, we typically put additional priors on quantities of which we are uncertain. That is, we model the kidney cancer rates using a <em><strong>hierarchical model</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j | \alpha, \beta &amp;\sim Ga(\alpha, \beta), \quad j = 1, \ldots, N\\
+\alpha &amp;\sim Ga(a, b)\\
+\beta &amp;\sim Ga(c, d)
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(a, b, c, d\)</span> are hyperparameters.</p>
+<ol class="arabic simple">
+<li><p><strong>(Posterior Marginal Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the mean of the posterior marginal distribution over <span class="math notranslate nohighlight">\(\theta_j\)</span>, i.e. <span class="math notranslate nohighlight">\(p(\theta_j|y_1, \ldots, y_N)\)</span>, vs the county population size (in log scale), highlight these means in orange.</p></li>
+</ol>
+<p>You should use <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> to sample from the posterior. Compare <code class="docutils literal notranslate"><span class="pre">pymc3</span></code>’s sampler with your sampler from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, what is the difference (if any) in the performance of these samplers?<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Hierarchical Bayes vs Empirical Bayes)</strong> Compare the shrinkage of the posterior marginal means of the hierarchical model to the shrinkage of the posterior means from the Bayesian model with empirical Bayes estimates for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>. What is the difference in shrinkage between the full hierarchical model and the Bayesian model with empirical Bayes?</p></li>
+</ol>
+</div>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
+<p>To help you analyze the broader impact of your technology, begin by considering the following questions:</p>
+<p>I. Identify the relevant socio-technical systems</p>
+<ul class="simple">
+<li><p>In what social, political, economic system could the tech be deployed?</p></li>
+<li><p>How would the tech be used in these systems (what role will it take in the decision making processes)?<br><br></p></li>
+</ul>
+<p>II. Identify the stakeholders</p>
+<ul>
+<li><p>Who are the users?</p></li>
+<li><p>Who are the affected communities (are these the users)?</p>
+<p><em><strong>Hint:</strong></em> users are typically decision makers who will use the technology as decision aids (e.g. doctors), whereas affected communities may be folks who are impacted by these decisions but who are not represented in the decision making process (e.g. patients).<br><br></p>
+</li>
+</ul>
+<p>III. What types of harm can this tech do?</p>
+<ul>
+<li><p>What kinds of failures can this tech have?</p></li>
+<li><p>What kinds of direct harm can these failures cause?</p></li>
+<li><p>What kinds of harm can the socio-technical system cause?</p>
+<p><em><strong>Hint:</strong></em> many technical innovations have niche applications, they may sit in a long chain of decision making in a complex system. As such, it may seem, at first glance, that these technologies have no immediate real-life impact. In these cases, it’s helpful to think about the impact of the entire system and then think about how the proposed innovations aid, hamper or change the goals or outcomes of this system.<br><br></p>
+</li>
+</ul>
+<p>IV. What types of good can this tech do?</p>
+<ul class="simple">
+<li><p>What kinds of needs do these users/communities have?</p></li>
+<li><p>What kinds of constraints do these users/communities have?<br><br></p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><strong>(Computational Footprint)</strong>  In the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, we considered the broader impact of the this hierarchical model for kidney cancer: we examined under what circumstances a hierachical model for kidney cancer is more preferable to a MLE model or a Bayesian model with hand-picked priors. In this problem, we compare hierarchical Bayes and empirical Bayes.</p></li>
+</ol>
+<p>In practical terms, what are the real-life advantages and drawbacks of implementing an empirical Bayesian model compared with an hierarchical Bayesian model?</p>
+<p><strong>Hint:</strong> for example, compare how tractable it is to implement the inference algorithm for each model, compare how easy it is to for the inference method for each model to converge (would you know that your training has converged?). Consider also: how easily could a practitioner diagnose the training process and how could they evaluate the model fit and what kinds of computational resurces would be required to train each model.</p>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Mitigation of Potential Negative Impacts)</strong> Based on your answers for the previous question and your broader impact analysis from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, what information would the model designer/engineer need to disclose to the end-users to mitigate potentially negative impacts?</p></li>
+</ol>
+<p><strong>Hint:</strong> consider how your end-user would be able to validate the model (how would they know if the model is working or has ceased to work once it has been deployed), how should the end-user choose between implementing a hiearchical Bayesian model or an empirical Bayesian model, how could the end-user identify and mitigate negative impacts (if they occur).</p>
+</div>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">13.6. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Hierarchical Bayes and Model Selection</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://mfviz.com/hierarchical-models/" rel="noreferrer" target="_blank">Visual explanation for why we do hierarchical modeling</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="http://www.stat.cmu.edu/~brian/463-663/week10/Chapter%2009.pdf" rel="noreferrer" target="_blank">Introduction to Hierarchical Models</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://towardsdatascience.com/taming-false-discoveries-with-empirical-bayes-2ce81aa8f407" rel="noreferrer" target="_blank">Taming False Discoveries with Empirical Bayes</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://www.cse.wustl.edu/~garnett/cse515t/fall_2019/files/lecture_notes/7.pdf" rel="noreferrer" target="_blank">Bayesian Model Selection</a></p></li>
+<li><p>(Advanced) <a class="reference external" href="https://www.stat.cmu.edu/~larry/=stat705/Lecture16.pdf" rel="noreferrer" target="_blank">Model Selection with AIC, BIC etc</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="http://www.stat.columbia.edu/~gelman/research/published/waic_understand3.pdf" rel="noreferrer" target="_blank">Understanding predictive information criteria for Bayesian models</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="10-variational-inference.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">12. </span>Bayesian Latent Variable Models and Variational Inference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="impact-3-latent-variables.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">14. </span>Applications and Broader Impact: Latent Variables and Variational Inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-statistical-modeling">13.1. Review of Statistical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far-models">What We Can Do So Far: Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far-inference">What We Can Do So Far: Inference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-can-we-not-do">What Can We Not Do?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happens-after-inference">What Happens After Inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modeling-process">The Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-predictive-distributions">Evaluating the Predictive Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-data-log-likelihood">Interpreting the Data Log-Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-and-quantifying-uncertainty">Evaluating and Quantifying Uncertainty</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation-for-hierarchical-models">13.2. Motivation for Hierarchical Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-binomial-model-for-movie-rankings">A Binomial Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-beta-binomial-model-for-movie-rankings">A Beta-Binomial Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings">Credible Intervals for Movies with the Most and the Least Number of Ratings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model">Emprirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-moments-for-empirical-bayes-ml-ii">Method of Moments for Empirical Bayes (ML-II)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-and-shrinkage">Empirical Bayes and Shrinkage</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-models-and-empirical-bayes">13.3. Hierarchical Models and Empirical Bayes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-model-for-movie-rankings">A Hierarchical Model for Movie Rankings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii">Point Estimate Approximations of Inference in Hierachical Models (MAP-II)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">13.4. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">13.5. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-modeling-kidney-cancer-data">Problem Set: Modeling Kidney Cancer Data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">13.6. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

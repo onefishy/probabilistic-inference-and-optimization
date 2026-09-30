@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Sampling for Posterior Simulation &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/05-sampling';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/05-sampling.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Monte Carlo Integration" href="06-monte-carlo-integration.html" />
+    <link rel="prev" title="5. Applications and Broader Impact: Foundations of Inference" href="impact-1-foundations.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/05-sampling.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/05-sampling.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Sampling for Posterior Simulation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics-of-sampling">6.1. Basics of Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-sampling">What is Sampling?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-uniform-random-variable-linear-congruence">Simulating a Uniform Random Variable: Linear Congruence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling">6.2. Inverse CDF Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-cumulative-distribution-function">The Cumulative Distribution Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-an-intuition">Inverse CDF Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-algorithm">Inverse CDF Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-proof-of-correctness">Inverse CDF Sampling: Proof of Correctness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-an-exponential-random-variable">Simulating an Exponential Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-bernoulli-random-variable">Simulating a Bernoulli Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-can-we-simulate">What Can We Simulate?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling">6.3. Rejection Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-an-intuition">Rejection Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-algorithm">Rejection Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-efficiency">Rejection Sampling: Efficiency</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-normal-random-variable">Simulating a Normal Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What Can We Simulate?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-rejection-sampling-in-high-dimensions">Limitations of Rejection Sampling in High Dimensions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling">6.4. Gibbs Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semi-conjugate-priors">Semi-Conjugate Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling-an-intuition">Gibbs Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling-algorithm">Gibbs Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-the-posterior-of-a-normal-normal-inverse-gamma-model">Simulating the Posterior of a Normal-Normal-Inverse Gamma Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summarizing-sampling">6.5. Summarizing Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#samplers-for-simulating-random-variables">Samplers for Simulating Random Variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-evaluate-a-sampler">How to Evaluate a Sampler</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-are-we-sampling-again">Why are We Sampling Again?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-if-we-want-posterior-point-estimates">What If We Want Posterior Point Estimates?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">6.6. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">6.7. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="sampling-for-posterior-simulation">
+<h1><span class="section-number">6. </span>Sampling for Posterior Simulation<a class="headerlink" href="#sampling-for-posterior-simulation" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/aRVIJpPPg3o" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Basics of Sampling</p></li>
+<li><p>Inverse CDF Sampling</p></li>
+<li><p>Rejection Sampling</p></li>
+<li><p>Gibbs Sampling</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="basics-of-sampling">
+<h2><span class="section-number">6.1. </span>Basics of Sampling<a class="headerlink" href="#basics-of-sampling" title="Link to this heading">#</a></h2>
+<section id="motivation">
+<h3>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h3>
+<p>Note that nearly <em>every</em> computation for Bayesian models requires us being able to obtain samples from the posterior:</p>
+<ol class="arabic simple">
+<li><p>Generating synethtic data from the posterior predictive require us to sample from the model parameters from the posterior, and then sample data given each of these parameters samples.</p></li>
+<li><p>Empirically computing the posterior predictive mean requires samples from the posterior.</p></li>
+<li><p>Evaluating the fit of the Bayesian model, i.e. empirically computing the marginal data log-likelihood, requires us to average the likelihood of the data over parameter samples from the posterior.</p></li>
+</ol>
+<p>This is why Bayesian inference relies crucially on the tractability of the posterior. And yet, the posterior of most Bayesian models do not have nice simple closed forms! So how to we sample from these posteriors?</p>
+</section>
+<section id="what-is-sampling">
+<h3>What is Sampling?<a class="headerlink" href="#what-is-sampling" title="Link to this heading">#</a></h3>
+<p>Given a distribution <span class="math notranslate nohighlight">\(p(x)\)</span> over a space <span class="math notranslate nohighlight">\(\mathbb{R}^D\)</span>, <em><strong>sampling</strong></em> <span class="math notranslate nohighlight">\(x \sim p(x)\)</span> means to generate a random <span class="math notranslate nohighlight">\(x\in \mathbb{R}^D\)</span>, such that the asymptotic frequencies of the samples generated is described by the pdf <span class="math notranslate nohighlight">\(p(x)\)</span>.</p>
+<p>A <em><strong>sampler</strong></em> is an algorithm or procedure that produces numbers with a certain distribution <span class="math notranslate nohighlight">\(p(x)\)</span>.</p>
+<p>In practice, “random numbers” are simulated using deterministic algorithms called <em><strong>pseudo number generators</strong></em>. A pseudo number generator takes an initial value, the <em><strong>random seed</strong></em>, and produces an array of random looking numbers (from a uniform distribution).</p>
+<p><strong>Note:</strong> for a given pseudo number generator, if the random seed is fixed then the random number output will also be fixed.</p>
+</section>
+<section id="simulating-a-uniform-random-variable-linear-congruence">
+<h3>Simulating a Uniform Random Variable: Linear Congruence<a class="headerlink" href="#simulating-a-uniform-random-variable-linear-congruence" title="Link to this heading">#</a></h3>
+<p>Fix an integer <span class="math notranslate nohighlight">\(c &gt; N\)</span> and fix integers <span class="math notranslate nohighlight">\(a, b &gt; 0\)</span>.</p>
+<ol class="arabic simple">
+<li><p>seed: set an integer <span class="math notranslate nohighlight">\(0\leq s_0 &lt; c\)</span></p></li>
+<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times: <div class="math notranslate nohighlight">
+\[s_n = (as_{n-1} + b)_{\text{mod } c}\]</div>
+</p></li>
+</ol>
+<p>Output is an array of random integers <span class="math notranslate nohighlight">\([s_0, \ldots, s_N]\)</span> in <span class="math notranslate nohighlight">\([0, c]\)</span>.</p>
+<p>For an array of random real numbers in <span class="math notranslate nohighlight">\([0, 1]\)</span>, we compute <span class="math notranslate nohighlight">\(\left[\frac{s_0}{c}, \ldots, \frac{s_N}{c}\right]\)</span>.</p>
+<p>We’ll see that <strong>the simulation of all random variables is based on the simulation of the uniform distribution over <span class="math notranslate nohighlight">\([0, 1]\)</span></strong>!</p>
+<p><strong>Note:</strong> the apparent randomness of the output is sensitive to choices of <span class="math notranslate nohighlight">\(a, b, c\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#parameters of linear congruence algorithm</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1">#total number of simulations</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="c1">#random seed</span>
+<span class="n">s_current</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1">#array of random numbers</span>
+<span class="n">random_numbers</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#run the linear congruence algorithm N times</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="n">s_next</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">s_current</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">%</span> <span class="n">c</span>
+    <span class="n">random_numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s_next</span><span class="p">)</span>
+    <span class="n">s_current</span> <span class="o">=</span> <span class="n">s_next</span>
+    
+<span class="c1">#convert random integers to random real values in [0, 1]    </span>
+<span class="n">random_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span>
+<span class="n">random_numbers</span> <span class="o">/=</span> <span class="n">c</span>
+<span class="c1">#print</span>
+<span class="n">random_numbers</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.38, 0.23, 0.58, 0.43, 0.78, 0.63, 0.98, 0.83, 0.18, 0.03])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="inverse-cdf-sampling">
+<h2><span class="section-number">6.2. </span>Inverse CDF Sampling<a class="headerlink" href="#inverse-cdf-sampling" title="Link to this heading">#</a></h2>
+<section id="the-cumulative-distribution-function">
+<h3>The Cumulative Distribution Function<a class="headerlink" href="#the-cumulative-distribution-function" title="Link to this heading">#</a></h3>
+<p>Recall that the <em><strong>cumulative distribution function (CDF)</strong></em> of a real-valued random variable <span class="math notranslate nohighlight">\(X\)</span> with continuous pdf <span class="math notranslate nohighlight">\(f_X\)</span> is defined as
+<div class="math notranslate nohighlight">
+\[
+F_X(a) = \mathbb{P}[X \leq a] = \int_{-\infty}^a f_X(t) dt
+\]</div>
+</p>
+<figure class="align-center" id="fig-05-cdf">
+<a class="reference internal image-reference" href="../_images/cdf.jpg"><img alt="../_images/cdf.jpg" src="../_images/cdf.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="inverse-cdf-sampling-an-intuition">
+<h3>Inverse CDF Sampling: An Intuition<a class="headerlink" href="#inverse-cdf-sampling-an-intuition" title="Link to this heading">#</a></h3>
+<p>The idea behind Inverse CDF Sampling is that while it is sometimes difficult to generate values for <span class="math notranslate nohighlight">\(X\)</span> with the relative frequency described by pdf, <span class="math notranslate nohighlight">\(f_X\)</span>, it can be easier to generate values for <span class="math notranslate nohighlight">\(X\)</span> using the CDF.</p>
+<p>The intuition is as follows:</p>
+<ol class="arabic simple">
+<li><p>While the support of the pdf and CDF can be unbounded, the range of the CDF is bounded between 0 and 1.<br><br></p></li>
+<li><p>The CDF for a continuous single-variable pdf is an invertible function (on the support of the pdf). That is, each value between 0 and 1 corresponds to a unique value of the random variable <span class="math notranslate nohighlight">\(X\)</span>.<br><br></p></li>
+<li><p>Values of <span class="math notranslate nohighlight">\(X\)</span> that lie under peaks of the pdf occupy larger portions of the interval [0, 1]. That is, the range of the CDF, [0, 1], can be subdivided to exactly reflect the areas of high probability mass and low probability mass under the pdf.</p></li>
+</ol>
+<p>So if we uniformly sample values in the range of the CDF, [0, 1] and find the corresponding <span class="math notranslate nohighlight">\(X\)</span> values for these samples (using the inverse function of the CDF), we obtain samples of <span class="math notranslate nohighlight">\(X\)</span>.</p>
+<figure class="align-center" id="fig-05-inverse-cdf">
+<a class="reference internal image-reference" href="../_images/inverse_cdf.jpg"><img alt="../_images/inverse_cdf.jpg" src="../_images/inverse_cdf.jpg" style="width: 583px;" />
+</a>
+</figure>
+</section>
+<section id="inverse-cdf-sampling-algorithm">
+<h3>Inverse CDF Sampling: Algorithm<a class="headerlink" href="#inverse-cdf-sampling-algorithm" title="Link to this heading">#</a></h3>
+<p>We use a random variable <span class="math notranslate nohighlight">\(U\)</span> with uniform distribution over <span class="math notranslate nohighlight">\([0, 1]\)</span> to simulate a univariate random variable <span class="math notranslate nohighlight">\(X\)</span> with pdf <span class="math notranslate nohighlight">\(f_X\)</span>, where:</p>
+<ul class="simple">
+<li><p>we know the analytical form of the CDF of <span class="math notranslate nohighlight">\(X\)</span>, <span class="math notranslate nohighlight">\(F_X\)</span>.</p></li>
+<li><p>we know the analytical form of the inverse of the CDF of <span class="math notranslate nohighlight">\(X\)</span>, <span class="math notranslate nohighlight">\(F^{-1}_X\)</span>.</p></li>
+</ul>
+<p>To simulate <span class="math notranslate nohighlight">\(X\)</span>, we repeat for <span class="math notranslate nohighlight">\(N\)</span> number of samples:</p>
+<ol class="arabic simple">
+<li><p>sample
+<div class="math notranslate nohighlight">
+\[U_n \sim U(0, 1)\]</div>
+</p></li>
+<li><p>compute
+<div class="math notranslate nohighlight">
+\[X_n = F^{-1}_X(U_n)\]</div>
+</p></li>
+</ol>
+<p><strong>Question:</strong> How do we simulate multivariate random variables? What if we don’t have the analytical form of <span class="math notranslate nohighlight">\(F^{-1}_X\)</span>?</p>
+</section>
+<section id="inverse-cdf-sampling-proof-of-correctness">
+<h3>Inverse CDF Sampling: Proof of Correctness<a class="headerlink" href="#inverse-cdf-sampling-proof-of-correctness" title="Link to this heading">#</a></h3>
+<p><strong>Theorem:</strong>  Let <span class="math notranslate nohighlight">\(F_X\)</span> be the continuous and strictly increasing CDF of a real-valued random variable <span class="math notranslate nohighlight">\(X\)</span>. Let <span class="math notranslate nohighlight">\(F_X^{−1} : [0,1] \to \mathbb{R}\)</span> be the inverse function of <span class="math notranslate nohighlight">\(F_X\)</span>. Let <span class="math notranslate nohighlight">\(U \sim U(0,1)\)</span>, then the random variable <span class="math notranslate nohighlight">\(Y = F_X^{−1}(U)\)</span> has CDF <span class="math notranslate nohighlight">\(F_X\)</span>.</p>
+<p><em><strong>Proof:</strong></em> Recall that the CDF of <span class="math notranslate nohighlight">\(Y\)</span> is defined by <span class="math notranslate nohighlight">\(F_Y(x) = \mathbb{P}[Y \leq x]\)</span>. Now, we can write</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+F_Y(x) &amp;= \mathbb{P}[Y \leq x]&amp;\\ 
+&amp;= \mathbb{P}[F_X^{−1}(U) \leq x],&amp;(\text{since $Y = F_X(U)$})\\
+&amp;= \mathbb{P}[F_X(F_X^{−1}(U)) \leq F_X(x)],&amp;(\text{since $F_X$ is strictly increasing})\\
+&amp;= \mathbb{P}[U \leq F_X(x)],&amp;(\text{since $F_X^{-1}$ is the inverse of $F_X$})\\
+&amp;= F_X(x)&amp; (\text{since $0\leq F_X\leq 1$})
+\end{aligned}\end{split}\]</div>
+</section>
+<section id="simulating-an-exponential-random-variable">
+<h3>Simulating an Exponential Random Variable<a class="headerlink" href="#simulating-an-exponential-random-variable" title="Link to this heading">#</a></h3>
+<p>We’ll use a uniform random variable <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span> to simulate a exponential variable <span class="math notranslate nohighlight">\(X\sim Exp(\lambda)\)</span>. Recall that the exponential CDF is
+<div class="math notranslate nohighlight">
+\[
+F_X(x) = 1 - e^{-\lambda x}.
+\]</div>
+</p>
+<p>The inverse of the CDF can be found by solving for the input, <span class="math notranslate nohighlight">\(x\)</span>, of the CDF
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y &amp;= 1 - e^{-\lambda x}\\
+e^{-\lambda x} &amp;= 1 - y\\
+-\lambda x &amp;= \log(1 - y)\\
+x &amp;= -\frac{1}{\lambda}\log(1 - y)
+\end{aligned}\end{split}\]</div>
+
+where we take <span class="math notranslate nohighlight">\(\log\)</span> to be base <span class="math notranslate nohighlight">\(e\)</span>.</p>
+<p>Thus, <span class="math notranslate nohighlight">\(F_X^{-1}(y) = -\frac{1}{\lambda}\log(1 - y)\)</span>.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">lam</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="c1">#get the exponential pmf function from scipy.stats</span>
+<span class="n">exp_pmf</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">lam</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+<span class="c1">#inverse cdf of exponential</span>
+<span class="n">inverse_cdf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span>  <span class="n">y</span><span class="p">)</span>
+<span class="c1">#inverse cdf samples</span>
+<span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">inverse_cdf</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot true pdf and samples</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">exp_pmf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'exponential pdf'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'histogram of samples'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'exponential pdf vs simulation by inverse cdf'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>   
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dcef890a69fea211bf682063947f67f350a9c8ce8eab319f2c657f14c76833b9.png" src="../_images/dcef890a69fea211bf682063947f67f350a9c8ce8eab319f2c657f14c76833b9.png" />
+</div>
+</div>
+</section>
+<section id="simulating-a-bernoulli-random-variable">
+<h3>Simulating a Bernoulli Random Variable<a class="headerlink" href="#simulating-a-bernoulli-random-variable" title="Link to this heading">#</a></h3>
+<p>The CDF of a discrete random variable <span class="math notranslate nohighlight">\(X\)</span> with <span class="math notranslate nohighlight">\(K\)</span> possible outputs is a step function:</p>
+<figure class="align-center" id="fig-05-bernoulli-cdf">
+<a class="reference internal image-reference" href="../_images/bernoulli_cdf.jpg"><img alt="../_images/bernoulli_cdf.jpg" src="../_images/bernoulli_cdf.jpg" style="width: 584px;" />
+</a>
+</figure>
+<p>Technically this CDF is not invertible. But we can easily map the output of the CDF to values of <span class="math notranslate nohighlight">\(X\)</span>. The CDF naturally divides the interval [0, 1] into <span class="math notranslate nohighlight">\(K\)</span> parts, each part should be mapped to a case where <span class="math notranslate nohighlight">\(X=k\)</span>. For example, the Bernoulli CDF divides up the interval into two parts, the first <span class="math notranslate nohighlight">\([0, 1-\theta]\)</span> maps to naturally to <span class="math notranslate nohighlight">\(X=0\)</span> and the second <span class="math notranslate nohighlight">\([0, 1-\theta]\)</span> maps to <span class="math notranslate nohighlight">\(X=1\)</span>.</p>
+<p>Thus, to simulate a Bernoulli random variable <span class="math notranslate nohighlight">\(X \sim Ber(\theta)\)</span>, we</p>
+<ol class="arabic simple">
+<li><p>sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(U&lt;1-\theta\)</span> we map to <span class="math notranslate nohighlight">\(X=0\)</span>, otherwise we map to <span class="math notranslate nohighlight">\(X=1\)</span></p></li>
+</ol>
+<p>This process is easily extended to categorical variables with <span class="math notranslate nohighlight">\(K\)</span> categories.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Bernoulli distribution</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="c1">#number of samples</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="c1">#simulate N number of uniform RVs</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+<span class="c1">#for each uniform sample, determine if it is heads or tails by comparing to theta</span>
+<span class="n">heads</span> <span class="o">=</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">theta</span>
+<span class="n">tails</span> <span class="o">=</span> <span class="n">u</span> <span class="o">&gt;=</span> <span class="n">theta</span>
+<span class="n">u</span><span class="p">[</span><span class="n">heads</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">u</span><span class="p">[</span><span class="n">tails</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot samples</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'simulated samples from a bernoulli with theta=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/79528ee471e54b790977023bf7bda37e830770826fb689dff10a8c660a0f7239.png" src="../_images/79528ee471e54b790977023bf7bda37e830770826fb689dff10a8c660a0f7239.png" />
+</div>
+</div>
+</section>
+<section id="what-can-we-simulate">
+<h3>What Can We Simulate?<a class="headerlink" href="#what-can-we-simulate" title="Link to this heading">#</a></h3>
+<p>We can simulate sampling from univariate continuous distributions with closed form inverse CDF’s, e.g. exponential random variables. We can’t simulate normal random variables since <strong>the normal CDF does not have a closed form inverse</strong>! We can’t simulate multivariate random variables.</p>
+<p>We can simulate discrete random variables.</p>
+</section>
+</section>
+<section id="rejection-sampling">
+<h2><span class="section-number">6.3. </span>Rejection Sampling<a class="headerlink" href="#rejection-sampling" title="Link to this heading">#</a></h2>
+<section id="rejection-sampling-an-intuition">
+<h3>Rejection Sampling: An Intuition<a class="headerlink" href="#rejection-sampling-an-intuition" title="Link to this heading">#</a></h3>
+<p>The idea behind Rejection Sampling is to by-pass the problem of sampling from a difficult distribution <span class="math notranslate nohighlight">\(f_X\)</span>, by:</p>
+<ol class="arabic simple">
+<li><p>approximating <span class="math notranslate nohighlight">\(f_X\)</span> (called the <em><strong>target distribution</strong></em>), with a pdf <span class="math notranslate nohighlight">\(g\)</span> (called the <em><strong>proposal distribution</strong></em>) that is easy to sample</p></li>
+<li><p>sample from <span class="math notranslate nohighlight">\(g\)</span> and reject the samples that are unlikely to be from <span class="math notranslate nohighlight">\(f_X\)</span></p></li>
+</ol>
+<figure class="align-center" id="fig-05-rejection">
+<a class="reference internal image-reference" href="../_images/rejection.jpg"><img alt="../_images/rejection.jpg" src="../_images/rejection.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="rejection-sampling-algorithm">
+<h3>Rejection Sampling: Algorithm<a class="headerlink" href="#rejection-sampling-algorithm" title="Link to this heading">#</a></h3>
+<p>We can use rejection sampling to simulate multivariate random variables and random variables for which we don’t have a closed form for <span class="math notranslate nohighlight">\(F^{-1}_X\)</span>. We choose a proposal distribution <span class="math notranslate nohighlight">\(g\)</span> such that (1) the support of <span class="math notranslate nohighlight">\(g\)</span> covers the support of <span class="math notranslate nohighlight">\(f\)</span> and (2) there is a constant <span class="math notranslate nohighlight">\(M &gt; 0\)</span> with <span class="math notranslate nohighlight">\(\frac{f_X(y)}{g(y)} \leq M\)</span> for all <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>In less high-falutin talk: we need (1) <span class="math notranslate nohighlight">\(g\)</span> to be non-zero where ever <span class="math notranslate nohighlight">\(f\)</span> is and <span class="math notranslate nohighlight">\(g\)</span> must decay slower than <span class="math notranslate nohighlight">\(f\)</span> (2) M * g is an upper bound of <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<p>To simulate <span class="math notranslate nohighlight">\(X\)</span>, we repeat until <span class="math notranslate nohighlight">\(N\)</span> samples are accepted:</p>
+<ol class="arabic simple">
+<li><p>sample <span class="math notranslate nohighlight">\(Y_k \sim g(Y)\)</span></p></li>
+<li><p>sample a random height, <span class="math notranslate nohighlight">\(U_k \sim U(0, 1)\)</span></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(U_k &lt; \frac{f_X(Y_k)}{Mg(Y_k)}\)</span> then accept <span class="math notranslate nohighlight">\(Y_k\)</span> as a sample, else reject</p></li>
+</ol>
+<p><strong>Question:</strong> How long does it take to accumulate <span class="math notranslate nohighlight">\(N\)</span> samples? What is the effect of the choice of the proposal distribution <span class="math notranslate nohighlight">\(g\)</span> have on the sampling process? Now that we can sample from any distribution, this class is over right?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Rejection Sampling: Proof of Correctness</p>
+<p>We need to show that the accepted samples <span class="math notranslate nohighlight">\(Y\)</span> have same distribution as <span class="math notranslate nohighlight">\(X\)</span>. In particular, we’ll show that the CDF of the accepted samples is equal to <span class="math notranslate nohighlight">\(F_X\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{P}\left[ Y \leq a\; \left\vert\; U \leq \frac{f_X(Y)}{Mg(Y)}\right. \right] = F_X(a).
+\]</div>
+<p>Using Baye’s rule for probabilities, we get that</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{P}\left[\left.U \leq \frac{f_X(Y)}{Mg(Y)} \; \right\vert\; Y \leq a  \right] &amp;= \frac{\mathbb{P}\left[Y \leq a,\; U \leq \frac{f_X(Y)}{Mg(Y)} \right]}{\mathbb{P}\left[ Y \leq a\right]}\\
+&amp;= \int_{-\infty}^a \frac{\mathbb{P}\left[\left.U \leq \frac{f_X(Y)}{Mg(Y)} \; \right\vert\; Y \leq y \leq a  \right] g(y)}{\mathbb{P}\left[ Y \leq a\right]} dy\\
+&amp;= \frac{1}{\mathbb{P}\left[ Y \leq a\right]}\int_{-\infty}^a \mathbb{P}\left[\left.U \leq \frac{f_X(Y)}{Mg(Y)} \; \right\vert\; Y \leq y \leq a  \right] g(y) dy\\
+&amp;= \frac{1}{\mathbb{P}\left[ Y \leq a\right]} \int_{-\infty}^a \frac{f_X(y)}{Mg(y)} g(y) dy\\
+&amp;= \frac{1}{M\mathbb{P}\left[ Y \leq a\right]} \int_{-\infty}^a f_X(y) dy\\
+&amp;= \frac{1}{M\mathbb{P}\left[ Y \leq a\right]} \mathbb{P}\left[ X \leq a\right]\\
+&amp;= \frac{F_X(a)}{MG(a)}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(G\)</span> is the CDF of the proposal pdf <span class="math notranslate nohighlight">\(g\)</span>.</p>
+<p>Now, we can write:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{P}\left[ Y \leq a\; \left\vert\; U \leq \frac{f_X(Y)}{Mg(Y)}\right. \right] &amp;= \frac{\mathbb{P}\left[\left.U \leq \frac{f_X(Y)}{Mg(Y)} \; \right\vert\; Y \leq a  \right] \mathbb{P}\left[ Y \leq a\right]}{\mathbb{P}\left[U \leq \frac{f_X(Y)}{Mg(Y)}\right]}\\
+&amp;= \frac{\frac{F_X(a)}{MG(a)} * G(a)}{1/M}\\
+&amp;= F_X(a)
+\end{aligned}\end{split}\]</div>
+<p>which is exactly what we wanted to show.</p>
+</div>
+</section>
+<section id="rejection-sampling-efficiency">
+<h3>Rejection Sampling: Efficiency<a class="headerlink" href="#rejection-sampling-efficiency" title="Link to this heading">#</a></h3>
+<p>Given a proposal <span class="math notranslate nohighlight">\(Y=y\)</span>, the probability of accepting it is
+<div class="math notranslate nohighlight">
+\[
+\mathbb{P}\left[\left.U\leq \frac{f(Y)}{Mg(Y)} \right\vert Y=y\right] = \frac{f(y)}{Mg(y)}.
+\]</div>
+</p>
+<p>So the overall probability <span class="math notranslate nohighlight">\(p\)</span> of accepting any given proposal can be computed by integrating out <span class="math notranslate nohighlight">\(y\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p &amp;= \int_{\mathbb{R}} \frac{f(y)}{Mg(y)} g(y)dy \\
+&amp;= \frac{1}{M} \int_{\mathbb{R}} f(y) dy\\
+&amp;= \frac{1}{M}
+\end{aligned}\end{split}\]</div>
+<p>We see that the expected number of times it takes to draw and accept a sample <span class="math notranslate nohighlight">\(X=x\)</span> is precisely <span class="math notranslate nohighlight">\(M\)</span>. This means that roughly <span class="math notranslate nohighlight">\((M-1)/M\)</span> of samples drawn from <span class="math notranslate nohighlight">\(g\)</span> will be rejected. When <span class="math notranslate nohighlight">\(M\)</span> is large, the rejection sampler is very inefficient.</p>
+</section>
+<section id="simulating-a-normal-random-variable">
+<h3>Simulating a Normal Random Variable<a class="headerlink" href="#simulating-a-normal-random-variable" title="Link to this heading">#</a></h3>
+<p>We note that if we can simulate a standard normal variable <span class="math notranslate nohighlight">\(X\sim \mathcal{N}(0, 1)\)</span>, then we can simulate any normal variable <span class="math notranslate nohighlight">\(Y\sim \mathcal{N}(\mu, \sigma^2)\)</span> by setting <span class="math notranslate nohighlight">\(Y = \sigma* X + \mu\)</span>.</p>
+<p>We also observe that since the standard normal distirbution is symmetric about <span class="math notranslate nohighlight">\(X=0\)</span>, we only need to simulate samples from the non-negative side of <span class="math notranslate nohighlight">\(\mathcal{N}(0, 1)\)</span> and then independently sample a sign (+ or -) for each sample using a Bernoulli distribution with <span class="math notranslate nohighlight">\(\theta = 0.5\)</span>.</p>
+<p>Simulating the positive half of the normal distribution means we need to scale the normal pdf by a factor of 2, so that is integrates to 1 over the nonnegative real numbers.</p>
+<p>A natural candidate for a pdf to cover the non-negative half of the standard normal pdf is the exponential pdf.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#target distribution</span>
+<span class="n">target_pdf</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+<span class="c1">#proposal distirbution</span>
+<span class="n">proposal_pdf</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+<span class="c1">#scaling constant</span>
+<span class="n">M</span> <span class="o">=</span> <span class="mf">2.</span>
+
+<span class="c1">#total number of samples we want</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1">#repeat rejection sampling until total number of samples is attained</span>
+<span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+    <span class="c1">#sample x from proposal distribution</span>
+    <span class="n">proposed_sample</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">expon</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#sample a random height at x</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#accept if height is below target distribution</span>
+    <span class="c1">#remember that we are comparing the exponential distribution to the right half of the normal pdf</span>
+    <span class="c1">#so we need to scale the normal pdf by a factor of 2 to make it a proper pdf over the nonnegative numbers</span>
+    <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">target_pdf</span><span class="p">(</span><span class="n">proposed_sample</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">proposal_pdf</span><span class="p">(</span><span class="n">proposed_sample</span><span class="p">)):</span>
+        <span class="c1">#if we are accepting randomly append a negative sign to the sample</span>
+        <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proposed_sample</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        
+<span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot samples</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">target_pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'target: standard normal'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span> <span class="o">*</span> <span class="n">proposal_pdf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'</span><span class="si">{}</span><span class="s1"> * proposal: exponential'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">M</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'proposal vs target distribution'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'simulated samples via rejection sampling'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>   
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0253075bd7bef95a37dcfed165f8dd2de2524221d4c347418f957536722d4ef6.png" src="../_images/0253075bd7bef95a37dcfed165f8dd2de2524221d4c347418f957536722d4ef6.png" />
+</div>
+</div>
+</section>
+<section id="id1">
+<h3>What Can We Simulate?<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>We can simulate any continuous or discrete random variable as long as we can find a suitable proposal distribution.</p>
+<p>But as the dimensions of the random variable increases or for inappropriate choices of the proposal distribution, the efficiency of this sampler may be very low.</p>
+</section>
+<section id="limitations-of-rejection-sampling-in-high-dimensions">
+<h3>Limitations of Rejection Sampling in High Dimensions<a class="headerlink" href="#limitations-of-rejection-sampling-in-high-dimensions" title="Link to this heading">#</a></h3>
+<p>Since the acceptance rate for rejection sampling is 1/M, where <span class="math notranslate nohighlight">\(M\)</span> is a constant that bounds <span class="math notranslate nohighlight">\(\frac{f_X(y)}{g(y)}\)</span> for all <span class="math notranslate nohighlight">\(y\)</span>, we’d want to make <span class="math notranslate nohighlight">\(M\)</span> as close to <span class="math notranslate nohighlight">\(1\)</span> as possible, i.e. we want <span class="math notranslate nohighlight">\(g(y)\)</span> to be approximately equal to <span class="math notranslate nohighlight">\(f_X(y)\)</span>. In general this is very difficult to achieve, especially in high dimensions.</p>
+<p><strong>Example:</strong></p>
+<p>Let’s say our target distribution is a <span class="math notranslate nohighlight">\(D\)</span>-dimensional Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}\left(0, \sigma_f^2\mathbf{I}_{D\times D}\right)\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{I}_{D\times D}\)</span> is a <span class="math notranslate nohighlight">\(D\times D\)</span> identity matrix. Let’s fix the proposal distribution to be a <span class="math notranslate nohighlight">\(D\)</span>-dimensional Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}\left(0, \sigma_g^2\mathbf{I}_{D\times D}\right)\)</span>, where <span class="math notranslate nohighlight">\(\sigma_g &gt; \sigma_f\)</span>. We can compute the optimum value of <span class="math notranslate nohighlight">\(M\)</span> to be <span class="math notranslate nohighlight">\(\left(\frac{\sigma_g}{\sigma_f}\right)^D\)</span>. But this is a value that scales with <span class="math notranslate nohighlight">\(D\)</span>! For example, if <span class="math notranslate nohighlight">\(D=1,000\)</span> and <span class="math notranslate nohighlight">\(\frac{\sigma_g}{\sigma_f} = 1.01\)</span> then the probability of accepting a sample will be <span class="math notranslate nohighlight">\(\frac{1}{M} = 0.000047\)</span>.</p>
+</section>
+</section>
+<section id="gibbs-sampling">
+<h2><span class="section-number">6.4. </span>Gibbs Sampling<a class="headerlink" href="#gibbs-sampling" title="Link to this heading">#</a></h2>
+<section id="semi-conjugate-priors">
+<h3>Semi-Conjugate Priors<a class="headerlink" href="#semi-conjugate-priors" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with both parameters unknown. We place a normal prior on <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\mu\sim\mathcal{N}(m, s^2)\)</span>, and an gamma prior on <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\sim IG(\alpha, \beta)\)</span>.</p>
+<p>The posterior <span class="math notranslate nohighlight">\(p(\mu, \sigma^2|Y)\)</span> is then:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\mu, \sigma^2 | Y)  = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{1}{\sqrt{2\pi s^2}} \mathrm{exp} \left\{-\frac{(m - \mu)^2}{2s^2}\right\}}^{\text{prior on $\mu$}}\overbrace{\frac{\beta^\alpha}{\Gamma(\alpha)} \left( \sigma^2\right)^{-\alpha -1}\mathrm{exp} \left\{-\frac{\beta}{\sigma^2}\right\}}^{\text{prior on $\sigma^2$}}}{p(Y)}
+\end{aligned}\]</div>
+<p>Note that:</p>
+<ol class="arabic simple">
+<li><p>if we condition on <span class="math notranslate nohighlight">\(\sigma^2\)</span> (i.e. hold it constant) then <span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> is a normal pdf, <span class="math notranslate nohighlight">\(\mathcal{N}\left(\mu; \frac{s^2y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right)\)</span>.</p></li>
+<li><p>if we condition on <span class="math notranslate nohighlight">\(\mu\)</span> (i.e. hold it constant) then <span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span> is an inverse gamma pdf, <span class="math notranslate nohighlight">\(IG\left(\sigma^2; \alpha + 0.5, \frac{(y-\mu)^2}{2} + \beta\right)\)</span></p></li>
+</ol>
+<p>That is, <strong>the conditional of the posterior are easy to sample from while the joint posterior is not</strong>. In this case, we call the priors <em><strong>semi-conjugate</strong></em> for our likelihood.</p>
+</section>
+<section id="gibbs-sampling-an-intuition">
+<h3>Gibbs Sampling: An Intuition<a class="headerlink" href="#gibbs-sampling-an-intuition" title="Link to this heading">#</a></h3>
+<p>If we start at a point <span class="math notranslate nohighlight">\((x^{(0)}, y^{(0)})\)</span> sampled from from the joint distribution <span class="math notranslate nohighlight">\(p(X, Y)\)</span>, we can get to the next point <span class="math notranslate nohighlight">\((x^{(1)}, y^{(1)}) \sim p(X, Y)\)</span> through a “stepping-stone” <span class="math notranslate nohighlight">\((x^{(1)}, y^{(0)})\)</span>, where we updated the first coordinate by <span class="math notranslate nohighlight">\(x^{(1)} \sim p(X|Y = y^{(0)})\)</span>. From there, we update the second coordinate <span class="math notranslate nohighlight">\(y^{(1)} \sim p(Y|X = x^{(1)})\)</span>.</p>
+<p>The initial samples may be unlikely under <span class="math notranslate nohighlight">\(p(X, Y)\)</span>, but this process will eventually lead us to a high density area in <span class="math notranslate nohighlight">\(p(X, Y)\)</span> and we will mostly sample there.</p>
+<figure class="align-center" id="fig-05-gibbs">
+<a class="reference internal image-reference" href="../_images/gibbs.jpg"><img alt="../_images/gibbs.jpg" src="../_images/gibbs.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="gibbs-sampling-algorithm">
+<h3>Gibbs Sampling: Algorithm<a class="headerlink" href="#gibbs-sampling-algorithm" title="Link to this heading">#</a></h3>
+<p>To simulate <span class="math notranslate nohighlight">\(N\)</span> samples of a <span class="math notranslate nohighlight">\(D\)</span>-dimensional multivariate random variable <span class="math notranslate nohighlight">\(X\)</span> with pdf <span class="math notranslate nohighlight">\(f_X\)</span>, we</p>
+<ol class="arabic simple">
+<li><p>initialization: choose any <span class="math notranslate nohighlight">\(x^{(0)} = \left[x^{(0)}_1\;\; \ldots\;\; x^{(0)}_D\right]\)</span></p></li>
+<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times: sample <span class="math notranslate nohighlight">\(x^{(n+1)} = \left[x^{(n+1)}_1\;\; \ldots\;\; x^{(n+1)}_D\right]\)</span> by</p></li>
+</ol>
+<p>a. initialization: sample <span class="math notranslate nohighlight">\(X^{(n+1)}_1\)</span> from the conditional distribution</p>
+<div class="math notranslate nohighlight">
+\[f_X\left(X_1 \,|\, X_2 = x^{(n)}_2,\;\ldots,\; X_D = x^{(n)}_D\right)\]</div>
+<p>b. iterate from <span class="math notranslate nohighlight">\(d = 2\)</span> througbh <span class="math notranslate nohighlight">\(d=D\)</span>: sample <span class="math notranslate nohighlight">\(x^{(n+1)}_d\)</span> from the conditional distribution</p>
+<div class="math notranslate nohighlight">
+\[f_X\left(X_d \,|\, X_1 = x^{(n+1)}_1,\; \ldots,\; X_{d-1} = x^{(n+1)}_{d-1},\; X_{d+1} = x^{(n)}_{d+1},\; \ldots,\; X_D = x^{(n)}_D\right)\]</div>
+<p><strong>Claim:</strong> When <span class="math notranslate nohighlight">\(N\)</span> is large enough, the latter portion of the samples we obtain will be from the distribution of <span class="math notranslate nohighlight">\(X\)</span>.</p>
+<p><strong>Question:</strong> Why is this algorithm a valid sampler? That is, how do we prove that the samples we obtain are actually distributed as <span class="math notranslate nohighlight">\(f_X\)</span>? What is the effect of the initialization <span class="math notranslate nohighlight">\(x^{(0)}\)</span>?</p>
+</section>
+<section id="simulating-the-posterior-of-a-normal-normal-inverse-gamma-model">
+<h3>Simulating the Posterior of a Normal-Normal-Inverse Gamma Model<a class="headerlink" href="#simulating-the-posterior-of-a-normal-normal-inverse-gamma-model" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with both parameters unknown. We place a normal prior on <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\mu\sim\mathcal{N}(m, s^2)\)</span>, and an gamma prior on <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\sim IG(\alpha, \beta)\)</span>.</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> is a normal pdf,
+<div class="math notranslate nohighlight">
+\[\mathcal{N}\left(\mu; \frac{s^2y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right).\]</div>
+</p></li>
+<li><p><span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span> is an inverse gamma pdf,
+<div class="math notranslate nohighlight">
+\[IG\left(\sigma^2; \alpha + 0.5, \frac{(y-\mu)^2}{2} + \beta\right).\]</div>
+</p></li>
+</ol>
+<p>We choose an arbitrary initial point <span class="math notranslate nohighlight">\((\mu_0, \sigma^2_0) \in \mathbb{R}^2\)</span>, and then sample the next point by  sampling from the conditionals <span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> and <span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span>, in order.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of gibbs samples</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1">#observation</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="c1">#inverse gamma prior</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">3.</span>
+<span class="c1">#normal prior</span>
+<span class="n">s</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mf">2.</span>
+
+<span class="c1">#initialize the gibbs sampler</span>
+<span class="n">current_mu</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">current_sigma_sq</span> <span class="o">=</span> <span class="mf">1.</span> 
+<span class="n">posterior_samples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">current_mu</span><span class="p">,</span> <span class="n">current_sigma_sq</span><span class="p">)]</span>
+
+<span class="c1">#run gibbs N times</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="c1">#sample mu from the posterior conditioned on the current sigma squared</span>
+    <span class="n">next_mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="n">s</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">s</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">current_sigma_sq</span><span class="p">),</span> <span class="n">s</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">current_sigma_sq</span><span class="p">)</span>
+    <span class="c1">#sample sigma squared from the posterior conditioned on the updated mu</span>
+    <span class="n">next_sigma_sq</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">invgamma</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">current_mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">+</span> <span class="n">beta</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#the next sample is the updated mu and sigma squared</span>
+    <span class="n">current_mu</span> <span class="o">=</span> <span class="n">next_mu</span>
+    <span class="n">current_sigma_sq</span> <span class="o">=</span> <span class="n">next_sigma_sq</span>
+    <span class="n">posterior_samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">current_mu</span><span class="p">,</span> <span class="n">current_sigma_sq</span><span class="p">))</span>
+    
+<span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">)[</span><span class="mi">100</span><span class="p">:,</span> <span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot posterior samples via gibbs</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'posterior samples of normal-normal-inverse-gamma by Gibbs'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'mu'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'sigma squared'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>   
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/28c645a0cd02c60b74187e36d6ca5aac6295a2e90e8b3e91ffe82dfdd4c5e96b.png" src="../_images/28c645a0cd02c60b74187e36d6ca5aac6295a2e90e8b3e91ffe82dfdd4c5e96b.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="summarizing-sampling">
+<h2><span class="section-number">6.5. </span>Summarizing Sampling<a class="headerlink" href="#summarizing-sampling" title="Link to this heading">#</a></h2>
+<section id="samplers-for-simulating-random-variables">
+<h3>Samplers for Simulating Random Variables<a class="headerlink" href="#samplers-for-simulating-random-variables" title="Link to this heading">#</a></h3>
+<p>A <em><strong>sampler</strong></em> is a procedure for producing random numbers from a specific distribution <span class="math notranslate nohighlight">\(p(X)\)</span>. We’ve seen that we can build up samplers for sophisticated distributions, incrementally, starting from a sampler for a uniform distribution <span class="math notranslate nohighlight">\(U(0, 1)\)</span>.</p>
+<ol class="arabic simple">
+<li><p><strong>Linear Congruence Pseudo Random Number Generator:</strong> simulates random numbers in <span class="math notranslate nohighlight">\(U(0, 1)\)</span>.
+By translating and scaling we can simulate a random variable <span class="math notranslate nohighlight">\(U\sim U(a, b)\)</span>.</p></li>
+<li><p><strong>Inverse CDF Sampling:</strong> transforms random samples from a uniform distribution <span class="math notranslate nohighlight">\(U(0, 1)\)</span> into samples from a univariate distribution <span class="math notranslate nohighlight">\(p(X)\)</span> by using the inverse CDF of <span class="math notranslate nohighlight">\(X\)</span>.</p></li>
+<li><p><strong>Rejection Sampling:</strong> find a proposal distribution <span class="math notranslate nohighlight">\(q(X)\)</span> that is (1) easy to sample from and (2) approximates the target distribution <span class="math notranslate nohighlight">\(p(X)\)</span>. We then sample from <span class="math notranslate nohighlight">\(q\)</span> and reject samples that are unlikely under <span class="math notranslate nohighlight">\(p\)</span>.</p></li>
+<li><p><strong>Gibbs Sampling:</strong> when complex multivariate distributions have easy conditional distributions <span class="math notranslate nohighlight">\(p(X_n | X_1, \ldots, X_{n-1}, X_{n+1}, \ldots, X_{N})\)</span>, we can obtain samples iteratively by updating the last sample from the conditionals, one coordinate at a time. <em>Eventually, these samples will be from <span class="math notranslate nohighlight">\(p(X)\)</span></em>. This allows us to sample from the posterior of models with semi-conjugate priors.</p></li>
+</ol>
+</section>
+<section id="how-to-evaluate-a-sampler">
+<h3>How to Evaluate a Sampler<a class="headerlink" href="#how-to-evaluate-a-sampler" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Correctness:</strong> Every sampler must come with a <em><strong>proof</strong></em> of correctness - that is, the numbers produced by the sampler have the distribution <span class="math notranslate nohighlight">\(p(X)\)</span>. Many intuitively sensible ways of sampling can fail to be correct.</p></li>
+</ol>
+<p><strong>Question:</strong> Why isn’t it sufficient to “histogram” the samples and check that they are distributed like <span class="math notranslate nohighlight">\(p(X)\)</span>?<br><br></p>
+<ol class="arabic simple" start="2">
+<li><p><strong>Efficiency:</strong> Every sampler must be analyzed for it’s efficiency - that is, how many times the procedure must run before it accepts a sample. You should also be aware of how the efficiency is affected by the dimension of <span class="math notranslate nohighlight">\(X\)</span>.</p></li>
+</ol>
+<p><strong>Question:</strong> How do inverse CDF and rejection compare in terms of efficiency?<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p><strong>Sufficiency of repetition:</strong> Some samplers like Gibbs comes with the guarantee that if you repeat the procedure enough times (asymptotically), you will eventually be sampling from <span class="math notranslate nohighlight">\(p(X)\)</span>. But exactly how many times is enough?</p></li>
+</ol>
+</section>
+<section id="why-are-we-sampling-again">
+<h3>Why are We Sampling Again?<a class="headerlink" href="#why-are-we-sampling-again" title="Link to this heading">#</a></h3>
+<p>Recall that the primary objects of interest in a Bayesian model are the <em><strong>posterior distribution</strong></em> over parameters and the <em><strong>posterior predictive distribution</strong></em> over observations.</p>
+<p>Evaluating the model, forming scientific hypothesis about the data and making predictions all require <strong>sampling</strong> from one of the two distributions.</p>
+<p>When the prior is conjugate for the likelihood, the posterior pdf can be derived in closed form. Often, such a posterior is easy to sample from (using inverse CDF or rejection sampling). However, restricting ourselves to such simple likelihoods and priors limits our ability to model complex real-life data!</p>
+<p>Our goal is to develop a set of different procedures that allow us to sample from arbitrary distributions. I.e. <strong>samplers will make Bayesian inference more “generic”, less “artisenal”</strong>.</p>
+</section>
+<section id="what-if-we-want-posterior-point-estimates">
+<h3>What If We Want Posterior Point Estimates?<a class="headerlink" href="#what-if-we-want-posterior-point-estimates" title="Link to this heading">#</a></h3>
+<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[\theta] = \int_\Theta \theta\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S \theta_s,\, \theta_s \sim p(\theta | Y)
+\]</div>
+</p>
+<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected vaue of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y)
+\]</div>
+</p>
+<p><strong>Question:</strong> But is this estimate consistent? Unbiased? Of minimal variance?</p>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">6.6. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple" start="0">
+<li><p>What’s a good strategy for learning/organizing the info in this class?</p></li>
+</ol>
+<p>Every topic is potentially really technical and really deep (e.g. do I need to read a text book on measure-theoretic foundations of probability theory first?), how do you manage diminishing margins of return and your finite energy?</p>
+<ul class="simple">
+<li><p><em><strong>Ask: what is this good for?</strong></em> Let the tasks and real-life questions guide you to the piece of theory that is necessary to address these tasts/questions <strong>productively</strong> and <strong>responsibly</strong>.<br><br></p></li>
+<li><p><em><strong>Ask: why do I care?</strong></em> Remember <strong>the big-picture story</strong> of the class, each topic is linked to the next and builds on the previous. You can Google the details later.</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
+<li><p><em><strong>(Marginal Data Log-Likelihood: Secretely Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:
+<div class="math notranslate nohighlight">
+\[\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta\]</div>
+<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>Why is sampling hard (can’t we <code class="docutils literal notranslate"><span class="pre">numpy.random.something</span></code>)?<br><br></p></li>
+<li><p>Basic strategy of sampling:</p></li>
+</ol>
+<ul class="simple">
+<li><p>build up a set of simple distributions that we can pseudo-randomly sample from (e.g. Uniform)</p></li>
+<li><p>transform samples from our simple distributions into samples from complex distributions:</p>
+<ul>
+<li><p>inverse CDF (only if the CDF is defined can be inverted analytically)</p></li>
+<li><p>rejection sampling (not efficient in high dimensions)</p></li>
+<li><p>Gibbs (only if the conditional distributions are easy to sample from)<br><br></p></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p>How do I evaluate the quality of my samples?</p></li>
+</ol>
+<ul class="simple">
+<li><p>Can I histogram my samples and compare it with the graph of my target pdf?</p></li>
+<li><p>There’s a whole lot of math that came with my sampler, do I need to care?</p></li>
+<li><p>Can I customize or change the sampling algorithm?</p></li>
+<li><p>If I know that my sampler is correct (e.g. produces actual samples from my target pdf) do I care about any other properties?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p><strong>But do I REALLY need to be Bayesian???</strong></p></li>
+</ol>
+<ul class="simple">
+<li><p>Uncertainty is obviously important in many high-impact tasks (e.g. Bayesian Modeling of Uncertainty in Ensembles of Climate Models)<br><br></p></li>
+<li><p>Even if I <em><strong>ONLY</strong></em> care about prediction, the averaged predictions from an <em>ensemble</em> of models is very often better in terms of accuracy, and Bayesian posteriors naturally given you an <em>ensemble</em> of models. Averaging the predictions of models in the Bayesian posterior is called <em><strong>Bayesian averaging</strong></em> and it can be better in terms of accuracy than even bootstrap ensembles!</p></li>
+</ul>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">6.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Sampling</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://medium.com/unitychain/provable-randomness-how-to-test-rngs-55ac6726c5a3" rel="noreferrer" target="_blank">Provable Randomness: How to Test RNGs</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://www.math.arizona.edu/~tgk/mc/book_chap4.pdf" rel="noreferrer" target="_blank">Basics of Sampling</a></p></li>
+<li><p>(More detailed) <a class="reference external" href="https://bookdown.org/rdpeng/advstatcomp/rejection-sampling.html" rel="noreferrer" target="_blank">How to choose g and M in rejection sampling</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="impact-1-foundations.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Applications and Broader Impact: Foundations of Inference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="06-monte-carlo-integration.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Monte Carlo Integration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basics-of-sampling">6.1. Basics of Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-sampling">What is Sampling?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-uniform-random-variable-linear-congruence">Simulating a Uniform Random Variable: Linear Congruence</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling">6.2. Inverse CDF Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-cumulative-distribution-function">The Cumulative Distribution Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-an-intuition">Inverse CDF Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-algorithm">Inverse CDF Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-cdf-sampling-proof-of-correctness">Inverse CDF Sampling: Proof of Correctness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-an-exponential-random-variable">Simulating an Exponential Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-bernoulli-random-variable">Simulating a Bernoulli Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-can-we-simulate">What Can We Simulate?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling">6.3. Rejection Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-an-intuition">Rejection Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-algorithm">Rejection Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rejection-sampling-efficiency">Rejection Sampling: Efficiency</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-a-normal-random-variable">Simulating a Normal Random Variable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What Can We Simulate?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-rejection-sampling-in-high-dimensions">Limitations of Rejection Sampling in High Dimensions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling">6.4. Gibbs Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semi-conjugate-priors">Semi-Conjugate Priors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling-an-intuition">Gibbs Sampling: An Intuition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-sampling-algorithm">Gibbs Sampling: Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulating-the-posterior-of-a-normal-normal-inverse-gamma-model">Simulating the Posterior of a Normal-Normal-Inverse Gamma Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summarizing-sampling">6.5. Summarizing Sampling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#samplers-for-simulating-random-variables">Samplers for Simulating Random Variables</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-evaluate-a-sampler">How to Evaluate a Sampler</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-are-we-sampling-again">Why are We Sampling Again?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-if-we-want-posterior-point-estimates">What If We Want Posterior Point Estimates?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">6.6. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">6.7. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

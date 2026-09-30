@@ -1,0 +1,1038 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>21. Neural Network Models for Regression &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/16-neural-network-regression';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/16-neural-network-regression.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="22. Black-box Variational Inference" href="17-black-box-vi.html" />
+    <link rel="prev" title="20. Applications and Broader Impact: Advanced MCMC" href="impact-5-advanced-mcmc.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/16-neural-network-regression.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/16-neural-network-regression.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Neural Network Models for Regression</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-as-generalized-linear-models">21.1. Regression as Generalized Linear Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression-models">Linear Regression Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parameterize-a-non-linear-trend">How Would You Parameterize a Non-linear Trend?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-geometry-of-logistic-regression">Review of the Geometry of Logistic Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-ellipitical-decision-boundary">How would you parametrize a ellipitical decision boundary?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary">How would you parametrize an arbitrary complex decision boundary?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks">21.2. Neural Networks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-arbitrarily-complex-decision-boundaries">Approximating Arbitrarily Complex Decision Boundaries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-neural-network">What is a Neural Network?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-as-function-approximators">Neural Networks as Function Approximators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-flexible-framework-for-function-approximation">A Flexible Framework for Function Approximation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-choices-for-the-activation-function">Common Choices for the Activation Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-are-universal-function-approximators">Neural Networks are Universal Function Approximators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-regression">Neural Networks Regression</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-differentiation-and-backpropagation">21.3. Automatic Differentiation and Backpropagation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-computation-for-neural-networks">Gradient Computation for Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-computing-neural-network-gradients">Example: Computing Neural Network Gradients</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backpropagation-gradient-descent-for-neural-networks">Backpropagation: Gradient Descent for Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-computation-with-automatic-differentiation">Gradient Computation with Automatic Differentiation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-a-neural-network-learn">21.4. What Does a Neural Network Learn?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-a-neural-network-classifier-so-effective">Why is a Neural Network Classifier So Effective?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#two-interpretations-of-a-neural-network-classifier">Two Interpretations of a Neural Network Classifier:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-great-flexibility-comes-with-great-problems">21.5. With Great Flexibility Comes with Great Problems</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-regression-vs-linear-regression">Neural Network Regression vs Linear Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretable-deep-learning">Interpretable Deep Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-machine-learning-models-make-use-of-human-concepts">Can Machine Learning Models Make Use of Human Concepts?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-machine-learning-models-learn-to-explore-hypothetical-scenarios">Can Machine Learning Models Learn to Explore Hypothetical Scenarios?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#right-for-the-right-reasons">Right for the Right Reasons?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-explanations">The Perils of Explanations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalization-error-and-bias-variance">Generalization Error and Bias/Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalization-of-deep-models">Generalization of Deep Models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">21.6. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Neural Network Regression vs Linear Regression</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="neural-network-models-for-regression">
+<h1><span class="section-number">21. </span>Neural Network Models for Regression<a class="headerlink" href="#neural-network-models-for-regression" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/GdwF4YxTo50" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Regression as Generalized Linear Models</p></li>
+<li><p>Neural Networks</p></li>
+<li><p>Automatic Differentiation and BackPropagation</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets.samples_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">YouTubeVideo</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="regression-as-generalized-linear-models">
+<h2><span class="section-number">21.1. </span>Regression as Generalized Linear Models<a class="headerlink" href="#regression-as-generalized-linear-models" title="Link to this heading">#</a></h2>
+<section id="linear-regression-models">
+<h3>Linear Regression Models<a class="headerlink" href="#linear-regression-models" title="Link to this heading">#</a></h3>
+<p>Here is a generalized linear model (GLM) you’ve known since day one!
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mu &amp;= \mathbf{w}^\top \mathbf{X}^{(n)}\\
+Y^{(n)}&amp;\sim \mathcal{N}(\mu, \sigma^2)
+\end{aligned}\end{split}\]</div>
+
+Alternatively, we can write this model as</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+    Y^{(n)} = \mathbf{w}^\top \mathbf{X}^{(n)} + \epsilon; \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+\end{aligned}\]</div>
+<p>That is, injecting covariates into a normal likelihood is precisely linear regression! Just like in the case of logistic regression, we can form scientific hypotheses by examining the parameters of a linear regression model:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\end{aligned}\]</div>
+</section>
+<section id="how-would-you-parameterize-a-non-linear-trend">
+<h3>How Would You Parameterize a Non-linear Trend?<a class="headerlink" href="#how-would-you-parameterize-a-non-linear-trend" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-fig12">
+<a class="reference internal image-reference" href="../_images/fig12.png"><img alt="../_images/fig12.png" src="../_images/fig12.png" style="width: 100%;" />
+</a>
+</figure>
+<p>It’s not easy to think of a function <span class="math notranslate nohighlight">\(g(x)\)</span> can capture the trend in the data, e.g. what degree of polynomial should we use?</p>
+</section>
+<section id="review-of-the-geometry-of-logistic-regression">
+<h3>Review of the Geometry of Logistic Regression<a class="headerlink" href="#review-of-the-geometry-of-logistic-regression" title="Link to this heading">#</a></h3>
+<p>In <strong>logistic regression</strong>, we model the probability of an input <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> being labeled ‘1’ as a function of its distance from the hyperplane parametrized by <span class="math notranslate nohighlight">\(\mathbf{w}\)</span></p>
+<figure class="align-center" id="fig-16-fig0">
+<a class="reference internal image-reference" href="../_images/fig0.png"><img alt="../_images/fig0.png" src="../_images/fig0.png" style="width: 451px;" />
+</a>
+</figure>
+<p>That is, we model <span class="math notranslate nohighlight">\(p(y=1 | \mathbf{w}, \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x})\)</span>. Where <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}=0\)</span> is the equation of the decision boundary.</p>
+</section>
+<section id="how-would-you-parametrize-a-ellipitical-decision-boundary">
+<h3>How would you parametrize a ellipitical decision boundary?<a class="headerlink" href="#how-would-you-parametrize-a-ellipitical-decision-boundary" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-fig1">
+<a class="reference internal image-reference" href="../_images/fig1.png"><img alt="../_images/fig1.png" src="../_images/fig1.png" style="width: 461px;" />
+</a>
+</figure>
+<p>We can say that the decision boundary is given by a <em><strong>quadratic function</strong></em> of the input:
+<div class="math notranslate nohighlight">
+\[
+w_1x^2_1 + w_2x^2_2 + w_3 = 0
+\]</div>
+
+We say that we can fit such a decision boundary using logistic regression with degree 2 polynomial features</p>
+</section>
+<section id="how-would-you-parametrize-an-arbitrary-complex-decision-boundary">
+<h3>How would you parametrize an arbitrary complex decision boundary?<a class="headerlink" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-fig2">
+<a class="reference internal image-reference" href="../_images/fig2.png"><img alt="../_images/fig2.png" src="../_images/fig2.png" style="width: 414px;" />
+</a>
+</figure>
+<p>It’s not easy to think of a function <span class="math notranslate nohighlight">\(g(x)\)</span> can capture this decision boundary.</p>
+<p><strong>GOAL:</strong> Find models that can capture <em>arbitrarily complex</em> functions.</p>
+</section>
+</section>
+<section id="neural-networks">
+<h2><span class="section-number">21.2. </span>Neural Networks<a class="headerlink" href="#neural-networks" title="Link to this heading">#</a></h2>
+<section id="approximating-arbitrarily-complex-decision-boundaries">
+<h3>Approximating Arbitrarily Complex Decision Boundaries<a class="headerlink" href="#approximating-arbitrarily-complex-decision-boundaries" title="Link to this heading">#</a></h3>
+<p>Given an exact parametrization, we could learn the functional form, <span class="math notranslate nohighlight">\(g\)</span>, of the decision boundary directly.</p>
+<p>However, assuming an exact form for <span class="math notranslate nohighlight">\(g\)</span> is restrictive.</p>
+<p>Rather, we can build increasingly good approximations, <span class="math notranslate nohighlight">\(\widehat{g}\)</span>, of <span class="math notranslate nohighlight">\(g\)</span> by composing simple functions.</p>
+</section>
+<section id="what-is-a-neural-network">
+<h3>What is a Neural Network?<a class="headerlink" href="#what-is-a-neural-network" title="Link to this heading">#</a></h3>
+<p><strong>Goal:</strong> build a good approximation <span class="math notranslate nohighlight">\(\widehat{g}\)</span> of a complex function <span class="math notranslate nohighlight">\(g\)</span> by composing simple functions.</p>
+<p>For example, let the following picture represents <span class="math notranslate nohighlight">\(a = f\left(\sum_{i}w_ix_i\right)\)</span>, where <span class="math notranslate nohighlight">\(f\)</span> is a non-linear transform, and we denote the intermediate value <span class="math notranslate nohighlight">\(\sum_{i}w_ix_i\)</span> by <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<figure class="align-center" id="fig-16-fig4">
+<a class="reference internal image-reference" href="../_images/fig4.png"><img alt="../_images/fig4.png" src="../_images/fig4.png" style="width: 271px;" />
+</a>
+</figure>
+<p><strong>Note:</strong> we always assume that <span class="math notranslate nohighlight">\(x_0=1\)</span> and hence <span class="math notranslate nohighlight">\(w_0\)</span> is the intercept or <em><strong>bias</strong></em> of the linear expression <span class="math notranslate nohighlight">\(\sum_i w_i x_i\)</span>.</p>
+</section>
+<section id="neural-networks-as-function-approximators">
+<h3>Neural Networks as Function Approximators<a class="headerlink" href="#neural-networks-as-function-approximators" title="Link to this heading">#</a></h3>
+<p>Then we can define the approximation <span class="math notranslate nohighlight">\(\widehat{g}\)</span> with a graphical schema representing a complex series of compositions and sums of the form, <span class="math notranslate nohighlight">\(f\left(\sum_{i}w_ix_i\right)\)</span></p>
+<figure class="align-center" id="fig-16-fig5">
+<a class="reference internal image-reference" href="../_images/fig5.png"><img alt="../_images/fig5.png" src="../_images/fig5.png" style="width: 553px;" />
+</a>
+</figure>
+<p>This is a <em><strong>neural network</strong></em>. We denote the weights of the neural network collectively by <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.
+The non-linear function <span class="math notranslate nohighlight">\(f\)</span> is called the <em><strong>activation function</strong></em>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p><strong>Note:</strong>
+Typically, at each node, we want to take a weighted sum of the values of the previous nodes with a additional <em><strong>bias term</strong></em>. That is, we want as input <span class="math notranslate nohighlight">\(\sum_i w^l_{ij} \text{node}^l_i + \text{bias}_j\)</span> for the <span class="math notranslate nohighlight">\(j\)</span>-th node in the <span class="math notranslate nohighlight">\(l\)</span>-th hidden layer. This is often done by adding an extra node per layer with the value of 1:</p>
+<figure class="align-center" id="fig-16-bias">
+<a class="reference internal image-reference" href="../_images/bias.png"><img alt="../_images/bias.png" src="../_images/bias.png" style="width: 307px;" />
+</a>
+</figure>
+<p>The bias terms are considered to be part of the network parameters and when we jointly denote the network parameters by <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, bias terms are included.</p>
+</div>
+</section>
+<section id="a-flexible-framework-for-function-approximation">
+<h3>A Flexible Framework for Function Approximation<a class="headerlink" href="#a-flexible-framework-for-function-approximation" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-fig6">
+<a class="reference internal image-reference" href="../_images/fig6.png"><img alt="../_images/fig6.png" src="../_images/fig6.png" style="width: 597px;" />
+</a>
+</figure>
+</section>
+<section id="common-choices-for-the-activation-function">
+<h3>Common Choices for the Activation Function<a class="headerlink" href="#common-choices-for-the-activation-function" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-fig8">
+<a class="reference internal image-reference" href="../_images/fig8.png"><img alt="../_images/fig8.png" src="../_images/fig8.png" style="width: 508px;" />
+</a>
+</figure>
+</section>
+<section id="neural-networks-are-universal-function-approximators">
+<h3>Neural Networks are Universal Function Approximators<a class="headerlink" href="#neural-networks-are-universal-function-approximators" title="Link to this heading">#</a></h3>
+<p>So what kind of functions can be approximated by neural networks?</p>
+<p><strong>Theorem: (Hornik, Stinchombe, White, 1989)</strong> Fix a “nice” activation function <span class="math notranslate nohighlight">\(f\)</span>. For any continuous function <span class="math notranslate nohighlight">\(g\)</span> on a compact set <span class="math notranslate nohighlight">\(K\)</span>, there exists a feedforward neural network with activation <span class="math notranslate nohighlight">\(f\)</span>, having only a single hidden layer, which approximates <span class="math notranslate nohighlight">\(g\)</span> to within an arbitrary degree of precision on <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<p>For this reason, we call neural networks <em><strong>universal function approximators</strong></em>.</p>
+</section>
+<section id="neural-networks-regression">
+<h3>Neural Networks Regression<a class="headerlink" href="#neural-networks-regression" title="Link to this heading">#</a></h3>
+<p><strong>Model for Regression:</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\sim \mathcal{N}(\mu, \sigma^2)\)</span>, <span class="math notranslate nohighlight">\(\mu = g_\mathbf{W}(\mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a neural network with parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.</p>
+<p><strong>Training Objective:</strong> find <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> to maximize the likelihood of our data. This is equivalent to minimizing the Mean Square Error,
+<div class="math notranslate nohighlight">
+\[
+\max_{\mathbf{W}}\, \mathrm{MSE}(\mathbf{W}) = \frac{1}{N}\sum^N_{n=1} \left(y_n - g_\mathbf{W}(x_n)\right)^2
+\]</div>
+</p>
+<p><strong>Optimizing the Training Objective:</strong> For linear regression (when <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a linear function), we computed the gradient of the MSE with respective to the model parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, set it equal to zero and solved for the optimal <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> analytically (see the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>). For logistic regression, we computed the gradient and used (stochastic) gradient descent to “solve for where the gradient is zero”.</p>
+<p>Can we do the same when <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a neural network?</p>
+</section>
+</section>
+<section id="automatic-differentiation-and-backpropagation">
+<h2><span class="section-number">21.3. </span>Automatic Differentiation and Backpropagation<a class="headerlink" href="#automatic-differentiation-and-backpropagation" title="Link to this heading">#</a></h2>
+<section id="gradient-computation-for-neural-networks">
+<h3>Gradient Computation for Neural Networks<a class="headerlink" href="#gradient-computation-for-neural-networks" title="Link to this heading">#</a></h3>
+<p>Computing the gradient for any parameter <span class="math notranslate nohighlight">\(w^l_{ij}\)</span> in the following network requires us to use the <em><strong>chain rule</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\frac{\partial}{\partial t} g(h(t)) = g'(h(t))h'(t),\quad&amp; \text{or}\quad\frac{\partial g}{\partial t} = \frac{\partial g}{\partial h} \frac{\partial h}{\partial t}
+\end{aligned}\]</div>
+<p>This is because a neural network is just a big composition of functions.</p>
+<figure class="align-center" id="fig-16-fig7">
+<a class="reference internal image-reference" href="../_images/fig7.png"><img alt="../_images/fig7.png" src="../_images/fig7.png" style="width: 286px;" />
+</a>
+</figure>
+</section>
+<section id="example-computing-neural-network-gradients">
+<h3>Example: Computing Neural Network Gradients<a class="headerlink" href="#example-computing-neural-network-gradients" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-16-backprop">
+<a class="reference internal image-reference" href="../_images/backprop.jpg"><img alt="../_images/backprop.jpg" src="../_images/backprop.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="backpropagation-gradient-descent-for-neural-networks">
+<h3>Backpropagation: Gradient Descent for Neural Networks<a class="headerlink" href="#backpropagation-gradient-descent-for-neural-networks" title="Link to this heading">#</a></h3>
+<p>The <em><strong>backpropagation</strong></em> algorithm consists of three phases:
+0. (<strong>Initialize</strong>) intialize the network parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span></p>
+<ol class="arabic simple">
+<li><p>Repeat:</p></li>
+<li><p>(<strong>Forward Pass</strong>) compute all intermediate values <span class="math notranslate nohighlight">\(s_{ij}^l\)</span> and <span class="math notranslate nohighlight">\(a_{ij}^l\)</span> for the given covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span></p></li>
+<li><p>(<strong>Backward Pass</strong>) compute all the gradients <span class="math notranslate nohighlight">\(\frac{\partial \mathcal{L}}{\partial w^l_{ij}}\)</span></p></li>
+<li><p>(<strong>Update Parameters</strong>) update each parameter by <span class="math notranslate nohighlight">\(-\eta \frac{\partial \mathcal{L}}{\partial w^l_{ij}}\)</span></p></li>
+</ol>
+<figure class="align-center" id="fig-16-graph-structure">
+<a class="reference internal image-reference" href="../_images/graph_structure.png"><img alt="../_images/graph_structure.png" src="../_images/graph_structure.png" style="width: 428px;" />
+</a>
+</figure>
+</section>
+<section id="gradient-computation-with-automatic-differentiation">
+<h3>Gradient Computation with Automatic Differentiation<a class="headerlink" href="#gradient-computation-with-automatic-differentiation" title="Link to this heading">#</a></h3>
+<p>The forwards-backwards way of computing the gradient lends itself to an algorithm that automates gradient computation for any neural network.</p>
+<p>This is a special instance of <em><strong>reverse mode automatic differentiation</strong></em> – a method of algorithmically computing exact gradients for functions defined by combinations of simple functions, by drawing graphical models of the composition of functions and then taking gradients by going forwards-backwards.</p>
+<figure class="align-center" id="fig-16-function">
+<a class="reference internal image-reference" href="../_images/function.png"><img alt="../_images/function.png" src="../_images/function.png" style="width: 526px;" />
+</a>
+</figure>
+<figure class="align-center" id="fig-16-computation-graph">
+<a class="reference internal image-reference" href="../_images/computation_graph.png"><img alt="../_images/computation_graph.png" src="../_images/computation_graph.png" style="width: 259px;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="what-does-a-neural-network-learn">
+<h2><span class="section-number">21.4. </span>What Does a Neural Network Learn?<a class="headerlink" href="#what-does-a-neural-network-learn" title="Link to this heading">#</a></h2>
+<section id="why-is-a-neural-network-classifier-so-effective">
+<h3>Why is a Neural Network Classifier So Effective?<a class="headerlink" href="#why-is-a-neural-network-classifier-so-effective" title="Link to this heading">#</a></h3>
+<p>Visualizing the decision boundary:</p>
+<figure class="align-center" id="fig-16-boundary">
+<a class="reference internal image-reference" href="../_images/boundary.png"><img alt="../_images/boundary.png" src="../_images/boundary.png" style="width: 100%;" />
+</a>
+</figure>
+<p>Visualizing the output of the last hidden layer.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p>Before neural network models became wildly popular in machine learning, a common method for building non-linear classifiers is to first map the data, in the input space <span class="math notranslate nohighlight">\(\mathbb{R}^{\text{input}}\)</span>, into a ‘feature’ space <span class="math notranslate nohighlight">\(\mathbb{R}^{\text{feature}}\)</span>, such that the classes are well-separated in the feature space. Then, a linear classifier can be fitted to the transformed data.</p>
+<p>If we ignore the output node of our neural network classifier, we are left with a function, <span class="math notranslate nohighlight">\(\mathbb{R}^{2} \to \mathbb{R}^2\)</span>, mapping the data from the input space to a 2-dimensional feature space. The transformed data (and in general, the output from a hidden layer in a neural network) is called a <em><strong>representation</strong></em> of the data.</p>
+<figure class="align-center" id="fig-16-architecture">
+<a class="reference internal image-reference" href="../_images/architecture.jpeg"><img alt="../_images/architecture.jpeg" src="../_images/architecture.jpeg" style="width: 700px;" />
+</a>
+</figure>
+<p>Visualizing these representations can often shed light on how and what neural network models learns from the data.</p>
+</div>
+<figure class="align-center" id="fig-16-latent">
+<a class="reference internal image-reference" href="../_images/latent.png"><img alt="../_images/latent.png" src="../_images/latent.png" style="width: 642px;" />
+</a>
+</figure>
+</section>
+<section id="two-interpretations-of-a-neural-network-classifier">
+<h3>Two Interpretations of a Neural Network Classifier:<a class="headerlink" href="#two-interpretations-of-a-neural-network-classifier" title="Link to this heading">#</a></h3>
+<table>
+    <tr><td><font size="3">A Complex Decision Boundary $g\quad\quad\quad\quad\quad$</font></td>
+        <td><font size="3">A Transformation $g_0$ and a linear model $g_1\quad\quad\quad\quad$</font></td>
+    <tr><td><img src="../_static/figs/decision.png" alt="" style="max-width:100%;height:auto;max-height:350px"></td>
+        <td><img src="../_static/figs/architecture2.png" alt="" style="max-width:100%;height:auto;max-height:400px"></td></tr>
+</table></section>
+</section>
+<section id="with-great-flexibility-comes-with-great-problems">
+<h2><span class="section-number">21.5. </span>With Great Flexibility Comes with Great Problems<a class="headerlink" href="#with-great-flexibility-comes-with-great-problems" title="Link to this heading">#</a></h2>
+<section id="neural-network-regression-vs-linear-regression">
+<h3>Neural Network Regression vs Linear Regression<a class="headerlink" href="#neural-network-regression-vs-linear-regression" title="Link to this heading">#</a></h3>
+<p>Linear models are easy to interpret. Once we’ve found the MLE of the model parameters, we can formulate scientific hypotheses about the relationship between the outcome <span class="math notranslate nohighlight">\(Y\)</span> and the covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\end{aligned}\]</div>
+<p>What do the weights of a neural network tell you about the relationship between the covariates and the outcome?</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/fig5.png"><img alt="../_images/fig5.png" src="../_images/fig5.png" style="width: 461px;" />
+</a>
+</figure>
+</section>
+<section id="interpretable-deep-learning">
+<h3>Interpretable Deep Learning<a class="headerlink" href="#interpretable-deep-learning" title="Link to this heading">#</a></h3>
+<p>We might be tempted to conclude that neural networks are uninterpretable due to their complexity. But just because we can’t understand neural networks by inspecting the value of the individual weights, it does not mean that we can’t understand them.</p>
+<p>In <a class="reference external" href="https://arxiv.org/abs/1606.03490" rel="noreferrer" target="_blank">The Mythos of Model Interpretability</a>, the authors survey a large number of methods for interpreting deep models.</p>
+<figure class="align-center" id="fig-16-cnnviz">
+<a class="reference internal image-reference" href="../_images/cnnviz.jpg"><img alt="../_images/cnnviz.jpg" src="../_images/cnnviz.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="can-machine-learning-models-make-use-of-human-concepts">
+<h3>Can Machine Learning Models Make Use of Human Concepts?<a class="headerlink" href="#can-machine-learning-models-make-use-of-human-concepts" title="Link to this heading">#</a></h3>
+<p><em><strong>(with Anita Mahinpei, Justin Clark, Ike Lage, Finale Doshi-Velez)</strong></em></p>
+<p>What if instead building complex non-linear models based on raw inputs, we instead build simple linear models based on human interpretable <strong>concepts</strong>? We use a neural network to predict concepts from inputs and then use a linear model to predict the outcome from the concepts. We interpret the relationship between the outcome and the concepts via the linear model. These models are called <strong>concept bottleneck models</strong>.</p>
+<p>In <a class="reference external" href="https://arxiv.org/abs/2106.13314" rel="noreferrer" target="_blank">The Promises and Pitfalls of Black-box Concept Learning Models</a>, we examine the advantages and drawbacks of these models.</p>
+<figure class="align-center" id="fig-16-slide15">
+<a class="reference internal image-reference" href="../_images/slide15.png"><img alt="../_images/slide15.png" src="../_images/slide15.png" style="width: 583px;" />
+</a>
+</figure>
+</section>
+<section id="can-machine-learning-models-learn-to-explore-hypothetical-scenarios">
+<h3>Can Machine Learning Models Learn to Explore Hypothetical Scenarios?<a class="headerlink" href="#can-machine-learning-models-learn-to-explore-hypothetical-scenarios" title="Link to this heading">#</a></h3>
+<p><em><strong>(with Michael Downs, Jonathan Chu, Wisoo Song, Yaniv Yacoby, Finale Doshi-Velez)</strong></em></p>
+<p>Rather than explaining why the model made a decision, it’s often more helpful to explain how to change the data in order to change the model’s decision. This modified input is a <strong>counter-factual</strong>. In <a class="reference external" href="https://finale.seas.harvard.edu/files/finale/files/cruds-_counterfactual_recourse_using_disentangled_subspaces.pdf" rel="noreferrer" target="_blank">CRUDS: Counterfactual Recourse Using Disentangled Subspaces</a>, we study how to automatically generate counter-factual explanations that can help users achieve a favorable outcome from a decision system.</p>
+<figure class="align-center" id="fig-16-slide16">
+<a class="reference internal image-reference" href="../_images/slide16.png"><img alt="../_images/slide16.png" src="../_images/slide16.png" style="width: 496px;" />
+</a>
+</figure>
+</section>
+<section id="right-for-the-right-reasons">
+<h3>Right for the Right Reasons?<a class="headerlink" href="#right-for-the-right-reasons" title="Link to this heading">#</a></h3>
+<p>In <em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em>, the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<figure class="align-center" id="fig-16-shap">
+<a class="reference internal image-reference" href="../_images/shap.png"><img alt="../_images/shap.png" src="../_images/shap.png" style="width: 724px;" />
+</a>
+</figure>
+</section>
+<section id="the-perils-of-explanations">
+<h3>The Perils of Explanations<a class="headerlink" href="#the-perils-of-explanations" title="Link to this heading">#</a></h3>
+<p>In <em>How machine-learning recommendations influence clinician treatment selections: the example of antidepressant selection</em>, the authors found that clinicians interacting with incorrect recommendations paired with simple explanations experienced significant reduction in treatment selection accuracy.</p>
+<figure class="align-center" id="fig-16-reliance">
+<a class="reference internal image-reference" href="../_images/reliance.png"><img alt="../_images/reliance.png" src="../_images/reliance.png" style="width: 412px;" />
+</a>
+</figure>
+<p><strong>Take-away:</strong> Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.</p>
+</section>
+<section id="generalization-error-and-bias-variance">
+<h3>Generalization Error and Bias/Variance<a class="headerlink" href="#generalization-error-and-bias-variance" title="Link to this heading">#</a></h3>
+<p>Complex models have <em><strong>low bias</strong></em> – they can model a wide range of functions, given enough samples.</p>
+<p>But complex models like neural networks can use their ‘extra’ capacity to explain non-meaningful features of the training data that are unlikely to appear in the test data (i.e. noise). These models have <em><strong>high variance</strong></em> – they are very sensitive to small changes in the data distribution, leading to drastic performance decrease from train to test settings.</p>
+<table>
+    <tr>
+        <td>
+            <img src="../_static/figs/fig11.png" alt="" style="max-width:100%">
+        </td>
+        <td>
+            <img src="../_static/figs/fig12.png" alt="" style="max-width:100%">
+        </td>
+    </tr>
+</table></section>
+<section id="generalization-of-deep-models">
+<h3>Generalization of Deep Models<a class="headerlink" href="#generalization-of-deep-models" title="Link to this heading">#</a></h3>
+<p>Just as in the case of linear and polynomial models, we can prevent nerual networks from overfitting (i.e. poor generalization due to high variance) by regularization or by ensembling a large number of models.</p>
+<p>However, a new body of work like <a class="reference external" href="https://mltheory.org/deep.pdf" rel="noreferrer" target="_blank">Deep Double Descent: Where Bigger Models and More Data Hurt</a> show that very wide neural networks (with far more parameters than there are data observations) actually ceases to overfit as the width surpasses a certain threshold. In fact, as the width of a neural network approaches infinity, training the neural network becomes kernel regression (this kernel is called the <em><strong>neural tangent kernel</strong></em>)!</p>
+<figure class="align-center" id="fig-16-dd">
+<img alt="../_images/dd.jpg" src="../_images/dd.jpg" />
+</figure>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">21.6. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>(Why is NN a Big Deal?)</strong> Neural networks are universal function approximators that are easy to compute with and easy to train.</p></li>
+</ol>
+<ul class="simple">
+<li><p>Specifically, we can build a very very complex function using very <strong>simple</strong> and <strong>numerically stable</strong> functions and <strong>fast</strong> operations (like <strong>vectorized</strong> addition, multiplication and simple non-linear function evaluation). In fact, we can approximate any “nice” non-linear function arbitrarily well with a neural network.</p></li>
+<li><p>It’s easy to find the MLE of NN parameters by gradient descent, since computing the gradient is just recursively applying the chain rule of differentiation.</p></li>
+</ul>
+<p><strong>Lesson:</strong> If you need a “generic” non-linear model for data, use a neural network.</p>
+<figure class="align-center" id="fig-16-summary-backprop">
+<a class="reference internal image-reference" href="../_images/backprop.jpg"><img alt="../_images/backprop.jpg" src="../_images/backprop.jpg" style="width: 100%;" />
+</a>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Why is NN So Good at Modeling Data?)</strong> Instead of thinking about NNs as representing very complex regression functions or very complex decision boundaries, we can think of NNs as:</p></li>
+</ol>
+<ul class="simple">
+<li><p>first transforming the data into a form that is simple to capture with a linear model, we call these <em><strong>representations</strong></em> or <em><strong>features</strong></em> of the data</p></li>
+<li><p>fitting a linear model on the transformed data</p></li>
+</ul>
+  <table>
+    <tr><td><font size="3">A Complex Decision Boundary $g\quad\quad\quad\quad\quad$</font></td>
+        <td><font size="3">A Transformation $g_0$ and a linear model $g_1\quad\quad\quad\quad$</font></td>
+    <tr><td><img src="../_static/figs/decision.png" alt="" style="max-width:100%;height:auto;max-height:350px"></td>
+        <td><img src="../_static/figs/architecture2.png" alt="" style="max-width:100%;height:auto;max-height:400px"></td></tr>
+</table>
+<section id="id1">
+<h3>Neural Network Regression vs Linear Regression<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Linear models are easy to interpret. Once we’ve found the MLE of the model parameters, we can formulate scientific hypotheses about the relationship between the outcome <span class="math notranslate nohighlight">\(Y\)</span> and the covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\end{aligned}\]</div>
+<p>What do the weights of a neural network tell you about the relationship between the covariates and the outcome?</p>
+<figure class="align-center" id="fig-16-summary-fig5">
+<a class="reference internal image-reference" href="../_images/fig5.png"><img alt="../_images/fig5.png" src="../_images/fig5.png" style="width: 461px;" />
+</a>
+</figure>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="impact-5-advanced-mcmc.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">20. </span>Applications and Broader Impact: Advanced MCMC</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="17-black-box-vi.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">22. </span>Black-box Variational Inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-as-generalized-linear-models">21.1. Regression as Generalized Linear Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression-models">Linear Regression Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parameterize-a-non-linear-trend">How Would You Parameterize a Non-linear Trend?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-geometry-of-logistic-regression">Review of the Geometry of Logistic Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-ellipitical-decision-boundary">How would you parametrize a ellipitical decision boundary?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary">How would you parametrize an arbitrary complex decision boundary?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks">21.2. Neural Networks</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-arbitrarily-complex-decision-boundaries">Approximating Arbitrarily Complex Decision Boundaries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-neural-network">What is a Neural Network?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-as-function-approximators">Neural Networks as Function Approximators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-flexible-framework-for-function-approximation">A Flexible Framework for Function Approximation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-choices-for-the-activation-function">Common Choices for the Activation Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-are-universal-function-approximators">Neural Networks are Universal Function Approximators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-networks-regression">Neural Networks Regression</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-differentiation-and-backpropagation">21.3. Automatic Differentiation and Backpropagation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-computation-for-neural-networks">Gradient Computation for Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-computing-neural-network-gradients">Example: Computing Neural Network Gradients</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backpropagation-gradient-descent-for-neural-networks">Backpropagation: Gradient Descent for Neural Networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-computation-with-automatic-differentiation">Gradient Computation with Automatic Differentiation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-a-neural-network-learn">21.4. What Does a Neural Network Learn?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-a-neural-network-classifier-so-effective">Why is a Neural Network Classifier So Effective?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#two-interpretations-of-a-neural-network-classifier">Two Interpretations of a Neural Network Classifier:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#with-great-flexibility-comes-with-great-problems">21.5. With Great Flexibility Comes with Great Problems</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-regression-vs-linear-regression">Neural Network Regression vs Linear Regression</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretable-deep-learning">Interpretable Deep Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-machine-learning-models-make-use-of-human-concepts">Can Machine Learning Models Make Use of Human Concepts?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#can-machine-learning-models-learn-to-explore-hypothetical-scenarios">Can Machine Learning Models Learn to Explore Hypothetical Scenarios?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#right-for-the-right-reasons">Right for the Right Reasons?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-explanations">The Perils of Explanations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalization-error-and-bias-variance">Generalization Error and Bias/Variance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalization-of-deep-models">Generalization of Deep Models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">21.6. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Neural Network Regression vs Linear Regression</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

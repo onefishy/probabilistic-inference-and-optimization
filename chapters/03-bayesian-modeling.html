@@ -1,0 +1,1354 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Bayesian Modeling &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/03-bayesian-modeling';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/03-bayesian-modeling.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Bayesian versus Frequentist Inference" href="04-bayesian-vs-frequentist.html" />
+    <link rel="prev" title="2. Maximum Likelihood Estimation" href="02-maximum-likelihood.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/03-bayesian-modeling.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/03-bayesian-modeling.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Bayesian Modeling</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-method-of-maximum-likelihood">3.1. Review of the Method of Maximum Likelihood</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-method-of-maximum-likelihood">The Method of Maximum Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-mle">Evaluating the MLE</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-the-maximum-likelihood-estimator">Properties of The Maximum Likelihood Estimator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-bias-always-bad">Is Bias Always Bad?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-mle-overfitting-under-scarcity-of-data">Limitations of MLE: Overfitting Under Scarcity of Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#models-for-real-data">3.2. Models for Real Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-ranking">Video Ranking</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-rates">Kidney Cancer Rates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#birth-weights">Birth Weights</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3.3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-model-revisited">The Coin Toss Model: Revisited</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incoporating-prior-beliefs">Incoporating Prior Beliefs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-for-the-beta-binomial-model">Posterior for the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-posterior-bayesian-update">Interpreting the Posterior: Bayesian Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-bayesian-update-for-the-coin-flip">Simulation: Bayesian Update for the Coin Flip</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#making-predictions">Making Predictions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-posterior-predictive-for-the-coin-flip">Simulation: Posterior Predictive for the Coin Flip</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-modeling-a-summary">3.4. Bayesian Modeling - A Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modeling-process">The Bayesian Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-bayesian-models">Evaluating Bayesian Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#where-do-priors-come-from">Where do Priors Come From?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">3.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">3.6. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-review-of-statistical-modeling-and-scientific-computing">Problem Set: Review of Statistical Modeling and Scientific Computing</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-description">Problem Description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">3.7. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="bayesian-modeling">
+<h1><span class="section-number">3. </span>Bayesian Modeling<a class="headerlink" href="#bayesian-modeling" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/bhrUXe09A-Y" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Review of the Method of Maximum Likelihood</p></li>
+<li><p>Models for Real Data</p></li>
+<li><p>The Beta-Binomial Model</p></li>
+<li><p>Bayesian Modeling</p></li>
+<li><p>Connections and Comparisons with Frequentist Inference</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="review-of-the-method-of-maximum-likelihood">
+<h2><span class="section-number">3.1. </span>Review of the Method of Maximum Likelihood<a class="headerlink" href="#review-of-the-method-of-maximum-likelihood" title="Link to this heading">#</a></h2>
+<section id="the-method-of-maximum-likelihood">
+<h3>The Method of Maximum Likelihood<a class="headerlink" href="#the-method-of-maximum-likelihood" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Model)</strong> Assume observations from <span class="math notranslate nohighlight">\(N\)</span> number of <em><strong>independently and identically distributed</strong></em> outcomes, <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span>, with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span> and where <span class="math notranslate nohighlight">\(\theta\)</span> is the set of parameters of the distribution <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span>. The likelihood function is
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+ \mathcal{L}(\theta) = \prod_{n=1}^N p(y_n | \theta)
+\end{aligned}\]</div>
+</p></li>
+<li><p><strong>(Inference)</strong>
+We estimate <span class="math notranslate nohighlight">\(\theta\)</span> using the <em><strong>maximium likelihood estimate</strong></em>, defined as
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+ \theta_{\text{MLE}} = \underset{\theta}{\mathrm{argmax}}\; \mathcal{L}(\theta) = \underset{\theta}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | \theta)
+ \end{aligned}\]</div>
+</p></li>
+<li><p><strong>(Inference Method)</strong></p></li>
+</ol>
+<ul class="simple">
+<li><p><em>Unconstrained Optimization:</em> if <span class="math notranslate nohighlight">\(\theta\)</span> doesn’t need to satisfy any special property, then it’s as simple as setting the <em><strong>gradient</strong></em> of the likelihood equal to zero and solving!
+<strong>(Except it’s not that simple!)</strong><br><br></p></li>
+<li><p><em>Constrained Optimization:</em> if <span class="math notranslate nohighlight">\(\theta\)</span> needs to satisfy special properties, then it’s as simple as setting the gradient of the <em><strong>Lagrangian</strong></em> of the likelihood and the constraint equal to zero and solving!
+<strong>(Except it’s not that simple!)</strong></p></li>
+</ul>
+</section>
+<section id="evaluating-the-mle">
+<h3>Evaluating the MLE<a class="headerlink" href="#evaluating-the-mle" title="Link to this heading">#</a></h3>
+<p>If we have the true parameters <span class="math notranslate nohighlight">\(\theta\)</span>, we can compute the <em><strong>Mean Squared Error</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{MSE}_{\theta} = \mathbb{E}_{Y^{\theta}}\left[(\theta_{\text{MLE}}\left(Y^\theta\right) - \theta)^2\right]
+\]</div>
+<p>If we don’t have the true parameters <span class="math notranslate nohighlight">\(\theta\)</span>, we can use <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> <em><strong>predict</strong></em> or <em><strong>simulate</strong></em> data and compare it with the observed data, i.e. sample</p>
+<div class="math notranslate nohighlight">
+\[
+Y^{\theta_{\text{MLE}}} \sim p(Y| \theta_{\text{MLE}}),
+\]</div>
+<p>compare <span class="math notranslate nohighlight">\(Y^{\theta_{\text{MLE}}}\)</span> and <span class="math notranslate nohighlight">\(Y^{\theta}\)</span>.</p>
+</section>
+<section id="properties-of-the-maximum-likelihood-estimator">
+<h3>Properties of The Maximum Likelihood Estimator<a class="headerlink" href="#properties-of-the-maximum-likelihood-estimator" title="Link to this heading">#</a></h3>
+<p><strong>Why Choose MLE?</strong>
+Asymptotically, i.e. given an infinite number of samples, the MLE is</p>
+<ol class="arabic simple">
+<li><p><em>Consistent:</em> <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> approaches the true parameters <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><em>Unbiased:</em> The average <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>, taken over many different samples of the data, is <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><em>Minimum Variance:</em> The MLE has the lowest variance of all unbiased estimators.</p></li>
+</ol>
+<p><strong>Why Not Choose MLE?</strong>
+When the sample size is “small”, the MLE can be</p>
+<ol class="arabic simple">
+<li><p><em>Overfitted:</em> The MLE can is sensitive to outliers in the data.</p></li>
+<li><p><em>Biased:</em> The average <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>, taken over many different data samples, is not <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><em>Imprecise:</em> The MLE can have high variance.</p></li>
+</ol>
+<p><strong>What Other Estimators are There?</strong></p>
+<ol class="arabic simple">
+<li><p>Method of Moments</p></li>
+<li><p>Minimum Variance Unbiased Estimator</p></li>
+<li><p>Regularized MLE</p></li>
+</ol>
+<p><strong>Note:</strong> the computation of (1) and (2) can be much more complex than MLE.</p>
+</section>
+<section id="is-bias-always-bad">
+<h3>Is Bias Always Bad?<a class="headerlink" href="#is-bias-always-bad" title="Link to this heading">#</a></h3>
+<p>Recall that we can use the properties of expectations to decompose the mean squared error of the maximum likelihood estimator:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{MSE}_{\theta_{\text{MLE}}} = \underbrace{\mathbb{E}\left[(\theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}])^2\right]}_{\text{variance}} + \underbrace{\left( \mathbb{E}[\theta_{\text{MLE}}] - \theta\right)^2}_{\text{bias}}
+\]</div>
+<p>Although we want an unbiased estimator, the above decomposition says that if the variance of the estimator is high our espected error will nonetheless be high.</p>
+<p>The <em><strong>variance-bias trade-off</strong></em> refers to the phenomenon that, in many cases, when estimators have low bias they have high corresponding variance (and vice versa), and hence high MSE.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Decomposition of MSE</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathrm{MSE}_{\theta_{\text{MLE}}} &amp;= \mathbb{E}_{Y^\theta} \left[\left(\theta_{\text{MLE}} - \theta \right)^2 \right]\\
+&amp;= \mathbb{E}_{Y^\theta}\left[\left( \theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}] + \mathbb{E}[\theta_{\text{MLE}}] - \theta \right)^2 \right]\\
+&amp;= \mathbb{E}\left[\left(\theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}]\right)^2\right] + \mathbb{E}\left[\left(\mathbb{E}[\theta_{\text{MLE}}] - \theta \right)^2 \right] + 2\mathbb{E}\left[ (\theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}])(\mathbb{E}[\theta_{\text{MLE}}] - \theta)\right]\\
+&amp;= \underbrace{\mathbb{E}\left[(\theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}])^2\right]}_{\text{variance}} + \underbrace{\left( \mathbb{E}[\theta_{\text{MLE}}] - \theta\right)^2}_{\text{bias}}
+\end{aligned}\end{split}\]</div>
+<p><strong>Example of the Bias Variance Trade-off</strong>
+Let <span class="math notranslate nohighlight">\(Y \sim\mathcal{N}(0, \sigma^2)\)</span>. Consider two estimators of the variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\widehat{\theta}_1(Y) = Y^2\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\widehat{\theta}_2(Y) = \frac{1}{3}Y^2\)</span></p></li>
+</ol>
+<p>The expected values of the estimators are:</p>
+<ol class="arabic simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbb{E}[\widehat{\theta}_1] = \mathbb{E}[Y^2]=\sigma^2\)</span>, using the fact <span class="math notranslate nohighlight">\(Y^2\)</span> is a Gamma distribution with mean <span class="math notranslate nohighlight">\(\sigma^2\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbb{E}[\widehat{\theta}_1] = \mathbb{E}[Y^2]=\frac{1}{3}\sigma^2\)</span>
+So we see that <span class="math notranslate nohighlight">\(\widehat{\theta}_1\)</span> is unbiased, whereas <span class="math notranslate nohighlight">\(\widehat{\theta}_2\)</span> is biased.</p></li>
+</ol>
+<p>Note that the two estimators are both of the form <span class="math notranslate nohighlight">\(cY^2\)</span> where <span class="math notranslate nohighlight">\(c\)</span> is a constant. We can compute the MSE, in a general way, for this class of estimators:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathrm{MSE}_{\widehat{\theta}} &amp;= \mathbb{E}\left[\left(\widehat{\theta}_2 - \sigma^2\right)^2\right]\\
+&amp;= \mathbb{E}\left[c^2Y^4 - 2\sigma^2 cY^2 + \sigma^4 \right]\\
+&amp;= c^2\mathbb{E} \left[Y^4 \right] - 2\sigma^2c\mathbb{E} \left[Y^2 \right] + \sigma^4\\
+&amp;= 3c^2\sigma^4 - 2c\sigma^4 + \sigma^4\\
+&amp;= \sigma^4(3c^2 - 2c + 1)
+\end{aligned}\end{split}\]</div>
+<p>From the expression of the MSE, we can find the <span class="math notranslate nohighlight">\(c\)</span> that will minimize <span class="math notranslate nohighlight">\(\mathrm{MSE}_{\widehat{\theta}}\)</span> - this involves finding the stationary points of the derivative of <span class="math notranslate nohighlight">\(\mathrm{MSE}_{\widehat{\theta}}\)</span> (and then checking concavity/convexity!):</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{d}{dc}\mathrm{MSE}_{\widehat{\theta}} = \sigma^4(6a - 2) = 0
+\]</div>
+<p>We see that <span class="math notranslate nohighlight">\(\mathrm{MSE}_{\widehat{\theta}}\)</span> has a unique global minimum at <span class="math notranslate nohighlight">\(c = \frac{1}{3}\)</span>. That is, the biased estimator <span class="math notranslate nohighlight">\(\widehat{\theta}_2\)</span> has smaller MSE than the unbiased estimator <span class="math notranslate nohighlight">\(\widehat{\theta}_1\)</span>.</p>
+</div>
+</section>
+<section id="limitations-of-mle-overfitting-under-scarcity-of-data">
+<h3>Limitations of MLE: Overfitting Under Scarcity of Data<a class="headerlink" href="#limitations-of-mle-overfitting-under-scarcity-of-data" title="Link to this heading">#</a></h3>
+<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. From what we’ve see before, the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \frac{3}{3} = 1.
+\]</div>
+
+Is this a good estimate of the bias of the coin? What can we do to make this estimate better?</p>
+<p>Suppose that we have two YouTube videos with 4/5 likes and 3,500/5,000 likes respectively. We can model the probability that a viewer will like each video as two Bernoulli distribtutions, <span class="math notranslate nohighlight">\(Ber(\theta_1)\)</span>, <span class="math notranslate nohighlight">\(Ber(\theta_2)\)</span>, where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the “inherent” likeability of each video.</p>
+<p>Again, we can compute the MLE of the Bernoulli parameters:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_1 = 4/5 = 0.8,\; \theta_2 = 3,500/5,000 = 0.75.
+\]</div>
+<p>It is fair to say that the second video is more likeable base on our estimates?</p>
+</section>
+<section id="regularization">
+<h3>Regularization<a class="headerlink" href="#regularization" title="Link to this heading">#</a></h3>
+<p>We can prevent MLE from overfitting to the observations when training data is scarce by constraining it from unreasonable values.</p>
+<p>Recall that in order to prevent the MLE solution for linear regression from learn unrealistically large slopes and intercepts, we add <span class="math notranslate nohighlight">\(\ell_2\)</span>-regularization on the model parameters during training, essentially forcing the parameters to stay as small (close to zero) as they can be while still capturing the data.</p>
+<p>Similarly, if want the MLE of the parameter <span class="math notranslate nohighlight">\(\theta\)</span> of a Bernoulli distribution to avoid extreme values (1 and 0), we need to ‘anchor’ our estimation of <span class="math notranslate nohighlight">\(\theta\)</span> to some ‘reasonable’ value:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\theta_{\text{MLE Reg.}} = \frac{\text{# positive outcome} + \alpha}{\text{# total trials} + \beta}
+\end{aligned}\]</div>
+<p>The fraction <span class="math notranslate nohighlight">\(\alpha/\beta\)</span> expresses your notion of what is a reasonable looking probability.</p>
+<p>But is regularization a principled way to perform inference (i.e. will it ruin the nice properties of MLE)? How do you choose the hyperparameters <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> in a principled manner?</p>
+</section>
+</section>
+<section id="models-for-real-data">
+<h2><span class="section-number">3.2. </span>Models for Real Data<a class="headerlink" href="#models-for-real-data" title="Link to this heading">#</a></h2>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Die Roll</p>
+<p>We can model the outcome, <span class="math notranslate nohighlight">\(Y\)</span>, of a single dice roll with a <em><strong>categorical</strong></em> distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+Y \sim Cat(\theta)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta = [\theta_1 \ldots \theta_6]\)</span> is a vector satisfying <span class="math notranslate nohighlight">\(\sum_{i=1}^6 \theta_i = 1\)</span>, and where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the probability of rolling a number <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>Given <span class="math notranslate nohighlight">\(Y_1,\ldots, Y_N\)</span> identically and independently distributed outcomes with <span class="math notranslate nohighlight">\(Y_n \sim Cat(\theta)\)</span>. Denote the total number observed for each face as a vector <span class="math notranslate nohighlight">\(F = [f_1 \ldots f_6]\)</span>, where <span class="math notranslate nohighlight">\(f_i\)</span> is the number of times the number <span class="math notranslate nohighlight">\(i\)</span> was rolled. Then <span class="math notranslate nohighlight">\(F\)</span> can be modeled with a <em><strong>multinomial</strong></em> distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+F \sim Mul(N, \theta).
+\]</div>
+<p><strong>Model Critique:</strong> What are the assumptions made in this model? Are they realistic?</p>
+</div>
+<section id="video-ranking">
+<h3>Video Ranking<a class="headerlink" href="#video-ranking" title="Link to this heading">#</a></h3>
+<p>We can model the outcome, <span class="math notranslate nohighlight">\(Y\)</span>, of a user rating for a specific YouTube video as a Bernoulli distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+Y \sim Ber(\theta)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta\)</span> is the probability that a user will like the video.</p>
+<p>Given <span class="math notranslate nohighlight">\(Y_1,\ldots, Y_N\)</span> identically and independently distributed outcomes with <span class="math notranslate nohighlight">\(Y_n \sim Ber(\theta)\)</span>. Denote the total number of likes by <span class="math notranslate nohighlight">\(L\)</span>. Then <span class="math notranslate nohighlight">\(L\)</span> can be modeled with a <em><strong>binomial</strong></em> distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+L \sim Bin(N, \theta).
+\]</div>
+<p><strong>Model Critique:</strong> What are the assumptions made in this model? Are they realistic?</p>
+</section>
+<section id="kidney-cancer-rates">
+<h3>Kidney Cancer Rates<a class="headerlink" href="#kidney-cancer-rates" title="Link to this heading">#</a></h3>
+<p>Given a dataset with <span class="math notranslate nohighlight">\(N\)</span> number of US counties and the incidents of kidney cancer in each county, we can model the observed incidents of cancer, <span class="math notranslate nohighlight">\(C_n\)</span>, of the <span class="math notranslate nohighlight">\(n\)</span>-th county with a Poisson distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+C_n \sim Poi(T_n\theta_n)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(T_n\)</span> is the total population of the county and <span class="math notranslate nohighlight">\(\theta_n\)</span> is the “true” cancer rate of the county.</p>
+<p><strong>Model Critique:</strong> What are the assumptions made in this model? Are they realistic?</p>
+<p>The following is a visualization of the counties with the highest rates of kidney cancer (Gelman 1998). Is there any noticeable spatial pattern in these maps? Recall that the MLE of the rate of the Poisson distribution for each county is <span class="math notranslate nohighlight">\(\frac{C_n}{T_n}\)</span>.</p>
+<figure class="align-center" id="fig-03-kidney">
+<a class="reference internal image-reference" href="../_images/kidney.jpg"><img alt="../_images/kidney.jpg" src="../_images/kidney.jpg" style="width: 562px;" />
+</a>
+</figure>
+</section>
+<section id="birth-weights">
+<h3>Birth Weights<a class="headerlink" href="#birth-weights" title="Link to this heading">#</a></h3>
+<p>In our lab, we work with IVF clinics to build models for prediction and data analysis. One of our current tasks is to model the birth weights of the infants born in the clinic.</p>
+<p>Naively, given observed birth weights <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span>, we can model each outcome <span class="math notranslate nohighlight">\(Y_n\)</span> with a normal distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+Y_n \sim \mathcal{N}(\mu, \sigma^2)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the average birth weight for this population and <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the population variance.</p>
+<p><strong>Model Critique:</strong> What are the assumptions made in this model? Are they realistic?</p>
+</section>
+</section>
+<section id="the-beta-binomial-model">
+<h2><span class="section-number">3.3. </span>The Beta-Binomial Model<a class="headerlink" href="#the-beta-binomial-model" title="Link to this heading">#</a></h2>
+<section id="the-coin-toss-model-revisited">
+<h3>The Coin Toss Model: Revisited<a class="headerlink" href="#the-coin-toss-model-revisited" title="Link to this heading">#</a></h3>
+<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. The MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \frac{3}{3} = 1.
+\]</div>
+
+This is a clear case of the MLE overfitting to the observed data.</p>
+<p>Last time, you’d suggested tying the estimate to some fixed reasonable number, for example,
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE Reg}} = \frac{H + 1}{N + 2},
+\]</div>
+
+and in general,
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE Reg}} = \frac{H + \alpha}{N + \beta}.
+\]</div>
+
+The terms <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are called <em><strong>regularization terms</strong></em> .</p>
+<p><strong>Question:</strong> What is the effect of <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> on our estimate? What values should we choose for <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span>?</p>
+</section>
+<section id="incoporating-prior-beliefs">
+<h3>Incoporating Prior Beliefs<a class="headerlink" href="#incoporating-prior-beliefs" title="Link to this heading">#</a></h3>
+<p>Our choise of the regularization terms, <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span>, depends on our prior beliefs about the coin. The way we chose to incorporate these beliefs doesn’t indicate any uncertainty.</p>
+<p>Alternatively, we can incorporate our prior belief about <span class="math notranslate nohighlight">\(\theta\)</span> as a distribution, this is called the <em><strong>prior distribution</strong></em>. Since <span class="math notranslate nohighlight">\(\theta\)</span> is a number between 0 and 1, a beta distribution is an appropriate choice.</p>
+<figure class="align-center" id="fig-03-beta">
+<a class="reference internal image-reference" href="../_images/beta.jpg"><img alt="../_images/beta.jpg" src="../_images/beta.jpg" style="width: 438px;" />
+</a>
+</figure>
+</section>
+<section id="id1">
+<h3>The Beta-Binomial Model<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>A model that involves both a likelihood for the data and prior on the parameters in the likelihood is called a <em><strong>Bayesian model</strong></em>.</p>
+<p><strong>Bayesian Model for Coin Flip</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+Y &amp;\sim Bin(N, \theta),\quad &amp;\text{(Likelihood)}\\
+\theta &amp;\sim Beta(\alpha, \beta),\quad &amp;\text{(Prior)}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are called <em><strong>hyperparameters</strong></em> of the model.</p>
+<p>Now, computing the MLE no longer makes sense (since the MLE only considers the likelihood). Luckily, Bayes’ Rule allows us to derive a distribution that considers both the prior and the likelihood:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\theta | Y) = \frac{\overbrace{p(Y| \theta)}^{\text{likelihood}} \overbrace{p(\theta)}^{\text{prior}}}{\underbrace{p(Y)}_{\text{marginal data likelihood}}} = \frac{p(Y, \theta)}{\int p(Y, \theta) d\theta}
+\end{aligned}\]</div>
+<p>The distribution <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior</strong></em>.</p>
+</section>
+<section id="posterior-for-the-beta-binomial-model">
+<h3>Posterior for the Beta-Binomial Model<a class="headerlink" href="#posterior-for-the-beta-binomial-model" title="Link to this heading">#</a></h3>
+<p>In our case, the posterior is given by
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\theta | Y) = \frac{p(Y| \theta)p(\theta)}{p(Y)} = \frac{\overbrace{{N \choose Y}\theta^{Y}(1- \theta)^{N-Y}}^{\text{binomial pdf}} \overbrace{\frac{1}{B(\alpha, \beta)} \theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}^{\text{beta pdf}}}{p(Y)}
+\end{aligned}\]</div>
+
+We can rewrite the posterior as</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+p(\theta | Y) = const * \theta^{(Y+\alpha) - 1}(1 - \theta)^{(N-Y + \beta) - 1}
+\end{aligned}\]</div>
+<p>where <span class="math notranslate nohighlight">\(const = \frac{{N \choose Y}}{B(\alpha, \beta)p(Y)}\)</span> must be the normalizing constant for <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span>.</p>
+<p>We recognize the posterior as a beta distribution, <span class="math notranslate nohighlight">\(Beta(Y+\alpha, N-Y + \beta)\)</span>! Can you see why?</p>
+</section>
+<section id="interpreting-the-posterior-bayesian-update">
+<h3>Interpreting the Posterior: Bayesian Update<a class="headerlink" href="#interpreting-the-posterior-bayesian-update" title="Link to this heading">#</a></h3>
+<p>Rather than a point estimate for <span class="math notranslate nohighlight">\(\theta\)</span>, we now have a posterior distribution, <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>, over <span class="math notranslate nohighlight">\(\theta\)</span>. What does the posterior tell us about <span class="math notranslate nohighlight">\(\theta\)</span>?</p>
+<p>Since the prior distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span> encoded our beliefs about <span class="math notranslate nohighlight">\(\theta\)</span> along with our uncertainty, it is natural to interpret the posterior as yet another <strong>belief</strong> about <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>Since the posterior includes the likelihood, this belief has been <strong>updated by the data</strong>.</p>
+</section>
+<section id="simulation-bayesian-update-for-the-coin-flip">
+<h3>Simulation: Bayesian Update for the Coin Flip<a class="headerlink" href="#simulation-bayesian-update-for-the-coin-flip" title="Link to this heading">#</a></h3>
+<p>What is the effect of the choice of the prior on the posterior? What is the effect of the number of observations, <span class="math notranslate nohighlight">\(N\)</span>, on the posterior?</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#a function for computing the prior and the posterior (after simulating data)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_models</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+    <span class="c1">#prior definition: beta distribution</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+    
+    <span class="c1">#sample data</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+    
+    <span class="c1">#update posterior: beta distribution</span>
+    <span class="n">posterior_alpha</span> <span class="o">=</span> <span class="n">H</span> <span class="o">+</span> <span class="n">alpha</span>
+    <span class="n">posterior_beta</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">H</span> <span class="o">+</span> <span class="n">beta</span>
+    <span class="n">posterior</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+    
+    <span class="k">return</span> <span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span>
+
+<span class="c1"># a function for ploting the prior and posterior distribution</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_prior_posterior</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prior</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Prior distribution'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">posterior</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Posterior distribution after seeing </span><span class="si">{}</span><span class="s1"> Heads/</span><span class="si">{}</span><span class="s1"> Flips'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="c1">#prior definition: beta distribution</span>
+<span class="c1">#try: alpha = beta = 0.5, 1, 10; try: alpha=10, beta=1; try: alpha=1, beta=10</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="c1">#data: binomial distribution</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+<span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span> <span class="o">=</span> <span class="n">make_models</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_prior_posterior</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e4c579eb58b4d1bb45743f5a9f6076bd4e3be6fcfa1845d5945a0c36f4ebe7a1.png" src="../_images/e4c579eb58b4d1bb45743f5a9f6076bd4e3be6fcfa1845d5945a0c36f4ebe7a1.png" />
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#run this multiple times to see the effect of updates</span>
+<span class="n">posterior_alpha</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">posterior_beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span> <span class="o">=</span> <span class="n">make_models</span><span class="p">(</span><span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_prior_posterior</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">posterior</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/4feac302b92737fc3480ce39fc145c47b47f395c5e8d05637aaa283ab71b73a4.png" src="../_images/4feac302b92737fc3480ce39fc145c47b47f395c5e8d05637aaa283ab71b73a4.png" />
+</div>
+</div>
+</section>
+<section id="making-predictions">
+<h3>Making Predictions<a class="headerlink" href="#making-predictions" title="Link to this heading">#</a></h3>
+<p>If the posteriors we infer represent beliefs, how do we evaluate these beliefs?</p>
+<ol class="arabic simple">
+<li><p>In the case that we the true parameter <span class="math notranslate nohighlight">\(\theta^{\text{true}}\)</span>, we can check to see if the posterior assigns high likelihood to <span class="math notranslate nohighlight">\(\theta^{\text{true}}\)</span>, and the certainty the posterior has around <span class="math notranslate nohighlight">\(\theta^{\text{true}}\)</span>.<br><br></p></li>
+<li><p>When we do not know <span class="math notranslate nohighlight">\(\theta^{\text{true}}\)</span>, we can simulate data <span class="math notranslate nohighlight">\(Y^{\theta}\)</span> using samples of <span class="math notranslate nohighlight">\(\theta\)</span> from the posterior. We compare the distribution of simulated data, or <em><strong>posterior predictive</strong></em>, to the observed data.</p></li>
+</ol>
+</section>
+<section id="simulation-posterior-predictive-for-the-coin-flip">
+<h3>Simulation: Posterior Predictive for the Coin Flip<a class="headerlink" href="#simulation-posterior-predictive-for-the-coin-flip" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># function to plot the posterior predictive of the beta-binomial model</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_predictive</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">posterior_pred</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'observed heads'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">posterior_pred</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'histogram of predicted head'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">posterior_pred</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'posterior predictive over heads'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">posterior_alpha</span><span class="p">,</span> <span class="n">posterior_beta</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">posterior_pred</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">theta_sample</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">theta_sample</span> <span class="ow">in</span> <span class="n">posterior_samples</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_posterior_predictive</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">posterior_pred</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/eab37958b30bb544941cdd3038d957a2f151793def563369995a85e61e680122.png" src="../_images/eab37958b30bb544941cdd3038d957a2f151793def563369995a85e61e680122.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="bayesian-modeling-a-summary">
+<h2><span class="section-number">3.4. </span>Bayesian Modeling - A Summary<a class="headerlink" href="#bayesian-modeling-a-summary" title="Link to this heading">#</a></h2>
+<section id="the-bayesian-modeling-process">
+<h3>The Bayesian Modeling Process<a class="headerlink" href="#the-bayesian-modeling-process" title="Link to this heading">#</a></h3>
+<p>In order to make statements about <span class="math notranslate nohighlight">\(Y\)</span>, the outcome, and <span class="math notranslate nohighlight">\(\theta\)</span>, parameters of the distribution generating the data, we form the joint distribution over both variables and use the various marginals/conditional distributions to reason about <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<ol class="arabic simple">
+<li><p>we form the <em><strong>joint distribution</strong></em> over both variables <span class="math notranslate nohighlight">\(p(Y, \theta) = p(Y | \theta) p(\theta)\)</span>.</p></li>
+<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,
+<div class="math notranslate nohighlight">
+\[
+p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
+\]</div>
+
+where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p></li>
+<li><p>before any data is observed, we can simulate data by using our prior
+<div class="math notranslate nohighlight">
+\[
+p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
+\]</div>
+
+where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p></li>
+<li><p>after observing data, we can simulate new data simliar to the observed data by using our posterior
+<div class="math notranslate nohighlight">
+\[
+p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
+\]</div>
+
+where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p></li>
+</ol>
+</section>
+<section id="evaluating-bayesian-models">
+<h3>Evaluating Bayesian Models<a class="headerlink" href="#evaluating-bayesian-models" title="Link to this heading">#</a></h3>
+<p>As we have seen in the Beta-Binomial model, we can simulate the posterior (and prior) predictive rather than compute them analytically. That is, you don’t need to know the pdf of <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span>.</p>
+<p>The posterior predictive can be represented by <strong>samples</strong> of predictions:</p>
+<ol class="arabic simple">
+<li><p>we sample values of <span class="math notranslate nohighlight">\(\theta_n\)</span> from the posterior, <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>.</p></li>
+<li><p>we sample an outcome <span class="math notranslate nohighlight">\(Y_n\)</span> from <span class="math notranslate nohighlight">\(p(Y|\theta_n)\)</span> for each posterior sample <span class="math notranslate nohighlight">\(\theta_n\)</span>.</p></li>
+</ol>
+<p>The set <span class="math notranslate nohighlight">\(Y_n\)</span> we obtain emprirically represents the posterior predictve distribution <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p>How do we evaluate the quality of our Bayesian model: how appropriate was our choice of prior? How appropriate was our choice of noise structure for the data (i.e. how appropriate is our choice of likelihood)?</p>
+<p>Evaluating Bayesian models is challenging for two reasons:</p>
+<ol class="arabic simple">
+<li><p>Instead of learning a single best estimate of the model parameters <span class="math notranslate nohighlight">\(\theta\)</span>, like in the case of maximum likelihood estimation, we learn a distribution over possible values of <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span></p></li>
+<li><p>In real life we do not have access to the ground truth values of model parameters</p></li>
+</ol>
+<p>Thus, we evaluate our model by seeing how well it fits the observed data. That is, we check to see how well our predicted distribution of <span class="math notranslate nohighlight">\(Y^*\)</span>, <span class="math notranslate nohighlight">\(p(Y^* | Y)\)</span>, matches up with the observed data <span class="math notranslate nohighlight">\(Y^*\)</span>.</p>
+<p>When we are able to visualize the data (i.e. when <span class="math notranslate nohighlight">\(Y^*\)</span> is low-dimensional), we can visualize both data <span class="math notranslate nohighlight">\(Y^*\)</span> and samples from  <span class="math notranslate nohighlight">\(p(Y^* | Y)\)</span>. If the model is a good fit for the data, these two plots should be similar.</p>
+<p>But what if it’s not possible to visualize the data?</p>
+</div>
+</section>
+<section id="where-do-priors-come-from">
+<h3>Where do Priors Come From?<a class="headerlink" href="#where-do-priors-come-from" title="Link to this heading">#</a></h3>
+<p>Hopefully you’ve noticed a key property of the priors we chose:</p>
+<blockquote>
+<div><p>All the priors combined with the likelihood to form a distribution we recognize! Specifically, the posterior distribution is of the same type as the prior!</p>
+</div></blockquote>
+<p>These priors are called <em><strong>conjugate priors</strong></em> for the corresponding likelihoods. This is a purely mathematical property.</p>
+<p><strong>Question:</strong> is it right to choose priors that are mathematically convenient? What is a good way to choose a prior? What if we “choose wrong”?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Uninformative Priors: How to Say I Don’t Know</p>
+<p>If you don’t have a strong prior believe about the parameters in the likelihood, you should choose a prior that has no effect when combined with the likelihood – i.e. <strong>let the data speak for itself</strong>.</p>
+<p><strong>Example:</strong>
+In the Beta-Binomial model, is there a choice of the hyperparameters of the prior that has no effect on the posterior?</p>
+<p>We might try <span class="math notranslate nohighlight">\(Beta(1, 1)\)</span>, which is the uniform distribution over <span class="math notranslate nohighlight">\([0, 1]\)</span>. The posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> is then <span class="math notranslate nohighlight">\(Beta(Y + 1, N - Y + 1)\)</span>. In the following example, visualizing the posterior, we see that the posterior assigns the highest mass to the MLE of <span class="math notranslate nohighlight">\(\theta\)</span>. But the posterior assigns more mass to values of <span class="math notranslate nohighlight">\(\theta\)</span> smaller than the MLE. In this sense, the prior <strong>does</strong> inform the posterior.</p>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">MLE</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">N</span>
+<span class="n">posterior</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">-</span> <span class="n">Y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
+<span class="n">posterior_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span> <span class="o">+</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mf">2.</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">posterior</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Posterior pdf'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">MLE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Maximum Likelihood Estimate'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">posterior_mean</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'Posterior Mean'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Comparison of the posterior with the MLE'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/3d645d6e5d4d3c49e13ab7ea3e41bb6c1c1949d33f5b8ac10514d67a32950f0c.png" src="../_images/3d645d6e5d4d3c49e13ab7ea3e41bb6c1c1949d33f5b8ac10514d67a32950f0c.png" />
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Going deeper: Aside</p>
+<p>There is a general purpose technique for creating non-informative priors, called <em><strong>Jeffreys priors</strong></em>, which places less prior weight on parameter values where the likelihood function is flat. This prevents the prior from having undue influency on the posterior.</p>
+<p>There are many resources that cover the construction of Jeffreys priors for common likelihoods.</p>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">3.5. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>How do we evaluate the fit of our MLE model?</p></li>
+</ol>
+<ul class="simple">
+<li><p>With regression it’s easy, you plug <span class="math notranslate nohighlight">\(x_n\)</span> into <span class="math notranslate nohighlight">\(f_{\theta_\text{MLE}}(x)\)</span> and then compare the prediction <span class="math notranslate nohighlight">\(\widehat{y}_n\)</span> with <span class="math notranslate nohighlight">\(y\)</span>. But what if we don’t have any inputs, <span class="math notranslate nohighlight">\(x_n\)</span>, what if we just have <span class="math notranslate nohighlight">\(y_n\)</span>? In this case we would not be able to predict a <span class="math notranslate nohighlight">\(\widehat{y}_n\)</span> for a specific <span class="math notranslate nohighlight">\(y_n\)</span>.<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>What are the potential drawbacks of MLE (in particular, under data scarcity)?</p></li>
+</ol>
+<ul class="simple">
+<li><p>What are some common fixes for the drawbacks of MLE?</p></li>
+<li><p>What are some potential issues with these fixes?<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>What is the point of adding priors to our models? Specifically how does adding priors to our model mitigate some of the drawbacks of MLE?<br><br></p></li>
+<li><p>How should we interpret the posterior of a Bayesian model and why?<br><br></p></li>
+<li><p>What is a posterior predictive? What is the relationship between the posterior predictive and the posterior? What is the point of deriving the posterior predictive (i.e. once we derive the posterior isn’t that enough)?<br><br></p></li>
+<li><p>How do we evaluate a Bayesian model (the posterior is a distribution over plausible models not a single “best” model)?<br><br></p></li>
+<li><p>How do we choose priors for Bayesian models? What if we chose wrong? Why did we choose a Beta prior for the binomial model for the coin flip data?</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2><span class="section-number">3.6. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-review-of-statistical-modeling-and-scientific-computing">
+<span id="ps-hw1"></span><h3>Problem Set: Review of Statistical Modeling and Scientific Computing<a class="headerlink" href="#problem-set-review-of-statistical-modeling-and-scientific-computing" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="problem-description">
+<h4>Problem Description<a class="headerlink" href="#problem-description" title="Link to this heading">#</a></h4>
+<p>In the competitive rubber chicken retail market, the success of a company is built on satisfying the exacting standards of a consumer base with refined and discriminating taste. In particular, customer product reviews are all important. But how should we judge the quality of a product based on customer reviews?</p>
+<p>On Amazon, the first customer review statistic displayed for a product is the <em><strong>average rating</strong></em>. The following are the main product pages for two competing rubber chicken products, manufactured by Lotus World and Toysmith respectively:</p>
+<p>Lotus World |  Toysmith</p>
+<ul class="simple">
+<li><p>|  -
+<img src="../_static/figs/lotus1.png" alt="alt" style="max-width:100%"> |  <img src="../_static/figs/toysmith1.png" alt="alt" style="max-width:100%"></p></li>
+</ul>
+<p>Clicking on the ‘customer review’ link on the product pages takes us to a detailed break-down of the reviews. In particular, we can now see the number of times a product is rated a given rating (between 1 and 5 stars).</p>
+<p>Lotus World |  Toysmith</p>
+<ul class="simple">
+<li><p>|  -
+<img src="../_static/figs/lotus2.png" alt="alt" style="max-width:100%"> |  <img src="../_static/figs/toysmith2.png" alt="alt" style="max-width:100%"></p></li>
+</ul>
+<p>In the following, we will ask you to build statistical models to compare these two products using the observed rating. Larger versions of the images are available in the data set accompanying this notebook.</p>
+<div class="admonition-exercise-part-i-a-maximum-likelihood-model admonition">
+<p class="admonition-title">Exercise: Part I: A Maximum Likelihood Model</p>
+<ol class="arabic simple">
+<li><p><strong>(Model Building)</strong> Suppose that for each product, we can model the probability of the value each new rating as the following vector:
+<div class="math notranslate nohighlight">
+\[
+\theta = [\theta_1, \theta_2, \theta_3, \theta_4, \theta_5]
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the probability that a given customer will give the product <span class="math notranslate nohighlight">\(i\)</span> number of stars. That is, each new rating (a value between 1 and 5) has a categorical distribution <span class="math notranslate nohighlight">\(Cat(\theta)\)</span>. Represent the observed ratings of an Amazon product as a vector <span class="math notranslate nohighlight">\(R = [r_1, r_2, r_3, r_4, r_5]\)</span> where, for example, <span class="math notranslate nohighlight">\(r_4\)</span> is the number of <span class="math notranslate nohighlight">\(4\)</span>-star reviews out of a total of <span class="math notranslate nohighlight">\(N\)</span> ratings. Write down the likelihood of <span class="math notranslate nohighlight">\(R\)</span>. That is, what is <span class="math notranslate nohighlight">\(p(R| \theta)\)</span>?</p></li>
+</ol>
+<p><strong>Note:</strong> The observed ratings for each product should be read off the image files included in the dataset.</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Model Fitting)</strong> Find the maximum likelihood estimator of <span class="math notranslate nohighlight">\(\theta\)</span> for the Lotus World model; find the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> for the Toysmith model. You need to make a reasonably mathematical argument for why your estimate actually maximizes the likelihood (i.e. recall the criteria for a point to be a global optima of a function).</p></li>
+</ol>
+<p><em>Note:</em> I recommend deriving the MLE using the general expression of the likelihood. That is, derive the posterior using the variable <span class="math notranslate nohighlight">\(R\)</span>, then afterwards plug in your specific values of <span class="math notranslate nohighlight">\(R\)</span> for each product.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(Model Interpretation)</strong> Based on your MLE of <span class="math notranslate nohighlight">\(\theta\)</span>’s for both models, do you feel confident deciding if one product is superior to another? Why or why not?</p></li>
+</ol>
+<div class="admonition-exercise-part-ii-a-bayesian-model admonition">
+<p class="admonition-title">Exercise: Part II: A Bayesian Model</p>
+<ol class="arabic simple">
+<li><p><strong>(Model Building)</strong> Suppose you are told that customer opinions are very polarized in the retail world of rubber chickens, that is, most reviews will be 5 stars or 1 stars (with little middle ground). What would be an appropriate <span class="math notranslate nohighlight">\(\alpha\)</span> for the Dirichlet prior on <span class="math notranslate nohighlight">\(\theta\)</span>? Recall that the Dirichlet pdf is given by:
+<div class="math notranslate nohighlight">
+\[
+p_{\Theta}(\theta) = \frac{1}{B(\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1}, \quad B(\alpha) = \frac{\prod_{i=1}^k\Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^k\alpha_i\right)},
+\]</div>
+
+where <span class="math notranslate nohighlight">\(\theta_i \in (0, 1)\)</span> and <span class="math notranslate nohighlight">\(\sum_{i=1}^k \theta_i = 1\)</span>, <span class="math notranslate nohighlight">\(\alpha_i &gt; 0 \)</span> for <span class="math notranslate nohighlight">\(i = 1, \ldots, k\)</span>.</p></li>
+</ol>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Inference)</strong> Analytically derive the posterior distribution (using the likelihoods you derived in Part I) for each product.</p></li>
+</ol>
+<p><em>Note:</em> I recommend deriving the posterior using the general expression of a Dirichelet pdf. That is, derive the posterior using the variable <span class="math notranslate nohighlight">\(\alpha\)</span>, then afterwards plug in your specific values of <span class="math notranslate nohighlight">\(\alpha\)</span> when you need to.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>(The Maximum A Posterior Estimate)</strong> Analytically or empirically compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. How do these estimates compare with the MLE? Just for this problem, compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product using a Dirichelet prior with hyperparameters <span class="math notranslate nohighlight">\(\alpha = [1, 1, 1, 1, 1]\)</span>. Make a conjecture about the effect of the prior on the difference between the MAP estimates and the MLE’s of <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p><strong>(The Posterior Mean Estimate)</strong> Analytically or empirically compute the posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. How do these estimates compare with the MAP estimates and the MLE?</p></li>
+</ol>
+<ol class="arabic simple" start="5">
+<li><p><strong>(The Posterior Predictive Estimate)</strong> Sample 1000 rating vectors from the posterior predictive for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. Use the average of the posterior predictive samples to estimate <span class="math notranslate nohighlight">\(\theta\)</span>. How do these estimates compare with the MAP, MLE, posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span>?</p></li>
+</ol>
+<ol class="arabic simple" start="6">
+<li><p><strong>(Model Evaluation)</strong> Compute the 95% credible interval of <span class="math notranslate nohighlight">\(\theta\)</span> for each product (<em>Hint: compute the 95% credible interval for each <span class="math notranslate nohighlight">\(\theta_i\)</span>, <span class="math notranslate nohighlight">\(i=1, \ldots, 5\)</span></em>). For which product is the posterior mean and MAP estimate more reliable and why?</p></li>
+</ol>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
+<p>To help you analyze the broader impact of your technology, begin by considering the following questions:</p>
+<p>I. Identify the relevant socio-technical systems</p>
+<ul class="simple">
+<li><p>In what social, political, economic system could the tech be deployed?</p></li>
+<li><p>How would the tech be used in these systems (what role will it take in the decision making processes)?<br><br></p></li>
+</ul>
+<p>II. Identify the stakeholders</p>
+<ul>
+<li><p>Who are the users?</p></li>
+<li><p>Who are the affected communities (are these the users)?</p>
+<p><em><strong>Hint:</strong></em> users are typically decision makers who will use the technology as decision aids (e.g. doctors), whereas affected communities may be folks who are impacted by these decisions but who are not represented in the decision making process (e.g. patients).<br><br></p>
+</li>
+</ul>
+<p>III. What types of harm can this tech do?</p>
+<ul>
+<li><p>What kinds of failures can this tech have?</p></li>
+<li><p>What kinds of direct harm can these failures cause?</p></li>
+<li><p>What kinds of harm can the socio-technical system cause?</p>
+<p><em><strong>Hint:</strong></em> many technical innovations have niche applications, they may sit in a long chain of decision making in a complex system. As such, it may seem, at first glance, that these technologies have no immediate real-life impact. In these cases, it’s helpful to think about the impact of the entire system and then think about how the proposed innovations aid, hamper or change the goals or outcomes of this system.<br><br></p>
+</li>
+</ul>
+<p>IV. What types of good can this tech do?</p>
+<ul class="simple">
+<li><p>What kinds of needs do these users/communities have?</p></li>
+<li><p>What kinds of constraints do these users/communities have?</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><strong>(Impact)</strong> Analyze the broader impact of models of product popularity/quality when used for ranking. Specifically, focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
+</ol>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Comparison of Ranking Systems)</strong></p></li>
+</ol>
+<p>Recall that on Amazon, the first customer review statistic displayed for a product is the average rating. What is potentially problemmatic with ranking products based on the average customer rating?</p>
+<p>Which point estimate (MAP, MLE, posterior mean or posterior predictive estimate) of <span class="math notranslate nohighlight">\(\theta\)</span>, if any, would you feel choose to rank the two Amazon products? Why?</p>
+<p><em>Hint: think about which of these estimates are equivalent (if any). If they are not equivalent, what are the special properties of each estimate? What aspect of the data or the model is each estimate good at capturing?</em></p>
+<p><strong>Note:</strong> we’re not looking for “the correct answer” here. We are looking for a sound decision based on a statistically correct interpretation of your models.</p>
+</section>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">3.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Statistics</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="http://www.stat.columbia.edu/~gelman/research/published/philosophy.pdf" rel="noreferrer" target="_blank">Philosophy and the practice of Bayesian statistics</a></p></li>
+<li><p>(Introductory) <a class="reference external" href="https://people.eecs.berkeley.edu/~jordan/courses/260-spring10/other-readings/chapter9.pdf" rel="noreferrer" target="_blank">The Exponential Family: Conjugate Priors</a></p></li>
+</ul>
+<p><strong>Other Reference</strong></p>
+<ul class="simple">
+<li><p>Gelman, Chapters 2 &amp; 3</p></li>
+<li><p>Gelman, Chapter 4</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="02-maximum-likelihood.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Maximum Likelihood Estimation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="04-bayesian-vs-frequentist.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Bayesian versus Frequentist Inference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-method-of-maximum-likelihood">3.1. Review of the Method of Maximum Likelihood</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-method-of-maximum-likelihood">The Method of Maximum Likelihood</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-mle">Evaluating the MLE</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-the-maximum-likelihood-estimator">Properties of The Maximum Likelihood Estimator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#is-bias-always-bad">Is Bias Always Bad?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-of-mle-overfitting-under-scarcity-of-data">Limitations of MLE: Overfitting Under Scarcity of Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#models-for-real-data">3.2. Models for Real Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#video-ranking">Video Ranking</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-rates">Kidney Cancer Rates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#birth-weights">Birth Weights</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3.3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-model-revisited">The Coin Toss Model: Revisited</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incoporating-prior-beliefs">Incoporating Prior Beliefs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-for-the-beta-binomial-model">Posterior for the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-posterior-bayesian-update">Interpreting the Posterior: Bayesian Update</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-bayesian-update-for-the-coin-flip">Simulation: Bayesian Update for the Coin Flip</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#making-predictions">Making Predictions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-posterior-predictive-for-the-coin-flip">Simulation: Posterior Predictive for the Coin Flip</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-modeling-a-summary">3.4. Bayesian Modeling - A Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bayesian-modeling-process">The Bayesian Modeling Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-bayesian-models">Evaluating Bayesian Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#where-do-priors-come-from">Where do Priors Come From?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">3.5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">3.6. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-review-of-statistical-modeling-and-scientific-computing">Problem Set: Review of Statistical Modeling and Scientific Computing</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-description">Problem Description</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">3.7. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

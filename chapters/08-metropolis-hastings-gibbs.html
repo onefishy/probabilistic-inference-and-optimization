@@ -1,0 +1,1302 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>9. Metropolis-Hastings and Gibbs &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/08-metropolis-hastings-gibbs';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/08-metropolis-hastings-gibbs.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. Applications and Broader Impact: Sampling and Monte Carlo" href="impact-2-sampling.html" />
+    <link rel="prev" title="8. Markov Chain Monte Carlo" href="07-mcmc.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15-parallel-tempering-sghmc.html">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/08-metropolis-hastings-gibbs.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/08-metropolis-hastings-gibbs.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Metropolis-Hastings and Gibbs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">9.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo">9.2. Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-samplers">Markov Chain Monte Carlo Samplers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-the-idea">Metropolis-Hastings: The Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-the-algorithm">Metropolis-Hastings: The Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-proof-of-correctness">Metropolis-Hastings: Proof of Correctness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-proof-of-detailed-balance">Metropolis-Hastings: Proof of Detailed Balance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-as-metropolis-hastings">Gibbs as Metropolis-Hastings</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-mcmc-diagnostics">9.3. Simple MCMC Diagnostics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#traceplot-checks-for-mixing">Traceplot Checks for Mixing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#burn-in-and-thinning">Burn-in and Thinning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-sampling-from-a-mixture-of-two-gaussians">Example: Sampling from a Mixture of Two Gaussians</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-checks-for-mixing">Visual Checks for Mixing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-checks-can-be-misleading">Visual Checks Can be Misleading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-importance-of-tuning-your-sampler">The Importance of Tuning Your Sampler</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-mcmc-diagnostics-and-best-practices">9.4. More MCMC Diagnostics and Best Practices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more-rigorous-checks-for-convergence">More Rigorous Checks for Convergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-traceplots-of-multiple-chains">Visual Diagnostics: Traceplots of Multiple Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-the-effective-sample-size">Autocorrelation: the “Effective” Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-the-autocorrelation-plot">Visual Diagnostics: The Autocorrelation Plot</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quantitative-diagnostics">Quantitative Diagnostics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-statistical-modeling">9.5. Review of Statistical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far">What We Can Do So Far</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happens-after-inference">What Happens After Inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modeling-process">The Modeling Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">9.6. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-know-that-my-sampler-is-an-mcmc-sampler-for-the-target-pi-text-target">How Do I Know That My Sampler is an MCMC Sampler for the target <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#samplers-with-asymptotic-guarantees-can-be-lemons">Samplers with Asymptotic Guarantees Can Be Lemons!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">More Rigorous Checks for Convergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-broader-impacts-of-mcmc-theory">What Are the Broader Impacts of MCMC Theory?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">9.7. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-modeling-kidney-cancer-data">Problem Set: Modeling Kidney Cancer Data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">9.8. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="metropolis-hastings-and-gibbs">
+<h1><span class="section-number">9. </span>Metropolis-Hastings and Gibbs<a class="headerlink" href="#metropolis-hastings-and-gibbs" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/y1WNKlA1ZhU" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>MCMC Samplers: Metropolis-Hastings and Gibbs</p></li>
+<li><p>MCMC Diagnostics</p></li>
+<li><p>A Review of Statistical Modeling Thus Far</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="motivation">
+<h2><span class="section-number">9.1. </span>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
+<p>Last time, we’d argued intuitively that the Gibbs sampler is a type of MCMC sampler, but we did not prove it.</p>
+<p>Today, rather than directly proving that Gibbs is an MCMC sampler, we describe a more general type of MCMC sampler, the Metropolis-Hastings sampler, and show that the Gibbs sampler is a special case of Metropolis-Hastings.</p>
+<figure class="align-center" id="fig-08-gibbs2">
+<a class="reference internal image-reference" href="../_images/gibbs2.jpg"><img alt="../_images/gibbs2.jpg" src="../_images/gibbs2.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="markov-chain-monte-carlo">
+<h2><span class="section-number">9.2. </span>Markov Chain Monte Carlo<a class="headerlink" href="#markov-chain-monte-carlo" title="Link to this heading">#</a></h2>
+<section id="markov-chain-monte-carlo-samplers">
+<h3>Markov Chain Monte Carlo Samplers<a class="headerlink" href="#markov-chain-monte-carlo-samplers" title="Link to this heading">#</a></h3>
+<p>Every sampler for a distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span> over the domain <span class="math notranslate nohighlight">\(\Theta\)</span> defines a stochastic process <span class="math notranslate nohighlight">\(\{X_0, X_1, \ldots, \}\)</span>, where the state space is <span class="math notranslate nohighlight">\(\Theta\)</span>.</p>
+<p>If the sampler defines a Markov chain whose unique stationary and limiting distribution is <span class="math notranslate nohighlight">\(p\)</span>, we call it a <em><strong>Markov Chain Monte Carlo (MCMC)</strong></em> sampler.</p>
+<p>That is, for every MCMC sampler, we have that</p>
+<ol class="arabic simple">
+<li><p><strong>Stationary:</strong> <span class="math notranslate nohighlight">\(pT = p\)</span><br><br></p></li>
+<li><p><strong>Limiting:</strong> <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>, for any <span class="math notranslate nohighlight">\(\pi^{(0)}\)</span></p></li>
+</ol>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the transition matrix or kernel pdf defined by the sampler.</p>
+</section>
+<section id="what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">
+<h3>What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?<a class="headerlink" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Prove that the sampler is <em><strong>irreducible</strong></em> and <em><strong>aperiodic</strong></em>. Then, there is a unique stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> such that
+<div class="math notranslate nohighlight">
+\[\pi T = \pi.\]</div>
+</p></li>
+<li><p>Prove that the sampler is <em><strong>reversible</strong></em> or <em><strong>detailed balanced</strong></em> with respect to <span class="math notranslate nohighlight">\(p\)</span>. Then,
+<div class="math notranslate nohighlight">
+\[\pi = p.\]</div>
+</p></li>
+</ol>
+</section>
+<section id="metropolis-hastings-the-idea">
+<h3>Metropolis-Hastings: The Idea<a class="headerlink" href="#metropolis-hastings-the-idea" title="Link to this heading">#</a></h3>
+<p>The Metropolis-Hastings algorithm is similar to rejection sampling, but rather than sampling from a proposal distribution <span class="math notranslate nohighlight">\(q\)</span> over the entire domain, we use the proposal distribution to sample a point close to the last sample. If the proposed sample has higher likelihood than the current under the target pdf <span class="math notranslate nohighlight">\(p\)</span> then we are more likely to accept it as a sample from <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<p>Rather than making global “jumps” or proposals that may be very unlikely under <span class="math notranslate nohighlight">\(p\)</span>, we make a series of smaller local “jumps”.</p>
+<figure class="align-center" id="fig-08-mh">
+<a class="reference internal image-reference" href="../_images/mh.jpg"><img alt="../_images/mh.jpg" src="../_images/mh.jpg" style="width: 578px;" />
+</a>
+</figure>
+</section>
+<section id="metropolis-hastings-the-algorithm">
+<h3>Metropolis-Hastings: The Algorithm<a class="headerlink" href="#metropolis-hastings-the-algorithm" title="Link to this heading">#</a></h3>
+<p>For a target distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span> over <span class="math notranslate nohighlight">\(\Theta\)</span> and a proposal distribution <span class="math notranslate nohighlight">\(q(\theta | \theta_{\text{old}})\)</span> over <span class="math notranslate nohighlight">\(\Theta\)</span>, the <em><strong>Metropolis-Hastings (MH) algorithm</strong></em> is a MCMC algorithm for generating samples from <span class="math notranslate nohighlight">\(p\)</span>.</p>
+<ol class="arabic simple">
+<li><p><strong>Step 0:</strong> choose an initial value <span class="math notranslate nohighlight">\(\theta_0 \in \Theta\)</span>.</p></li>
+<li><p><strong>Step 1:</strong> repeat for <span class="math notranslate nohighlight">\(S\)</span> number of steps:</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Proposal:</strong> propose a sample <span class="math notranslate nohighlight">\(\theta_{\text{prop}} \sim q(\theta | \theta_{\text{old}})\)</span></p></li>
+<li><p><strong>Accept/Reject:</strong></p>
+<ul>
+<li><p>generate <span class="math notranslate nohighlight">\(U \sim U(0, 1)\)</span></p></li>
+<li><p>generate accept “probability”:
+<div class="math notranslate nohighlight">
+\[\alpha(\theta_{\text{prop}}, \theta_{\text{old}}) = \min\left(1, \frac{p(\theta_{\text{prop}})/q(\theta_{\text{prop}} | \theta_{\text{old}})}{p(\theta_{\text{old}})/ q(\theta_{\text{old}}| \theta_{\text{prop}})}\right)\]</div>
+</p></li>
+<li><p>if <span class="math notranslate nohighlight">\(U &lt; \alpha(\theta_{\text{prop}}, \theta_{\text{old}})\)</span>:</p>
+<ul>
+<li><p>add <span class="math notranslate nohighlight">\(\theta_{\text{prop}}\)</span> to list of accepted samples</p></li>
+<li><p>set <span class="math notranslate nohighlight">\(\theta_{\text{old}} \leftarrow \theta_{\text{prop}}\)</span></p></li>
+</ul>
+</li>
+<li><p>else:
+add <span class="math notranslate nohighlight">\(\theta_{\text{old}}\)</span> to list of accepted samples</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="metropolis-hastings-proof-of-correctness">
+<h3>Metropolis-Hastings: Proof of Correctness<a class="headerlink" href="#metropolis-hastings-proof-of-correctness" title="Link to this heading">#</a></h3>
+<p>We want to show that the Metropolis Hastings algorithm defines a Markov Chain, <span class="math notranslate nohighlight">\(\theta_0, \theta_1, \ldots\)</span>, with a unique stationary distribution <span class="math notranslate nohighlight">\(p\)</span> and that the chain converges to <span class="math notranslate nohighlight">\(p\)</span> regardless of initialization. So we need:</p>
+<ol class="arabic simple">
+<li><p>MH defines an <strong>irreducible</strong> chain: a sufficient condition is that for any <span class="math notranslate nohighlight">\(\theta' \in \Theta\)</span></p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+q(\theta| \theta') &gt; 0,\; \text{for all } \theta \in \Theta.
+\]</div>
+<ol class="arabic simple" start="2">
+<li><p>MH defines an <strong>aperiodic</strong> chain: a sufficient condition is that for any <span class="math notranslate nohighlight">\(\theta' \in \Theta\)</span></p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+q(\theta | \theta') &gt; 0, \text{for all $\theta$ is a small neighbourhood around $\theta'$}.
+\]</div>
+<ol class="arabic simple" start="3">
+<li><p>MH defines an <strong>reversible</strong> chain (i.e. <strong>detailed balance</strong> is satisfied) with respect to <span class="math notranslate nohighlight">\(p\)</span>:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+p(\theta')T_{\text{MH}}(\theta', \theta) = T_{\text{MH}}(\theta, \theta') p(\theta)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(T_{\text{MH}}\)</span> is transition kernel pdf of the MH sampler.</p>
+</section>
+<section id="metropolis-hastings-proof-of-detailed-balance">
+<h3>Metropolis-Hastings: Proof of Detailed Balance<a class="headerlink" href="#metropolis-hastings-proof-of-detailed-balance" title="Link to this heading">#</a></h3>
+<p>Recall that the transition kernel pdf <span class="math notranslate nohighlight">\(T_{\text{MH}}(\theta, \theta')\)</span> is the likelihood of the MH sampler transitioning from <span class="math notranslate nohighlight">\(\theta\)</span> to <span class="math notranslate nohighlight">\(\theta'\)</span>. When <span class="math notranslate nohighlight">\(\theta \neq \theta'\)</span>, the MH transition kernel pdf is, written a more friendly way, using <span class="math notranslate nohighlight">\(T_{\text{MH}}(\theta' | \theta)\)</span> to denote transitioning from <span class="math notranslate nohighlight">\(\theta\)</span> to <span class="math notranslate nohighlight">\(\theta'\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+T_{\text{MH}}(\theta | \theta') = \underbrace{q(\theta| \theta')}_{\text{likelihood of proposing $\theta$}}\;\;\underbrace{\alpha(\theta, \theta')}_{\text{probability of accepting $\theta$}}.
+\]</div>
+<p>Now, we can show:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(\theta')T_{\text{MH}}(\theta| \theta') &amp;= p(\theta')q(\theta| \theta')\alpha(\theta, \theta')\\
+&amp;= p(\theta')q(\theta| \theta')\min\left(1, \frac{p(\theta)q(\theta'|\theta)}{p(\theta')q(\theta|\theta')}\right)\\
+&amp;= \min\left(p(\theta')q(\theta| \theta'), \frac{p(\theta)q(\theta'|\theta)p(\theta')q(\theta| \theta')}{p(\theta')q(\theta|\theta')}\right)\\
+&amp;= \min\left(p(\theta')q(\theta| \theta'), p(\theta)q(\theta'|\theta)\right)\\
+&amp;= p(\theta)q(\theta'|\theta)\min\left(\frac{p(\theta')q(\theta| \theta')}{p(\theta)q(\theta'|\theta)}, 1\right)\\
+&amp;= p(\theta)q(\theta'|\theta)\alpha(\theta', \theta)\\
+&amp;= T_{\text{MH}}(\theta'| \theta) p(\theta)
+\end{aligned}\end{split}\]</div>
+</p>
+</section>
+<section id="gibbs-as-metropolis-hastings">
+<h3>Gibbs as Metropolis-Hastings<a class="headerlink" href="#gibbs-as-metropolis-hastings" title="Link to this heading">#</a></h3>
+<p>Now we are ready to prove the correctness of Gibbs sampling, by realizing it as a special instance of Metropolis-Hastings sampling.</p>
+<p>Let <span class="math notranslate nohighlight">\(\theta \in \mathbb{R}^D\)</span>. Let’s define the proposal distribution <span class="math notranslate nohighlight">\(q(\theta_{\text{new}}|\theta_{\text{old}})\)</span> as a two stage process:</p>
+<ol class="arabic simple">
+<li><p>propose an integer <span class="math notranslate nohighlight">\(d \in [1, D]\)</span> uniformly</p></li>
+<li><p>propose <span class="math notranslate nohighlight">\(\theta_{\text{new}}\)</span> where <span class="math notranslate nohighlight">\(\theta_{d, \text{new}} \sim p(\theta_d | \theta_{-d, \text{old}})\)</span> and <span class="math notranslate nohighlight">\(\theta_{-d, \text{new}} = \theta_{-d, \text{old}}\)</span></p></li>
+</ol>
+<p>where <span class="math notranslate nohighlight">\(\theta_d\)</span> is the <span class="math notranslate nohighlight">\(d\)</span>-th component of <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\theta_{-d} = [\theta_1, \ldots, \theta_{d-1}, \theta_{d+1}, \ldots, \theta_D]\)</span>.</p>
+<p>Then the acceptance probability is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\min\left(1, \frac{p(\theta_{\text{new}})q(\theta_{\text{old}}|\theta_{\text{new}})}{p(\theta_{\text{old}})q(\theta_{\text{new}}|\theta_{\text{old}})} \right) &amp;= \min\left(1, \frac{p(\theta_{d, \text{new}}|\theta_{-d, \text{new}})p(\theta_{-d, \text{new}}) p(\theta_{d, \text{old}} | \theta_{-d, \text{new}})}{p(\theta_{d, \text{old}}|\theta_{-d, \text{old}})p(\theta_{-d, \text{old}}) p(\theta_{d, \text{new}} | \theta_{-d, \text{old}})} \right)\\
+&amp;= \min\left(1, \frac{p(\theta_{d, \text{new}}|\theta_{-d, \text{old}})p(\theta_{-d, \text{old}}) p(\theta_{d, \text{old}} | \theta_{-d, \text{new}})}{p(\theta_{d, \text{old}}|\theta_{-d, \text{new}})p(\theta_{-d, \text{old}}) p(\theta_{d, \text{new}} | \theta_{-d, \text{old}})} \right)\\
+&amp;= \min\left(1, 1\right) = 1
+\end{aligned}\end{split}\]</div>
+<p>in the second to last equality, we make use of the fact that <span class="math notranslate nohighlight">\(\theta_{-d, \text{new}} = \theta_{-d, \text{old}}\)</span>. That is, Gibbs sampling is a MH algorithm with 100% acceptance rate.</p>
+</section>
+</section>
+<section id="simple-mcmc-diagnostics">
+<h2><span class="section-number">9.3. </span>Simple MCMC Diagnostics<a class="headerlink" href="#simple-mcmc-diagnostics" title="Link to this heading">#</a></h2>
+<section id="traceplot-checks-for-mixing">
+<h3>Traceplot Checks for Mixing<a class="headerlink" href="#traceplot-checks-for-mixing" title="Link to this heading">#</a></h3>
+<p>Reversibility, irreducibility and aperiodicity gaurantee that as the number of iterations <span class="math notranslate nohighlight">\(S\)</span> approaches infinity, the sampler will be sampling from the target distribution <span class="math notranslate nohighlight">\(p\)</span>. In practice, getting sufficiently close to convergence, or <em><strong>mixing</strong></em>, may take a very large number of steps.</p>
+<p>A quick and intuitive way to check for mixing is by visualizing the <em><strong>traceplots</strong></em> of each dimension of the samples over iterations.  That is, for each dimension of the samples, we plot the sampled values of that dimension against the iteration number.</p>
+<figure class="align-center" id="fig-08-mixing">
+<a class="reference internal image-reference" href="../_images/mixing.jpg"><img alt="../_images/mixing.jpg" src="../_images/mixing.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="burn-in-and-thinning">
+<h3>Burn-in and Thinning<a class="headerlink" href="#burn-in-and-thinning" title="Link to this heading">#</a></h3>
+<p><strong>When initialization is the problem:</strong> when you initialize your sampler far from any regions of high probability mass, the initial samples produced by your sampler will have a trend – they will move sequentially towards an area in the sample space <span class="math notranslate nohighlight">\(\Theta\)</span> where the target distribution <span class="math notranslate nohighlight">\(p\)</span> has high mass.</p>
+<p>This problem can be mitigated by discarding <span class="math notranslate nohighlight">\(B\)</span> number of initial samples, this chunk of samples is called the <em><strong>burn-in</strong></em>.</p>
+<p><strong>When high spatial correlation is the problem:</strong> for Metropolis-Hastings, when your proposal distirbution has very low variance the proposed sample will be very close to the current sample. This results in higher correlations between consecutive samples in your chain.</p>
+<p>This problem can be mitigated by discarding every <span class="math notranslate nohighlight">\(T\)</span> number of samples, this is called <em><strong>thinning</strong></em>. The rational is that every sample might be correlated with <span class="math notranslate nohighlight">\(T\)</span> number of samples immediately preceeding or suceeding it, but its correlation with samples greater than <span class="math notranslate nohighlight">\(T\)</span> steps away from it will be much smaller.</p>
+</section>
+<section id="example-sampling-from-a-mixture-of-two-gaussians">
+<h3>Example: Sampling from a Mixture of Two Gaussians<a class="headerlink" href="#example-sampling-from-a-mixture-of-two-gaussians" title="Link to this heading">#</a></h3>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implementation of metropolis-hastings with symmetric proposal distribution</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="n">init</span>
+    <span class="n">accepts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+        <span class="n">proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">U</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">target</span><span class="p">(</span><span class="n">proposal</span><span class="p">)</span> <span class="o">/</span> <span class="n">target</span><span class="p">(</span><span class="n">current</span><span class="p">))):</span>
+            <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proposal</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">proposal</span>
+            <span class="n">accepts</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+    
+            
+    <span class="k">return</span> <span class="n">samples</span><span class="p">,</span> <span class="n">accepts</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">S</span>
+
+<span class="c1">#visualize target distribution and samples</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">target</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'target distribution'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'all samples'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+<span class="c1">#define the target distribution as a mixture of two univariate gaussians</span>
+<span class="n">sigma_sqs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">mus</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+<span class="n">pis</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="n">target</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">pis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of samples</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="c1">#initialization of the MH sampler</span>
+<span class="n">init</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<span class="c1">#amount of samples to throw out</span>
+<span class="n">burn_in</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1">#keep every n samples</span>
+<span class="n">thinning</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1">#sample from the MH sampler</span>
+<span class="n">samples</span><span class="p">,</span> <span class="n">accepts</span> <span class="o">=</span> <span class="n">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">target</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'pdf of target distribution'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d1f2f3ba9a675fbbf73fff9f617ee92bd9857a48949b54a90338789e6b8e6706.png" src="../_images/d1f2f3ba9a675fbbf73fff9f617ee92bd9857a48949b54a90338789e6b8e6706.png" />
+</div>
+</div>
+</section>
+<section id="visual-checks-for-mixing">
+<h3>Visual Checks for Mixing<a class="headerlink" href="#visual-checks-for-mixing" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="n">samples</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Trace plot of x for all samples'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="n">burn_in</span><span class="p">::</span><span class="n">thinning</span><span class="p">])),</span> <span class="n">samples</span><span class="p">[</span><span class="n">burn_in</span><span class="p">::</span><span class="n">thinning</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Trace plot of x for after burn-in and thinning'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/41ab9e3ec4a6915ff2c30f309684aef9516838f4fa9666d25c706c5d6a78e078.png" src="../_images/41ab9e3ec4a6915ff2c30f309684aef9516838f4fa9666d25c706c5d6a78e078.png" />
+</div>
+</div>
+</section>
+<section id="visual-checks-can-be-misleading">
+<h3>Visual Checks Can be Misleading<a class="headerlink" href="#visual-checks-can-be-misleading" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="s1">'target distribution vs all samples, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples</span><span class="p">[</span><span class="mi">200</span><span class="p">:],</span> <span class="s1">'target distribution vs samples after </span><span class="si">{}</span><span class="s1"> burn-in, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/832c83ae7cd54053b38905908b42652956429a2bddd4a30a22151eca267a1bd4.png" src="../_images/832c83ae7cd54053b38905908b42652956429a2bddd4a30a22151eca267a1bd4.png" />
+</div>
+</div>
+</section>
+<section id="the-importance-of-tuning-your-sampler">
+<h3>The Importance of Tuning Your Sampler<a class="headerlink" href="#the-importance-of-tuning-your-sampler" title="Link to this heading">#</a></h3>
+<p>Our Metropolis-Hastings sampler was unable to capture both modes in the target distribution!</p>
+<p>Is this because this algorithm is incapable of sampling from this specific distribution of this class of <em><strong>multimodal distributions</strong></em>? Or did we make inappropriate design choices when we specified our sampler?</p>
+<p><strong>Question:</strong> we’ve demonstrated that visualizing the traceplot may be a poor metric for evaluating MCMC performance. Is there a better way to check if our MCMC chain has mixed? In particular, how do we detect that there is still a high-likelihood region in the domain <span class="math notranslate nohighlight">\(\Theta\)</span> that the sampler has yet to visit?</p>
+</section>
+</section>
+<section id="more-mcmc-diagnostics-and-best-practices">
+<h2><span class="section-number">9.4. </span>More MCMC Diagnostics and Best Practices<a class="headerlink" href="#more-mcmc-diagnostics-and-best-practices" title="Link to this heading">#</a></h2>
+<section id="more-rigorous-checks-for-convergence">
+<h3>More Rigorous Checks for Convergence<a class="headerlink" href="#more-rigorous-checks-for-convergence" title="Link to this heading">#</a></h3>
+<p>Look for:</p>
+<ol class="arabic simple">
+<li><p>Large segments of the <em><strong>chain</strong></em> (sequence of samples) should have give similar statistics (mean, variance etc)</p></li>
+<li><p>Low correlations within states of the chain</p></li>
+<li><p>“Reasonably high” acceptance rate of proposed steps</p></li>
+<li><p>Multiple chains initialized from different initial points give similar results</p></li>
+</ol>
+<p>Best practics:</p>
+<ol class="arabic simple">
+<li><p>Always run multiple chains initialized from very different random starting points</p></li>
+<li><p>Always run your chains for as long as you can then burn and thin</p></li>
+<li><p>Always check all relevant convergence diagnostics</p></li>
+<li><p>Never be too certain: remember that there is no “proof” of convergence for finite chains!</p></li>
+<li><p>Keep reading about best practice!</p></li>
+</ol>
+</section>
+<section id="visual-diagnostics-traceplots-of-multiple-chains">
+<h3>Visual Diagnostics: Traceplots of Multiple Chains<a class="headerlink" href="#visual-diagnostics-traceplots-of-multiple-chains" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-08-multichain">
+<a class="reference internal image-reference" href="../_images/multichain.jpg"><img alt="../_images/multichain.jpg" src="../_images/multichain.jpg" style="width: 606px;" />
+</a>
+</figure>
+</section>
+<section id="autocorrelation-the-effective-sample-size">
+<h3>Autocorrelation: the “Effective” Sample Size<a class="headerlink" href="#autocorrelation-the-effective-sample-size" title="Link to this heading">#</a></h3>
+<p>We quantify how much the samples in the chain are correlated with the samples obtained <span class="math notranslate nohighlight">\(k\)</span>-steps later (<strong>the <span class="math notranslate nohighlight">\(k\)</span>-th lag</strong>). The <em><strong>autocorrelation</strong></em> <span class="math notranslate nohighlight">\(\rho_k\)</span> is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+\rho_k = \frac{\sum_{n=1}^{N-k}(x_n - \bar{x})(x_{n+k} - \bar{x})}{\sum_{n=1}^{N}(x_n - \bar{x})^2}
+\]</div>
+<p>We plot the autocorrelation for each <span class="math notranslate nohighlight">\(k = 1, \ldots, \frac{N}{2}\)</span>, and this <em><strong>autocorrelation plot</strong></em> tells us how much we to thin in order to obtain effectively independent samples. The autocorrelation plot gives us an idea of the <em><strong>effective sample size</strong></em> of the Markov chain.</p>
+</section>
+<section id="visual-diagnostics-the-autocorrelation-plot">
+<h3>Visual Diagnostics: The Autocorrelation Plot<a class="headerlink" href="#visual-diagnostics-the-autocorrelation-plot" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-08-autocorr">
+<a class="reference internal image-reference" href="../_images/autocorr.jpg"><img alt="../_images/autocorr.jpg" src="../_images/autocorr.jpg" style="width: 622px;" />
+</a>
+</figure>
+</section>
+<section id="quantitative-diagnostics">
+<h3>Quantitative Diagnostics<a class="headerlink" href="#quantitative-diagnostics" title="Link to this heading">#</a></h3>
+<p><strong>Idea:</strong> measure between-chain and within-chain variability of a quantity of interest – if the chains have converged, these measures will be similar; otherwise, the between-chain variability will be larger.</p>
+<ol class="arabic simple">
+<li><p><em><strong>Gelman &amp; Rubin</strong></em>: quantity <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} =  \frac{B}{W}\)</span>, which compares <span class="math notranslate nohighlight">\(B\)</span> the empirical variance of all the chains pooled and <span class="math notranslate nohighlight">\(W\)</span> the average emprical variance within each chain. If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}}\)</span> is large then the chains are very different (not converged). If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} = 1\)</span> is ideal but in practice we accept <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} &lt; 1.05\)</span>.<br><br></p></li>
+<li><p><em><strong>Geweke</strong></em>: takes two nonoverlapping parts (usually the first 0.1 and last 0.5 proportions) of the Markov chain and compares the means of both parts, using a difference of means test to see if the two parts of the chain are from the same distribution (the test statistic is a standard Z-score with the standard errors adjusted for autocorrelation).</p></li>
+</ol>
+</section>
+</section>
+<section id="review-of-statistical-modeling">
+<h2><span class="section-number">9.5. </span>Review of Statistical Modeling<a class="headerlink" href="#review-of-statistical-modeling" title="Link to this heading">#</a></h2>
+<section id="what-we-can-do-so-far">
+<h3>What We Can Do So Far<a class="headerlink" href="#what-we-can-do-so-far" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Models)</strong> When we have observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>, we can model <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> as a random variable <span class="math notranslate nohighlight">\(Y_{\text{Obs}} \sim p(Y |\theta)\)</span> with a known distribution <span class="math notranslate nohighlight">\(p\)</span>.</p></li>
+</ol>
+<ul class="simple">
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a label, we can model it as a <em>Categorical</em> or <em>Bernoulli</em> variable</p></li>
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a count, we can model it as a <em>Binomial</em>, <em>Multinomial</em> or <em>Poisson</em></p></li>
+<li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is continuous, we can model it as a <em>Gaussian</em>, <em>Exponential</em>, <em>Dirichlet</em> etc</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Inference)</strong> We can make statements about <span class="math notranslate nohighlight">\(\theta\)</span> by performing:</p>
+<ul class="simple">
+<li><p><em><strong>Maximum Likelihood Estimation:</strong></em> compute a fixed value <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> that maximizes the likelihood of the observed data <span class="math notranslate nohighlight">\(Y\)</span>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em> <em>assume</em> a prior for <span class="math notranslate nohighlight">\(\theta\)</span>, encoding our knowledge and uncertainty about <span class="math notranslate nohighlight">\(\theta\)</span>, then compute the posterior <span class="math notranslate nohighlight">\(p(\theta| Y)\)</span> distribution.</p></li>
+</ul>
+</li>
+<li><p><strong>(Inference Algorithm)</strong> We choose an algorithm to perform inference:</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>Maximum Likelihood Estimation:</strong></em> <em>analytically</em> solve an unconstrained or contrained optimization problem to obtain <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em></p>
+<ul>
+<li><p>if the prior and likelihood are <em><strong>conjugate</strong></em>, then <em>analytically</em> derive the posterior distribution</p></li>
+<li><p>if the posterior distribution does not have a known (to you) form, sample from it using a <em><strong>sampler</strong></em>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="what-happens-after-inference">
+<h3>What Happens After Inference?<a class="headerlink" href="#what-happens-after-inference" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>(Predictive Evaluation)</strong> In practice, we do not know the true model <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>! Thus, <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> cannot be evaluated by comparison to <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>.</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> we sample multiple <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta_{\text{MLE}})\)</span> and compare with observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em> we sample multiple <span class="math notranslate nohighlight">\(Y\)</span> from the <em><strong>posterior predictive</strong></em> and compare with observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>(Uncertainty Evaluation)</strong> Before making decisions with real-life consequence based on your model, you should check the precision of your estimate or uncertainty of you model.</p></li>
+</ol>
+<ul class="simple">
+<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> repeat the MLE computation on many bootstrap samples of <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>. Compute the confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> and the predictive interval for <span class="math notranslate nohighlight">\(Y\)</span>. These intervals indicate <em>precision</em>.</p></li>
+<li><p><em><strong>Bayesian Inference:</strong></em> Compute credible intervals for the posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> and the predictive intervals of the posterior predictive. These intervals indicate <em>model uncertainty</em>.</p></li>
+</ul>
+</section>
+<section id="the-modeling-process">
+<h3>The Modeling Process<a class="headerlink" href="#the-modeling-process" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-08-modeling">
+<a class="reference internal image-reference" href="../_images/modeling.jpg"><img alt="../_images/modeling.jpg" src="../_images/modeling.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+</section>
+<section id="summary">
+<h2><span class="section-number">9.6. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<section id="how-do-i-know-that-my-sampler-is-an-mcmc-sampler-for-the-target-pi-text-target">
+<h3>How Do I Know That My Sampler is an MCMC Sampler for the target <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span>?<a class="headerlink" href="#how-do-i-know-that-my-sampler-is-an-mcmc-sampler-for-the-target-pi-text-target" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Check that my chain is <em><strong>aperiodic</strong></em>.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Finite State Space:</strong> check that the period of each state is 1, where the period of a state is the <code class="docutils literal notranslate"><span class="pre">gcd</span></code> of the lengths of all paths starting and ending.</p></li>
+<li><p><strong>Continuous State Space:</strong> Periodicity is defined as the largest <span class="math notranslate nohighlight">\(n\)</span> such that there is a pairwise disjoint family of <span class="math notranslate nohighlight">\(n\)</span> number of measurable sets where <span class="math notranslate nohighlight">\(T(x, A_{j+1}) = 1\)</span> for all <span class="math notranslate nohighlight">\(x\in A_j\)</span> and <span class="math notranslate nohighlight">\(T(x, A_1) = 1\)</span> for all <span class="math notranslate nohighlight">\(x\in A_n\)</span>, where <span class="math notranslate nohighlight">\(T(x,\cdot)\)</span> is the measure induced by the transition kernel <span class="math notranslate nohighlight">\(T\)</span>.<br><br>
+It’s <strong>sufficient</strong> that the proposal distribution is positive everywhere in the sample space.<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>Check that my chain is <em><strong>irreducible</strong></em>.</p></li>
+</ol>
+<ul>
+<li><p><strong>Finite State Space:</strong> check that for some <span class="math notranslate nohighlight">\(n\)</span> the transition matrix <span class="math notranslate nohighlight">\(T^n\)</span> has all positive entries.</p></li>
+<li><p><strong>Continuous State Space:</strong> a kernel is <em><strong>Harris positive recurrent</strong></em> if it is <span class="math notranslate nohighlight">\(\varphi\)</span>-irreducible (i.e. there is some <span class="math notranslate nohighlight">\(n\)</span> such that for all <span class="math notranslate nohighlight">\(A\)</span> we have <span class="math notranslate nohighlight">\(\varphi(A)&gt;0\)</span>, <span class="math notranslate nohighlight">\(T^n(x, A) &gt; 0\)</span>) with stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> and for all <span class="math notranslate nohighlight">\(\pi(A)&gt;0\)</span>, all <span class="math notranslate nohighlight">\(x\)</span>, we have <span class="math notranslate nohighlight">\(Pr(\tau_A &lt;\infty|X_0 =x)=1\)</span>, where <span class="math notranslate nohighlight">\(\tau_A = \inf\{n\geq 1: X_n \in A\}.\)</span></p>
+<p>It’s <strong>sufficient</strong> that the proposal distribution is positive everywhere in the sample space.<br><br></p>
+</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>By the Fundamental Theorem, we get that there exists a unique stationary distribution <span class="math notranslate nohighlight">\(\pi^{\text{sta}}\)</span> that is the limiting distribution <span class="math notranslate nohighlight">\(\pi^{\infty}\)</span>:
+<div class="math notranslate nohighlight">
+\[
+\pi^{\text{sta}} = \pi^{\infty}
+\]</div>
+</p></li>
+<li><p>We check that the sampler satisfy <em><strong>detailed balance</strong></em> with respect to <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span>.</p></li>
+<li><p>Then we know that <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span> is stationary, since the stationary distribution is unique for our sampler, and hence limiting:
+<div class="math notranslate nohighlight">
+\[
+\pi^{\text{target}} = \pi^{\text{sta}} = \pi^{\infty}
+\]</div>
+</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="samplers-with-asymptotic-guarantees-can-be-lemons">
+<h3>Samplers with Asymptotic Guarantees Can Be Lemons!<a class="headerlink" href="#samplers-with-asymptotic-guarantees-can-be-lemons" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Burn-in:</strong> The first chunch of samples from an MCMC sampler will be worthless. We need to discard these samples.</p></li>
+<li><p><strong>Mixing:</strong> How do we know when the sampler is finally sampling from <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span>?</p></li>
+</ol>
+<ul>
+<li><p>Look at the trace plots</p>
+<figure class="align-center" id="fig-08-summary-mixing">
+<a class="reference internal image-reference" href="../_images/mixing.jpg"><img alt="../_images/mixing.jpg" src="../_images/mixing.jpg" style="width: 100%;" />
+</a>
+</figure>
+</li>
+<li><p>Trace plots can be misleading!
+<a class="reference download internal" download="" href="../_downloads/e187ee0ca1f44126b4394104bcf4a90f/trace.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">derivation</span> <span class="pre">(PDF)</span></code></a></p></li>
+<li><p>Look at the correlation plots</p>
+<figure class="align-center" id="fig-08-summary-autocorr">
+<a class="reference internal image-reference" href="../_images/autocorr.jpg"><img alt="../_images/autocorr.jpg" src="../_images/autocorr.jpg" style="width: 544px;" />
+</a>
+</figure>
+</li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p><strong>Remember that all your metrics are flawed!</strong></p></li>
+</ol>
+</section>
+<section id="id1">
+<h3>More Rigorous Checks for Convergence<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Look for:</p>
+<ol class="arabic simple">
+<li><p>Large segments of the <em><strong>chain</strong></em> (sequence of samples) should have give similar statistics (mean, variance etc)</p></li>
+<li><p>Low correlations within states of the chain</p></li>
+<li><p>“Reasonably high” acceptance rate of proposed steps</p></li>
+<li><p>Multiple chains initialized from different initial points give similar results</p></li>
+</ol>
+<p>Best practics:</p>
+<ol class="arabic simple">
+<li><p>Always run multiple chains initialized from very different random starting points</p></li>
+<li><p>Always run your chains for as long as you can then burn and thin</p></li>
+<li><p>Always check all relevant convergence diagnostics</p></li>
+<li><p>Never be too certain: <strong>remember that there is no “proof” of convergence for finite chains!</strong></p></li>
+<li><p>Keep reading about best practice!</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="what-are-the-broader-impacts-of-mcmc-theory">
+<h3>What Are the Broader Impacts of MCMC Theory?<a class="headerlink" href="#what-are-the-broader-impacts-of-mcmc-theory" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>How much technical know-how does it take to understand how MCMC samplers work?</p></li>
+</ol>
+<ul class="simple">
+<li><p>Do ML researchers need to understand how MCMC samplers work? How much do they need to understand?</p></li>
+<li><p>Do data scientists need to understand how MCMC samplers work? How much do they need to understand?</p></li>
+<li><p>Do domain experts (like clinicians) need to understand how MCMC samplers work? How much do they need to understand?</p></li>
+<li><p>How would each group of people know when the sampler has failed? <br><br></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>How much do you <strong>think</strong> you need to understand in order to comfortably use MCMC samplers? Does your percieved technical overhead of understanding MCMC discourage you from using this method? Innovating in this field?<br><br></p></li>
+<li><p>What kinds of power hierarchies are created by us using fancy models with fancy theory – i.e. how much power do affected communities have in changing the technology or detecting/attributing fault? How can we equalize this distribution of power?</p></li>
+</ol>
+</section>
+</section>
+<section id="exercises">
+<h2><span class="section-number">9.7. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<section id="problem-set-modeling-kidney-cancer-data">
+<span id="ps-hw4b"></span><h3>Problem Set: Modeling Kidney Cancer Data<a class="headerlink" href="#problem-set-modeling-kidney-cancer-data" title="Link to this heading">#</a></h3>
+<p>In this problem, we will work with the US Kidney Cancer Data set, <code class="docutils literal notranslate"><span class="pre">kcancer.csv</span></code>. This is a dataset of kidney cancer frequencies across the US over 5 years on a per county basis. Suppose that the model you develop will be deployed by the CDC as part of a system that identifies cancer hotspots for further research and for establishing targeted cancer drug trials.</p>
+<p><strong>In this problem set, we focus on the mechanics of seting up a statistical model for this data set and performing inference on it. In the <a class="reference internal" href="11-hierarchical-models.html#ps-hw5b"><span class="std std-ref">Chapter 13 problem set</span></a>, we will focus on interpreting this model and comparing it with others in context.</strong></p>
+<p>Let <span class="math notranslate nohighlight">\(N\)</span> be the number of counties; let <span class="math notranslate nohighlight">\(y_j\)</span> the number of kidney cancer case for the <span class="math notranslate nohighlight">\(j\)</span>-th county, <span class="math notranslate nohighlight">\(n_j\)</span> the population of the <span class="math notranslate nohighlight">\(j\)</span>-county and <span class="math notranslate nohighlight">\(\theta_j\)</span> be the underlying kidney cancer rate for that county. The following is a Bayesian model for our data:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j &amp;\sim Gamma(\alpha, \beta), \quad j = 1, \ldots, N
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are hyper-parameters of the model.</p>
+<p>Rather than arbitrarily choosing the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>, following the Bayesian philosophy, we typically put additional priors on quantities of which we are uncertain. That is, we model the kidney cancer rates using a <em><strong>hierarchical model</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+y_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots, N\\
+\theta_j &amp;\sim Ga(\alpha, \beta), \quad j = 1, \ldots, N\\
+\alpha &amp;\sim Ga(a, b)\\
+\beta &amp;\sim Ga(c, d)
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(a, b, c, d\)</span> are hyperparameters.</p>
+<p>In this problem, you will implement a modified Gibbs sampler to sample from the posterior of this complex model.</p>
+<div class="admonition-exercise-part-i-the-conditional-distributions admonition">
+<p class="admonition-title">Exercise: Part I: The Conditional Distributions</p>
+<ol class="arabic simple">
+<li><p>Justify our choice to use a hierarchical model. Specifically, explain the draw-backs of using MLE estimates of <span class="math notranslate nohighlight">\(\theta_j\)</span> to represent the underlying cancer rates of these counties (recall the discussion in Lecture #3). Explain the draw-backs of choosing specific values for the hyper-parameters of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> rather than putting priors on them (recall the discussion of priors in the <a class="reference internal" href="03-bayesian-modeling.html#ps-hw1"><span class="std std-ref">Chapter 3 problem set</span></a>).<br><br></p></li>
+<li><p>Verify that the conditional distributions are
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(\theta_j | \theta_{-j}, y, \alpha, \beta) &amp;= Ga(\theta_j; \alpha + y_j, 5 n_j  + \beta),\\
+p(\alpha, \beta | \theta, y) &amp;\propto \frac{\beta^{N\alpha}}{\Gamma^N(\alpha)} \left[\prod_j \theta_j^{\alpha - 1}\right] e^{-\sum_j\beta\theta_j - d\beta - b\alpha} \alpha^{a-1} \beta^{c-1}
+\end{aligned}\end{split}\]</div>
+
+where we use the following notation:
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta &amp;:= \{ \theta_j\}_{j=1, \ldots, N}\\
+\theta_{-j} &amp;:= \{ \theta_i\}_{i=1, \ldots, j-1, j+1,\ldots, N}\\
+y &amp;:= \{y_j \}_{j=1, \ldots, N}\\
+y_{-j} &amp;:= \{ y_i\}_{i=1,\ldots, j-1, j+1,\ldots, N}\\
+\end{aligned}\end{split}\]</div>
+
+Unfortunately, you see that <span class="math notranslate nohighlight">\(p(\alpha, \beta | \theta, y)\)</span> doesn’t resemble the pdf of a nice simple distribution; that is, it is unclear how to sample from it.</p></li>
+</ol>
+</div>
+<div class="admonition-exercise-part-ii-metropolis-hastings-in-gibbs admonition">
+<p class="admonition-title">Exercise: Part II: Metropolis-Hastings-in-Gibbs</p>
+<ol class="arabic simple">
+<li><p>When one or more conditional distributions in a Gibbs sampler do not have closed forms (this is the case for most models), we often sample from these conditionals using another MCMC method (e.g. Metropolis Hastings). That is, we modify the Gibbs sampler as follows:</p></li>
+</ol>
+<p><strong>I.</strong> Sample <span class="math notranslate nohighlight">\(\theta_j\)</span> using the closed form for <span class="math notranslate nohighlight">\(p(\theta_j | \theta_{-j}, y, \alpha, \beta)\)</span>.</p>
+<p><strong>II.</strong> Sample <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> from <span class="math notranslate nohighlight">\(p(\alpha, \beta | \theta, y)\)</span> using a Metropolis-Hastings step (i.e. use a proposal distribution to propose a sample and the MH reject/accept mechanism to accept the new sample or keep the old).</p>
+<p>This algorithm is called a <em><strong>Metropolis-Hastings-in-Gibbs sampler</strong></em>. <br><br></p>
+<p>Note that we computed <span class="math notranslate nohighlight">\(p(\alpha, \beta | \theta, y)\)</span> only up to a constant. Show why we don’t need to know the normalizing constant of <span class="math notranslate nohighlight">\(p(\alpha, \beta | \theta, y)\)</span> when we perform MH sampling.<br><br></p>
+<ol class="arabic simple" start="3">
+<li><p>Implement and run a Metropolis-Hastings-in-Gibbs sampler for the kidney cancer model.</p></li>
+</ol>
+<p>We suggest the following settings for your MH-in-Gibbs sampler, but please feel free to use your own:</p>
+<ul class="simple">
+<li><p>Gibbs sweeps: 100,000</p></li>
+<li><p><span class="math notranslate nohighlight">\(a = 9, b = 6, c = 9, d = 0.00001\)</span></p></li>
+<li><p>Starting points: <span class="math notranslate nohighlight">\(\alpha_0 = 1.54517349188, \beta_0 = 133514.171939\)</span></p></li>
+<li><p>proposal distribution: <span class="math notranslate nohighlight">\(\mathcal{N}\left([\alpha, \beta], \left[\begin{array}{cc} 0.1 &amp; 0 \\ 0 &amp; 1000\end{array}\right]\right)\)</span></p></li>
+<li><p>burn in: 10%</p></li>
+<li><p>thinning: 10<br><br></p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p>Check for and discuss the convergence of your sampler. If you think your sampler has converged, explain why. If you believe your sampler has not converged, explain what next steps you might take to determine which design choices were problemmatic.</p></li>
+</ol>
+<p><strong>Important Disclaimer:</strong> Convergence in a untweaked sampler may be unlikely after only 100,000 Gibbs sweeps. We are not asking you in this problem set to achieve convergence, but you must demonstrate that you know how to perform diagnostics on your sampler.<br><br></p>
+<p><strong>Optional not Required:</strong> Tweak the settings in your sampler (e.g. number of sweeps) in order to achieve reasonable confidence that your sampler has converged. Reconsider also other design choices like, do you need to sample <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> jointly?</p>
+</div>
+<div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
+<p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
+<p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
+<p>To help you analyze the broader impact of your technology, begin by considering the following questions:</p>
+<p>I. Identify the relevant socio-technical systems</p>
+<ul class="simple">
+<li><p>In what social, political, economic system could the tech be deployed?</p></li>
+<li><p>How would the tech be used in these systems (what role will it take in the decision making processes)?<br><br></p></li>
+</ul>
+<p>II. Identify the stakeholders</p>
+<ul>
+<li><p>Who are the users?</p></li>
+<li><p>Who are the affected communities (are these the users)?</p>
+<p><em><strong>Hint:</strong></em> users are typically decision makers who will use the technology as decision aids (e.g. doctors), whereas affected communities may be folks who are impacted by these decisions but who are not represented in the decision making process (e.g. patients).<br><br></p>
+</li>
+</ul>
+<p>III. What types of harm can this tech do?</p>
+<ul>
+<li><p>What kinds of failures can this tech have?</p></li>
+<li><p>What kinds of direct harm can these failures cause?</p></li>
+<li><p>What kinds of harm can the socio-technical system cause?</p>
+<p><em><strong>Hint:</strong></em> many technical innovations have niche applications, they may sit in a long chain of decision making in a complex system. As such, it may seem, at first glance, that these technologies have no immediate real-life impact. In these cases, it’s helpful to think about the impact of the entire system and then think about how the proposed innovations aid, hamper or change the goals or outcomes of this system.<br><br></p>
+</li>
+</ul>
+<p>IV. What types of good can this tech do?</p>
+<ul class="simple">
+<li><p>What kinds of needs do these users/communities have?</p></li>
+<li><p>What kinds of constraints do these users/communities have?</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p><strong>(Impact)</strong>  Analyze the broader impact of this model for kidney cancer. Focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
+</ol>
+<p>In terms of broader impact, is it more preferable to use a hiearchical model, an MLE model or a Bayesian model with hand-picked priors for this dataset? Previously, we have outlined the advantages of hierarchical models over the other two types of models. Under what circumstances would using a hierarchical model to model the data have potentially negative impact on down-stream decision making?</p>
+</div>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">9.8. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>MCMC Diagnostics</strong></p>
+<ul class="simple">
+<li><p>(Introductory) <a class="reference external" href="https://www.statlect.com/fundamentals-of-statistics/Markov-Chain-Monte-Carlo-diagnostics" rel="noreferrer" target="_blank">Markov Chain Monte Carlo (MCMC) Diagnostics</a></p></li>
+<li><p>(In-Depth) <a class="reference external" href="https://arxiv.org/pdf/1909.11827.pdf" rel="noreferrer" target="_blank">Convergence diagnostics for Markov chain Monte Carlo</a></p></li>
+<li><p>(Opinion) <a class="reference external" href="http://users.stat.umn.edu/~geyer/mcmc/diag.html" rel="noreferrer" target="_blank">On the Bogosity of MCMC Diagnostics</a></p></li>
+</ul>
+<p><strong>More on Thinning</strong></p>
+<ul class="simple">
+<li><p>(Thinning is bad!) <a class="reference external" href="https://besjournals.onlinelibrary.wiley.com/doi/epdf/10.1111/j.2041-210X.2011.00131.x" rel="noreferrer" target="_blank">On Thinning of Chains in MCMC</a></p></li>
+<li><p>(Thinning can be good!) <a class="reference external" href="https://arxiv.org/pdf/1510.07727.pdf" rel="noreferrer" target="_blank">Statistically efficient thinning of a Markov chain sampler</a></p></li>
+</ul>
+<p><strong>More on Chain Length</strong></p>
+<ul class="simple">
+<li><p>(The longer the better? Not always) <a class="reference external" href="https://arxiv.org/pdf/1708.03625.pdf" rel="noreferrer" target="_blank">Unbiased Markov chain Monte Carlo with couplings</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="07-mcmc.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>Markov Chain Monte Carlo</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="impact-2-sampling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">10. </span>Applications and Broader Impact: Sampling and Monte Carlo</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">9.1. Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo">9.2. Markov Chain Monte Carlo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#markov-chain-monte-carlo-samplers">Markov Chain Monte Carlo Samplers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-the-idea">Metropolis-Hastings: The Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-the-algorithm">Metropolis-Hastings: The Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-proof-of-correctness">Metropolis-Hastings: Proof of Correctness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metropolis-hastings-proof-of-detailed-balance">Metropolis-Hastings: Proof of Detailed Balance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gibbs-as-metropolis-hastings">Gibbs as Metropolis-Hastings</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-mcmc-diagnostics">9.3. Simple MCMC Diagnostics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#traceplot-checks-for-mixing">Traceplot Checks for Mixing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#burn-in-and-thinning">Burn-in and Thinning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-sampling-from-a-mixture-of-two-gaussians">Example: Sampling from a Mixture of Two Gaussians</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-checks-for-mixing">Visual Checks for Mixing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-checks-can-be-misleading">Visual Checks Can be Misleading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-importance-of-tuning-your-sampler">The Importance of Tuning Your Sampler</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#more-mcmc-diagnostics-and-best-practices">9.4. More MCMC Diagnostics and Best Practices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more-rigorous-checks-for-convergence">More Rigorous Checks for Convergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-traceplots-of-multiple-chains">Visual Diagnostics: Traceplots of Multiple Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-the-effective-sample-size">Autocorrelation: the “Effective” Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-the-autocorrelation-plot">Visual Diagnostics: The Autocorrelation Plot</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quantitative-diagnostics">Quantitative Diagnostics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-statistical-modeling">9.5. Review of Statistical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-we-can-do-so-far">What We Can Do So Far</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happens-after-inference">What Happens After Inference?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modeling-process">The Modeling Process</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">9.6. Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-i-know-that-my-sampler-is-an-mcmc-sampler-for-the-target-pi-text-target">How Do I Know That My Sampler is an MCMC Sampler for the target <span class="math notranslate nohighlight">\(\pi^{\text{target}}\)</span>?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#samplers-with-asymptotic-guarantees-can-be-lemons">Samplers with Asymptotic Guarantees Can Be Lemons!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">More Rigorous Checks for Convergence</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-the-broader-impacts-of-mcmc-theory">What Are the Broader Impacts of MCMC Theory?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">9.7. Exercises</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-set-modeling-kidney-cancer-data">Problem Set: Modeling Kidney Cancer Data</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">9.8. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

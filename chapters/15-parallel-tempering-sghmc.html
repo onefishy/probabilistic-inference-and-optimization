@@ -1,0 +1,879 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>19. Parallel Tempering and Stochastic HMC &#8212; Probabilistic Inference &amp; Optimization</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"tex": {"macros": {"argmax": "\\operatorname*{argmax}", "argmin": "\\operatorname*{argmin}"}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/15-parallel-tempering-sghmc';</script>
+    <link rel="canonical" href="https://onefishy.github.io/probabilistic-inference-and-optimization/chapters/15-parallel-tempering-sghmc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="20. Applications and Broader Impact: Advanced MCMC" href="impact-5-advanced-mcmc.html" />
+    <link rel="prev" title="18. Hamiltonian Monte Carlo" href="14-hamiltonian-monte-carlo.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Probabilistic Inference & Optimization</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Probabilistic Inference & Optimization
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Part I: Foundations of Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-overview.html">1. Overview: Stochastic Methods for Data Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-maximum-likelihood.html">2. Maximum Likelihood Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-bayesian-modeling.html">3. Bayesian Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-bayesian-vs-frequentist.html">4. Bayesian versus Frequentist Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-1-foundations.html">5. Applications and Broader Impact: Foundations of Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part II: Sampling and Monte Carlo</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-sampling.html">6. Sampling for Posterior Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-monte-carlo-integration.html">7. Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-mcmc.html">8. Markov Chain Monte Carlo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-metropolis-hastings-gibbs.html">9. Metropolis-Hastings and Gibbs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-2-sampling.html">10. Applications and Broader Impact: Sampling and Monte Carlo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part III: Latent Variables and Variational Inference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="09-latent-variable-models.html">11. Latent Variable Models and MLE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-variational-inference.html">12. Bayesian Latent Variable Models and Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-hierarchical-models.html">13. Hierarchical Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-3-latent-variables.html">14. Applications and Broader Impact: Latent Variables and Variational Inference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part IV: Optimization</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="12-logistic-regression-gradient-descent.html">15. Logistic Regression and Gradient Descent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sgd-simulated-annealing.html">16. Stochastic Gradient Descent and Simulated Annealing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-4-optimization.html">17. Applications and Broader Impact: Optimization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part V: Advanced MCMC</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14-hamiltonian-monte-carlo.html">18. Hamiltonian Monte Carlo</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">19. Parallel Tempering and Stochastic HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-5-advanced-mcmc.html">20. Applications and Broader Impact: Advanced MCMC</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Part VI: Bayesian Deep Learning</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="16-neural-network-regression.html">21. Neural Network Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17-black-box-vi.html">22. Black-box Variational Inference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18-automatic-differentiation.html">23. Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19-vi-in-context.html">24. Variational Inference in Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20-variational-autoencoders.html">25. Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21-implementing-vaes.html">26. Implementing Variational Autoencoders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="impact-6-bayesian-deep-learning.html">27. Applications and Broader Impact: Bayesian Deep Learning</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Labs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-01-scientific-computing.html">Lab 1: Review of Scientific Computing in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-02-posterior-simulation.html">Lab 2: Posterior and Posterior Predictive Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-03-monte-carlo-integration.html">Lab 3: Sampling and Monte Carlo Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-04-gibbs-metropolis-hastings.html">Lab 4: Gibbs and Metropolis-Hastings Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-05-kl-divergence-pymc3.html">Lab 5: KL-Divergence and Modeling with pymc3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-06-logistic-regression.html">Lab 6: Interpreting and Evaluating Logistic Regression Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-07-nonlinear-regression.html">Lab 7: Non-Linear Models for Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-08-vi-vs-hmc.html">Lab 8: Variational Inference vs HMC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labs/lab-09-hidden-markov-models.html">Lab 9: Inference and Learning for Discrete-State HMMs</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/onefishy/probabilistic-inference-and-optimization/issues/new?title=Issue%20on%20page%20%2Fchapters/15-parallel-tempering-sghmc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/15-parallel-tempering-sghmc.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Parallel Tempering and Stochastic HMC</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-hmc">19.1. Review of HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-hmc">Hamiltonian Monte Carlo (HMC)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#faqs-about-hmc">FAQs About HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-for-multimodal-distributions">HMC for Multimodal Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#signs-of-maybe-convergence">Signs of Maybe Convergence?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-traceplots-of-multiple-chains">Visual Diagnostics: Traceplots of Multiple Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-the-effective-sample-size">Autocorrelation: the “Effective” Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-the-autocorrelation-plot">Visual Diagnostics: The Autocorrelation Plot</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quantitative-diagnostics">Quantitative Diagnostics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-tempering">19.2. Parallel Tempering</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-posteriors">Multimodal Posteriors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-effect-of-temperature">The Effect of Temperature</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-idea-of-parallel-tempering">The Idea of Parallel Tempering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-tempering-with-hmc">Parallel Tempering with HMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc">19.3. Stochastic Gradient HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-scaling-hmc">Problems with Scaling HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-stochastic-gradient-hmc">Naïve Stochastic Gradient HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc-with-friction">Stochastic Gradient HMC with Friction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc-in-practice">Stochastic Gradient HMC in Practice</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">19.4. Further Reading</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="parallel-tempering-and-stochastic-hmc">
+<h1><span class="section-number">19. </span>Parallel Tempering and Stochastic HMC<a class="headerlink" href="#parallel-tempering-and-stochastic-hmc" title="Link to this heading">#</a></h1>
+<p>This chapter is adapted from AM207 (Harvard, Fall 2021). <a class="reference external" href="https://youtu.be/jiIxj68f0t8" rel="noreferrer" target="_blank">Watch the recorded lecture</a>.</p>
+<div class="tip admonition">
+<p class="admonition-title">In this chapter</p>
+<ol class="arabic simple">
+<li><p>Review of HMC</p></li>
+<li><p>Parallel Tempering</p></li>
+<li><p>Stochastic Gradient HMC</p></li>
+</ol>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell content</p>
+<p class="expanded admonition-title">Hide code cell content</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">YouTubeVideo</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="review-of-hmc">
+<h2><span class="section-number">19.1. </span>Review of HMC<a class="headerlink" href="#review-of-hmc" title="Link to this heading">#</a></h2>
+<section id="hamiltonian-monte-carlo-hmc">
+<h3>Hamiltonian Monte Carlo (HMC)<a class="headerlink" href="#hamiltonian-monte-carlo-hmc" title="Link to this heading">#</a></h3>
+<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions
+<div class="math notranslate nohighlight">
+\[
+U(q) = - \log \pi(q), \quad \pi(q) = \frac{1}{Z}\exp\left\{ \frac{-U(q)}{T}\right\},\; T=1
+\]</div>
+
+This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<figure class="align-center" id="fig-15-hamiltonian">
+<a class="reference internal image-reference" href="../_images/hamiltonian.jpg"><img alt="../_images/hamiltonian.jpg" src="../_images/hamiltonian.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="faqs-about-hmc">
+<h3>FAQs About HMC<a class="headerlink" href="#faqs-about-hmc" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Question:</strong> HMC seems complicated, do I really need to use it?<br>
+<strong>Answer:</strong> Yes. For complex models of interest (non-conjugate, hierarchical, latent variable) HMC is the least complicated sampler you can use to perform reliable inference.<br><br></p></li>
+<li><p><strong>Question:</strong> Ok, but can I treat the theory as a black-box, i.e. can I just press some <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> button?<br>
+<strong>Answer:</strong> No. HMC (like all samplers) must be tuned. That is, for many models and datasets, <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> will not have good performance. You need the theory to tell you which design choices need to be adjusted and in what way.<br><br></p></li>
+<li><p><strong>Question:</strong> But I don’t need to implement it since <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> has already done so, right?<br>
+<strong>Answer:</strong> You need to implement HMC. Because <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> is not going to scale well for Bayesian inference for models with neural network likelihoods and large datasets. <br><br></p></li>
+<li><p><strong>Question:</strong> We worked so hard to derive HMC, so it’s state-of-the-art and can be applied to any Bayesian model for any dataset right?<br>
+<strong>Answer:</strong> No. HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see this weeks readings). Futhermore, HMC <strong>does not scale well to large datasets</strong>.</p></li>
+</ol>
+</section>
+<section id="hmc-for-multimodal-distributions">
+<h3>HMC for Multimodal Distributions<a class="headerlink" href="#hmc-for-multimodal-distributions" title="Link to this heading">#</a></h3>
+<p><video controls muted playsinline style="max-width:100%;max-height:440px"><source src="../_static/figs/hmc_multimodal.mp4" type="video/mp4"></video></p>
+</section>
+<section id="signs-of-maybe-convergence">
+<h3>Signs of Maybe Convergence?<a class="headerlink" href="#signs-of-maybe-convergence" title="Link to this heading">#</a></h3>
+<p>Look for:</p>
+<ol class="arabic simple">
+<li><p>Large segments of the chain should have give similar statistics (mean, variance etc)</p></li>
+<li><p>Low correlations within states of the chain</p></li>
+<li><p>“Reasonably high” acceptance rate of proposed steps</p></li>
+<li><p>Multiple chains initialized from different initial points give similar results</p></li>
+</ol>
+<p>Best practics:</p>
+<ol class="arabic simple">
+<li><p>Always run multiple chains initialized from very different random starting points</p></li>
+<li><p>Always run your chains for as long as you can then burn and thin</p></li>
+<li><p>Always check all relevant convergence diagnostics</p></li>
+<li><p>Never be too certain: remember that there is no “proof” of convergence for finite chains!</p></li>
+<li><p>Keep reading about best practice!</p></li>
+</ol>
+</section>
+<section id="visual-diagnostics-traceplots-of-multiple-chains">
+<h3>Visual Diagnostics: Traceplots of Multiple Chains<a class="headerlink" href="#visual-diagnostics-traceplots-of-multiple-chains" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-15-multichain">
+<a class="reference internal image-reference" href="../_images/multichain.jpg"><img alt="../_images/multichain.jpg" src="../_images/multichain.jpg" style="width: 606px;" />
+</a>
+</figure>
+</section>
+<section id="autocorrelation-the-effective-sample-size">
+<h3>Autocorrelation: the “Effective” Sample Size<a class="headerlink" href="#autocorrelation-the-effective-sample-size" title="Link to this heading">#</a></h3>
+<p>We quantify how much the samples in the chain are correlated with the samples obtained <span class="math notranslate nohighlight">\(k\)</span>-steps later (<strong>the <span class="math notranslate nohighlight">\(k\)</span>-th lag</strong>). The <em><strong>autocorrelation</strong></em> <span class="math notranslate nohighlight">\(\rho_k\)</span> is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+\rho_k = \frac{\sum_{n=1}^{N-k}(x_n - \bar{x})(x_{n+k} - \bar{x})}{\sum_{n=1}^{N}(x_n - \bar{x})^2}
+\]</div>
+<p>We plot the autocorrelation for each <span class="math notranslate nohighlight">\(k = 1, \ldots, \frac{N}{2}\)</span>, and this <em><strong>autocorrelation plot</strong></em> tells us how much we to thin in order to obtain effectively independent samples. The autocorrelation plot gives us an idea of the <em><strong>effective sample size</strong></em> of the Markov chain.</p>
+</section>
+<section id="visual-diagnostics-the-autocorrelation-plot">
+<h3>Visual Diagnostics: The Autocorrelation Plot<a class="headerlink" href="#visual-diagnostics-the-autocorrelation-plot" title="Link to this heading">#</a></h3>
+<figure class="align-center" id="fig-15-autocorr">
+<a class="reference internal image-reference" href="../_images/autocorr.jpg"><img alt="../_images/autocorr.jpg" src="../_images/autocorr.jpg" style="width: 622px;" />
+</a>
+</figure>
+</section>
+<section id="quantitative-diagnostics">
+<h3>Quantitative Diagnostics<a class="headerlink" href="#quantitative-diagnostics" title="Link to this heading">#</a></h3>
+<p><strong>Idea:</strong> measure between-chain and within-chain variability of a quantity of interest – if the chains have converged, these measures will be similar; otherwise, the between-chain variability will be larger.</p>
+<ol class="arabic simple">
+<li><p><em><strong>Gelman &amp; Rubin</strong></em>: quantity <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} =  \frac{B}{W}\)</span>, which compares <span class="math notranslate nohighlight">\(B\)</span> the empirical variance of all the chains pooled and <span class="math notranslate nohighlight">\(W\)</span> the average emprical variance within each chain. If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}}\)</span> is large then the chains are very different (not converged). If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} = 1\)</span> is ideal but in practice we accept <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} &lt; 1.05\)</span>.<br><br></p></li>
+<li><p><em><strong>Geweke</strong></em>: takes two nonoverlapping parts (usually the first 0.1 and last 0.5 proportions) of the Markov chain and compares the means of both parts, using a difference of means test to see if the two parts of the chain are from the same distribution (the test statistic is a standard Z-score with the standard errors adjusted for autocorrelation).</p></li>
+</ol>
+</section>
+</section>
+<section id="parallel-tempering">
+<h2><span class="section-number">19.2. </span>Parallel Tempering<a class="headerlink" href="#parallel-tempering" title="Link to this heading">#</a></h2>
+<section id="multimodal-posteriors">
+<h3>Multimodal Posteriors<a class="headerlink" href="#multimodal-posteriors" title="Link to this heading">#</a></h3>
+<p>But when are posteriors multimodal? Often, the posterior can be multimodal when the likelihood is <em><strong>non-identifiable</strong></em>, i.e. there are multiple sets of model parameters that can explain the data equally well.</p>
+<p>For example, the observed data likelihood of a Gaussian mixture model with 2 univariate components is:</p>
+<div class="math notranslate nohighlight">
+\[
+p(y|\mu, \sigma^2, \pi) = \pi_1 \mathcal{N}(y; \mu_1, \sigma^2_1) + \pi_2 \mathcal{N}(y; \mu_2, \sigma^2_2)
+\]</div>
+<p>But, given an observation <span class="math notranslate nohighlight">\(y\)</span>, there are multiple sets of model parameters <span class="math notranslate nohighlight">\(\mu, \sigma^2, \pi\)</span> that will fit the data:</p>
+<div class="math notranslate nohighlight">
+\[
+0.1 \mathcal{N}(y; 1, 0.5) + 0.9 \mathcal{N}(y; -2, 1) = 0.9 \mathcal{N}(y; -2, 1) + 0.1 \mathcal{N}(y; 1, 0.5)
+\]</div>
+<p>That is, we can label the components however we want without changing the fit.</p>
+<p>When we fit a Bayesian GMM, the posterior will contain multiple modes, one for each way of labeling the components.</p>
+<p><strong>Note:</strong> There are more non-trivial ways in which the likelihood of a GMM can be non-identifiable and, hence, its posterior multimodal!</p>
+</section>
+<section id="the-effect-of-temperature">
+<h3>The Effect of Temperature<a class="headerlink" href="#the-effect-of-temperature" title="Link to this heading">#</a></h3>
+<p>Why is it hard for samplers to visit multiple modes in a target distribution?</p>
+<p>MCMC samplers can only propose locally, so moving from one mode to another requires traveling through regions that are very unlikely under the target distribution.</p>
+<p>In HMC terms, moving from one mode to another requires climbing a big hill – this is called an <em><strong>energy barrier</strong></em>. From simulated annealing we know that range of movement of a sampler of a Gibbs distribution is enhanced when we increase the temperature term:</p>
+<div class="math notranslate nohighlight">
+\[
+\pi_T(q) = \frac{1}{Z}\exp\left\{ -\frac{-\log\pi(q)}{T}\right\} 
+\]</div>
+<p>Another way to say this is that when temperature is high, the poential energy landscape <span class="math notranslate nohighlight">\(\frac{-\log\pi(q)}{T}\)</span> is flat, hence easier to explore.</p>
+<p>But we can’t simply set <span class="math notranslate nohighlight">\(T &gt; 1\)</span>! Doing so means that we will not be sampling from the target <span class="math notranslate nohighlight">\(\pi(q)\)</span> (i.e. the above equation will not hold).</p>
+</section>
+<section id="the-idea-of-parallel-tempering">
+<h3>The Idea of Parallel Tempering<a class="headerlink" href="#the-idea-of-parallel-tempering" title="Link to this heading">#</a></h3>
+<p>Using one MCMC chain with <span class="math notranslate nohighlight">\(T&gt;1\)</span> will produce incorrect samples. What if we use multiple chains: one for <span class="math notranslate nohighlight">\(T=1\)</span> (which will produce samples from <span class="math notranslate nohighlight">\(\pi(q)\)</span>) and other chains with <span class="math notranslate nohighlight">\(T&gt;1\)</span>, and we allow the chains to exchange samples once in a while?</p>
+<figure class="align-center" id="fig-15-tempering">
+<a class="reference internal image-reference" href="../_images/tempering.jpg"><img alt="../_images/tempering.jpg" src="../_images/tempering.jpg" style="width: 100%;" />
+</a>
+</figure>
+</section>
+<section id="parallel-tempering-with-hmc">
+<h3>Parallel Tempering with HMC<a class="headerlink" href="#parallel-tempering-with-hmc" title="Link to this heading">#</a></h3>
+<p>We set an increasing sequence of temperatures <span class="math notranslate nohighlight">\(T_0=1, \ldots, T_M &gt;1\)</span>. For each temperature, denote the corresponding Gibbs distribution and potential energy function as follows:
+<div class="math notranslate nohighlight">
+\[
+\pi_m(q) = \frac{1}{Z}\exp\left\{ -U_m(q)\right\}, \; U_m(q) = \frac{-\log\pi(q)}{T_m}
+\]</div>
+
+We denote the potential energy of <span class="math notranslate nohighlight">\(\pi(q)\)</span> as <span class="math notranslate nohighlight">\(U(q) = -\log\pi(q)\)</span>.</p>
+<p><strong>Parallel Tempering HMC</strong></p>
+<p><strong>1.</strong> initialize <span class="math notranslate nohighlight">\(M\)</span> number of HMC samplers: each using the same kinetic energy function, the <span class="math notranslate nohighlight">\(m\)</span>-th sampler using the potential energy function <span class="math notranslate nohighlight">\(U_m(q)\)</span>.</p>
+<p><strong>2.</strong>  alternate between:<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><strong>a.</strong>  sample <span class="math notranslate nohighlight">\(S\)</span> samples from each chain independently<br>
+<span class="math notranslate nohighlight">\(\quad\)</span><strong>b.</strong>  at the <span class="math notranslate nohighlight">\(S\)</span>-sample, the sample <span class="math notranslate nohighlight">\(q^{S}_{m+1}\)</span> from chain <span class="math notranslate nohighlight">\(m + 1\)</span> is exchanged with the sample <span class="math notranslate nohighlight">\(q^{S}_{m}\)</span> from chain <span class="math notranslate nohighlight">\(m\)</span> with the probability:</p>
+<div class="math notranslate nohighlight">
+\[
+  \alpha = \min\left\{1, \exp \left\{(1/T_{m} - 1/T_{m+1})(U(q^{S}_m) - U(q^{S}_{m+1}))\right\}\right\}
+  \]</div>
+<p>In the end, we keep the samples in the <span class="math notranslate nohighlight">\(0\)</span>-th chain.</p>
+<p>Can you show that parallel tempering is detailed balanced? What about irreducible and aperiodic?</p>
+</section>
+</section>
+<section id="stochastic-gradient-hmc">
+<h2><span class="section-number">19.3. </span>Stochastic Gradient HMC<a class="headerlink" href="#stochastic-gradient-hmc" title="Link to this heading">#</a></h2>
+<section id="problems-with-scaling-hmc">
+<h3>Problems with Scaling HMC<a class="headerlink" href="#problems-with-scaling-hmc" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\mathcal{D} = \{(x_1, y_1), \ldots, (x_n, y_n)\}\)</span> be our observed data (alternatively we can have a set of observed that that do not include any covariates), let the target distribution <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span> from which we want to sample be the posterior of the Bayesian model:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{w} &amp;\sim p(\mathbf{w})\\
+\mathcal{y_n} | x_n, \mathbf{w} &amp;\sim p(y_n | x_n, \mathbf{w})
+\end{aligned}\end{split}\]</div>
+<p>Then the potenial energy function determined by the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span> is given by</p>
+<div class="math notranslate nohighlight">
+\[U(\mathbf{w}) = \log p(\mathbf{w} | \mathcal{D}) = \sum_{n=1}^N \log p(y_n | x_n, \mathbf{w}) + \log p(\mathbf{w})\]</div>
+<p>We see that during <strong>each iteration</strong> of HMC, whenever we need to compute <span class="math notranslate nohighlight">\(\nabla_\mathbf{w} U\)</span>, we have to evaluate <span class="math notranslate nohighlight">\(\sum_{n=1}^N \nabla_\mathbf{w} p(y_n | x_n, \mathbf{w})\)</span> at each data point <span class="math notranslate nohighlight">\((x_n, y_n)\)</span>. Now if your data is large, this means that each step of HMC can take very long to compute!</p>
+<p><strong>Idea:</strong> use stochastic gradients for HMC! That is rather than computing the gradient over the entire dataset, we compute it over <strong>mini-batches</strong> of the data, just as we did in stochastic gradient descent.</p>
+</section>
+<section id="naive-stochastic-gradient-hmc">
+<h3>Naïve Stochastic Gradient HMC<a class="headerlink" href="#naive-stochastic-gradient-hmc" title="Link to this heading">#</a></h3>
+<p>So what if we implemented HMC with mini-batch gradients? That is, what if we approximated <span class="math notranslate nohighlight">\(\nabla_{\mathbf{w}}U\)</span> by</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\nabla_{\mathbf{w}}U(\mathbf{w}) \approx \nabla \widetilde{U}(\mathbf{w}) = -\frac{|\mathcal{D}|}{|\widetilde{\mathcal{D}}|}\sum_{x_n\in \widetilde{\mathcal{D}}} \nabla_{\mathbf{w}} \log p(y_n | x_n, \mathbf{w}) + \nabla_{\mathbf{w}}\log p(\mathbf{w}).\; \widetilde{\mathcal{D}} \subset \mathcal{D}
+\end{aligned}\]</div>
+<p>Again, if the observed data are independent, then by the Central Limit Theorem we have that <span class="math notranslate nohighlight">\(\nabla \widetilde{U}(\mathbf{w}) \approx \nabla U(\mathbf{w}) + \mathcal{N}(0, V(\mathbf{w}))\)</span>, where <span class="math notranslate nohighlight">\(V\)</span> is the covariance of the gradient noise. So, mini-batch gradient is a noisy approximation of the true gradient <span class="math notranslate nohighlight">\(\nabla U(\mathbf{w})\)</span>.</p>
+<p>Unfortunately, naïve stochastic gradient HMC does not preserve the target distribution <span class="math notranslate nohighlight">\(p(\mathbf{w}|\mathcal{D})\)</span>!</p>
+<p><strong>Corollary:</strong> The distribution <span class="math notranslate nohighlight">\(\pi(\mathbf{w}, p)\propto \mathrm{exp}(−H(\mathbf{w}, p))\)</span>, where <span class="math notranslate nohighlight">\(p\)</span> is the momentum, is no longer invariant under naïve stochastic gradient Hamiltonia dynamics.</p>
+<p>We can correct the errors in naïve stochastic gradient Hamiltonian dynamics with a Metropolis-Hastings step (i.e. we don’t accept all proposed samples), but in practice stochastic gradients produce large deviations from true Hamiltonia dynamics and hence <strong>the acceptance rate will be low</strong>! Furthermore, every MH step requires that we compute <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span>, which <strong>requires evaluating the likelihood at every data point</strong>!</p>
+<p><em><strong>Source:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p>
+</section>
+<section id="stochastic-gradient-hmc-with-friction">
+<h3>Stochastic Gradient HMC with Friction<a class="headerlink" href="#stochastic-gradient-hmc-with-friction" title="Link to this heading">#</a></h3>
+<p>If HMC is like rolling a marble on a landscape made of ice - where the motion of the marble is determined completely by the gradient, then naïve stochastic gradient HMC is like rolling a marble on ice with a <strong>wind that blows in random directions</strong>.</p>
+<p><strong>Idea:</strong> we add friction to the surface, this will lessen if not cancel the effect of wind.</p>
+<p>Let our kinetic energy function be <span class="math notranslate nohighlight">\(\frac{1}{2}p^\top M^{-1} p\)</span>. Naïve stochastic gradient HMC dynamics:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\begin{cases}
+d\mathbf{w} = M^{-1} p\, dt\\
+d\mathbf{p} = - \nabla_\mathbf{w} U(\mathbf{w}) + \mathcal{N}(0, 2B dt)
+\end{cases}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(B = \frac{1}{2} \epsilon V(\mathbf{w})\)</span>, with <span class="math notranslate nohighlight">\(V\)</span> the covariance of gradient noise and <span class="math notranslate nohighlight">\(\epsilon\)</span> the step-size.</p>
+<p><em><strong>Stochastic Gradient HMC with Friction</strong></em> dynamics:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\begin{cases}
+d\mathbf{w} = M^{-1} p\, dt\\
+d\mathbf{p} = - \nabla_\mathbf{w} U(\mathbf{w}) - BM^{-1} p\,dt + \mathcal{N}(0, 2B dt)
+\end{cases}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(BM^{-1} p\)</span> is a friction term that reduces the effect of the “random wind” <span class="math notranslate nohighlight">\(\mathcal{N}(0, 2B dt)\)</span>.</p>
+<p>If the friction term uses the exact gradient noise covariance, then SGHMC with Friction has exact dynamics - that is, <strong>we do not need an Metropolis-Hastings correction step</strong>!</p>
+<p><em><strong>Source:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p>
+</section>
+<section id="stochastic-gradient-hmc-in-practice">
+<h3>Stochastic Gradient HMC in Practice<a class="headerlink" href="#stochastic-gradient-hmc-in-practice" title="Link to this heading">#</a></h3>
+<p>In practice, we don’t know the gradient noise covariance <span class="math notranslate nohighlight">\(V\)</span> and hence cannot compute <span class="math notranslate nohighlight">\(B\)</span>! Instead, we approximate <span class="math notranslate nohighlight">\(\widehat{B} \approx B\)</span> and choose a user-defined friction coefficient <span class="math notranslate nohighlight">\(C\)</span>. Then, <em><strong>Stochastic Gradient HMC with Friction</strong></em> dynamics becomes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\begin{cases}
+d\mathbf{w} = M^{-1} p\, dt\\
+d\mathbf{p} = - \nabla_\mathbf{w} U(\mathbf{w}) - CM^{-1} p\,dt + \mathcal{N}(0, 2(C-\widehat{B}) dt) + \mathcal{N}(0, 2B dt)
+\end{cases}
+\end{aligned}\end{split}\]</div>
+<p><strong>Theorem:</strong> If <span class="math notranslate nohighlight">\(\widehat{B} = B\)</span> then the dynamics of SGHMC with Friction yields the stationary distribution <span class="math notranslate nohighlight">\(\pi(\mathbf{w}) \propto \mathrm{exp}\{-H(\mathbf{w}, p) \}\)</span>.</p>
+<p>That is, SGHMC with Friction is an MCMC sampler if our estimation <span class="math notranslate nohighlight">\(\widehat{B}\)</span> of <span class="math notranslate nohighlight">\(B\)</span> (related to the true gradient noise variance) is exact. Note: this means that, <strong>in practice, SGHMC with Friction is not an MCMC sampler</strong>, since we can’t know the exact gradient noise variance!</p>
+<p>But <strong>SGHMC is one of only very few ways we have for scaling MCMC methods to large datasets</strong>.</p>
+<p><em><strong>Source:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p>
+</section>
+</section>
+<section id="further-reading">
+<h2><span class="section-number">19.4. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p><strong>Parallel Tempering</strong></p>
+<ul class="simple">
+<li><p>(In-Depth) <a class="reference external" href="http://www.math.pitt.edu/~cbsg/Materials/Earl_ParallelTempering.pdf" rel="noreferrer" target="_blank">Parallel tempering: Theory, applications, and new perspectives</a></p></li>
+</ul>
+<p><strong>Improvements to HMC and MCMC in General</strong></p>
+<ul class="simple">
+<li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p></li>
+<li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/1111.4246" rel="noreferrer" target="_blank">The No-U-Turn Sampler</a></p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/1111.4246" rel="noreferrer" target="_blank"></a>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/0907.1100" rel="noreferrer" target="_blank">Riemannian Manifold Hamiltonian Monte Carlo</a></p></li>
+<li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/1808.03230" rel="noreferrer" target="_blank">Does Hamiltonian Monte Carlo mix faster than a random walk on multimodal densities?</a></p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="14-hamiltonian-monte-carlo.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">18. </span>Hamiltonian Monte Carlo</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="impact-5-advanced-mcmc.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">20. </span>Applications and Broader Impact: Advanced MCMC</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-hmc">19.1. Review of HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-hmc">Hamiltonian Monte Carlo (HMC)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#faqs-about-hmc">FAQs About HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-for-multimodal-distributions">HMC for Multimodal Distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#signs-of-maybe-convergence">Signs of Maybe Convergence?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-traceplots-of-multiple-chains">Visual Diagnostics: Traceplots of Multiple Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autocorrelation-the-effective-sample-size">Autocorrelation: the “Effective” Sample Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-diagnostics-the-autocorrelation-plot">Visual Diagnostics: The Autocorrelation Plot</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quantitative-diagnostics">Quantitative Diagnostics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-tempering">19.2. Parallel Tempering</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multimodal-posteriors">Multimodal Posteriors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-effect-of-temperature">The Effect of Temperature</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-idea-of-parallel-tempering">The Idea of Parallel Tempering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-tempering-with-hmc">Parallel Tempering with HMC</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc">19.3. Stochastic Gradient HMC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-scaling-hmc">Problems with Scaling HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-stochastic-gradient-hmc">Naïve Stochastic Gradient HMC</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc-with-friction">Stochastic Gradient HMC with Friction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stochastic-gradient-hmc-in-practice">Stochastic Gradient HMC in Practice</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">19.4. Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Weiwei Pan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+<div class="extra_footer">
+  <p>
+  This book is licensed under a
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+</p>
+
+</div>
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
