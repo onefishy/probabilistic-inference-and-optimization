@@ -1,0 +1,16 @@
+# Tools to build the book (Phase 1: notebooks are not executed at build time).
+jupyter-book==1.0.4.post1
+Sphinx==7.4.7
+sphinx-book-theme==1.1.4
+pydata-sphinx-theme==0.15.4
+myst-nb==1.3.0
+myst-parser==3.0.1
+sphinxcontrib-bibtex==2.6.5
+sphinx-multitoc-numbering
+sphinx-togglebutton
+sphinx-proof
+sphinx-new-tab-link
+# Conversion script only
+nbformat
+Pillow
+imageio-ffmpeg

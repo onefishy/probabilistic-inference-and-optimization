@@ -1,0 +1,65 @@
+title: Probabilistic Inference & Optimization
+author: Weiwei Pan
+copyright: "2026"
+exclude_patterns: [_build, .venv, scripts, drafts, Thumbs.db, .DS_Store, "**.ipynb_checkpoints", README.md]
+only_build_toc_files: true
+
+execute:
+  # Phase 1: chapters show the outputs saved in the original notebooks.
+  # Switch to "cache" once every chapter has been ported to JAX/NumPyro.
+  execute_notebooks: "off"
+
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - colon_fence
+    - deflist
+    - dollarmath
+    - html_admonition
+    - linkify
+    - substitution
+  myst_url_schemes: [mailto, http, https]
+
+html:
+  use_edit_page_button: false
+  use_repository_button: true
+  use_issues_button: true
+  use_multitoc_numbering: true
+  home_page_in_navbar: true
+  baseurl: "https://onefishy.github.io/probabilistic-inference-and-optimization/"
+  extra_footer: |
+    <p>
+      This book is licensed under a
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+    </p>
+
+repository:
+  url: https://github.com/onefishy/probabilistic-inference-and-optimization
+  branch: main
+
+launch_buttons:
+  # Enabled per chapter in Phase 2, once its code runs on a current Python stack.
+  colab_url: ""
+  binderhub_url: ""
+
+bibtex_bibfiles:
+  - references.bib
+
+sphinx:
+  extra_extensions:
+    - sphinx_multitoc_numbering
+    - sphinx_togglebutton
+    - sphinx_proof
+    - sphinx_new_tab_link
+  config:
+    html_show_copyright: false
+    html_context:
+      default_mode: light
+    suppress_warnings: ["myst.header"]
+    # Inline $$...$$ renders as display math. (Jupyter Book ignores this key under `parse:`.)
+    myst_dmath_double_inline: true
+    mathjax3_config:
+      tex:
+        macros:
+          argmax: "\\operatorname*{argmax}"
+          argmin: "\\operatorname*{argmin}"

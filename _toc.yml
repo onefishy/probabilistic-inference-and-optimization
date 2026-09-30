@@ -1,0 +1,61 @@
+format: jb-book
+root: index
+defaults:
+  titlesonly: true
+parts:
+  - caption: "Part I: Foundations of Inference"
+    numbered: 2
+    chapters:
+    - file: chapters/01-overview
+    - file: chapters/02-maximum-likelihood
+    - file: chapters/03-bayesian-modeling
+    - file: chapters/04-bayesian-vs-frequentist
+    - file: chapters/impact-1-foundations
+  - caption: "Part II: Sampling and Monte Carlo"
+    numbered: 2
+    chapters:
+    - file: chapters/05-sampling
+    - file: chapters/06-monte-carlo-integration
+    - file: chapters/07-mcmc
+    - file: chapters/08-metropolis-hastings-gibbs
+    - file: chapters/impact-2-sampling
+  - caption: "Part III: Latent Variables and Variational Inference"
+    numbered: 2
+    chapters:
+    - file: chapters/09-latent-variable-models
+    - file: chapters/10-variational-inference
+    - file: chapters/11-hierarchical-models
+    - file: chapters/impact-3-latent-variables
+  - caption: "Part IV: Optimization"
+    numbered: 2
+    chapters:
+    - file: chapters/12-logistic-regression-gradient-descent
+    - file: chapters/13-sgd-simulated-annealing
+    - file: chapters/impact-4-optimization
+  - caption: "Part V: Advanced MCMC"
+    numbered: 2
+    chapters:
+    - file: chapters/14-hamiltonian-monte-carlo
+    - file: chapters/15-parallel-tempering-sghmc
+    - file: chapters/impact-5-advanced-mcmc
+  - caption: "Part VI: Bayesian Deep Learning"
+    numbered: 2
+    chapters:
+    - file: chapters/16-neural-network-regression
+    - file: chapters/17-black-box-vi
+    - file: chapters/18-automatic-differentiation
+    - file: chapters/19-vi-in-context
+    - file: chapters/20-variational-autoencoders
+    - file: chapters/21-implementing-vaes
+    - file: chapters/impact-6-bayesian-deep-learning
+  - caption: Labs
+    chapters:
+    - file: labs/lab-01-scientific-computing
+    - file: labs/lab-02-posterior-simulation
+    - file: labs/lab-03-monte-carlo-integration
+    - file: labs/lab-04-gibbs-metropolis-hastings
+    - file: labs/lab-05-kl-divergence-pymc3
+    - file: labs/lab-06-logistic-regression
+    - file: labs/lab-07-nonlinear-regression
+    - file: labs/lab-08-vi-vs-hmc
+    - file: labs/lab-09-hidden-markov-models
