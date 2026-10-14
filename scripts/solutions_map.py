@@ -13,7 +13,8 @@ A solution is `S(page, after, title, *segments)`:
   title     dropdown title, numbered as the reader sees the question
   segments  md(src, cell, start, end, fixes)  prose from a markdown cell, between the
                                               start and end markers (both excluded,
-                                              unless keep_start=True)
+                                              unless keep_start=True; unindent=True strips
+                                              leading spaces, for text taken out of a list)
             code(src, cell, out, fixes)       a code cell and (out=True) its saved outputs;
                                               cell=None shows a whole .py source file
             ran(step)                         code and outputs of a re-run step (RERUN)
@@ -56,8 +57,8 @@ def S(page, after, title, *segments, key=None):
     return {"page": page, "after": after, "title": title, "segments": segments, "key": key}
 
 
-def md(src, cell, start=None, end=None, fixes=(), keep_start=False):
-    return ("md", src, cell, start, end, tuple(fixes), keep_start)
+def md(src, cell, start=None, end=None, fixes=(), keep_start=False, unindent=False):
+    return ("md", src, cell, start, end, tuple(fixes), keep_start, unindent)
 
 
 def code(src, cell, out=True, fixes=()):
@@ -943,8 +944,9 @@ init_var = np.ones(init_mean.shape) * -10
 init = np.hstack((init_mean, init_var))
 
 #fit a mean-field Gaussian approximation of the posterior with BBVI
+#(with step size 1e-3 the ELBO is still rising after 10,000 iterations)
 bbvi = BBVI(log_joint, nn.D, S=500, random=random)
-bbvi.fit(step_size=1e-3, max_iteration=10000, check_point=1000, params_init=init)
+bbvi.fit(step_size=1e-2, max_iteration=10000, check_point=1000, params_init=init)
 
 #keep the variational parameters with the best ELBO over the last 100 iterations
 best = np.argmax(bbvi.ELBO[-100:])
@@ -1191,4 +1193,76 @@ SOLUTIONS += [
     S(_LAB4, "## Metropolis Hastings on a Mixture of Gaussians", "Solution",
       ran("mixture"), ran("mixture-run"), ran("mixture-plot"),
       note("a discussion of how the proposal variance and the initialization affect the sampler.")),
+]
+
+# ---------------------------------------------------------------------------
+# lab-01-scientific-computing (new: from lab_1_solutions.ipynb; re-run, numpy/scipy/pandas)
+# ---------------------------------------------------------------------------
+# Fixes: the simulations used the covariance [[2.5, 1], [1, 2.5]] instead of the prompt's
+# [[1.5, 1], [1, 1.5]], and drew epsilon ~ N(0, 5) with standard deviation 5 instead of sqrt(5);
+# neither changes the expected values.
+
+_LAB1 = "lab-01-scientific-computing"
+_LAB1_Q = "## Model of USPS Package Processing Time"
+_LAB1_COV = ("Sigma = np.ones((2, 2)) + 1.5 * np.eye(2)", "Sigma = np.ones((2, 2)) + 0.5 * np.eye(2)")
+
+PROMPT_EDITS[_LAB1] = [
+    ("This lab is adapted from AM207 (Harvard). Data files are in the book's `data/` folder.",
+     "This lab is adapted from AM207 (Harvard). Data files are in the book's `data/` folder."
+     " Worked solutions are collapsed: try each exercise before expanding them."),
+]
+
+RERUN[_LAB1] = [
+    run("imports", "LAB1", 2),
+    lit("scipy", "import scipy.stats"),
+    run("poisson", "LAB1", 5),
+    run("gaussian", "LAB1", 7),
+    run("sample-total-time", "LAB1", 9, fixes=[
+        _LAB1_COV,
+        ("epsilons = np.random.normal(0, 5, size=total_packages)", "epsilons = np.random.normal(0, 5**0.5, size=total_packages)"),
+    ]),
+    run("total-time-hist", "LAB1", 10),
+    run("totals", "LAB1", 12, fixes=[_LAB1_COV]),
+    run("mean-total-time", "LAB1", 15),
+]
+
+SOLUTIONS += [
+    S(_LAB1, _LAB1_Q, "Solution: Task 1",
+      md("LAB1", 4, "**Solutions:**\n"),
+      ran("poisson"),
+      md("LAB1", 6),
+      ran("gaussian"),
+      md("LAB1", 8, end="**Processing Time as a Random Variable**", fixes=[
+          ("around 120 $cm^3$ and 4 lbs", "around 120 $in^3$ and 4 lbs"),
+          ("contorl which aspect", "control which aspect"),
+          ("shape of the pdf is effected", "shape of the pdf is affected"),
+      ]),
+      md("LAB1", 11, "Compute the expected average weight and size of packages that arrive over a single day.\n", fixes=[
+          ("so it's mean is", "so its mean is"),
+          ("is the producted of the", "is the product of the"),
+      ]),
+      ran("totals"),
+      md("LAB1", 13),
+      note("the expected total size, and the expected average weight and size of a package.")),
+    S(_LAB1, _LAB1_Q, "Solution: Task 2",
+      md("LAB1", 14, "2. Compute the expected number of packages that arrives in a single day.\n",
+         "3. Compute the expected processing time of a single package.", unindent=True)),
+    S(_LAB1, _LAB1_Q, "Solution: Task 3",
+      md("LAB1", 14, "3. Compute the expected processing time of a single package.\n",
+         "4. Compute the expected processing time of all packages over a single day.", unindent=True)),
+    S(_LAB1, _LAB1_Q, "Solution: Task 4",
+      md("LAB1", 8, "**Processing Time as a Random Variable**", keep_start=True),
+      ran("sample-total-time"),
+      ran("total-time-hist"),
+      md("LAB1", 11, end="---"),
+      md("LAB1", 14, "4. Compute the expected processing time of all packages over a single day.\n", unindent=True, fixes=[
+          ("The expression for a single package is\n$$\nT_{\\text{total}}", "The expression for the total processing time is\n$$\nT_{\\text{total}}"),
+          ("from Question 3.", "from Task 3."),
+          ("At the beginning of this notebook, we'd simulated samples", "Above, we simulated samples"),
+      ]),
+      ran("mean-total-time"),
+      md("LAB1", 16, fixes=[
+          ("This look close to", "This looks close to"),
+          ("(by computint the various integrals exactly)", "(by computing the various integrals exactly)"),
+      ])),
 ]

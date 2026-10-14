@@ -230,11 +230,13 @@ def render_segments(entry, ctx, assets, labels):
     for seg in entry["segments"]:
         kind = seg[0]
         if kind == "md":
-            _, src, cell, start, end, fixes, keep_start = seg
+            _, src, cell, start, end, fixes, keep_start, unindent = seg
             c = ctx.source(src).cells[cell]
             if c.cell_type != "markdown":
                 raise SystemExit(f"{where}: {src} cell {cell} is not markdown")
             text = slice_text(c.source.replace("\r\n", "\n"), start, end, f"{where} ({src} c{cell})", keep_start)
+            if unindent:  # text lifted out of a list item would otherwise render as code
+                text = "\n".join(line.lstrip() for line in text.split("\n"))
             text = apply_fixes(text, fixes, f"{where} ({src} c{cell})")
             blocks.append(("prose", prose(text, ctx, page, src, assets, labels)))
         elif kind == "code":
