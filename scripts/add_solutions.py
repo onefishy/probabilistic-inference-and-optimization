@@ -36,7 +36,7 @@ import nbformat
 from am207_map import HOMEWORK, LECTURES
 from convert_am207 import (CHAPTERS, FIGURES, LABS_DIR, ROOT, STATIC_FIGS, TEXT_WIDTH_PX, Assets,
                            book_chapter_numbers, clean_code_cell, clean_markdown, compress_image,
-                           fence, headings_to_bold, isolate_display_math, problem_set_keys,
+                           fence, fix_typos, headings_to_bold, isolate_display_math, problem_set_keys,
                            resolve_xrefs)
 from solutions_map import GAPS, LAB_REMOVE, PROMPT_EDITS, RERUN, SOLUTIONS, SOURCES
 
@@ -153,7 +153,7 @@ def prose(text, ctx, page, src, assets, labels):
         t = clean_markdown(parts[i], assets, src_base, f"fig-{label_tag(page)}-sol", labels,
                            heading_delta=0, fig_dir=SOLUTION_FIGS / page, static_dir=STATIC_FIGS / "solutions" / page)
         parts[i] = headings_to_bold(t)
-    return "\n\n".join(p.strip() for p in parts if p.strip())
+    return fix_typos("\n\n".join(p.strip() for p in parts if p.strip()))
 
 
 def code_block(source):

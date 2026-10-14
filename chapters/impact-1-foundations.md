@@ -16,11 +16,11 @@ From the {ref}`Chapter 1 problem set <ps-hw0>` you've already seen that model ev
   
   - What if the data has been preprocessed like in the {ref}`Chapter 1 problem set <ps-hw0>`? What does this say about ML development pipelines where the ML experts are removed from the data cleaning, preprocessing step?
   
-2. We've also see that for risk-adverse applications it's cruicial to get predictive uncertainty from our models.
+2. We've also seen that for risk-averse applications it's crucial to get predictive uncertainty from our models.
 
   - Why is predictive uncertainty useful? 
-  - What is predictive uncertianty useful for?
-  - Under what real-life conditions would we need predcitive uncertainty?
+  - What is predictive uncertainty useful for?
+  - Under what real-life conditions would we need predictive uncertainty?
   
   *(Reading: Second opinion needed: communicating uncertainty in medical machine learning, Uncertainty as a Form of Transparency: Measuring, Communicating, and Using Uncertainty)*
 

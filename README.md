@@ -39,14 +39,16 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which builds the book and
 - turns the RISE slide notebook into a chapter: it strips slide metadata, the course header and logo, and repeated slide titles, and makes the outline an "In this chapter" box;
 - renders cells that were hidden from the slides (`skip`) as collapsible "Going deeper" boxes;
 - makes bare `\begin{aligned}`/`align` blocks render by wrapping them in `$$`, and converts standalone `<img>` tags to `{figure}` directives;
-- fixes Markdown that MyST renders wrongly (`layout_fixes`): display equations inside a paragraph get their own paragraph (only where that leaves lists and code blocks unchanged), numbered lists starting at 0 get a blank line before them, and `- | -` table rows become `--- | ---`;
+- fixes Markdown that MyST renders wrongly (`layout_fixes`): lines under a numbered item are re-indented to the item's text column, so follow-on paragraphs and sub-lists written with two-space indents stay inside the item instead of rendering flush left; display equations inside a paragraph get their own paragraph; numbered lists starting at 0 get a blank line before them; and `- | -` table rows become `--- | ---`. A change is kept only if it leaves the page's lists, code blocks and equations intact;
+- removes links with no text and drops the link (not the title) from readings behind the Harvard library proxy;
 - appends the lecture summary, the week's reading list, and the matching homework problems. Starter code is kept; solutions are added afterwards (see [Worked solutions](#worked-solutions));
 - transcodes the `.mov` animations to small H.264 `.mp4` files and shrinks oversized images.
 
 Summary cells and reading groups are routed through the tables in `scripts/am207_map.py`, which also records what was dropped as course logistics. That file also holds:
 
 - `LABS`: which notebook each lab comes from, and which of its cells are worked answers. `scripts/add_solutions.py` later merges them into one collapsed dropdown per question.
-- `TEXT_FIXES`: exact-text edits applied after conversion. They point references to homework, in-class exercises and labs at the matching problem set, lab or chapter. Links are written as placeholders (`[[ps:4b]]`, `[[lab:6]]`, `[[ch:14]]`), which the converter turns into links with the right chapter numbers. The converter stops if a fix no longer matches exactly.
+- `TEXT_FIXES`: exact-text edits applied after conversion. They point references to homework, in-class exercises, lectures and labs at the matching problem set, lab or chapter, and reword course framing ("this class", "today", "last week", "Problem 2") for a book. Links are written as placeholders (`[[ps:4b]]`, `[[lab:6]]`, `[[ch:14]]`, where `ch` takes the lecture number), which the converter turns into links with the right chapter numbers. The converter stops if a fix no longer matches exactly. `CODE_FIXES` does the same for code cells.
+- `TYPO_FIXES`: misspelled words and their corrections. They are applied to prose only, never to code, math or URLs, both here and in the worked solutions.
 
 **Do not re-run the converter once chapters have been edited by hand.** It rebuilds `chapters/` from scratch. `--only N ...` regenerates just the listed lectures. After a conversion, run `make solutions` to put the worked solutions back.
 

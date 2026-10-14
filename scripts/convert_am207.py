@@ -18,6 +18,7 @@ hand-edited unless you pass --only for chapters that are still untouched.
 """
 
 import argparse
+import collections
 import copy
 import re
 import shutil
@@ -30,7 +31,7 @@ from PIL import Image
 
 from am207_map import (HOMEWORK, LAB_DATA, LABS, LECTURE_DROP_CELLS, LECTURES, PARTS,
                        PRIVATE_LINK_MARKERS, READING_GROUPS, SKIP_OUTLINE, SUMMARY_CELLS,
-                       SUMMARY_DROP_HEADINGS, TEXT_FIXES)
+                       SUMMARY_DROP_HEADINGS, TEXT_FIXES, CODE_FIXES, TYPO_FIXES)
 
 ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS = ROOT / "chapters"
@@ -427,16 +428,130 @@ def isolate_display_math_safely(text):
     return "".join(blocks)
 
 
+ORDERED_ITEM_RE = re.compile(r"^ {0,3}\d{1,9}[.)] +(?=\S)")
+LIST_MARKER_RE = re.compile(r"^( *)([-*+]|\d{1,9}[.)])( +)(?=\S)")
+UNINDENTED_BLOCK_START_RE = re.compile(r"^(?:#|:::|```|<)")
+
+
+def myst_counts(text):
+    """Counts of list items, code blocks, tables, HTML blocks and formulas in the MyST parse of
+    `text`, including the bodies of colon-fence directives."""
+    myst_structure("")  # builds the parser
+    counts = collections.Counter()
+    for t in _MYST_PARSER.parse(text):
+        if t.type in ("list_item_open", "code_block", "fence", "table_open", "html_block"):
+            counts[t.type] += 1
+        elif t.type.startswith("math_block") or t.type == "amsmath":
+            counts["math"] += 1
+        elif t.type == "inline":
+            counts["math"] += sum(c.type.startswith("math_inline") for c in t.children or [])
+        elif t.type == "colon_fence":
+            counts += myst_counts("\n".join(l for l in t.content.split("\n") if not re.match(r"^:\w+:", l)))
+    return counts
+
+
+def _numbered_items(lines):
+    """(start, end) line ranges of unindented numbered items: from the item to its next sibling, or
+    to the first unindented line, other than a list item, after a blank line (or to a heading,
+    fence or HTML)."""
+    items, i = [], 0
+    while i < len(lines):
+        m = ORDERED_ITEM_RE.match(lines[i])
+        if not m:
+            i += 1
+            continue
+        indent = len(lines[i]) - len(lines[i].lstrip(" "))
+        j, prev_blank = i + 1, False
+        while j < len(lines):
+            line = lines[j]
+            if ORDERED_ITEM_RE.match(line) and len(line) - len(line.lstrip(" ")) <= indent:
+                break
+            if line[:1].strip() and not LIST_MARKER_RE.match(line) and \
+                    (prev_blank or UNINDENTED_BLOCK_START_RE.match(line)):
+                break
+            prev_blank = not line.strip()
+            j += 1
+        items.append((i, j))
+        i = j
+    return items
+
+
+def _renest(lines):
+    """Re-indent list lines the way the notebooks' original renderer read them: a line indented
+    past an item's marker (a sub-item: at least two spaces past) belongs to that item, so it moves
+    to at least the item's text column (CommonMark needs the full column; 2 spaces under '1. '
+    renders flush left)."""
+    out, stack = [], []  # (marker indent, text column, bullet?) in the source, text column in the output
+    fence_shift = None  # inside a code fence, every line moves with the opening line
+    prev_blank = True
+    for line in lines:
+        s = len(line) - len(line.lstrip(" "))
+        if fence_shift is not None:
+            out.append(" " * fence_shift + line if fence_shift >= 0 else line[min(-fence_shift, s):])
+            if line.lstrip().startswith("```"):
+                fence_shift = None
+            continue
+        m = LIST_MARKER_RE.match(line)
+        if not line.strip() or (s == 0 and not m):  # blank, or a lazy continuation line
+            out.append(line)
+            prev_blank = not line.strip()
+            continue
+        bullet = bool(m) and m.group(2) in "-*+"
+        # Text straight after a line of text continues the innermost item (CommonMark reads it as
+        # a lazy continuation whatever its indent); otherwise the indent decides. An item one space
+        # deeper than an item of the same kind is its sibling.
+        while stack and (m or prev_blank) and \
+                (s <= stack[-1][0] or (m and s == stack[-1][0] + 1 and bullet == stack[-1][2])):
+            stack.pop()
+        prev_blank = False
+        dst = stack[-1][3] + max(0, s - stack[-1][1]) if stack else s
+        if m:
+            spaces = len(m.group(3))
+            width = len(m.group(2)) + (spaces if spaces <= 4 else 1)
+            stack.append((s, s + width, bullet, dst + width))
+        elif line.lstrip().startswith("```"):
+            fence_shift = dst - s
+        out.append(" " * dst + line.lstrip(" "))
+    return out
+
+
+def indent_list_continuations(text):
+    """Re-indent each numbered item (_renest), so follow-on paragraphs, hints and sub-lists stay
+    inside it instead of rendering flush left or as run-on text. An item is changed only if
+    the MyST parse keeps its tables, HTML and formulas and loses no list items (indented-code
+    blocks may only go away: those were lines that rendered as code by accident)."""
+    lines = text.split("\n")
+    base = myst_counts(text)
+    for start, end in reversed(_numbered_items(lines)):
+        region = lines[start:end]
+        if any(l.lstrip().startswith("#") for l in region):
+            continue
+        trial = lines[:start] + _renest(region) + lines[end:]
+        if trial == lines:
+            continue
+        after = myst_counts("\n".join(trial))
+        if all(after[k] == base[k] for k in ("fence", "table_open", "html_block")) and \
+                after["list_item_open"] >= base["list_item_open"] and \
+                after["code_block"] <= base["code_block"] and after["math"] >= base["math"]:
+            lines, base = trial, after
+    return "\n".join(lines)
+
+
 def layout_fixes(text):
     """Fix Markdown that MyST renders wrongly: display math inside a paragraph (the text after it
-    escapes the paragraph), numbered lists starting at 0 right after text (rendered inline), and
-    table separator rows written '- | -' (parsed as a bullet)."""
-    parts = LAYOUT_PROTECTED_RE.split(text)
-    for i in range(0, len(parts), 2):
-        t = TABLE_SEPARATOR_RE.sub(lambda m: m.group(1) + " | ".join("---" for _ in m.group(0).split("|")), parts[i])
-        t = separate_zero_lists(t)
-        parts[i] = t if ADJACENT_INLINE_MATH_RE.search(t) else isolate_display_math_safely(t)
-    return "".join(parts)
+    escapes the paragraph), numbered lists starting at 0 right after text (rendered inline),
+    table separator rows written '- | -' (parsed as a bullet), and numbered items whose follow-on
+    lines are indented too little to stay inside the item."""
+    for _ in range(5):  # each fix can enable another (an equation moved into a list item, ...)
+        parts = LAYOUT_PROTECTED_RE.split(indent_list_continuations(text))
+        for i in range(0, len(parts), 2):
+            t = TABLE_SEPARATOR_RE.sub(lambda m: m.group(1) + " | ".join("---" for _ in m.group(0).split("|")), parts[i])
+            t = separate_zero_lists(t)
+            parts[i] = t if ADJACENT_INLINE_MATH_RE.search(t) else isolate_display_math_safely(t)
+        if "".join(parts) == text:
+            break
+        text = "".join(parts)
+    return text
 
 
 def fence(n):
@@ -650,6 +765,11 @@ def readings(src):
     return videos, per_lecture, impact
 
 
+# A reading linked through the Harvard library proxy (the URL carries a personal access token)
+# keeps its title but loses the link.
+PROXY_LINK_RE = re.compile(r"\[([^\]]+)\]\(https?://[^)\s]*\.hul\.harvard\.edu/[^)\s]*\)")
+
+
 def reading_markdown(groups, heading="## Further Reading"):
     merged = {}
     for title, items in groups:
@@ -657,7 +777,7 @@ def reading_markdown(groups, heading="## Further Reading"):
     parts = [heading, ""]
     for title, items in merged.items():
         parts.append(f"**{title}**\n")
-        parts += [f"- {i}" for i in items]
+        parts += ["- " + PROXY_LINK_RE.sub(r"\1", i) for i in items]
         parts.append("")
     return "\n".join(parts).strip()
 
@@ -826,16 +946,54 @@ def resolve_xrefs(text, xref):
     return XREF_RE.sub(repl, text)
 
 
+# Spans fix_typos leaves alone: code fences (and fenced directives), math, inline code and roles,
+# link targets, URLs and HTML tags.
+TYPO_PROTECTED_RE = re.compile(
+    r"^[ \t]*(`{3,}|~{3,}).*?^[ \t]*\1[ \t]*$|\$\$.*?\$\$|\$[^$\n]+\$|\\begin\{(\w+\*?)\}.*?\\end\{\2\}"
+    r"|`[^`\n]*`|\]\([^)\s]*\)|https?://\S+|<[^>\n]+>",
+    re.M | re.S)
+TYPO_WORD_RE = re.compile(r"(?<![\w'])[A-Za-z]+(?:'[a-z]+)?(?![\w'])")
+
+
+def _fix_words(text):
+    def repl(m):
+        word = m.group(0)
+        new = TYPO_FIXES.get(word.lower())
+        if new is None:
+            return word
+        if word.isupper() and len(word) > 1:
+            return new.upper()
+        return new[0].upper() + new[1:] if word[0].isupper() and new == new.lower() else new
+    return TYPO_WORD_RE.sub(repl, text)
+
+
+def fix_typos(text):
+    """Correct the misspellings in TYPO_FIXES in the prose of `text`."""
+    out, pos = [], 0
+    for m in TYPO_PROTECTED_RE.finditer(text):
+        out += [_fix_words(text[pos:m.start()]), m.group(0)]
+        pos = m.end()
+    return "".join(out + [_fix_words(text[pos:])])
+
+
+# Links with no text ("[](url)") are invisible on the page.
+TEXTLESS_LINK_RE = re.compile(r"\[\]\([^()\s]*\)")
+
+
 def fix_markdown_cells(slug, cells, xref):
     md_cells = [c for c in cells if c.cell_type == "markdown"]
     for c, fixed in zip(md_cells, apply_text_fixes(slug, [c.source for c in md_cells], xref)):
-        c.source = layout_fixes(fixed)
+        c.source = layout_fixes(TEXTLESS_LINK_RE.sub("", fix_typos(fixed)))
+    code_cells = [c for c in cells if c.cell_type == "code"]
+    for c, fixed in zip(code_cells, apply_text_fixes(slug, [c.source for c in code_cells], None, CODE_FIXES)):
+        c.source = fixed
 
 
-def apply_text_fixes(slug, sources, xref):
-    """Apply TEXT_FIXES for one page to a list of markdown sources; returns the new list."""
+def apply_text_fixes(slug, sources, xref, fixes=TEXT_FIXES):
+    """Apply TEXT_FIXES (or `fixes`) for one page to a list of sources; returns the new list.
+    Cross-reference placeholders are resolved unless `xref` is None."""
     sources = list(sources)
-    for fix in TEXT_FIXES:
+    for fix in fixes:
         prefix, old, new = fix[:3]
         expected = fix[3] if len(fix) > 3 else 1
         if not slug.startswith(prefix):
@@ -844,7 +1002,7 @@ def apply_text_fixes(slug, sources, xref):
         if hits != expected:
             raise SystemExit(f"TEXT_FIXES: expected {expected} match(es) in {slug}, found {hits}: {old!r}")
         sources = [s.replace(old, new) for s in sources]
-    return [resolve_xrefs(s, xref) for s in sources]
+    return sources if xref is None else [resolve_xrefs(s, xref) for s in sources]
 
 
 # ---------------------------------------------------------------------------
@@ -968,7 +1126,7 @@ def main():
     impact_slugs = {}
     for p in range(len(PARTS)):
         slug, text = impact_chapter(p, impact_summaries.get(p, []), impact_readings.get(p, []))
-        text = apply_text_fixes(slug, [text], xref)[0]
+        text = fix_typos(apply_text_fixes(slug, [text], xref)[0])
         impact_slugs[p] = slug
         if only is None:
             (CHAPTERS / f"{slug}.md").write_text(text)
