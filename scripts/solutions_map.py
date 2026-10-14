@@ -135,6 +135,7 @@ SOLUTIONS += [
     S(_CH08, _CH08_P1, "Solution: Part I, Question 2",
       md("HW4", 8, "### Problem 2.\n", fixes=[
           ("Gamma(a, b)Gamma(c, d)", r"Gamma(\alpha; a, b)Gamma(\beta; c, d)", 2),
+          ("\n\nand $p(\\alpha, \\beta | \\theta, y)$ (again treating", "\n\nSimilarly, $p(\\alpha, \\beta | \\theta, y)$ (again treating"),
       ])),
     S(_CH08, _CH08_P2, "Solution: Part II, Question 1",
       md("HW4", 9, "### Problem 1\n", "### Problem 2")),
@@ -264,8 +265,9 @@ RERUN[_CH11] = [
 ]
 
 _HW5_PART2_PLOT = text(
-    "*This plot comes from the original `pymc3` run, which drew the raw rates almost transparent;"
-    " only the posterior means (green) are visible.*")
+    "*This plot is from the original `pymc3` run (not re-run). It was drawn with the original plotting helper,"
+    " which colours the top 300 raw rates blue and the bottom 300 red (the reverse of the question); the posterior"
+    " means are in green.*")
 
 SOLUTIONS += [
     S(_CH11, _CH11_P1, "Solution: Part I, Question 1",
@@ -348,6 +350,27 @@ RERUN[_CH13] = [
     run("grad", "HW6", 12),
     run("gd", "HW6", 14),
     run("sgd", "HW6", 18),
+    run("gd-run", "HW6", 15),
+    run("sgd-run", "HW6", 19, fixes=[
+        ("ax1.set_title('Total Loss vs Iteration in Gradient Descent')", "ax1.set_title('Total Loss vs Iteration in Stochastic Gradient Descent')"),
+        ("ax2.plot(np.arange(len(costs[-100:])) + N - 100, costs[-100:]", "ax2.plot(np.arange(len(costs) - 100, len(costs)), costs[-100:]"),
+        ("ax2.set_title('Total Loss vs Iteration in Gradient Descent (Last 100 Iterations)')",
+         "ax2.set_title('Total Loss vs Iteration in Stochastic Gradient Descent (Last 100 Iterations)')"),
+        ("ax4.plot(range(len(costs[15000:])), grad_norms_sgd[15000:]", "ax4.plot(range(15000, len(costs)), grad_norms_sgd[15000:]"),
+    ]),
+    run("sgd-shuffled-run", "HW6", 21, fixes=[
+        ("ax1.set_title('Total Loss vs Iteration in Gradient Descent')", "ax1.set_title('Total Loss vs Iteration in Stochastic Gradient Descent')"),
+        ("ax2.plot(range(len(costs[-100:])), costs[-100:]", "ax2.plot(np.arange(len(costs) - 100, len(costs)), costs[-100:]"),
+        ("ax2.set_title('Total Loss vs Iteration in Gradient Descent (Last 100 Iterations)')",
+         "ax2.set_title('Total Loss vs Iteration in Stochastic Gradient Descent (Last 100 Iterations)')"),
+        # the run can stop well before iteration 2500; show the last 500 iterations
+        ("ax4.plot(range(len(costs[2500:])), grad_norms_sgd[2500:]", "ax4.plot(np.arange(len(costs) - 500, len(costs)), grad_norms_sgd[-500:]"),
+    ]),
+    run("gd-step-sizes", "HW6", 24, fixes=[
+        ("fig, ax = plt.subplots(1, 4, figsize=(50, 10))", "fig, ax = plt.subplots(1, 4, figsize=(24, 5))"),
+        ("    ax[i].set_title('Total Loss vs Iteration in Gradient Descent')", "    ax[i].set_title('Gradient Descent, step size {}'.format(step_size))"),
+    ]),
+    *[run(f"sgd-step-size-{k}", "HW6", k) for k in range(26, 33)],
     run("init-gd", "HW6", 34, fixes=[
         (r"ax[0, i].set_title('Total Cost vs Iteration in Gradient Descent,\n init @({}, 0), stepsize 1.\n'",
          r"ax[0, i].set_title('Total Cost vs Iteration in Gradient Descent,\n init @({}, 0), stepsize 10\n'"),
@@ -380,30 +403,32 @@ SOLUTIONS += [
       ]),
       code("HW6", 12),
       md("HW6", 13, "A note on the correct stopping condition to use:", keep_start=True, fixes=[
+          (re.compile(r"(?m)^> ?"), "", 2),
           (r"\| [ lambda_1,  lambda_2] - [ 2.05384, 0 ] \|_2 < 1e^{-3}", r"\| [ \lambda_1,  \lambda_2] - [ 2.05384, 0 ] \|_2 < 10^{-3}"),
           ("(which involves suming over", "(which involves summing over"),
       ]),
       code("HW6", 14),
-      code("HW6", 15),
+      ran("gd-run"),
       md("HW6", 16)),
     S(_CH13, _CH13_P1, "Solution: Part I, Question 3",
       md("HW6", 17, "### Implementation: Stochastic Gradient Descent\n"),
       code("HW6", 18),
-      code("HW6", 19),
+      ran("sgd-run"),
       md("HW6", 20, fixes=[
           ("that descreases the loss", "that decreases the loss"),
           ("decrease form one iteration", "decrease from one iteration"),
       ]),
-      code("HW6", 21),
+      ran("sgd-shuffled-run"),
       md("HW6", 22, fixes=[
-          # The run above (cell output) took 751 iterations.
-          ("after 1,990 steps (versus", "after 751 steps (versus"),
+          # Match the re-run's iteration count.
+          ("after 1,990 steps (versus", "after 5,637 steps (versus"),
           ("around the optimal total loss of -9.93410279384.", "around the optimal total loss of -9.9341."),
           ("When we examing the total loss", "When we examine the total loss"),
           ("is ocillating around", "is oscillating around"),
       ])),
     S(_CH13, _CH13_P1, "Solution: Part I, Question 4",
       md("HW6", 13, "A note on the correct loss function to use:\n", "A note on the correct stopping condition to use:", fixes=[
+          (re.compile(r"(?m)^> ?"), "", 4),
           ("the loss funtion averaged", "the loss function averaged"),
       ])),
     S(_CH13, _CH13_P1, "Solution: Part I, Question 5",
@@ -411,21 +436,21 @@ SOLUTIONS += [
           # Match the timings printed by the runs in Questions 2 and 3.
           ("We see that it takes 0.000573873519897 seconds to compute one gradient for gradient descent, "
            "while it takes around 0.000241994857788 seconds to compute one gradient for stochastic gradient descent.",
-           "In the runs above, it takes about 0.00024 seconds to compute one gradient for gradient descent, "
-           "while it takes around 0.00011 to 0.00017 seconds to compute one gradient for stochastic gradient descent."),
+           "In the runs above, it takes about 0.00034 seconds to compute one gradient for gradient descent, "
+           "while it takes around 0.00004 seconds to compute one gradient for stochastic gradient descent."),
           (" For example, you can try to perform gradient descent in your Long Form Homework #1 and see how that will change your training time.", ""),
       ])),
     S(_CH13, _CH13_P1, "Solution: Part I, Question 6",
       md("HW6", 23, "#### Sensitivity to Stepsize:\n"),
-      code("HW6", 24),
+      ran("gd-step-sizes"),
       md("HW6", 25),
-      code("HW6", 26),
-      code("HW6", 27),
-      code("HW6", 28),
-      code("HW6", 29),
-      code("HW6", 30),
-      code("HW6", 31),
-      code("HW6", 32),
+      ran("sgd-step-size-26"),
+      ran("sgd-step-size-27"),
+      ran("sgd-step-size-28"),
+      ran("sgd-step-size-29"),
+      ran("sgd-step-size-30"),
+      ran("sgd-step-size-31"),
+      ran("sgd-step-size-32"),
       # The source's discussion of these SGD runs describes other step sizes (0.01-1) and
       # iteration counts that the outputs above do not show, so only its conclusion is kept.
       md("HW6", 33, "The same experiments with gradient descent shows", "<a id='init'></a>", keep_start=True, fixes=[
@@ -513,11 +538,18 @@ SOLUTIONS += [
       code("HW0", 11, out=False),
       md("HW0", 12),
       code("HW0", 13),
-      md("HW0", 14, fixes=[("From the histogram of the residuals (on the left)", "From the histogram of the residuals (on the right)")]),
+      md("HW0", 14, fixes=[
+          # Least-squares residuals with an intercept average exactly zero, and the histogram peaks at 0.
+          ("From the histogram of the residuals (on the left), we can see that (1) the residuals are not normally distributed"
+           " as we assumed in our model (2) they are not centered at zero as we assumed.",
+           "From the histogram of the residuals (on the right), we can see that the residuals are not normally distributed"
+           " as we assumed in our model."),
+      ]),
       note("the clinical interpretation of the parameters $w_0, w_1$.")),
     S(_CH01, "1. **(Inference)**", "Solution: Part II, Question 1",
       md("HW0", 21, "**Solution:** ", fixes=[
           ("we introduced in Part I Problem 3", "we introduced in Part I, Question 3"),
+          (r"(\mathbf{X}w - \mathbf{y}) + -\frac{1}{2} (w - m)^\top S^{-1}(w - m)", r"(\mathbf{X}w - \mathbf{y}) -\frac{1}{2} (w - m)^\top S^{-1}(w - m)"),
           (r"(w_1x_n + w_0)^2)", r"(w_1x_n + w_0))^2", 2),
           # The likelihood covariance is N x N.
           (r"I_{2\times 2}", r"I_{N}", 4),
@@ -586,7 +618,11 @@ RERUN[_CH03] = [
 
 SOLUTIONS += [
     S(_CH03, "Exercise: Part I: A Maximum Likelihood Model", "Solution: Part I, Question 1",
-      md("HW1", 4, "**Solution:** ", fixes=[("{10!6!10!27!109!}", "{10!6!10!28!109!}")])),
+      md("HW1", 4, "**Solution:** ", fixes=[
+          ("{10!6!10!27!109!}", "{10!6!10!28!109!}"),
+          ("$[10 6 10 28 109]$", r"$[10\;\; 6\;\; 10\;\; 28\;\; 109]$"),
+          ("$[57 33 29 45 246]$", r"$[57\;\; 33\;\; 29\;\; 45\;\; 246]$"),
+      ])),
     S(_CH03, "2. **(Model Fitting)**", "Solution: Part I, Question 2",
       md("HW1", 5, "**Solution:**\n", fixes=[
           ("From lecture, we know that the solution", "From [[ch:2]], we know that the solution"),
@@ -643,7 +679,16 @@ SOLUTIONS += [
 
 _CH04 = "04-bayesian-vs-frequentist"
 
-PROMPT_EDITS[_CH04] = [(INTRO_OLD, INTRO_NEW)]
+PROMPT_EDITS[_CH04] = [
+    (INTRO_OLD, INTRO_NEW),
+    # Question 2's sub-steps were indented 2 spaces, so they rendered as items 3-5 of the question list
+    # (and the next question showed up as a second "3."); 3 spaces nest them under Question 2.
+    ("\n\n  1. randomly sample two datasets", "\n\n   1. randomly sample two datasets"),
+    ("\n  2. plot the validation score as a function", "\n   2. plot the validation score as a function"),
+    ("\n  3. based on the plot, select", "\n   3. based on the plot, select"),
+    ("\n\n  Explain why performing model selection", "\n\n   Explain why performing model selection"),
+    ("<br><br>\n  Implement model selection by cross-validation", "<br><br>\n   Implement model selection by cross-validation"),
+]
 GAPS[_CH04] = ["Part I, Question 4 (the source fits Lasso, not Ridge, and has no discussion)",
                "Part II, Questions 1-3", "Part III (Broader Impact), Questions 1-3"]
 
@@ -960,7 +1005,9 @@ RERUN[_CH17] = [
          "#100 randomly selected posterior samples\n"
          "posterior_samples = HMC_sampler.trace[random.choice(len(HMC_sampler.trace), 100, replace=False)]\n"),
         ("size=(total_samples, len(x_test)))", "size=(total_samples, x_test.shape[1]))"),
-        ("label='test log-likelihood:{}'", "label='train log-likelihood:{}'"),
+        ("label='test log-likelihood:{}'.format(np.round(log_likelihood, 4))", "label='95% predictive interval'"),
+        ("ax.set_title('posterior predictive from HMC samples of the BNN posterior')",
+         "ax.set_title('posterior predictive from HMC samples of the BNN posterior\\n(train log-likelihood: {})'.format(np.round(log_likelihood, 4)))"),
         ("ax.scatter(x_train.flatten(), y_train.flatten(), color='red', s=10, alpha=0.5, label='train data')",
          _PLOT_SAMPLES + "ax.scatter(x_train.flatten(), y_train.flatten(), color='red', s=10, alpha=0.5, label='train data')"),
     ]),
@@ -1112,7 +1159,9 @@ SOLUTIONS += [
       text("*The saved outputs below come from the first model (a Bayesian logistic regression with a"
            " single observation), not from the Gaussian mixture: when the notebook was run, the mixture cell"
            " failed because it did not import `theano`. Re-running them requires `pymc3`.*"),
-      code("LAB8", 6),
+      code("LAB8", 6, fixes=[("#define the mixture model in pymc3\nwith pm.Model() as model:\n    w = pm.Normal",
+                              "#define a Bayesian logistic regression model in pymc3 (the saved outputs below come from it)\n"
+                              "with pm.Model() as model:\n    w = pm.Normal")]),
       code("LAB8", 7, fixes=[("#define the mixture model in pymc3\n", "#define the mixture model in pymc3\nimport theano\n")]),
       code("LAB8", 8),
       code("LAB8", 9),
@@ -1210,7 +1259,11 @@ RERUN[_LAB4] = [
     run("mixture-run", "LAB4", 14, fixes=[
         ("#proposal variance\nsigma_sq_large = 3.\n", "#proposal variance (standard deviation 9)\nsigma_sq_large = 81.\n"),
     ]),
-    run("mixture-plot", "LAB4", 16),
+    run("mixture-plot", "LAB4", 16, fixes=[
+        ("ax[0] = plot_samples(ax[0], target, samples_large_var[200:], 'target distribution vs all samples, S={}, init={}, proposal variance={}'.format(S, init, sigma_sq_large))",
+         "ax[0] = plot_samples(ax[0], target, samples_large_var[burn_in:], 'target distribution vs samples after {} burn-in, S={}, init={}, proposal variance={}'.format(burn_in, S, init, sigma_sq_large))"),
+        ("samples_small_var[200:]", "samples_small_var[burn_in:]"),
+    ]),
 ]
 
 SOLUTIONS += [
@@ -1283,7 +1336,11 @@ SOLUTIONS += [
          "3. Compute the expected processing time of a single package.", unindent=True)),
     S(_LAB1, _LAB1_Q, "Solution: Task 3",
       md("LAB1", 14, "3. Compute the expected processing time of a single package.\n",
-         "4. Compute the expected processing time of all packages over a single day.", unindent=True)),
+         "4. Compute the expected processing time of all packages over a single day.", unindent=True, fixes=[
+          ("We've already written a simulation for $T$ as part of the function `sample_total_time()`, we could have estimated",
+           "The function `sample_total_time()` in Task 4 simulates $T$ for every package, so we could also have estimated"),
+          ("[T]$ using simulations.", "[T]$ by simulation."),
+      ])),
     S(_LAB1, _LAB1_Q, "Solution: Task 4",
       md("LAB1", 8, "**Processing Time as a Random Variable**", keep_start=True),
       ran("sample-total-time"),

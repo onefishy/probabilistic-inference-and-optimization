@@ -39,6 +39,7 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which builds the book and
 - turns the RISE slide notebook into a chapter: it strips slide metadata, the course header and logo, and repeated slide titles, and makes the outline an "In this chapter" box;
 - renders cells that were hidden from the slides (`skip`) as collapsible "Going deeper" boxes;
 - makes bare `\begin{aligned}`/`align` blocks render by wrapping them in `$$`, and converts standalone `<img>` tags to `{figure}` directives;
+- fixes Markdown that MyST renders wrongly (`layout_fixes`): display equations inside a paragraph get their own paragraph (only where that leaves lists and code blocks unchanged), numbered lists starting at 0 get a blank line before them, and `- | -` table rows become `--- | ---`;
 - appends the lecture summary, the week's reading list, and the matching homework problems. Starter code is kept; solutions are added afterwards (see [Worked solutions](#worked-solutions));
 - transcodes the `.mov` animations to small H.264 `.mp4` files and shrinks oversized images.
 

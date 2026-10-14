@@ -1,0 +1,8 @@
+/* sphinx-togglebutton collapses a closed dropdown's content to zero height, but padding and
+   borders (blockquotes, figures) still take space and show as a blank band under the title.
+   Remove them while the dropdown is closed. */
+.admonition.toggle-hidden .admonition-title ~ * {
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden;
+}

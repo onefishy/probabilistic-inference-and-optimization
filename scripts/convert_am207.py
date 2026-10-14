@@ -352,6 +352,93 @@ def isolate_display_math(text):
     return "".join(out)
 
 
+TABLE_SEPARATOR_RE = re.compile(r"^([ \t]*)-[ \t]*\|[ \t|-]*$", re.M)
+ZERO_LIST_RE = re.compile(r"^[ \t]{0,3}0[.)][ \t]")
+LIST_ITEM_RE = re.compile(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]")
+# Code fences and HTML tables are left alone by layout_fixes.
+LAYOUT_PROTECTED_RE = re.compile(r"(^[ \t]*```.*?^[ \t]*```[ \t]*$|^[ \t]*<table\b.*?</table>[^\n]*$)", re.M | re.S)
+# Two inline formulas written back to back ("$\quad$$\quad$") contain a "$$" that is not display math.
+ADJACENT_INLINE_MATH_RE = re.compile(r"\$[^$\s][^$\n]*\$\$[^$\s][^$\n]*\$")
+
+
+def separate_zero_lists(text):
+    """CommonMark only lets a list that starts at 1 interrupt a paragraph, so a list starting at
+    0 right after a line of text ("...algorithm:\\n0. Initialize ...") renders inline. Put a
+    blank line before it."""
+    lines = text.split("\n")
+    out = []
+    for i, line in enumerate(lines):
+        if i and ZERO_LIST_RE.match(line):
+            block = []  # the paragraph lines directly above (a heading or blank line ends it)
+            for prev in reversed(out):
+                if not prev.strip() or prev.lstrip().startswith("#"):
+                    break
+                block.append(prev)
+            if block and not any(LIST_ITEM_RE.match(b) for b in block):
+                out.append("")
+        out.append(line)
+    return "\n".join(out)
+
+
+_MYST_PARSER = None
+_STRUCTURE_TOKENS = {"bullet_list_open", "ordered_list_open", "list_item_open", "code_block", "fence",
+                     "table_open", "blockquote_open", "dl_open", "html_block"}
+
+
+def myst_structure(text):
+    """Lists (with start numbers), code blocks, tables and the number of inline formulas in the
+    MyST parse of `text`, including the bodies of colon-fence directives (admonitions)."""
+    global _MYST_PARSER
+    if _MYST_PARSER is None:
+        from markdown_it.renderer import RendererHTML
+        from myst_parser.config.main import MdParserConfig
+        from myst_parser.parsers.mdit import create_md_parser
+        config = MdParserConfig(enable_extensions={"amsmath", "colon_fence", "deflist", "dollarmath",
+                                                   "html_admonition", "linkify", "substitution"},
+                                dmath_double_inline=True)
+        _MYST_PARSER = create_md_parser(config, RendererHTML)
+    out, inline_math = [], 0
+    for t in _MYST_PARSER.parse(text):
+        if t.type in _STRUCTURE_TOKENS:
+            out.append((t.type, t.level, (t.attrs or {}).get("start")))
+        elif t.type == "inline":
+            # a total, since splitting a paragraph in two splits its formulas between two inlines
+            inline_math += sum(c.type == "math_inline" for c in t.children or [])
+        elif t.type == "colon_fence":
+            body = "\n".join(l for l in t.content.split("\n") if not re.match(r"^:\w+:", l))
+            out.append(("colon_fence", tuple(myst_structure(body))))
+    return out + [("math_inline", inline_math)]
+
+
+def isolate_display_math_safely(text):
+    """isolate_display_math, one paragraph at a time, keeping a change only if the MyST parse of
+    the text keeps its lists, code blocks, tables and inline math. Moving an equation out of a list
+    item can otherwise end the list early or turn the indented lines after it into a code block."""
+    blocks = re.split(r"(\n[ \t]*\n)", text)
+    if not any("$$" in b for b in blocks[::2]):
+        return text
+    base = myst_structure(text)
+    for i in range(0, len(blocks), 2):
+        if "$$" not in blocks[i]:
+            continue
+        new = isolate_display_math(blocks[i])
+        if new != blocks[i] and myst_structure("".join(blocks[:i] + [new] + blocks[i + 1:])) == base:
+            blocks[i] = new
+    return "".join(blocks)
+
+
+def layout_fixes(text):
+    """Fix Markdown that MyST renders wrongly: display math inside a paragraph (the text after it
+    escapes the paragraph), numbered lists starting at 0 right after text (rendered inline), and
+    table separator rows written '- | -' (parsed as a bullet)."""
+    parts = LAYOUT_PROTECTED_RE.split(text)
+    for i in range(0, len(parts), 2):
+        t = TABLE_SEPARATOR_RE.sub(lambda m: m.group(1) + " | ".join("---" for _ in m.group(0).split("|")), parts[i])
+        t = separate_zero_lists(t)
+        parts[i] = t if ADJACENT_INLINE_MATH_RE.search(t) else isolate_display_math_safely(t)
+    return "".join(parts)
+
+
 def fence(n):
     return ":" * n
 
@@ -742,7 +829,7 @@ def resolve_xrefs(text, xref):
 def fix_markdown_cells(slug, cells, xref):
     md_cells = [c for c in cells if c.cell_type == "markdown"]
     for c, fixed in zip(md_cells, apply_text_fixes(slug, [c.source for c in md_cells], xref)):
-        c.source = fixed
+        c.source = layout_fixes(fixed)
 
 
 def apply_text_fixes(slug, sources, xref):
