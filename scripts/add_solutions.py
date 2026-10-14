@@ -78,6 +78,15 @@ class Context:
             self.notebooks[src] = nbformat.read(self.source_path(src), as_version=4)
         return self.notebooks[src]
 
+    def code_text(self, src, cell):
+        """Source of a notebook code cell (paths fixed), or of a whole .py file when cell is None."""
+        if cell is None:
+            return self.source_path(src).read_text().replace("\r\n", "\n").rstrip() + "\n"
+        c = self.source(src).cells[cell]
+        if c.cell_type != "code":
+            raise SystemExit(f"{src} cell {cell} is not code")
+        return clean_code_cell(c).source
+
 
 # ---------------------------------------------------------------------------
 # Pages
@@ -100,13 +109,17 @@ def resolve_page(prefix):
 # ---------------------------------------------------------------------------
 
 def apply_fixes(text, fixes, where):
+    """Exact (old, new[, count]) edits; `old` may also be a compiled regex."""
     for fix in fixes:
         old, new = fix[:2]
         expected = fix[2] if len(fix) > 2 else 1
-        hits = text.count(old)
+        if isinstance(old, re.Pattern):
+            text, hits = old.subn(new, text)
+        else:
+            hits = text.count(old)
+            text = text.replace(old, new)
         if hits != expected:
             raise SystemExit(f"{where}: expected {expected} match(es), found {hits}: {old!r}")
-        text = text.replace(old, new)
     return text
 
 
@@ -226,14 +239,11 @@ def render_segments(entry, ctx, assets, labels):
             blocks.append(("prose", prose(text, ctx, page, src, assets, labels)))
         elif kind == "code":
             _, src, cell, show_out, fixes = seg
-            c = ctx.source(src).cells[cell]
-            if c.cell_type != "code":
-                raise SystemExit(f"{where}: {src} cell {cell} is not code")
-            source = clean_code_cell(c).source
-            source = apply_fixes(source, fixes, f"{where} ({src} c{cell})")
+            source = apply_fixes(ctx.code_text(src, cell), fixes, f"{where} ({src} c{cell})")
             blocks.append(("code", code_block(source)))
-            if show_out:
-                blocks += [("out", b) for b in output_blocks(c.get("outputs", []), page, key, counter, label)]
+            if show_out and cell is not None:
+                outputs = ctx.source(src).cells[cell].get("outputs", [])
+                blocks += [("out", b) for b in output_blocks(outputs, page, key, counter, label)]
         elif kind == "ran":
             _, step, show_code, show_out = seg
             source, outputs = ctx.runs[page][step]
@@ -300,8 +310,7 @@ def run_program(page, ctx, book):
             cells.append((None, matches[0].source))
         elif kind == "src":
             _, key, src, cell, fixes = step
-            c = ctx.source(src).cells[cell]
-            source = apply_fixes(clean_code_cell(c).source, fixes, f"RERUN {page} {key} ({src} c{cell})")
+            source = apply_fixes(ctx.code_text(src, cell), fixes, f"RERUN {page} {key} ({src} c{cell})")
             cells.append((key, source))
         elif kind == "lit":
             cells.append((step[1], step[2]))

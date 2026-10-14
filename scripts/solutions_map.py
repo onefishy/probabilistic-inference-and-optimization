@@ -14,13 +14,17 @@ A solution is `S(page, after, title, *segments)`:
   segments  md(src, cell, start, end, fixes)  prose from a markdown cell, between the
                                               start and end markers (both excluded,
                                               unless keep_start=True)
-            code(src, cell, out, fixes)       a code cell and (out=True) its saved outputs
+            code(src, cell, out, fixes)       a code cell and (out=True) its saved outputs;
+                                              cell=None shows a whole .py source file
             ran(step)                         code and outputs of a re-run step (RERUN)
             text(markdown)                    connecting text written for the book
             note(markdown)                    "*Not covered here: ...*" for partial answers
-`fixes` are exact (old, new[, count]) edits; a fix that no longer matches stops the run.
+`fixes` are exact (old, new[, count]) edits (`old` may be a compiled regex); a fix that no
+longer matches stops the run.
 `[[ps:KEY]]`, `[[ch:LECTURE]]` and `[[lab:N]]` placeholders become cross-references.
 """
+
+import re
 
 SOURCES = {
     "HW0": ("hw", "HW_0/AM207_HW0_Solutions.ipynb"),
@@ -32,6 +36,19 @@ SOURCES = {
     "HW6": ("hw", "HW_6/HW6_solutions/AM207_HW6_Solutions.ipynb"),
     "HW8": ("hw", "HW_8/HW8_solutions/AM207_HW8.ipynb"),
     "HW9": ("hw", "HW_9/HW_9_solutions/AM207_HW9_Solutions.ipynb"),
+    # Labs: the notebooks the book's labs were converted from (cell numbers match the book's).
+    "LAB1": ("labs", "Lab_1/lab_1_solutions.ipynb"),
+    "LAB2": ("labs", "Lab_2/lab_2.ipynb"),
+    "LAB3": ("labs", "Lab_3/lab_3.ipynb"),
+    "LAB4": ("labs", "Lab_4/lab_4.ipynb"),
+    "LAB5": ("labs", "Lab_5/Lab_5/lab_5_slides.ipynb"),
+    "LAB5_SOL": ("labs", "Lab_5/Lab_5/lab_5.ipynb"),
+    "LAB6": ("labs", "Lab_6/Lab_6/lab_6.ipynb"),
+    "LAB7": ("labs", "Lab_7/lab_7.ipynb"),
+    "LAB8": ("labs", "Lab_8/lab_8.ipynb"),
+    # Helper modules the BNN solutions import.
+    "HMC_PY": ("hw", "HW_8/HW8_solutions/alpha_hmc.py"),
+    "BBVI_PY": ("hw", "HW_9/HW_9_solutions/bbvi.py"),
 }
 
 
@@ -60,7 +77,8 @@ def note(markdown):
 
 
 # Re-run steps: book(cell id) runs a book cell (starter code) without showing it;
-# run(key, src, cell, fixes) and lit(key, source) run code that solutions show via ran(key).
+# run(key, src, cell, fixes) and lit(key, source) run code that solutions show via ran(key)
+# (cell=None runs a whole .py source file).
 def book(cell_id):
     return ("book", cell_id)
 
@@ -836,4 +854,236 @@ SOLUTIONS += [
       note("a discussion of the stratified estimate's variance, which is the lowest of the six above.")),
     S(_CH06, _CH06_P3, "Solution: Part III, Question 2",
       md("HW3", 39, "### 2. Overall comparison\n")),
+]
+
+# ---------------------------------------------------------------------------
+# 17-black-box-vi (ps-hw8): Bayesian neural networks with HMC and BBVI
+# ---------------------------------------------------------------------------
+# Sources: the BNN/HMC solution (HW_8) and the BBVI solution (HW_9), plus their HMC and BBVI
+# classes. Re-run (autograd) with the book's ReLU network (the sources used rbf), after fixing:
+#   - the likelihood used the variance 0.5^2 as a standard deviation;
+#   - HMC's leapfrog changed the caller's position in place (so the Metropolis-Hastings step
+#     compared the proposal with itself), skipped the last position update, and the trace was
+#     thinned twice;
+#   - BBVI's softplus output is the standard deviation of q (it scales the N(0, I) samples) but
+#     the entropy treated it as a variance.
+# The fixed BBVI matches the exact KL(q||p) optimum on the logistic unit test (mean -0.562,
+# std 0.549 by quadrature); the fixed HMC recovers N(0, 1).
+
+_CH17 = "17-black-box-vi"
+_CH17_P1 = "Exercise: Part I: Inference for Bayesian Neural Networks Using HMC"
+_CH17_P2 = "Exercise: Part II: Inference for BNNs Using Black-Box Variational Inference"
+_CH17_P3 = "Exercise: Part III: Comparison"
+
+PROMPT_EDITS[_CH17] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH17] = ["Part I, Question 4", "Part II, Question 4", "Part III, Question 3"]
+
+_HMC_FIXES = [
+    ("        # initialize position\n        position = position_init\n",
+     "        # initialize position (a copy, so the caller's array is not changed in place)\n"
+     "        position = np.copy(position_init)\n"),
+    ("        position_proposal = position #+ self.params['step_size'] * momentum\n",
+     "        position_proposal = position + self.params['step_size'] * momentum\n"),
+    ("        momentum_proposal = momentum - self.params['step_size'] * self.grad_potential_energy(position) / 2\n",
+     "        momentum_proposal = momentum - self.params['step_size'] * self.grad_potential_energy(position_proposal) / 2\n"),
+    ("        self.trace = self.trace[::self.params['thinning_factor']]",
+     "        # (run_hmc already keeps every thinning_factor-th sample)"),
+]
+_BBVI_FIXES = [
+    (re.compile(r"\bvar\b"), "std", 18),
+    ("return 0.5 * np.sum(np.log(2 * np.pi * np.e) + np.log(std))", "return np.sum(0.5 * np.log(2 * np.pi * np.e) + np.log(std))"),
+    ("Sigma = np.diag(std)", "Sigma = np.diag(std**2)"),
+    ("Sigma_inv = np.linalg.det(Sigma)", "Sigma_inv = np.linalg.inv(Sigma)"),
+]
+_PLOT_SAMPLES = "for y_pred in y_pred_test:\n    ax.plot(x_test.flatten(), y_pred, color='gray', alpha=0.1)\n"
+
+RERUN[_CH17] = [
+    book("17-037"), book("17-038"), book("17-040"), book("17-042"), book("17-044"), book("17-045"),
+    run("log-joint", "HW8", 12, fixes=[
+        ("N = 12\n", "N = x_train.shape[1]\n"),
+        # sigma_y is the variance 0.5^2
+        ("constant = (-np.log(sigma_y) - 0.5 * np.log(2 * np.pi)) * N",
+         "constant = (-0.5 * np.log(sigma_y) - 0.5 * np.log(2 * np.pi)) * N"),
+        ("exponential = -0.5 * sigma_y**-2 * np.sum(", "exponential = -0.5 * sigma_y**-1 * np.sum("),
+    ]),
+    run("hmc-class", "HMC_PY", None, fixes=_HMC_FIXES),
+    run("energies", "HW8", 13),
+    # The source's step size (1e-2, 20 leapfrog steps) diverges on the book's ReLU network, so
+    # this uses the settings the problem suggests.
+    run("hmc-sample", "HW8", 15, fixes=[
+        ("step_size = 1e-2\n", "step_size = 1e-3\n"),
+        ("leapfrog_steps = 20\n", "leapfrog_steps = 50\n"),
+        ("total_samples = 20000\n", "total_samples = 10000\n"),
+        ("thinning_factor = 1\n", "thinning_factor = 2\n"),
+    ]),
+    run("trace-plot", "HW8", 17, fixes=[
+        ("ax[row, col].plot(range(total_samples), HMC_sampler.trace[:, i]",
+         "ax[row, col].plot(range(len(HMC_sampler.trace)), HMC_sampler.trace[:, i]"),
+    ]),
+    run("hmc-predictive", "HW8", 20, fixes=[
+        ("posterior_samples = HMC_sampler.trace[::100]\n",
+         "#100 randomly selected posterior samples\n"
+         "posterior_samples = HMC_sampler.trace[random.choice(len(HMC_sampler.trace), 100, replace=False)]\n"),
+        ("size=(total_samples, len(x_test)))", "size=(total_samples, x_test.shape[1]))"),
+        ("label='test log-likelihood:{}'", "label='train log-likelihood:{}'"),
+        ("ax.scatter(x_train.flatten(), y_train.flatten(), color='red', s=10, alpha=0.5, label='train data')",
+         _PLOT_SAMPLES + "ax.scatter(x_train.flatten(), y_train.flatten(), color='red', s=10, alpha=0.5, label='train data')"),
+    ]),
+    run("bbvi-class", "BBVI_PY", None, fixes=_BBVI_FIXES),
+    # Calls BBVI directly; the source went through wrapper modules (bayesian_regression.py,
+    # inference.py) whose relevant steps are these.
+    lit("bbvi-fit", """\
+#log joint distribution of the BNN (log_prior and log_lklhd are defined in Part I)
+def log_joint(W, t):
+    return log_lklhd(W) + log_prior(W)
+
+#initialize the variational means at the MLE weights and the variational std's near zero
+init_mean = nn.weights.reshape((nn.D, ))
+init_var = np.ones(init_mean.shape) * -10
+init = np.hstack((init_mean, init_var))
+
+#fit a mean-field Gaussian approximation of the posterior with BBVI
+bbvi = BBVI(log_joint, nn.D, S=500, random=random)
+bbvi.fit(step_size=1e-3, max_iteration=10000, check_point=1000, params_init=init)
+
+#keep the variational parameters with the best ELBO over the last 100 iterations
+best = np.argmax(bbvi.ELBO[-100:])
+var_mean, var_std = np.split(bbvi.variational_params[-100:][best], 2)"""),
+    lit("vi-samples", """\
+#100 samples from the variational approximation of the posterior
+posterior_samples = var_mean + var_std * random.randn(100, nn.D)
+#posterior predictive samples: network outputs plus observation noise
+y_pred_test = nn.forward(posterior_samples, x_test).reshape((100, -1)) + random.normal(0, sigma_y**0.5, size=(100, x_test.shape[1]))
+#compute the 95% predictive interval and the predictive mean
+y_postpred_ub = np.percentile(y_pred_test, 97.5, axis=0)
+y_postpred_lb = np.percentile(y_pred_test, 2.5, axis=0)
+y_postpred_means = np.mean(y_pred_test, axis=0)"""),
+    run("vi-plot", "HW9", 16, fixes=[
+        ("ax.scatter(x_train, y_train, color='red', label='training data')",
+         _PLOT_SAMPLES + "ax.scatter(x_train, y_train, color='red', label='training data')"),
+    ]),
+]
+
+SOLUTIONS += [
+    S(_CH17, _CH17_P1, "Solution: Part I, Question 1",
+      ran("log-joint")),
+    S(_CH17, "2. (**Sample from the Posterior**)", "Solution: Part I, Question 2",
+      ran("hmc-class"),
+      ran("energies"),
+      ran("hmc-sample")),
+    S(_CH17, "3. (**Visualize the Posterior Predictive**) Visualize 100 samples, randomly selected",
+      "Solution: Part I, Question 3",
+      ran("hmc-predictive")),
+    S(_CH17, _CH17_P2, "Solution: Part II, Question 1",
+      ran("bbvi-class"),
+      note("a unit test of the implementation on the Bayesian logistic regression model.")),
+    S(_CH17, "2. (**Variational Inference for BNNs**)", "Solution: Part II, Question 2",
+      ran("bbvi-fit")),
+    S(_CH17, "3. (**Visualize the Posterior Predictive**) Visualize 100 samples $\\mathbf{W}^s$",
+      "Solution: Part II, Question 3",
+      ran("vi-samples"),
+      ran("vi-plot")),
+    S(_CH17, _CH17_P3, "Solution: Part III, Question 1",
+      md("HW9", 17, "### 5. Comparison with HMC Posterior Predictive\n", fixes=[
+          ("Recall that the posterior preditive produced by HMC in HW#7 looks like:\n\n"
+           "<img src=\"./hmc_pred.png\" style='height:300px;'>\n\n",
+           "Compare the posterior predictive in Part II, Question 3 with the one produced by HMC in Part I, Question 3.\n\n"),
+          ("whereas the predcitive uncertainty produced variational inference rather uniform",
+           "whereas the predictive uncertainty produced by variational inference is rather uniform"),
+      ]),
+      note("whether the posterior approximation is good.")),
+    S(_CH17, "2. (**Quality of Posterior Vs Quality of Posterior Predictive**)", "Solution: Part III, Question 2",
+      ran("trace-plot"),
+      md("HW8", 18),
+      note("whether a mean-field Gaussian is a good approximation of the BNN posterior, which set of samples"
+           " better captures it, and how posterior approximation relates to the quality of the posterior"
+           " predictive uncertainties.")),
+]
+
+
+# ===========================================================================
+# Labs
+# ===========================================================================
+# The converter collapsed each lab's answer cells (am207_map.LABS) as separate "Solution"
+# dropdowns and hide-input code cells whose plots stayed visible. Here those cells are merged
+# into one dropdown per question (LAB_REMOVE lists the cells they replace).
+
+def _lab_cells(slug, numbers):
+    return [f"{slug}-{n:03d}" for n in numbers]
+
+
+# ---------------------------------------------------------------------------
+# lab-03-monte-carlo-integration
+# ---------------------------------------------------------------------------
+
+_LAB3 = "lab-03-monte-carlo-integration"
+LAB_REMOVE[_LAB3] = _lab_cells(_LAB3, range(8, 19))
+
+SOLUTIONS += [
+    S(_LAB3, "## Exercise: Monte Carlo Integration", "Solution",
+      md("LAB3", 8, fixes=[(r"\widehat{I} = \sum_{s=1}^S", r"\widehat{I} = \frac{1}{S}\sum_{s=1}^S")]),
+      code("LAB3", 9),
+      md("LAB3", 10),
+      code("LAB3", 11),
+      md("LAB3", 12),
+      code("LAB3", 13),
+      md("LAB3", 14, fixes=[
+          ('Looking at the "Nitty Gritty" slides page on importance sampling,',
+           'Looking at the discussion of the design of $q$ ("Nitty Gritty of Importance Sampling") in [[ch:6]],'),
+      ]),
+      code("LAB3", 15),
+      md("LAB3", 16),
+      code("LAB3", 17),
+      md("LAB3", 18)),
+]
+
+# ---------------------------------------------------------------------------
+# lab-06-logistic-regression: one prompt cell; answers grouped by its sections.
+# The data-loading cells 5-6 stay in place as setup. The Bayesian model uses pymc3: saved outputs.
+# ---------------------------------------------------------------------------
+
+_LAB6 = "lab-06-logistic-regression"
+_LAB6_AFTER = "X = df[['mothers income (normalized)', 'mothers age (normalized)']].values"
+LAB_REMOVE[_LAB6] = _lab_cells(_LAB6, range(7, 20))
+GAPS[_LAB6] = ["Data Heterogeneity, Question 2"]
+
+SOLUTIONS += [
+    S(_LAB6, _LAB6_AFTER, "Solution: Modeling for Testing Scientific Hypotheses",
+      code("LAB6", 7), code("LAB6", 9), code("LAB6", 10, out=False), code("LAB6", 11),
+      note("an interpretation of the plots and of the MLE coefficients.")),
+    S(_LAB6, _LAB6_AFTER, "Solution: Predictiveness",
+      code("LAB6", 12), code("LAB6", 13),
+      note("an interpretation of the accuracy and of the calibration plot.")),
+    S(_LAB6, _LAB6_AFTER, "Solution: Uncertainty",
+      code("LAB6", 14),
+      note("the mean bootstrap coefficients, and an interpretation of the bootstrap decision boundaries.")),
+    S(_LAB6, _LAB6_AFTER, "Solution: A Bayesian Approach",
+      code("LAB6", 15), code("LAB6", 16), code("LAB6", 17), code("LAB6", 18), code("LAB6", 19),
+      note("the comparison of the bootstrap and Bayesian uncertainties.")),
+    S(_LAB6, _LAB6_AFTER, "Solution: Data Heterogeneity, Question 1",
+      md("LAB6", 8, fixes=[("the data is heterogneous", "the data is heterogeneous")])),
+]
+
+# ---------------------------------------------------------------------------
+# lab-08-vi-vs-hmc (pymc3: saved outputs, not re-run)
+# ---------------------------------------------------------------------------
+
+_LAB8 = "lab-08-vi-vs-hmc"
+LAB_REMOVE[_LAB8] = _lab_cells(_LAB8, range(6, 15))
+
+SOLUTIONS += [
+    S(_LAB8, "#mixture weights", "Solution",
+      code("LAB8", 6),
+      code("LAB8", 7, fixes=[("#define the mixture model in pymc3\n", "#define the mixture model in pymc3\nimport theano\n")]),
+      code("LAB8", 8),
+      code("LAB8", 9),
+      code("LAB8", 10),
+      code("LAB8", 11),
+      code("LAB8", 12),
+      code("LAB8", 13),
+      code("LAB8", 14),
+      text("*The saved outputs above come from the first model (a Bayesian logistic regression with a"
+           " single observation), not from the Gaussian mixture: when the notebook was run, the mixture cell"
+           " failed because it did not import `theano`. Re-running them requires `pymc3`.*"),
+      note("a comparison of how well HMC and variational inference capture the target distribution.")),
 ]
