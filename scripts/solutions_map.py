@@ -12,7 +12,8 @@ A solution is `S(page, after, title, *segments)`:
             (solutions sharing an anchor keep their order here)
   title     dropdown title, numbered as the reader sees the question
   segments  md(src, cell, start, end, fixes)  prose from a markdown cell, between the
-                                              start and end markers (both excluded)
+                                              start and end markers (both excluded,
+                                              unless keep_start=True)
             code(src, cell, out, fixes)       a code cell and (out=True) its saved outputs
             ran(step)                         code and outputs of a re-run step (RERUN)
             text(markdown)                    connecting text written for the book
@@ -38,8 +39,8 @@ def S(page, after, title, *segments, key=None):
     return {"page": page, "after": after, "title": title, "segments": segments, "key": key}
 
 
-def md(src, cell, start=None, end=None, fixes=()):
-    return ("md", src, cell, start, end, tuple(fixes))
+def md(src, cell, start=None, end=None, fixes=(), keep_start=False):
+    return ("md", src, cell, start, end, tuple(fixes), keep_start)
 
 
 def code(src, cell, out=True, fixes=()):
@@ -301,4 +302,108 @@ SOLUTIONS += [
       ]),
       code("HW5", 23),
       _HW5_PART2_PLOT),
+]
+
+# ---------------------------------------------------------------------------
+# 13-sgd-simulated-annealing (ps-hw6): gradient descent vs SGD on a construction-cost loss
+# ---------------------------------------------------------------------------
+# Not re-run: the answers compare wall-clock timings, so the saved outputs are shown.
+# The source groups its answers by topic; they are regrouped here by question.
+
+_CH13 = "13-sgd-simulated-annealing"
+_CH13_P1 = "Exercise: Part I: Cost minimization with descent algorithms"
+_HW6_DATA = [("'HW5_data.csv'", "'../data/HW6_data.csv'")]
+
+PROMPT_EDITS[_CH13] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH13] = ["Part II (Broader Impact)"]
+
+SOLUTIONS += [
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 1",
+      code("HW6", 3),
+      md("HW6", 4, "### Visualizing Our Loss Function\n", fixes=[
+          ("In `python`, we would write the above as\n```\n", "In `python`, we would write the above as\n```python\n"),
+          ("the total loss is minized for", "the total loss is minimized for"),
+      ]),
+      code("HW6", 5, fixes=_HW6_DATA),
+      code("HW6", 6),
+      code("HW6", 7),
+      md("HW6", 8),
+      code("HW6", 9),
+      md("HW6", 10)),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 2",
+      md("HW6", 11, "### Implementation: Gradient Descent\n", fixes=[
+          # d/d lambda_2 of lambda_2^2 is 2 lambda_2 (the code has it right).
+          (r"2 * 0.000045\lambda_2^2 \sum", r"2 * 0.000045\lambda_2 \sum"),
+      ]),
+      code("HW6", 12),
+      md("HW6", 13, "A note on the correct stopping condition to use:", keep_start=True, fixes=[
+          (r"\| [ lambda_1,  lambda_2] - [ 2.05384, 0 ] \|_2 < 1e^{-3}", r"\| [ \lambda_1,  \lambda_2] - [ 2.05384, 0 ] \|_2 < 10^{-3}"),
+          ("(which involves suming over", "(which involves summing over"),
+      ]),
+      code("HW6", 14),
+      code("HW6", 15),
+      md("HW6", 16)),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 3",
+      md("HW6", 17, "### Implementation: Stochastic Gradient Descent\n"),
+      code("HW6", 18),
+      code("HW6", 19),
+      md("HW6", 20, fixes=[
+          ("that descreases the loss", "that decreases the loss"),
+          ("decrease form one iteration", "decrease from one iteration"),
+      ]),
+      code("HW6", 21),
+      md("HW6", 22, fixes=[
+          # The run above (cell output) took 751 iterations.
+          ("after 1,990 steps (versus", "after 751 steps (versus"),
+          ("around the optimal total loss of -9.93410279384.", "around the optimal total loss of -9.9341."),
+          ("When we examing the total loss", "When we examine the total loss"),
+          ("is ocillating around", "is oscillating around"),
+      ])),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 4",
+      md("HW6", 13, "A note on the correct loss function to use:\n", "A note on the correct stopping condition to use:", fixes=[
+          ("the loss funtion averaged", "the loss function averaged"),
+      ])),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 5",
+      md("HW6", 23, "#### Speed:\n", "<a id='stepsize'></a>", fixes=[
+          # Match the timings printed by the runs in Questions 2 and 3.
+          ("We see that it takes 0.000573873519897 seconds to compute one gradient for gradient descent, "
+           "while it takes around 0.000241994857788 seconds to compute one gradient for stochastic gradient descent.",
+           "In the runs above, it takes about 0.00024 seconds to compute one gradient for gradient descent, "
+           "while it takes around 0.00011 to 0.00017 seconds to compute one gradient for stochastic gradient descent."),
+          (" For example, you can try to perform gradient descent in your Long Form Homework #1 and see how that will change your training time.", ""),
+      ])),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 6",
+      md("HW6", 23, "#### Sensitivity to Stepsize:\n"),
+      code("HW6", 24),
+      md("HW6", 25),
+      code("HW6", 26),
+      code("HW6", 27),
+      code("HW6", 28),
+      code("HW6", 29),
+      code("HW6", 30),
+      code("HW6", 31),
+      code("HW6", 32),
+      # The source's discussion of these SGD runs describes other step sizes (0.01-1) and
+      # iteration counts that the outputs above do not show, so only its conclusion is kept.
+      md("HW6", 33, "The same experiments with gradient descent shows", "<a id='init'></a>", keep_start=True, fixes=[
+          ("The same experiments with gradient descent shows", "The same experiments with gradient descent show"),
+      ]),
+      note("a step-by-step discussion of the SGD runs for each step size.")),
+    S(_CH13, _CH13_P1, "Solution: Part I, Question 7",
+      md("HW6", 33, "#### Sensitivity to Initialization\n"),
+      code("HW6", 34),
+      md("HW6", 35),
+      code("HW6", 36),
+      md("HW6", 37, fixes=[
+          ("In lecture, we discussed how this descent", "Earlier in this chapter we saw how this descent"),
+      ]),
+      code("HW6", 38),
+      md("HW6", 39, fixes=[
+          ("We see that with step size 1., stochastic gradient descent", "We see that with step size 10, stochastic gradient descent"),
+      ]),
+      code("HW6", 40),
+      md("HW6", 41),
+      code("HW6", 42),
+      md("HW6", 43),
+      note("gradient descent with a learning rate of 50.")),
 ]

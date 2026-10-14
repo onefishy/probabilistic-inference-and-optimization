@@ -110,12 +110,12 @@ def apply_fixes(text, fixes, where):
     return text
 
 
-def slice_text(text, start, end, where):
+def slice_text(text, start, end, where, keep_start=False):
     if start is not None:
         i = text.find(start)
         if i < 0:
             raise SystemExit(f"{where}: start marker not found: {start!r}")
-        text = text[i + len(start):]
+        text = text[i if keep_start else i + len(start):]
     if end is not None:
         j = text.find(end)
         if j < 0:
@@ -155,7 +155,7 @@ def text_block(text):
     return f"{ticks}text\n{text}\n{ticks}"
 
 
-def output_blocks(outputs, page, figkey, counter):
+def output_blocks(outputs, page, figkey, counter, label):
     """Markdown for a code cell's outputs: text in ```text blocks, PNGs as {image} files."""
     blocks, stream = [], []
 
@@ -176,7 +176,7 @@ def output_blocks(outputs, page, figkey, counter):
         if "image/png" in data:
             flush()
             counter[0] += 1
-            blocks.append(save_png(data["image/png"], page, f"{figkey}-{counter[0]}"))
+            blocks.append(save_png(data["image/png"], page, f"{figkey}-{counter[0]}", f"{label}, figure {counter[0]}"))
         elif "text/plain" in data:
             text = data["text/plain"]
             text = text if isinstance(text, str) else "".join(text)
@@ -186,7 +186,7 @@ def output_blocks(outputs, page, figkey, counter):
     return blocks
 
 
-def save_png(b64, page, stem):
+def save_png(b64, page, stem, alt):
     dest_dir = SOLUTION_FIGS / page
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / f"{stem}.png"
@@ -194,7 +194,7 @@ def save_png(b64, page, stem):
         raw = Path(tmp) / f"{stem}.png"
         raw.write_bytes(base64.b64decode(b64 if isinstance(b64, str) else "".join(b64)))
         width, _ = compress_image(raw, dest)
-    lines = [f"```{{image}} ../figures/solutions/{page}/{dest.name}", f":alt: {stem.replace('-', ' ')}"]
+    lines = [f"```{{image}} ../figures/solutions/{page}/{dest.name}", f":alt: {alt}"]
     if width >= TEXT_WIDTH_PX:
         lines.append(":width: 100%")
     lines.append(":align: center")
@@ -213,14 +213,15 @@ def render_segments(entry, ctx, assets, labels):
     blocks = []
     counter = [0]
     key = entry.get("key") or figkey(title)
+    label = re.sub(r"^Solution:?\s*", "", title) or "Solution"
     for seg in entry["segments"]:
         kind = seg[0]
         if kind == "md":
-            _, src, cell, start, end, fixes = seg
+            _, src, cell, start, end, fixes, keep_start = seg
             c = ctx.source(src).cells[cell]
             if c.cell_type != "markdown":
                 raise SystemExit(f"{where}: {src} cell {cell} is not markdown")
-            text = slice_text(c.source.replace("\r\n", "\n"), start, end, f"{where} ({src} c{cell})")
+            text = slice_text(c.source.replace("\r\n", "\n"), start, end, f"{where} ({src} c{cell})", keep_start)
             text = apply_fixes(text, fixes, f"{where} ({src} c{cell})")
             blocks.append(("prose", prose(text, ctx, page, src, assets, labels)))
         elif kind == "code":
@@ -232,14 +233,14 @@ def render_segments(entry, ctx, assets, labels):
             source = apply_fixes(source, fixes, f"{where} ({src} c{cell})")
             blocks.append(("code", code_block(source)))
             if show_out:
-                blocks += [("out", b) for b in output_blocks(c.get("outputs", []), page, key, counter)]
+                blocks += [("out", b) for b in output_blocks(c.get("outputs", []), page, key, counter, label)]
         elif kind == "ran":
             _, step, show_code, show_out = seg
             source, outputs = ctx.runs[page][step]
             if show_code:
                 blocks.append(("code", code_block(source)))
             if show_out:
-                blocks += [("out", b) for b in output_blocks(outputs, page, key, counter)]
+                blocks += [("out", b) for b in output_blocks(outputs, page, key, counter, label)]
         elif kind == "text":
             blocks.append(("prose", prose(seg[1], ctx, page, None, assets, labels)))
         elif kind == "note":
