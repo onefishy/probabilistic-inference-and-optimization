@@ -588,3 +588,110 @@ SOLUTIONS += [
       md("HW1", 22, "**Solution:** \n"),
       note("which point estimate of $\\theta$, if any, to use to rank the two products.")),
 ]
+
+# ---------------------------------------------------------------------------
+# 04-bayesian-vs-frequentist (ps-hw2): polynomial regression under covariate shift (Fall 2020 draft)
+# ---------------------------------------------------------------------------
+
+_CH04 = "04-bayesian-vs-frequentist"
+
+PROMPT_EDITS[_CH04] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH04] = ["Part I, Question 4 (the source fits Lasso, not Ridge, and has no discussion)",
+               "Part II, Questions 1-3", "Part III (Broader Impact), Questions 1-3"]
+
+# Re-run (numpy/sklearn) against the book's generate_data, which returns (x_train, y_train, x_test).
+# The source's "bootstrap" ensembles drew fresh datasets from the true generating process;
+# they now resample one training set with replacement, as the question asks.
+_BOOT = "    # Bootstrap: resample the training data with replacement\n"
+RERUN[_CH04] = [
+    book("04-030"),
+    book("04-031"),
+    run("fit", "HW2", 7, fixes=[
+        ("x_train, y_train, x_test, y_test = generate_data(number_of_points=20, noise_variance=0.3) \n",
+         "x_train, y_train, x_test = generate_data(number_of_points=20, noise_variance=0.3)\n"
+         "# Noisy test outcomes from the same cubic function\n"
+         "y_test = 3 * x_test**3 + np.random.normal(0, 0.3**0.5, size=x_test.shape)\n"),
+    ]),
+    run("fit-plot", "HW2", 8, fixes=[
+        ("ax[row, col].plot(x_test, ys, label='training data')", "ax[row, col].plot(x_test, ys, label='MLE polynomial model')"),
+        ("alpha=0.9, label='MLE polynomial model')", "alpha=0.9, label='training data')"),
+    ]),
+    run("mse", "HW2", 10),
+    run("new-data", "HW2", 12, fixes=[("x_train_new, y_train_new, _, _ = generate_data", "x_train_new, y_train_new, _ = generate_data")]),
+    run("cv", "HW2", 15, fixes=[
+        ("x_train, y_train, _, _ = generate_data", "x_train, y_train, _ = generate_data"),
+        ("x_valid, y_valid, _, _ = generate_data", "x_valid, y_valid, _ = generate_data"),
+    ]),
+    run("cv-plot", "HW2", 16),
+    lit("train-data", "# The training data for the ensembles below\n"
+                      "x_train, y_train, x_test = generate_data(number_of_points=20, noise_variance=0.3)"),
+    run("train-plot", "HW2", 20, fixes=[("# Visualize the average validation mse for each degree\n", "# Visualize the training data\n")]),
+    run("ensemble", "HW2", 22, fixes=[
+        ("    # Generate a random training samples from the true distribution over x\n"
+         "    x_train, y_train, x_test, _ = generate_data(number_of_points=20, noise_variance=0.3)\n",
+         _BOOT + "    idx = np.random.choice(len(x_train), size=len(x_train), replace=True)\n"
+                 "    x_boot, y_boot = x_train[idx], y_train[idx]\n"),
+        ("poly.fit_transform(x_train.reshape((-1, 1)))", "poly.fit_transform(x_boot.reshape((-1, 1)))"),
+        ("linear_regressor.fit(x_train_poly, y_train.reshape(-1, 1))", "linear_regressor.fit(x_train_poly, y_boot.reshape(-1, 1))"),
+    ]),
+    run("intervals", "HW2", 23),
+    run("ensemble-plot", "HW2", 24, fixes=[
+        ("    ys = predictions[i].flatten()\n", ""),
+        ("label='MLE polynomial model') #scatter plot the training data", "label='training data') #scatter plot the training data"),
+    ]),
+    run("ensemble-sizes", "HW2", 26, fixes=[
+        ("    pred_per_data = []\n",
+         "    pred_per_data = []\n    # One training dataset of this size\n"
+         "    x_train_sample, y_train_sample, _ = generate_data(number_of_points=size, noise_variance=0.3)\n"),
+        ("        # Generate a random training samples from the true distribution over x\n"
+         "        x_train_sample, y_train_sample, _, _ = generate_data(number_of_points=size, noise_variance=0.3)\n",
+         "    " + _BOOT + "        idx = np.random.choice(len(x_train_sample), size=len(x_train_sample), replace=True)\n"
+                         "        x_boot, y_boot = x_train_sample[idx], y_train_sample[idx]\n"),
+        ("poly.fit_transform(x_train_sample.reshape((-1, 1)))", "poly.fit_transform(x_boot.reshape((-1, 1)))"),
+        ("linear_regressor.fit(x_train_poly, y_train_sample.reshape(-1, 1))", "linear_regressor.fit(x_train_poly, y_boot.reshape(-1, 1))"),
+    ]),
+    run("ensemble-sizes-plot", "HW2", 27, fixes=[
+        ("label='MLE polynomial model') #scatter plot the training data", "label='training data') #scatter plot the training data"),
+    ]),
+]
+
+SOLUTIONS += [
+    S(_CH04, "1. **(Effect of Model Complexity)**", "Solution: Part I, Question 1",
+      md("HW2", 6, "**Solutions:** "),
+      ran("fit"),
+      ran("fit-plot"),
+      md("HW2", 9, fixes=[("fit the data welll", "fit the data well"), ("and test errror", "and test error")]),
+      ran("mse"),
+      md("HW2", 11, fixes=[("the actualy data generating function", "the actual data generating function")]),
+      ran("new-data"),
+      # The re-run shows degree 10 with a train/test gap like degree 15's, so the source's remark
+      # that degree 10 is indistinguishable from degrees 3 and 5 is left out.
+      md("HW2", 13, fixes=[
+          (" But although we decided, based on our visual anlysis, that the degree 10 polynomial model is overfitting,"
+           " the difference between train and test MSE for this model is not significantly different from the degree 3"
+           " or degree 5 model. ", ""),
+      ])),
+    S(_CH04, "2. **(Model Selection)**", "Solution: Part I, Question 2",
+      ran("cv"),
+      ran("cv-plot"),
+      md("HW2", 17, fixes=[
+          (" For example, in Exercise 1 we thought that the degree 10 model looked comparable with degrees 3 and 5"
+           " based on its performance on one validation dataset!", ""),
+      ])),
+    S(_CH04, "3. **(Uncertainty Estimation)**", "Solution: Part I, Question 3",
+      md("HW2", 19, "**Solution:** "),
+      ran("train-data"),
+      ran("train-plot"),
+      md("HW2", 21, fixes=[("very disimilar to the training data", "very dissimilar to the training data")]),
+      ran("ensemble"),
+      ran("intervals"),
+      ran("ensemble-plot"),
+      md("HW2", 25, fixes=[
+          ("but it's uncertainty doesn't scale", "but its uncertainty doesn't scale"),
+          ("the model we picked via cross-validation in Exercise 3!", "the model we picked via cross-validation in Question 2!"),
+      ]),
+      ran("ensemble-sizes"),
+      ran("ensemble-sizes-plot"),
+      note("a discussion of the ensembles fitted on larger training sets (what happens in the data-rich and"
+           " data-poor regions, and whether any of the intervals are ideal when data is abundant).")),
+]
