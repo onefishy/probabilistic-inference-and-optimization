@@ -332,6 +332,17 @@ def isolate_display_math(text):
         first_line = text[para_start:line_bounds(para_start)[1]]
         marker = LIST_MARKER_RE.match(first_line)
         indent = " " * (len(marker.group(0)) if marker else len(first_line) - len(first_line.lstrip()))
+        # In a list, the innermost item holding the math: its own line, or the nearest item above
+        # whose marker sits left of the math line.
+        math_line = text[line_start:line_bounds(line_start)[1]]
+        k = len(math_line) - len(math_line.lstrip(" "))
+        start = line_start
+        while k and start > para_start:
+            item = LIST_MARKER_RE.match(text[start:line_bounds(start)[1]])
+            if item and (start == line_start or len(item.group(1)) < k):
+                indent = " " * len(item.group(0))
+                break
+            start, _ = line_bounds(start - 1)
 
         if text[line_start:m.start()].strip():      # text before the math on the same line
             out.append(text[pos:m.start()].rstrip() + "\n\n")
@@ -429,8 +440,8 @@ def isolate_display_math_safely(text):
 
 
 ORDERED_ITEM_RE = re.compile(r"^ {0,3}\d{1,9}[.)] +(?=\S)")
-LIST_MARKER_RE = re.compile(r"^( *)([-*+]|\d{1,9}[.)])( +)(?=\S)")
-UNINDENTED_BLOCK_START_RE = re.compile(r"^(?:#|:::|```|<)")
+ITEM_MARKER_RE = re.compile(r"^( *)([-*+]|\d{1,9}[.)])( +)(?=\S)")
+UNINDENTED_BLOCK_START_RE = re.compile(r"^(?:#|:::|```|<(?!br\s*/?>))")  # "<br>text" is paragraph text
 
 
 def myst_counts(text):
@@ -466,7 +477,7 @@ def _numbered_items(lines):
             line = lines[j]
             if ORDERED_ITEM_RE.match(line) and len(line) - len(line.lstrip(" ")) <= indent:
                 break
-            if line[:1].strip() and not LIST_MARKER_RE.match(line) and \
+            if line[:1].strip() and not ITEM_MARKER_RE.match(line) and \
                     (prev_blank or UNINDENTED_BLOCK_START_RE.match(line)):
                 break
             prev_blank = not line.strip()
@@ -491,10 +502,13 @@ def _renest(lines):
             if line.lstrip().startswith("```"):
                 fence_shift = None
             continue
-        m = LIST_MARKER_RE.match(line)
-        if not line.strip() or (s == 0 and not m):  # blank, or a lazy continuation line
+        m = ITEM_MARKER_RE.match(line)
+        if not line.strip():
             out.append(line)
-            prev_blank = not line.strip()
+            prev_blank = True
+            continue
+        if s == 0 and not m:  # an unindented line continuing the text above (a "lazy" line)
+            out.append(" " * stack[-1][3] + line if stack else line)
             continue
         bullet = bool(m) and m.group(2) in "-*+"
         # Text straight after a line of text continues the innermost item (CommonMark reads it as
