@@ -1364,3 +1364,7 @@ SOLUTIONS += [
       ran("ensembles-2"), ran("ensembles-plot-2"),
       _LAB7_NOTE),
 ]
+
+# Pages with no source solution at all.
+GAPS["14-hamiltonian-monte-carlo"] = ["the whole problem set (Exercises 1-8 and 10)"]
+GAPS["lab-09-hidden-markov-models"] = ["the whole lab"]
