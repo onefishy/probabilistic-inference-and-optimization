@@ -37,9 +37,9 @@ The book is organized into six parts:
 5. **Advanced MCMC.** Hamiltonian Monte Carlo, parallel tempering and stochastic HMC.
 6. **Bayesian Deep Learning.** Neural network models, black-box variational inference, automatic differentiation and variational autoencoders.
 
-Each chapter ends with a summary and a list of further readings; many also include exercises. Readings are tagged *Introductory*, *In-Depth* or *Research* where a level was given.
+Each chapter ends with a summary and a list of further readings; many also include exercises, most with collapsed worked solutions. Readings are tagged *Introductory*, *In-Depth* or *Research* where a level was given.
 
-The **Labs** at the end of the book are hands-on companions to the chapters, covering sampling, MCMC, variational inference, `pymc3`, logistic regression, neural network regression and hidden Markov models. Worked solutions are collapsed so that you can attempt each exercise first.
+The **Labs** at the end of the book are hands-on companions to the chapters, covering sampling, MCMC, variational inference, `pymc3`, logistic regression, neural network regression and hidden Markov models. Worked solutions, with their code and plots, are collapsed so that you can attempt each exercise first.
 
 **Prerequisites.** Familiarity with probability, linear algebra, multivariable calculus and Python (NumPy). Linear regression and basic Bayesian modeling at the level of an introductory data science course are helpful.
 

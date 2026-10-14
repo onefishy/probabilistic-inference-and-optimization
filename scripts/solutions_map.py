@@ -1266,3 +1266,101 @@ SOLUTIONS += [
           ("(by computint the various integrals exactly)", "(by computing the various integrals exactly)"),
       ])),
 ]
+
+# ---------------------------------------------------------------------------
+# lab-05-kl-divergence-pymc3 (new: from lab_5.ipynb, which has the worked solution; re-run)
+# ---------------------------------------------------------------------------
+# Fixes: scipy was used without being imported; the reverse-KL row of histograms was titled
+# D_KL(p||q). The pymc3 exercise that only lab_5.ipynb has (a prompt the book does not
+# include) is not added.
+
+_LAB5 = "lab-05-kl-divergence-pymc3"
+LAB_REMOVE[_LAB5] = _lab_cells(_LAB5, [7])
+GAPS[_LAB5] = ["A Pooled Bayesian Model for the Kidney Cancer Data Set (Question)"]
+
+RERUN[_LAB5] = [
+    lit("imports", "import numpy as np\nimport matplotlib.pyplot as plt"),
+    lit("scipy", "import scipy as sp\nimport scipy.stats"),
+    run("optimal-q", "LAB5_SOL", 6),
+    run("contours", "LAB5_SOL", 7),
+    run("marginals", "LAB5_SOL", 8, fixes=[
+        ("ax[1, 0].set_title('marginal distribution of x under q using D_KL(p||q)')",
+         "ax[1, 0].set_title('marginal distribution of x under q using D_KL(q||p)')"),
+        ("ax[1, 1].set_title('marginal distribution of y under q using D_KL(p||q)')",
+         "ax[1, 1].set_title('marginal distribution of y under q using D_KL(q||p)')"),
+    ]),
+]
+
+SOLUTIONS += [
+    S(_LAB5, "## Which KL-Divergence Should We Optimize?", "Solution",
+      ran("scipy"), ran("optimal-q"), ran("contours"), ran("marginals"),
+      note("a written answer to which KL-divergence to use.")),
+]
+
+# ---------------------------------------------------------------------------
+# lab-07-nonlinear-regression (re-run, autograd/sklearn)
+# ---------------------------------------------------------------------------
+# Fixes: the log-likelihood of the observed data now compares the observed y with predictions at
+# the observed x (the NN term used the bootstrap y; the polynomial term scored the bootstrap
+# sample) and includes the N in its constant; Part II bootstraps the network fits, as the prompt
+# asks; 100 trials, as the prompt asks (it said 50 in the code and "1000" in two places in the
+# prompt). Feedforward.fit never resets its traces, so the loop resets them before each fit
+# (otherwise each fit copies every earlier trace).
+# The data-loading and architecture cells (6, 7) and the Part II data generator (17) stay in place.
+
+_LAB7 = "lab-07-nonlinear-regression"
+LAB_REMOVE[_LAB7] = _lab_cells(_LAB7, [5, 8, 9, 10, 11, 12, 13, 14, 16, 18, 19, 20, 21, 22, 23])
+PROMPT_EDITS[_LAB7] = [
+    ("over these 1000 MLE models.<br><br>\n\n3. (**Model Evaluation**) Visualize the predictive distributions of your 1000"
+     " MLE models (i.e. use them to predict on a range of uniformly spaced values from [-8, 8]",
+     "over these 100 MLE models.<br><br>\n\n3. (**Model Evaluation**) Visualize the predictive distributions of your 100"
+     " MLE models (i.e. use them to predict on a range of uniformly spaced values from [-8, 8]"),
+    ("over these 1000 MLE models.<br><br>\n\n3. (**Model Evaluation**) Visualize the predictive distributions of your 1000"
+     " MLE models (i.e. use them to predict on a range of uniformly spaced values from [-11, 11]",
+     "over these 100 MLE models.<br><br>\n\n3. (**Model Evaluation**) Visualize the predictive distributions of your 100"
+     " MLE models (i.e. use them to predict on a range of uniformly spaced values from [-11, 11]"),
+]
+
+_LAB7_LOGLIK = (
+    "log_likelihood = lambda y_actual, y_pred: -0.5 * np.log(2 * np.pi * output_noise) - 0.5 * ((y_actual.flatten() - y_pred.flatten())**2).sum() / output_noise",
+    "log_likelihood = lambda y_actual, y_pred: -0.5 * len(y_actual.flatten()) * np.log(2 * np.pi * output_noise) - 0.5 * ((y_actual.flatten() - y_pred.flatten())**2).sum() / output_noise")
+_LAB7_SCORE = [
+    ("trials = 50\n", "trials = 100\n"),
+    ("    log_lkhd_nn.append(log_likelihood(bootstrap_y, y_train))", "    log_lkhd_nn.append(log_likelihood(y, y_train))"),
+    ("    y_train = linear_model.predict(bootstrap_x_poly)\n    log_lkhd_poly.append(log_likelihood(bootstrap_y, y_train.flatten()))",
+     "    y_train = linear_model.predict(x_poly)\n    log_lkhd_poly.append(log_likelihood(y, y_train.flatten()))"),
+]
+_LAB7_FIT = "    #fit my neural network to minimize MSE on the given data\n    nn.fit(x.reshape((1, -1)), y.reshape((1, -1)), params)\n"
+_LAB7_RESET = ("    #reset the optimization traces kept by the previous fit\n"
+               "    nn.objective_trace = np.empty((1, 1))\n    nn.weight_trace = np.empty((1, nn.D))\n")
+_LAB7_PLOT = [("#plot the 50 neural network and polynomial models", "#plot the neural network and polynomial models")]
+
+RERUN[_LAB7] = [
+    book(f"{_LAB7}-002"), book(f"{_LAB7}-003"), book(f"{_LAB7}-006"), book(f"{_LAB7}-007"),
+    run("fit-one-nn", "LAB7", 8), run("plot-one-nn", "LAB7", 9), run("one-poly", "LAB7", 11),
+    run("ensembles", "LAB7", 13, fixes=[_LAB7_LOGLIK, *_LAB7_SCORE, (_LAB7_FIT, _LAB7_RESET + _LAB7_FIT)]),
+    run("ensembles-plot", "LAB7", 14, fixes=_LAB7_PLOT),
+    book(f"{_LAB7}-017"),
+    run("fit-one-nn-2", "LAB7", 18), run("plot-one-nn-2", "LAB7", 19), run("one-poly-2", "LAB7", 21),
+    run("ensembles-2", "LAB7", 22, fixes=[
+        _LAB7_LOGLIK, *_LAB7_SCORE,
+        (_LAB7_FIT, _LAB7_RESET + "    #fit my neural network to minimize MSE on the bootstrap sample\n"
+                                  "    nn.fit(bootstrap_x.reshape((1, -1)), bootstrap_y.reshape((1, -1)), params)\n"),
+    ]),
+    run("ensembles-plot-2", "LAB7", 23, fixes=_LAB7_PLOT),
+]
+
+_LAB7_NOTE = note("which model class fits the data better, and which gives better aleatoric and epistemic uncertainty.")
+
+SOLUTIONS += [
+    S(_LAB7, "###define rbf activation function", "Solution: Part I",
+      md("LAB7", 5), ran("fit-one-nn"), ran("plot-one-nn"),
+      md("LAB7", 10), ran("one-poly"),
+      md("LAB7", 12), ran("ensembles"), ran("ensembles-plot"),
+      _LAB7_NOTE),
+    S(_LAB7, "## generate training data", "Solution: Part II",
+      md("LAB7", 16), ran("fit-one-nn-2"), ran("plot-one-nn-2"),
+      md("LAB7", 20), ran("one-poly-2"),
+      ran("ensembles-2"), ran("ensembles-plot-2"),
+      _LAB7_NOTE),
+]

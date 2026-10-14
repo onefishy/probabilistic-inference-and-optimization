@@ -203,8 +203,9 @@ TEXT_FIXES = [
 # Labs (from ~/Teaching/AM207_Lectures2020): number -> (notebook path relative to the
 # labs source folder, slug, title, answer cells). Answer cells are worked solutions to
 # the lab's exercise prompts: markdown goes in a collapsed "Solution" dropdown and code
-# is collapsed behind "Show code" (outputs stay visible). Solution notebooks/folders
-# and Lab_8/alpha_hmc.py (a full HMC implementation not used by the lab) are not included.
+# is collapsed behind "Show code" (outputs stay visible). scripts/add_solutions.py then
+# merges each question's answer cells into one collapsed dropdown (see solutions_map.py).
+# Lab_8/alpha_hmc.py (a full HMC implementation not used by the lab) is not included.
 LABS = {
     1: ("Lab_1/lab_1.ipynb", "lab-01-scientific-computing",
         "Review of Scientific Computing in Python", set()),

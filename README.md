@@ -22,11 +22,15 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which builds the book and
 | `chapters/NN-*.ipynb` | One chapter per original lecture: notes, summary, exercises, further reading |
 | `chapters/impact-*.md` | The "Applications and Broader Impact" chapter that closes each part (drafts) |
 | `labs/lab-NN-*.ipynb` | Lab 1–9, from the AM207 `Lab_N` folders; worked solutions collapsed |
+| `figures/solutions/` | Plots shown in the worked solutions (written by `scripts/add_solutions.py`) |
 | `figures/` | Images used by `{figure}` directives |
 | `_static/figs/` | Videos, and images embedded in raw HTML tables |
 | `data/` | Datasets used by the chapters and exercises |
 | `scripts/convert_am207.py` | One-time converter from the course repo |
 | `scripts/am207_map.py` | Every editorial mapping the converter uses (which summary cell goes where, and so on) |
+| `scripts/add_solutions.py` | Inserts the worked solutions into the problem sets and labs |
+| `scripts/solutions_map.py` | Which solution-notebook cells answer which question, and every edit made to them |
+| `scripts/requirements-solutions.txt` | Environment for re-running the corrected solution code |
 
 ## How the chapters were generated (Phase 1)
 
@@ -35,15 +39,25 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which builds the book and
 - turns the RISE slide notebook into a chapter: it strips slide metadata, the course header and logo, and repeated slide titles, and makes the outline an "In this chapter" box;
 - renders cells that were hidden from the slides (`skip`) as collapsible "Going deeper" boxes;
 - makes bare `\begin{aligned}`/`align` blocks render by wrapping them in `$$`, and converts standalone `<img>` tags to `{figure}` directives;
-- appends the lecture summary, the week's reading list, and the matching homework problems. Starter code is kept; solutions are never included;
+- appends the lecture summary, the week's reading list, and the matching homework problems. Starter code is kept; solutions are added afterwards (see [Worked solutions](#worked-solutions));
 - transcodes the `.mov` animations to small H.264 `.mp4` files and shrinks oversized images.
 
 Summary cells and reading groups are routed through the tables in `scripts/am207_map.py`, which also records what was dropped as course logistics. That file also holds:
 
-- `LABS`: which notebook each lab comes from, and which of its cells are worked answers (collapsed in the book). Lab solution notebooks and `Lab_8/alpha_hmc.py` are not included.
+- `LABS`: which notebook each lab comes from, and which of its cells are worked answers. `scripts/add_solutions.py` later merges them into one collapsed dropdown per question.
 - `TEXT_FIXES`: exact-text edits applied after conversion. They point references to homework, in-class exercises and labs at the matching problem set, lab or chapter. Links are written as placeholders (`[[ps:4b]]`, `[[lab:6]]`, `[[ch:14]]`), which the converter turns into links with the right chapter numbers. The converter stops if a fix no longer matches exactly.
 
-**Do not re-run the converter once chapters have been edited by hand.** It rebuilds `chapters/` from scratch. `--only N ...` regenerates just the listed lectures.
+**Do not re-run the converter once chapters have been edited by hand.** It rebuilds `chapters/` from scratch. `--only N ...` regenerates just the listed lectures. After a conversion, run `make solutions` to put the worked solutions back.
+
+## Worked solutions
+
+Every problem-set and lab question that has an answer in the author's solution notebooks (`~/Teaching/AM207_HW2020` and the lab folders) gets one collapsed "Solution" dropdown right after the question. It holds the prose, the code (as a static block), the text output and the plots (saved under `figures/solutions/`).
+
+`make solutions` (re)inserts them; it is idempotent. `scripts/solutions_map.py` records which source cells each dropdown comes from and every edit made to them:
+
+- Only the author's own answers are used. Questions without one get no dropdown; `python scripts/add_solutions.py ... --report` lists them (`GAPS`). Partial answers end with a "*Not covered here: …*" line.
+- Bugs in the source solutions are fixed and the affected code is re-run (`RERUN`), so the code, numbers and plots agree. Sentences that the corrected output contradicts are left out rather than rewritten.
+- Re-runs use a separate environment: `python3.11 -m venv .venv-solutions && .venv-solutions/bin/pip install -r scripts/requirements-solutions.txt`. Executed notebooks are cached in `_build/solution-runs` and reused until the code changes. Code that needs `pymc3` is not re-run; its saved outputs are shown.
 
 ## Revising a chapter (Phase 2)
 
