@@ -386,8 +386,13 @@ def process_page(page, ctx):
     assets = Assets([])
     labels = set()
     by_anchor = {}
+    keys = {}
     for entry in (e for e in SOLUTIONS if e["page"] == page):
         idx = find_anchor(nb, page, entry["after"])
+        # Figure files are named after the title; repeated titles ("Solution") get a number.
+        key = entry.get("key") or figkey(entry["title"])
+        keys[key] = keys.get(key, 0) + 1
+        entry = dict(entry, key=key if keys[key] == 1 else f"{key}-{keys[key]}")
         by_anchor.setdefault(idx, []).append(render_segments(entry, ctx, assets, labels))
     if assets.missing:
         raise SystemExit(f"{page}: missing images {assets.missing}")

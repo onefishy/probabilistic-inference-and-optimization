@@ -1087,3 +1087,108 @@ SOLUTIONS += [
            " failed because it did not import `theano`. Re-running them requires `pymc3`.*"),
       note("a comparison of how well HMC and variational inference capture the target distribution.")),
 ]
+
+# ---------------------------------------------------------------------------
+# lab-02-posterior-simulation (re-run, numpy/scipy)
+# ---------------------------------------------------------------------------
+# Fixes: the Normal-Normal posterior mean used s^2 m instead of sigma^2 m and its variance was
+# missing the 1/(N s^2 + sigma^2) factor; N(mu, 5) has variance 5, so the data and the
+# posterior predictive are drawn with standard deviation sqrt(5), not 5.
+
+_LAB2 = "lab-02-posterior-simulation"
+LAB_REMOVE[_LAB2] = _lab_cells(_LAB2, [7, 8, 9, 11, 12, 13])
+PROMPT_EDITS[_LAB2] = [
+    ("Say that you generated the data using 1,000 flips of a fair coin and observed 4,950 heads.",
+     "Say that you generated the data using 10 flips of a coin whose probability of heads is $\\theta = 0.3$."),
+]
+GAPS[_LAB2] = ["The Beta-Binomial Posterior, Questions 2-3", "The Normal-Normal Model, Question 4"]
+
+RERUN[_LAB2] = [
+    book(f"{_LAB2}-003"),
+    lit("scipy", "import scipy.stats"),
+    run("data", "LAB2", 7),
+    run("posterior", "LAB2", 8),
+    run("predictive", "LAB2", 9),
+    run("normal-posterior", "LAB2", 12, fixes=[
+        ("data = np.random.normal(3, 5, size=50)", "data = np.random.normal(3, 5**0.5, size=N)"),
+        ("mean = (data.sum() * s_squared + s_squared * m) / (N * s_squared + sigma_squared)",
+         "mean = (data.sum() * s_squared + sigma_squared * m) / (N * s_squared + sigma_squared)"),
+        ("variance = sigma_squared * s_squared\n", "variance = sigma_squared * s_squared / (N * s_squared + sigma_squared)\n"),
+    ]),
+    run("normal-predictive", "LAB2", 13, fixes=[
+        ("np.random.normal(sample, 5) for sample in posterior_samples", "np.random.normal(sample, sigma_squared**0.5) for sample in posterior_samples"),
+    ]),
+]
+
+SOLUTIONS += [
+    S(_LAB2, "## The Beta-Binomial Posterior and Posterior Predictive", "Solution: Question 1",
+      ran("data"), ran("posterior")),
+    S(_LAB2, "## The Beta-Binomial Posterior and Posterior Predictive", "Solution: Question 4",
+      ran("predictive"),
+      note("what the comparison says about the model.")),
+    S(_LAB2, "## The Normal-Normal Model", "Solution: Questions 1-2",
+      md("LAB2", 11, "**Solution:** ", fixes=[
+          ("recall from class that for the model", "Recall that for the model"),
+          (r"\frac{s^2\sum_{n=1}^N y_n + s^2 m}{Ns^2 + \sigma^2}, s^2\sigma^2\right)",
+           r"\frac{s^2\sum_{n=1}^N y_n + \sigma^2 m}{Ns^2 + \sigma^2}, \frac{s^2\sigma^2}{Ns^2 + \sigma^2}\right)"),
+      ]),
+      ran("normal-posterior")),
+    S(_LAB2, "## The Normal-Normal Model", "Solution: Question 3",
+      ran("normal-predictive"),
+      note("what the comparison says about the model.")),
+]
+
+# ---------------------------------------------------------------------------
+# lab-04-gibbs-metropolis-hastings (re-run, numpy/scipy)
+# ---------------------------------------------------------------------------
+# Book cell n is source cell n - 1 here (the source keeps a "**Solution:**" inside cell 4).
+# Fixes: the conditional variance of a bivariate Gaussian is sigma^2 (1 - rho^2); numpy's normal
+# takes a standard deviation (the Gibbs conditionals and the mixture proposal passed variances);
+# the np.savetxt cells are dropped. The mixture example's "large" proposal effectively had
+# standard deviation 9 (3**2), so it is now stated as variance 81, keeping the run the source shows.
+
+_LAB4 = "lab-04-gibbs-metropolis-hastings"
+LAB_REMOVE[_LAB4] = _lab_cells(_LAB4, [5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17])
+
+RERUN[_LAB4] = [
+    book(f"{_LAB4}-003"),
+    lit("scipy", "import scipy.stats"),
+    run("gibbs", "LAB4", 5, fixes=[
+        ("#implementation of the posterior distributions", "#implementation of the conditional distributions"),
+        ("sigma_x**2 * (1 - rho), 1)[0]", "(sigma_x**2 * (1 - rho**2))**0.5, 1)[0]"),
+        ("sigma_y**2 * (1 - rho), 1)[0]", "(sigma_y**2 * (1 - rho**2))**0.5, 1)[0]"),
+    ]),
+    run("gibbs-run", "LAB4", 6),
+    run("gibbs-plot", "LAB4", 8),
+    run("mh", "LAB4", 10, fixes=[
+        ("MH_samples, accepts = MH_sampler(S, log_target, init, burn_in, thinning, Sigma=Sigma_prop)",
+         "MH_samples, accepts = MH_sampler(S, log_target, init, burn_in, thinning, Sigma=Sigma_prop)\n"
+         "print('acceptance rate:', accepts)"),
+    ]),
+    run("mh-plot", "LAB4", 11),
+    run("mixture", "LAB4", 13, fixes=[
+        ("np.random.normal(current, sigma_sq**2)", "np.random.normal(current, sigma_sq**0.5)"),
+        ("sigma_sqs[0]**2", "sigma_sqs[0]**0.5"),
+        ("sigma_sqs[1]**2", "sigma_sqs[1]**0.5"),
+    ]),
+    run("mixture-run", "LAB4", 14, fixes=[
+        ("#proposal variance\nsigma_sq_large = 3.\n", "#proposal variance (standard deviation 9)\nsigma_sq_large = 81.\n"),
+    ]),
+    run("mixture-plot", "LAB4", 16),
+]
+
+SOLUTIONS += [
+    S(_LAB4, "## Gibbs on a Bivariate Gaussian", "Solution",
+      md("LAB4", 4, "**Solution:**\n", fixes=[
+          (r"\sigma_Y^2(1 - \rho)", r"\sigma_Y^2(1 - \rho^2)", 2),
+          (r"\sigma_X^2(1 - \rho)", r"\sigma_X^2(1 - \rho^2)", 2),
+      ]),
+      ran("gibbs"), ran("gibbs-run"), ran("gibbs-plot"),
+      note("the effect of the initialization, the second Gaussian, and how the shape of the Gaussian affects the sampler.")),
+    S(_LAB4, "## Gibbs versus Metropolis Hastings on a Bivariate Gaussian", "Solution",
+      ran("mh"), ran("mh-plot"),
+      note(r"the $\sigma^2 I_{2\times 2}$ proposals, and the discussion questions.")),
+    S(_LAB4, "## Metropolis Hastings on a Mixture of Gaussians", "Solution",
+      ran("mixture"), ran("mixture-run"), ran("mixture-plot"),
+      note("a discussion of how the proposal variance and the initialization affect the sampler.")),
+]
