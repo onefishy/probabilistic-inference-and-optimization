@@ -407,3 +407,112 @@ SOLUTIONS += [
       md("HW6", 43),
       note("gradient descent with a learning rate of 50.")),
 ]
+
+# ---------------------------------------------------------------------------
+# 01-overview (ps-hw0): MLE and Bayesian linear regression (Fall 2020 solutions)
+# ---------------------------------------------------------------------------
+
+_CH01 = "01-overview"
+
+PROMPT_EDITS[_CH01] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH01] = ["Part II, Question 3 (the source answers a different question: a histogram of p(y | x=2))",
+               "Part III (Broader Impact), Questions 1-2"]
+
+# Part II re-runs (numpy/sklearn): the interval table swapped slope and intercept.
+RERUN[_CH01] = [
+    book("01-042"),
+    run("data", "HW0", 7),
+    run("fit", "HW0", 11),
+    run("posterior", "HW0", 23, fixes=[("#sampling 100 points from the posterior", "#sampling 200 points from the posterior")]),
+    run("joint", "HW0", 24),
+    run("marginals", "HW0", 25, fixes=[
+        ("#visualize the posterior marginal of w_0\nax[0]", "#visualize the posterior marginal of w_1\nax[0]"),
+        ("#visualize the posterior marginal of w_1\nax[1]", "#visualize the posterior marginal of w_0\nax[1]"),
+    ]),
+    # Column 0 of the samples is the slope w_1 and column 1 the intercept w_0 (x_matrix = [x, 1]).
+    run("intervals", "HW0", 30, fixes=[
+        ("posterior_samples[:, 1]", "posterior_samples[:, @]", 3),
+        ("posterior_samples[:, 0]", "posterior_samples[:, 1]", 3),
+        ("posterior_samples[:, @]", "posterior_samples[:, 0]", 3),
+        ("columns=['posterior mean', ", "columns=['posterior median', "),
+    ]),
+]
+
+SOLUTIONS += [
+    S(_CH01, "1. **(Model Building)**", "Solution: Part I, Question 1",
+      md("HW0", 3, "**Solution:** ", fixes=[
+          (r"\prod_{n=1}^N \frac{1}{\sqrt{2\pi 0.5}} \exp\left\{-\frac{(y - (w_1x + w_0))^2}{2 * 0.5} \right\} = \left(\frac{1}{\sqrt{2\pi 0.5}}\right)^N \exp\left\{-\frac{\sum_{n=1}^N (y - (w_1x + w_0))^2}{2 * 0.5} \right\}",
+           r"\prod_{n=1}^N \frac{1}{\sqrt{2\pi 0.5}} \exp\left\{-\frac{(y_n - (w_1x_n + w_0))^2}{2 * 0.5} \right\} = \left(\frac{1}{\sqrt{2\pi 0.5}}\right)^N \exp\left\{-\frac{\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2}{2 * 0.5} \right\}"),
+      ])),
+    S(_CH01, "2. **(Defining a Learning Objective)**", "Solution: Part I, Question 2",
+      md("HW0", 4, "**Solution:** ", fixes=[("is equivalant to minimizing", "is equivalent to minimizing")])),
+    S(_CH01, "3. **(Model Fitting)**", "Solution: Part I, Question 3",
+      md("HW0", 5, "**Solution:** ", fixes=[
+          ("From #2, we see", "From Question 2, we see"),
+          (r"\frac{\partial}{w_1}", r"\frac{\partial}{\partial w_1}", 2),
+          (r"\frac{\partial}{w_0}", r"\frac{\partial}{\partial w_0}", 2),
+          # Setting the derivative to zero gives sum x y - (1/N) sum x sum y in the numerator.
+          (r"\sum_{n=1}^Nx^2_n + \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n + w_1",
+           r"\sum_{n=1}^Nx^2_n - \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n + w_1"),
+          (r"\sum_{n=1}^N x_n y_n + \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n",
+           r"\sum_{n=1}^N x_n y_n - \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n", 2),
+          ("mean square error of our linear model is concave", "mean square error of our linear model is convex"),
+          ("verify that it is negative definite (the multivariable version of 'the second derivative is negative')",
+           "verify that it is positive definite (the multivariable version of 'the second derivative is positive')"),
+          (r"\mathbf{x}_n = [x_1\;\; 1]", r"\mathbf{x}_n = [x_n\;\; 1]"),
+      ])),
+    S(_CH01, "4. **(Model Evaluation)**", "Solution: Part I, Question 4",
+      md("HW0", 6, "**Solution:**\n"),
+      code("HW0", 7),
+      md("HW0", 8),
+      code("HW0", 9),
+      md("HW0", 10),
+      code("HW0", 11, out=False),
+      md("HW0", 12),
+      code("HW0", 13),
+      md("HW0", 14, fixes=[("From the histogram of the residuals (on the left)", "From the histogram of the residuals (on the right)")]),
+      note("the clinical interpretation of the parameters $w_0, w_1$.")),
+    S(_CH01, "1. **(Inference)**", "Solution: Part II, Question 1",
+      md("HW0", 21, "**Solution:** ", fixes=[
+          ("we introduced in Part I Problem 3", "we introduced in Part I, Question 3"),
+          (r"(w_1x_n + w_0)^2)", r"(w_1x_n + w_0))^2", 2),
+          # The likelihood covariance is N x N.
+          (r"I_{2\times 2}", r"I_{N}", 4),
+          (r"I_{2\times2}", r"I_{N}"),
+          ("is the 2x2 identity matrix", r"is the $N\times N$ identity matrix"),
+          # Keep the -1/2 of the Gaussian exponent, and complete the square with b A^{-1} b^T.
+          (r"\mathrm{exp}\left\{ \mathbf{y}^\top\Sigma^{-1}\mathbf{y} + m^\top S^{-1}m \right\}",
+           r"\mathrm{exp}\left\{ -\frac{1}{2}\left(\mathbf{y}^\top\Sigma^{-1}\mathbf{y} + m^\top S^{-1}m\right) \right\}"),
+          (r"\mathrm{exp}\left\{ w^\top \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) w - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right) w\right\}",
+           r"\mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) w - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right) w\right)\right\}", 2),
+          (r"\mathrm{exp}\left\{ w^\top A w - 2b w\right\}",
+           r"\mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top A w - 2b w\right)\right\}", 2),
+          ("add and subtract the term $bA b^\\top$", "add and subtract the term $bA^{-1} b^\\top$"),
+          (r"\mathrm{exp}\left\{ w^\top A w - 2b w + bA b^\top- bA b^\top\right\}",
+           r"\mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top A w - 2b w + bA^{-1} b^\top- bA^{-1} b^\top\right)\right\}"),
+          (r"\mathrm{exp}\left\{ (w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top) - bA b^\top\right\}",
+           r"\mathrm{exp}\left\{ -\frac{1}{2}\left((w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top) - bA^{-1} b^\top\right)\right\}"),
+          (r"\mathrm{exp}\left\{ - b^\top A b^\top\right\}\mathrm{exp}\left\{ (w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}",
+           r"\mathrm{exp}\left\{ \frac{1}{2} bA^{-1} b^\top\right\}\mathrm{exp}\left\{ -\frac{1}{2}(w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}"),
+          (r"const * \mathrm{exp}\left\{ (w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}.",
+           r"const * \mathrm{exp}\left\{ -\frac{1}{2}(w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}."),
+          ("with mean $A^{-1}b$ and", "with mean $A^{-1}b^\\top$ and"),
+      ])),
+    S(_CH01, "2. **(Model Interpretation)**", "Solution: Part II, Question 2",
+      md("HW0", 22, "**Solution:** ", fixes=[
+          ("From #1, we see", "From Question 1, we see"),
+          ("by sampling 100 points from", "by sampling 200 points from"),
+          ("of these 100 samples", "of these 200 samples"),
+      ]),
+      ran("posterior"),
+      ran("joint"),
+      ran("marginals"),
+      md("HW0", 26, fixes=[
+          ("but does they cannot tell you", "but they cannot tell you"),
+          ("such correlations is important", "such correlations are important"),
+      ]),
+      text("We can also summarize each marginal posterior by its median and its 95% interval:"),
+      ran("intervals"),
+      note("the empirical variances of the marginal posteriors, and what the widths of these intervals "
+           "say about our confidence in the estimates.")),
+]
