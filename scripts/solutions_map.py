@@ -516,3 +516,75 @@ SOLUTIONS += [
       note("the empirical variances of the marginal posteriors, and what the widths of these intervals "
            "say about our confidence in the estimates.")),
 ]
+
+# ---------------------------------------------------------------------------
+# 03-bayesian-modeling (ps-hw1): multinomial/Dirichlet models of product ratings (Fall 2020)
+# ---------------------------------------------------------------------------
+
+_CH03 = "03-bayesian-modeling"
+
+PROMPT_EDITS[_CH03] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH03] = ["Part III (Broader Impact), Question 1"]
+
+# Part II re-runs (numpy): the posterior predictive drew 160 Lotus ratings; there are 163.
+RERUN[_CH03] = [
+    book("03-044"),
+    run("posterior-samples", "HW1", 10),
+    run("posterior-mean", "HW1", 13),
+    run("predictive", "HW1", 16, fixes=[("np.random.multinomial(160, sample", "np.random.multinomial(163, sample")]),
+    run("predictive-percent", "HW1", 17),
+    run("credible-intervals", "HW1", 20),
+]
+
+SOLUTIONS += [
+    S(_CH03, "Exercise: Part I: A Maximum Likelihood Model", "Solution: Part I, Question 1",
+      md("HW1", 4, "**Solution:** ", fixes=[("{10!6!10!27!109!}", "{10!6!10!28!109!}")])),
+    S(_CH03, "2. **(Model Fitting)**", "Solution: Part I, Question 2",
+      md("HW1", 5, "**Solution:**\n", fixes=[
+          ("From lecture, we know that the solution", "From [[ch:2]], we know that the solution"),
+          ("Since the likelihood is concave and the constraints affine",
+           "Since the log-likelihood is concave and the constraint is affine"),
+          # The Lotus counts 10 + 6 + 10 + 28 + 109 add up to 163.
+          ("{162}", "{163}", 5),
+          ("these estimates of $\\theta$ are precise the percentages", "these estimates of $\\theta$ are precisely the percentages"),
+      ])),
+    S(_CH03, "3. **(Model Interpretation)**", "Solution: Part I, Question 3",
+      md("HW1", 6, "**Solution:** ", fixes=[
+          ("total number of reveiws", "total number of reviews"),
+          ("equally reasonablbe", "equally reasonable"),
+      ])),
+    S(_CH03, "Exercise: Part II: A Bayesian Model", "Solution: Part II, Question 1",
+      md("HW1", 7, "**Solution:** ")),
+    S(_CH03, "2. **(Inference)** Analytically derive the posterior distribution (using the likelihoods",
+      "Solution: Part II, Question 2",
+      md("HW1", 8, "**Solution:** ")),
+    # The source's second prior is alpha = 1/5, not the book's [1, 1, 1, 1, 1]; that part is left out.
+    S(_CH03, "3. **(The Maximum A Posterior Estimate)**", "Solution: Part II, Question 3",
+      md("HW1", 9, "**Solution:**\n", "But to what extend"),
+      md("HW1", 9, "Rather than analytically computing", keep_start=True, fixes=[
+          (r"unimodal when $\alpha_i> 1$. This estimation", r"unimodal when $\alpha_i> 1$, this estimation"),
+      ]),
+      ran("posterior-samples"),
+      md("HW1", 11),
+      note(r"the MAP estimates under the uniform prior $\alpha = [1, 1, 1, 1, 1]$, and the conjecture about"
+           " the effect of the prior.")),
+    S(_CH03, "4. **(The Posterior Mean Estimate)**", "Solution: Part II, Question 4",
+      md("HW1", 12, "**Solution:** "),
+      ran("posterior-mean"),
+      md("HW1", 14)),
+    S(_CH03, "5. **(The Posterior Predictive Estimate)**", "Solution: Part II, Question 5",
+      md("HW1", 15, "**Solution:** ", fixes=[("parametrizes a distinct binomial model", "parametrizes a distinct multinomial model")]),
+      ran("predictive"),
+      ran("predictive-percent"),
+      md("HW1", 18)),
+    S(_CH03, "6. **(Model Evaluation)**", "Solution: Part II, Question 6",
+      md("HW1", 19, "**Solution:** ", fixes=[("just as in Homework #0, we empirically", "Just as in the [[ps:0]], we empirically")]),
+      ran("credible-intervals"),
+      md("HW1", 21, fixes=[
+          ("have comparible width", "have comparable width"),
+          ("may be unreasonble to use", "may be unreasonable to use"),
+      ])),
+    S(_CH03, "2. **(Comparison of Ranking Systems)**", "Solution: Part III, Question 2",
+      md("HW1", 22, "**Solution:** \n"),
+      note("which point estimate of $\\theta$, if any, to use to rank the two products.")),
+]
