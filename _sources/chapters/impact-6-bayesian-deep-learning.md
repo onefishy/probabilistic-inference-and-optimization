@@ -46,7 +46,7 @@ Rather than explaining why the model made a decision, it's often more helpful to
 ## Right for the Right Reasons?
 In *An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets*, the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes. 
 
-Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.
+Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highlighted regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.
 
 
 ```{figure} ../figures/shap.png

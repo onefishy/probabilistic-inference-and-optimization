@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -439,7 +440,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-elbo-via-coordinate-ascent">Maximizing the ELBO via Coordinate Ascent</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-gaussian-mixture-models">Bayesian Gaussian Mixture Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-for-bayesian-gaussian-mixture-models">Variational Inference for Bayesian Gaussian Mixture Models</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemenation-of-cavi-for-bayesian-gmm">Implemenation of CAVI for Bayesian GMM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-of-cavi-for-bayesian-gmm">Implementation of CAVI for Bayesian GMM</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-elbo-during-training">Sanity Check: ELBO During Training</a></li>
 </ul>
 </li>
@@ -497,27 +498,26 @@ document.write(`
 <section id="bayesian-latent-variable-models">
 <h2><span class="section-number">12.1. </span>Bayesian Latent Variable Models<a class="headerlink" href="#bayesian-latent-variable-models" title="Link to this heading">#</a></h2>
 <p>Overfitting is an always a concern when using MLE model parameters. We can mitigate the effect of outliers in the data on the model we learn by treating the parameters as random variables and placing priors on them.</p>
-<p>In a latent variable model, maximum liklihood inference treats parameters <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> as unknown constants and produces point-estimates for them. In a Bayesian latent variable model, <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> are random variables and we derive the posterior distribution over them.</p>
+<p>In a latent variable model, maximum likelihood inference treats parameters <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> as unknown constants and produces point-estimates for them. In a Bayesian latent variable model, <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\phi\)</span> are random variables and we derive the posterior distribution over them.</p>
 <figure class="align-center" id="fig-10-bayesian-model">
 <a class="reference internal image-reference" href="../_images/bayesian_model.jpg"><img alt="../_images/bayesian_model.jpg" src="../_images/bayesian_model.jpg" style="width: 669px;" />
 </a>
 </figure>
-<p>That is, we want to infer
+<p>That is, we want to infer</p>
 <div class="math notranslate nohighlight">
 \[p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N, a, b) = \frac{p(\theta | a)p(\phi|b)\prod_{n}p(Y_n|Z_n, \phi)p(Z_n|\theta)}{\prod_{n} p(Y_n)}.\]</div>
-</p>
 <section id="challenges-in-bayesian-inference">
 <h3>Challenges in Bayesian Inference<a class="headerlink" href="#challenges-in-bayesian-inference" title="Link to this heading">#</a></h3>
 <p>Unfortunately, most Bayesian models with multiple types of random variables (like Bayesian latent variable models) have complex posteriors that do not match known distributions. <em><strong>Exact inference</strong></em> is not possible.</p>
 <p>Sampling from the posterior may not always be the best option because:</p>
 <ol class="arabic simple">
 <li><p>Convergence of samplers may be slow (due to high dimensionality of the distribution or multimodality)<br><br></p></li>
-<li><p>Samplers like Metropolis-Hastings requires evaluating the liklihood <span class="math notranslate nohighlight">\(\prod_n p(Y_n | Z_n, \phi)\)</span> in each iteration, if the observed data is large (<span class="math notranslate nohighlight">\(N\)</span> is in the millions), this computation is expensive.</p></li>
+<li><p>Samplers like Metropolis-Hastings requires evaluating the likelihood <span class="math notranslate nohighlight">\(\prod_n p(Y_n | Z_n, \phi)\)</span> in each iteration, if the observed data is large (<span class="math notranslate nohighlight">\(N\)</span> is in the millions), this computation is expensive.</p></li>
 </ol>
 </section>
 <section id="the-idea-of-variational-inference">
 <h3>The Idea of Variational Inference<a class="headerlink" href="#the-idea-of-variational-inference" title="Link to this heading">#</a></h3>
-<p><strong>Idea: (Approximate Inferenec)</strong> Approximate the hard posterior <span class="math notranslate nohighlight">\(p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N)\)</span> with a distribution <span class="math notranslate nohighlight">\(q\)</span> that is easy to sample from (like a Gaussian). Any computation involving the posterior can now be done with <span class="math notranslate nohighlight">\(q\)</span>.</p>
+<p><strong>Idea: (Approximate Inference)</strong> Approximate the hard posterior <span class="math notranslate nohighlight">\(p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N)\)</span> with a distribution <span class="math notranslate nohighlight">\(q\)</span> that is easy to sample from (like a Gaussian). Any computation involving the posterior can now be done with <span class="math notranslate nohighlight">\(q\)</span>.</p>
 <p>This approximation of <span class="math notranslate nohighlight">\(p(\theta, \phi, Z_1, \ldots, Z_N|Y_1, \ldots, Y_N)\)</span> with a distribution <span class="math notranslate nohighlight">\(q\)</span> is called <em><strong>variational inference</strong></em>.</p>
 <figure class="align-center" id="fig-10-variational">
 <a class="reference internal image-reference" href="../_images/variational.jpg"><img alt="../_images/variational.jpg" src="../_images/variational.jpg" style="width: 578px;" />
@@ -531,11 +531,10 @@ document.write(`
 <p>A. <em><strong>(Variational family)</strong></em> a family <span class="math notranslate nohighlight">\(Q\)</span> of candidate distributions for approximating <span class="math notranslate nohighlight">\(p\)</span>. The members of <span class="math notranslate nohighlight">\(Q\)</span> are called the <em><strong>variational distributions</strong></em>.</p>
 <p><strong>Our Choice:</strong>  we assume that the joint <span class="math notranslate nohighlight">\(q(\psi)\)</span> factorizes completely over each dimension of <span class="math notranslate nohighlight">\(\psi\)</span>, i.e. <span class="math notranslate nohighlight">\(q(\psi)= \prod_{i=1}^I q(\psi_i | \lambda_i)\)</span>. This is called the <em><strong>mean field assumption</strong></em>. What can go wrong with this design choice?</p>
 <p>B. <em><strong>(Divergence measure)</strong></em> a divergence measure to quantify the difference between <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
-<p><strong>Our Choice:</strong>
+<p><strong>Our Choice:</strong></p>
 <div class="math notranslate nohighlight">
 \[D_{\text{KL}}(q(\psi | \lambda) \| p(\psi | Y_1, \ldots, Y_N)) = \mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left( \frac{q(\psi | \lambda)}{p(\psi | Y_1, \ldots, Y_N)} \right) \right]\]</div>
-
-What can go wrong with this design choice?</p>
+<p>What can go wrong with this design choice?</p>
 </section>
 <section id="variational-inference-as-optimization">
 <h3>Variational Inference as Optimization<a class="headerlink" href="#variational-inference-as-optimization" title="Link to this heading">#</a></h3>
@@ -563,8 +562,8 @@ What can go wrong with this design choice?</p>
 \nabla_{\lambda}\,\underbrace{\mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left(\frac{p(\psi, Y_1, \ldots, Y_N)}{q(\psi | \lambda)} \right)\right]}_{ELBO(\lambda)}.
 \end{aligned}\]</div>
 <p>In particular, the issue is that the gradient taken is with respect to the parameter <span class="math notranslate nohighlight">\(\psi\)</span> of the distribution over which we are taking the expectation - i.e. we cannot push the gradient into the expectation.</p>
-<p>Today we will maximize the <span class="math notranslate nohighlight">\(ELBO\)</span> using coordinate ascent (just as in the case of EM). But you’ll see that <em><strong>coordinate ascent variational inference</strong></em> requires that we perform model specific computations (often in closed form). This restrict the class of Bayesian models for which we can perform variational inference.</p>
-<p>Two of the major development we will cover later in the semester address how to estimate this gradient <strong>efficiently and without bias</strong>.</p>
+<p>In this chapter, we will maximize the <span class="math notranslate nohighlight">\(ELBO\)</span> using coordinate ascent (just as in the case of EM). But you’ll see that <em><strong>coordinate ascent variational inference</strong></em> requires that we perform model specific computations (often in closed form). This restrict the class of Bayesian models for which we can perform variational inference.</p>
+<p>Two of the major developments we will cover in <a class="reference internal" href="17-black-box-vi.html"><span class="doc">Chapter 22</span></a> address how to estimate this gradient <strong>efficiently and without bias</strong>.</p>
 </section>
 <section id="coordinate-ascent-variational-inference">
 <h3>Coordinate Ascent Variational Inference<a class="headerlink" href="#coordinate-ascent-variational-inference" title="Link to this heading">#</a></h3>
@@ -576,9 +575,9 @@ What can go wrong with this design choice?</p>
 <section id="maximizing-the-elbo-via-coordinate-ascent">
 <h3>Maximizing the ELBO via Coordinate Ascent<a class="headerlink" href="#maximizing-the-elbo-via-coordinate-ascent" title="Link to this heading">#</a></h3>
 <p>The coordinate ascent algorithm maximizes an objective function <span class="math notranslate nohighlight">\(ELBO(\lambda)\)</span> by iteratively maximizing over <span class="math notranslate nohighlight">\(\lambda_i\)</span>, holding constant <span class="math notranslate nohighlight">\(\lambda_{-i} = [\lambda_1\; \ldots\; \lambda_{i-1}\; \lambda_{i+1}\; \ldots\; \lambda_{I}]\)</span>.</p>
-<p>The <em><strong>coordinate ascent variational inference algorithm</strong></em>:
-0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\lambda^{(0)}\)</span></p>
-<ol class="arabic">
+<p>The <em><strong>coordinate ascent variational inference algorithm</strong></em>:</p>
+<ol class="arabic" start="0">
+<li><p><strong>Initialization:</strong> pick an initial value <span class="math notranslate nohighlight">\(\lambda^{(0)}\)</span></p></li>
 <li><p><strong>Coordinate-wise maximization:</strong></p>
 <p>Repeat for <span class="math notranslate nohighlight">\(j=1, \ldots, J\)</span> iterations:</p>
 <p><span class="math notranslate nohighlight">\(\quad\quad\)</span> Cycle thru <span class="math notranslate nohighlight">\(i=1, \ldots, I\)</span> coordinates:</p>
@@ -596,7 +595,7 @@ What can go wrong with this design choice?</p>
 \]</div>
 <p>To maximize the <span class="math notranslate nohighlight">\(ELBO\)</span>, we will</p>
 <ol class="arabic simple">
-<li><p>use the mean-field assumption to break up the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi \sim q(\psi|\lambda)}\)</span> into an interated expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}\)</span></p></li>
+<li><p>use the mean-field assumption to break up the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi \sim q(\psi|\lambda)}\)</span> into an iterated expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}\)</span></p></li>
 <li><p>we will rewrite the outer expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\)</span> as a negative KL-divergence</p></li>
 <li><p>we will maximize the negative KL-divergence by setting the two arguments of the divergence equal to each other</p></li>
 </ol>
@@ -787,8 +786,8 @@ q(\mu_k | m_k, s_k^2) &amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q
 \[s^2_k = \frac{1}{2B} = \frac{1}{\sum_{n=1}^N \phi_{nk} + \frac{1}{\sigma_0^2}}.\]</div>
 </div>
 </section>
-<section id="implemenation-of-cavi-for-bayesian-gmm">
-<h3>Implemenation of CAVI for Bayesian GMM<a class="headerlink" href="#implemenation-of-cavi-for-bayesian-gmm" title="Link to this heading">#</a></h3>
+<section id="implementation-of-cavi-for-bayesian-gmm">
+<h3>Implementation of CAVI for Bayesian GMM<a class="headerlink" href="#implementation-of-cavi-for-bayesian-gmm" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -885,7 +884,7 @@ q(\mu_k | m_k, s_k^2) &amp;\propto \exp\left\{ \mathbb{E}_{Z \sim q(Z | \phi), q
 </section>
 <section id="sanity-check-elbo-during-training">
 <h3>Sanity Check: ELBO During Training<a class="headerlink" href="#sanity-check-elbo-during-training" title="Link to this heading">#</a></h3>
-<p>Remember that ploting the posterior predictive against actual data is not always an option (e.g. high-dimensional data).</p>
+<p>Remember that plotting the posterior predictive against actual data is not always an option (e.g. high-dimensional data).</p>
 <p>A sanity check for that your CAVI algorithm has been implemented correctly is to plot the ELBO (or alternatively, the observed data log-likelihood) over the iterations of the algorithm:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -908,7 +907,7 @@ ELBO(\phi, m, s^2) = \mathbb{E}_{Z, \mu\sim q(Z, \mu | \phi, m, s^2)} \left[\log
 </section>
 <section id="exercises">
 <h2><span class="section-number">12.2. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-understanding-em-and-variational-inference">
 <span id="ps-hw5a"></span><h3>Problem Set: Understanding EM and Variational Inference<a class="headerlink" href="#problem-set-understanding-em-and-variational-inference" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -953,10 +952,10 @@ ELBO(\phi, m, s^2) = \mathbb{E}_{Z, \mu\sim q(Z, \mu | \phi, m, s^2)} \left[\log
 </div>
 </details>
 </div>
-<p>In this problem, we will draw concrete connections between EM and variational inference by applying both methods to a certain class of latent variable models. You’ll need to refer to relevant lecture notes on the derivations of EM and the derivation of the variational inference objective. This is an essay question that requires you to engage with complex derivations at a productive but still high level. No implementation is required.</p>
+<p>In this problem, we will draw concrete connections between EM and variational inference by applying both methods to a certain class of latent variable models. You’ll need to refer to the derivation of EM in <a class="reference internal" href="09-latent-variable-models.html"><span class="doc">Chapter 11</span></a> and the derivation of the variational inference objective earlier in this chapter. This is an essay question that requires you to engage with complex derivations at a productive but still high level. No implementation is required.</p>
 <section id="non-bayesian-latent-variable-model">
 <h4>Non-Bayesian Latent Variable Model<a class="headerlink" href="#non-bayesian-latent-variable-model" title="Link to this heading">#</a></h4>
-<p>Recall the class of latent variable models we studied in lecture:</p>
+<p>Recall the class of latent variable models we studied in <a class="reference internal" href="09-latent-variable-models.html"><span class="doc">Chapter 11</span></a>:</p>
 <figure class="align-center" id="fig-10-hw5-graphical-model">
 <a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 296px;" />
 </a>
@@ -969,23 +968,152 @@ ELBO(\phi, m, s^2) = \mathbb{E}_{Z, \mu\sim q(Z, \mu | \phi, m, s^2)} \left[\log
 <a class="reference internal image-reference" href="../_images/bayesian_model.jpg"><img alt="../_images/bayesian_model.jpg" src="../_images/bayesian_model.jpg" style="width: 456px;" />
 </a>
 </figure>
-<ol class="arabic simple">
-<li><p><strong>(Comparing ELBOs)</strong> For the above type of Bayesian latent variable model, write down the ELBO for variational inference with a mean field variational family. Compare the variational inference ELBO for the Bayesian model to the expectation maximization ELBO for the non-Bayesian model. What are the differences and similarities between these two ELBOs?</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Comparing ELBOs)</strong> For the above type of Bayesian latent variable model, write down the ELBO for variational inference with a mean field variational family. Compare the variational inference ELBO for the Bayesian model to the expectation maximization ELBO for the non-Bayesian model. What are the differences and similarities between these two ELBOs?</p>
 <p>In both EM and variational inference we optimize the ELBO. Compare the update steps in EM to the update steps in Coordinate Ascent Variational Inference, draw a concrete analogy between them.</p>
 <p><em><strong>Hint:</strong></em> To make both ELBO’s comparable, make sure that both are in terms of <span class="math notranslate nohighlight">\(z, y, \theta, \phi\)</span>.
 <br><br></p>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Comparing ELBOs and KL-divergences)</strong> Recall that the original objective of variational inference is to minimize a KL-divergence, we rewrote the objective to be that of maximizing the ELBO. Why is directly minimizing the KL-divergence in the original objective difficult (be specific about wherein the difficulty lies)?</p></li>
-</ol>
-<p>In the derivation of the E-step of EM, we reframed an maximization of the ELBO problem as a minimization of a KL-divergence problem. In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximize (use the instantiation of the E-step for Gaussian Mixture Models in Lecture 7 to help support your answer)?</p>
-<p>In the notes for Lecture 8, we introduce a way to maximize the variational inference ELBO – through coordinate ascent. In the derivation of the updates for coordinate ascent, there is a place where we reframed an maximization of the ELBO problem as an equivalent minimization of a KL-divergence problem. Write down the exact form of this equivalence (the two expressions are separated in the derivation by a bunch of lines, you’ll need to identify both parts that you need). In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximization (use the instantiation of the update for Gaussian Mixture Models in Lecture 8 to help support your answer)?</p>
+</li>
+<li><p><strong>(Comparing ELBOs and KL-divergences)</strong> Recall that the original objective of variational inference is to minimize a KL-divergence, we rewrote the objective to be that of maximizing the ELBO. Why is directly minimizing the KL-divergence in the original objective difficult (be specific about wherein the difficulty lies)?</p>
+<p>In the derivation of the E-step of EM, we reframed an maximization of the ELBO problem as a minimization of a KL-divergence problem. In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximize (use the instantiation of the E-step for Gaussian Mixture Models in <a class="reference internal" href="09-latent-variable-models.html"><span class="doc">Chapter 11</span></a> to help support your answer)?</p>
+<p>Earlier in this chapter, we introduced a way to maximize the variational inference ELBO – through coordinate ascent. In the derivation of the updates for coordinate ascent, there is a place where we reframed an maximization of the ELBO problem as an equivalent minimization of a KL-divergence problem. Write down the exact form of this equivalence (the two expressions are separated in the derivation by a bunch of lines, you’ll need to identify both parts that you need). In this case, why was the KL-divergence easier to minimize and the ELBO harder to maximization (use the instantiation of the update for Gaussian Mixture Models earlier in this chapter to help support your answer)?</p>
 <p>Based on this analysis, can you draw some general conclusions about when we’d prefer to minimize the KL-divergence versus when we’d prefer to maximize the ELBO?<br><br></p>
-<ol class="arabic simple" start="3">
+</li>
 <li><p><strong>(The Mean Field Assumption and Coordinate Ascent)</strong>  Describe exactly when and how the mean field assumption is used in the derivation of the coordinate ascent updates. <br><br></p></li>
-<li><p><strong>(Generalizability of CAVI)</strong> Summarize what kind of derivations/math is needed in order instantiate Coordinate Ascent Variational Inference (CAVI) for a given new model (look at what we did for Gaussian Mixture Models in Lecture 8 and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using CAVI for Bayesian inference in general. What do these draw backs imply about the practicality of variational inference as an inference method?<br><br></p></li>
-<li><p><strong>(Generalizability of EM)</strong> Summarize what kind of derivations/math is needed in order instantiate Expectation Maximization (EM) for a given new model (look at what we did for Gaussian Mixture Models in Lecture 9 and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using EM for MLE inference in general. What do these draw backs imply about the practicality of EM as an inference method?</p></li>
+<li><p><strong>(Generalizability of CAVI)</strong> Summarize what kind of derivations/math is needed in order instantiate Coordinate Ascent Variational Inference (CAVI) for a given new model (look at what we did for Gaussian Mixture Models earlier in this chapter and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using CAVI for Bayesian inference in general. What do these draw backs imply about the practicality of variational inference as an inference method?<br><br></p></li>
+<li><p><strong>(Generalizability of EM)</strong> Summarize what kind of derivations/math is needed in order instantiate Expectation Maximization (EM) for a given new model (look at what we did for Gaussian Mixture Models in <a class="reference internal" href="09-latent-variable-models.html"><span class="doc">Chapter 11</span></a> and predict what you’d need to do for a new model). Based on this, discuss the potential draw backs of using EM for MLE inference in general. What do these draw backs imply about the practicality of EM as an inference method?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Question 1</p>
+<p>Recall that the EM ELBO for this type of latent variable model is</p>
+<div class="math notranslate nohighlight">
+\[
+ELBO^{\text{EM}}(\theta, \phi, q(z)) = \mathbb{E}_{z\sim q(z)}\left[\log\left(\frac{p(y, z|\theta, \phi)}{q(z)}\right)\right]
+\]</div>
+<p>whereas the variational inference ELBO for the Bayesian version of this type of  latent variable model is</p>
+<div class="math notranslate nohighlight">
+\[
+ELBO^{\text{VI}}(q(\theta|\lambda_2), q(\phi|\lambda_1), q(z|\lambda_3)) = \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log\left(\frac{p(y, z, \theta, \phi|a, b)}{q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\right)\right]
+\]</div>
+<p>The similarity between these two ELBO is that they are both expected log ratios between a joint distribution <span class="math notranslate nohighlight">\(p\)</span> and an auxiliary or approximating distribution <span class="math notranslate nohighlight">\(q\)</span>. In the case of EM, we are measuring the expected (under <span class="math notranslate nohighlight">\(q\)</span>) log ratio between the auxiliary distribution <span class="math notranslate nohighlight">\(q(z)\)</span> and the joint <span class="math notranslate nohighlight">\(p(y, z|\theta, \phi)\)</span>; in the case of variational inference we are measuring the expected log ratio between the variational distribution <span class="math notranslate nohighlight">\(q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)\)</span> and the joint <span class="math notranslate nohighlight">\(p(y, z, \theta, \phi|a, b)\)</span>.</p>
+<p>The major difference is how the parameters <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> are treated in the two ELBOs. For EM, we treat <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> as point masses, in variational inference we treat them as random variables with distributions. In EM, we optimize the ELBO with respect to <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> as point-masses where as in variational inference we optimize the distribution of <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>. Note that the random variable <span class="math notranslate nohighlight">\(z\)</span> plays the same role in both ELBOs.</p>
+<p><em><strong>For those interested in a deeper connection:</strong></em> We can actually prove that EM is a special case of variational inference, by:</p>
+<ol class="arabic simple">
+<li><p>imposing flat priors for <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span></p></li>
+<li><p>performing variational inference on this model with delta distributions for <span class="math notranslate nohighlight">\(q(\theta)\)</span> and <span class="math notranslate nohighlight">\(q(\phi)\)</span></p></li>
+</ol>
+<p>You’ll derive the same ELBO for variational inference as that for the EM estimation of the MLE of <span class="math notranslate nohighlight">\(\theta, \phi\)</span>.</p>
+<p><em>Not covered here: a comparison of the EM update steps with the CAVI update steps.</em></p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Question 2</p>
+<p><strong>Variational Objective</strong>
+In variational inference, we are interested in finding a tractable distribution <span class="math notranslate nohighlight">\(q\)</span> that best approximates a complex distribution <span class="math notranslate nohighlight">\(p\)</span>. For the latent variable model considered in this problem, the variational objective is</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{\lambda}{\min} D_{\text{KL}}[q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3) \| p(z, \theta, \phi|y, a, b)] = \underset{\lambda}{\min} \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log \left( \frac{q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}{p(z, \theta, \phi|y, a, b)}\right) \right]
+\]</div>
+<p>Recall that the posterior <span class="math notranslate nohighlight">\(p(z, \theta, \phi|y, a, b)\)</span> is actually equal to</p>
+<div class="math notranslate nohighlight">
+\[
+p(z, \theta, \phi|y, a, b) = \frac{p(y, z, \theta, \phi| a, b)}{p(y | a, b)} = \frac{p(y, z, \theta, \phi| a, b)}{\int p(y, z, \theta, \phi| a, b)\, dz\, d\theta\, d\phi}
+\]</div>
+<p>So when we substitute this into the expression of the KL-divergence, we can write:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+D_{\text{KL}}[q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3) \| p(z, \theta, \phi|y, a, b)] &amp;= \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log \left( \frac{q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}{p(z, \theta, \phi|y, a, b)}\right) \right]\\
+=&amp; \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log \left( \frac{q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)p(y | a, b)}{p(y, z, \theta, \phi| a, b)}\right) \right]\\
+=&amp; \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3) + \log p(y | a, b) - \log p(y, z, \theta, \phi| a, b) \right]\\
+=&amp; \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)\right] \\
+&amp;+ \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log p(y | a, b)\right] \\
+&amp;- \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log p(y, z, \theta, \phi| a, b) \right]\\
+\end{aligned}\end{split}\]</div>
+<p>Note that the second term in the KL-divergence above is hard to compute:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log p(y | a, b)\right] = \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log \int p(y, z, \theta, \phi| a, b)\, dz\, d\theta\, d\phi\right]
+\]</div>
+<p>Now, when we work with the ELBO for variational inference, we have that</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+ELBO^{\text{VI}}(q(\theta|\lambda_2), q(\phi|\lambda_1), q(z|\lambda_3)) &amp;= \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log\left(\frac{p(y, z, \theta, \phi|a, b)}{q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\right)\right]\\
+&amp;= \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log p(y, z, \theta, \phi| a, b) \right] - \mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)} \left[\log q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)\right]
+\end{aligned}\end{split}\]</div>
+<p>That is, the problematic term <span class="math notranslate nohighlight">\(\mathbb{E}_{z, \phi, \theta \sim q(z, \phi, \theta |\lambda_1, \lambda_2, \lambda_3)}\left[\log p(y | a, b)\right]\)</span> is gone!</p>
+<p>This is why we say that the ELBO is easier to work with than the KL for variational inference.</p>
+<p><strong>The E-step in EM</strong>
+In the E-step of EM we had to compute</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{q}{\max} ELBO^{\text{EM}}(\theta^*, \phi^*, q(z)) = \underset{q}{\max} \mathbb{E}_{z\sim q(z)}\left[\log\left(\frac{p(y, z|\theta^*, \phi^*)}{q(z)}\right)\right]
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta^*, \phi^*\)</span> are the optimal values we found in the <span class="math notranslate nohighlight">\(M\)</span>-step.</p>
+<p>In order to optimize this ELBO, we needed to take the “gradient” with respect to <span class="math notranslate nohighlight">\(q\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_q \mathbb{E}_{z\sim q(z)}\left[\log\left(\frac{p(y, z|\theta^*, \phi^*)}{q(z)}\right)\right]
+\]</div>
+<p>But since the expectation is also with respect to <span class="math notranslate nohighlight">\(q\)</span>, this gradient is hard to compute!</p>
+<p>Converting the problem of maximizing the ELBO into one of minimizing a KL-divergence</p>
+<div class="math notranslate nohighlight">
+\[
+\underset{q}{\max} ELBO^{\text{EM}}(\theta^*, \phi^*, q(z)) \equiv \underset{q}{\min} D_{\text{KL}}[q(z)\| p(z|y, \theta, \phi) ]
+\]</div>
+<p>meant that we can solve the optimization problem immediately – by setting <span class="math notranslate nohighlight">\(q(z)\)</span> equal to <span class="math notranslate nohighlight">\(p(z|y, \theta, \phi)\)</span>. In the case, of the Gaussian Mixture Model, the posterior <span class="math notranslate nohighlight">\(p(z|y, \theta, \phi)\)</span> was not difficult to compute. Since the latent variable <span class="math notranslate nohighlight">\(z\)</span> is a categorical variable, we could compute the probability of each class membership <span class="math notranslate nohighlight">\(z=k\)</span> independently. Each computation was very tractable.</p>
+<p><strong>The Derivation of the Update for CAVI</strong>
+Let <span class="math notranslate nohighlight">\(\phi = [\phi_1,\ldots, \phi_I]\)</span> be the set of parameters and latent variables for which we want to infer a posterior <span class="math notranslate nohighlight">\(p(\phi | y_1, \ldots y_N)\)</span>. We approximate this posterior with a mean field variational family:</p>
+<div class="math notranslate nohighlight">
+\[
+q(\phi | \lambda) = \prod_{i=1}^I q(\phi_i | \lambda_i)
+\]</div>
+<p>In CAVI, we update the variational distribution for each <span class="math notranslate nohighlight">\(\phi_j\)</span>, conditioned on the other <span class="math notranslate nohighlight">\(\phi\)</span>’s by the rule:</p>
+<div class="math notranslate nohighlight">
+\[
+q(\phi_i | \lambda_i) \propto \exp\left\{ \mathbb{E}_{\psi_{-i} \sim q(\phi_{-i} | \lambda^{\text{new}}_{1}, \ldots, \lambda^{\text{new}}_{i-1}, \lambda^{\text{old}}_{i+1}, \ldots, \lambda^{\text{old}}_{I})}\left[\log p(Y_1, \ldots, Y_N, \psi)\right]\right\}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\psi_{-i} = [\psi_1\; \ldots\; \psi_{i-1}\; \psi_{i+1}\; \ldots\; \psi_{I}]\)</span>.</p>
+<p>To prove that this is the update that would maximize the ELBO for the coordinate <span class="math notranslate nohighlight">\(i\)</span>, we transformed the problem of maximizing the variational inference ELBO with respect to <span class="math notranslate nohighlight">\(q(\phi_i | \lambda_i)\)</span> into a problem of minimizing a KL-divergence between <span class="math notranslate nohighlight">\(q(\phi_i | \lambda_i)\)</span> and some other distribution:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{\lambda_i}{\max} ELBO(\lambda) &amp;= \underset{\lambda_i}{\max} \int_{\Psi} \left[ \log \left(\frac{p(Y_1, \ldots, Y_N, \psi)}{q(\psi|\lambda)} \right)\right]q(\psi|\lambda) d\psi\\
+&amp;= \underset{\lambda_i}{\max} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } {q(\psi_{i}|\lambda_{i})} \right)\right]\\
+&amp;\equiv \underset{\lambda_i}{\min} -\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } {q(\psi_{i}|\lambda_{i})} \right)\right]\\
+&amp;= \underset{\lambda_i}{\min} \underbrace{\mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{ q(\psi_{i}|\lambda_{i}) } {\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right]}_{\text{looks like a KL except the denominator is not a distribution}}\quad (\text{using the properties of log})\\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{ \mathcal{Z} q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right],\quad (\mathcal{Z} \text{ normalizes the denominator})\\
+&amp;= \underset{\lambda_i}{\min} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \log \left(\frac{  q(\psi_{i}|\lambda_{i}) } {\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\} } \right)\right] +\log(\mathcal{Z})\\
+&amp;\equiv \underset{\lambda_i}{\min}D_{\text{KL}} \left[ q(\psi_{i}|\lambda_{i})\| \mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\right].
+\end{aligned}\end{split}\]</div>
+<p>The optimization problem involving the KL-divergence was again easy to solve! We just set <span class="math notranslate nohighlight">\(q(\psi_{i}|\lambda_{i})\)</span> equal to <span class="math notranslate nohighlight">\(\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\)</span>.</p>
+<p>So why do we prefer to evaluate this complicated expression <span class="math notranslate nohighlight">\(q(\psi_{i}|\lambda_{i})\)</span> equal to <span class="math notranslate nohighlight">\(\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\)</span>?</p>
+<p>For one, maximizing the ELBO requires taking a gradient with respect to a variable that the expectation depends on: <span class="math notranslate nohighlight">\(\nabla_{\lambda_i} \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[ \ldots \right]\)</span>. This, again, is a hard problem to solve.</p>
+<p>Secondly, the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\)</span> is not intractable to compute for nice models like Gaussian Mixture Models. Due to the way that these models factorize – in each update, we end up working with one term involving <span class="math notranslate nohighlight">\(\phi_i\)</span>, since the other terms involving <span class="math notranslate nohighlight">\(\phi_{-i}\)</span> become constants after taking the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}\)</span>.</p>
+<p><strong>When to Work with the ELBO and When to Work with a KL?</strong>
+The general rule of thumb is intuitive: if the posterior <span class="math notranslate nohighlight">\(p(A|B)\)</span> is known and tractable then minimizing the KL-divergence <span class="math notranslate nohighlight">\(D_{\text{KL}}[q(A)\|p(A|B)]\)</span> by setting <span class="math notranslate nohighlight">\(q\)</span> equal to <span class="math notranslate nohighlight">\(p\)</span> is preferred. If <span class="math notranslate nohighlight">\(p(A|B)\)</span> is not known or tractable, but the joint <span class="math notranslate nohighlight">\(p(A, B)\)</span> is tractable then it’s preferable to work with the ELBO <span class="math notranslate nohighlight">\(\mathbb{E}_{q(A)}\left[\log \frac{p(A, B)}{q(A)}\right]\)</span>.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Question 3</p>
+<p>The mean field assumption allows us to rewrite the expectation in the ELBO over all <span class="math notranslate nohighlight">\(\psi_i\)</span>’s jointly as iterated expectation:</p>
+<div class="math notranslate nohighlight">
+\[
+ELBO(\lambda) = \mathbb{E}_{\psi \sim q(\psi|\lambda)}[\ldots] = \mathbb{E}_{\psi_i \sim q(\psi_i|\lambda_i)}\left[\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})}[\ldots] \right]
+\]</div>
+<p>When we modeled <span class="math notranslate nohighlight">\(\psi\)</span>’s as independent under the variational distribution <span class="math notranslate nohighlight">\(q\)</span>, we were able to apply Fubini’s theorem to the integral that defined <span class="math notranslate nohighlight">\(\mathbb{E}_{\psi \sim q(\psi|\lambda)}\)</span> – i.e. we turned a integral over multiple variables into an iterated integral.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Question 4</p>
+<p>Given a model with a posterior over variable <span class="math notranslate nohighlight">\(\psi_1, \ldots, \psi_I\)</span>, we’d need to set <span class="math notranslate nohighlight">\(q(\psi_{i}|\lambda_{i})\)</span> equal to <span class="math notranslate nohighlight">\(\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\)</span> for every <span class="math notranslate nohighlight">\(i\)</span>, in order to iteratively maximize the ELBO.</p>
+<p>For example, in the Bayesian Gaussian mixture case, we had to derive the update for <span class="math notranslate nohighlight">\(q(z|\phi)\)</span> and <span class="math notranslate nohighlight">\(q(\mu_k|m_k, s_k^2)\)</span> for each component <span class="math notranslate nohighlight">\(k\)</span> in the mixture. Each derivation required an immense amount of algebra. Further more each derivation was different in nature – for <span class="math notranslate nohighlight">\(q(z|\phi)\)</span> we used the fact that <span class="math notranslate nohighlight">\(z\)</span> is a categorical variable to compute the probability of <span class="math notranslate nohighlight">\(z=k\)</span> individually, for <span class="math notranslate nohighlight">\(q(\mu_k|m_k, s_k^2)\)</span> we had to complete the square to make the expression</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{Z}\exp\left\{\mathbb{E}_{\psi_{-i} \sim q(\psi_{-i}|\lambda_{-i})} \left[\log \left(p(Y_1, \ldots, Y_N, \psi_i | \psi_{-i}) \right)\right]\right\}\]</div>
+<p>look like the pdf of a Gaussian.</p>
+<p>This is a process that is highly specialized to the specific model we’re given.</p>
+<p>One can imagine that if you wanted to implement CAVI for a new model, you’d have to do the entire set of derivations from scratch!</p>
+<p>This prevents us from applying variational inference easily to new models and may prevent us from applying variational inference entirely if we are unable to complete these derivations. In order to make variational inference broadly applicable to a large class of Bayesian models we need an automatic and efficient way of</p>
+<ol class="arabic simple">
+<li><p>computing the gradient of the ELBO</p></li>
+<li><p>finding the stationary points of this gradient</p></li>
+</ol>
+</div>
 </section>
 </section>
 </section>
@@ -1075,7 +1203,7 @@ ELBO(\phi, m, s^2) = \mathbb{E}_{Z, \mu\sim q(Z, \mu | \phi, m, s^2)} \left[\log
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximizing-the-elbo-via-coordinate-ascent">Maximizing the ELBO via Coordinate Ascent</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-gaussian-mixture-models">Bayesian Gaussian Mixture Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference-for-bayesian-gaussian-mixture-models">Variational Inference for Bayesian Gaussian Mixture Models</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implemenation-of-cavi-for-bayesian-gmm">Implemenation of CAVI for Bayesian GMM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-of-cavi-for-bayesian-gmm">Implementation of CAVI for Bayesian GMM</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sanity-check-elbo-during-training">Sanity Check: ELBO During Training</a></li>
 </ul>
 </li>

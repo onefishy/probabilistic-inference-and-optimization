@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -513,29 +514,29 @@ document.write(`
 <section id="the-bayesian-modeling-process">
 <h3>The Bayesian Modeling Process<a class="headerlink" href="#the-bayesian-modeling-process" title="Link to this heading">#</a></h3>
 <p>In order to make statements about <span class="math notranslate nohighlight">\(Y\)</span>, the outcome, and <span class="math notranslate nohighlight">\(\theta\)</span>, parameters of the distribution generating the data, we form the joint distribution over both variables and use the various marginals/conditional distributions to reason about <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>we form the <em><strong>joint distribution</strong></em> over both variables <span class="math notranslate nohighlight">\(p(Y, \theta) = p(Y | \theta) p(\theta)\)</span>.</p></li>
-<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,
+<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[
-p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
-\]</div>
-
-where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p></li>
-<li><p>before any data is observed, we can simulate data by using our prior
+   p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p>
+</li>
+<li><p>before any data is observed, we can simulate data by using our prior</p>
 <div class="math notranslate nohighlight">
 \[
-p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
-\]</div>
-
-where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p></li>
-<li><p>after observing data, we can simulate new data simliar to the observed data by using our posterior
+   p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p>
+</li>
+<li><p>after observing data, we can simulate new data similar to the observed data by using our posterior</p>
 <div class="math notranslate nohighlight">
 \[
-p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
-\]</div>
-
-where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p></li>
+   p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p>
+</li>
 </ol>
 </section>
 <section id="bayesian-update">
@@ -548,19 +549,22 @@ where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new d
 <section id="model-evaluation">
 <h3>Model Evaluation<a class="headerlink" href="#model-evaluation" title="Link to this heading">#</a></h3>
 <p>How do we know that our Bayesian model is a good fit for the data?</p>
-<ol class="arabic simple">
-<li><p><strong>(Log-likelihood)</strong> We can compute the marginal log-likelihood of the data under our posterior. That is, give a set of test data <span class="math notranslate nohighlight">\(\{y^*_1, \ldots, y^*_M\}\)</span>, compute<br><br>
+<ol class="arabic">
+<li><p><strong>(Log-likelihood)</strong> We can compute the marginal log-likelihood of the data under our posterior. That is, give a set of test data <span class="math notranslate nohighlight">\(\{y^*_1, \ldots, y^*_M\}\)</span>, compute<br><br></p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-\log \prod_{m=1}^M p(\mathbf{y}^*_m | \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \text{Data}) = \sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
-\end{aligned}\]</div>
-
-<br>This is simply called the <strong>log-likelihood</strong> of the data under the Bayesian model.<br><br></p></li>
-<li><p><strong>(Posterior Predictive Check)</strong> We can also compare the synthetic data generated from our posterior predictive:</p></li>
+   \log \prod_{m=1}^M p(\mathbf{y}^*_m | \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \text{Data}) = \sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
+   \end{aligned}\]</div>
+<p><br>This is simply called the <strong>log-likelihood</strong> of the data under the Bayesian model.<br><br></p>
+</li>
+<li><p><strong>(Posterior Predictive Check)</strong> We can also compare the synthetic data generated from our posterior predictive:</p>
+<ol class="arabic simple">
 <li><p>sample from the posterior <span class="math notranslate nohighlight">\(\theta_s \sim p(\theta | Y)\)</span></p></li>
 <li><p>plug the posterior samples into the likelihood, and sample synthetic data from the likelihood <span class="math notranslate nohighlight">\(Y_s \sim p(Y | \theta_s)\)</span>.</p></li>
 </ol>
 <p>We can then compare the synthetic data from the posterior predictive to the observed data.</p>
+</li>
+</ol>
 </section>
 <section id="components-of-bayesian-inference">
 <h3>Components of Bayesian Inference<a class="headerlink" href="#components-of-bayesian-inference" title="Link to this heading">#</a></h3>
@@ -584,21 +588,19 @@ where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new d
 </section>
 <section id="id1">
 <h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Variance<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\mu|Y)\)</span> is then:
+<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\mu|Y)\)</span> is then:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 p(\mu | Y) = \frac{p(Y| \mu)p(\mu)}{p(Y)} = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{1}{\sqrt{2\pi s^2}} \mathrm{exp} \left\{-\frac{(m - \mu)^2}{2s^2}\right\}}^{\text{prior}}}{p(Y)}
 \end{aligned}\]</div>
-</p>
-<p>We can simplify the posterior as:
+<p>We can simplify the posterior as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 p(\mu | Y) &amp;= const *\frac{\mathrm{exp} \left\{ -\frac{s^2(Y - \mu)^2 + \sigma^2(m - \mu)^2}{2s^2\sigma^2}\right\}}{p(Y)} \\
 &amp;= const *\mathrm{exp} \left\{ \frac{s^2Y^2 + \sigma^2m^2}{\sigma^2 s^2}\right\}\mathrm{exp} \left\{ -\frac{(s^2 + \sigma^2)\mu^2 - 2(s^2Y + \sigma^2m)\mu}{2s^2\sigma^2}\right\}\\
 &amp;= const* \mathrm{exp} \left\{ -\frac{\left(\mu - \frac{s^2Y + \sigma^2m}{s^2 + \sigma^2} \right)^2}{2s^2\sigma^2}\right\}\quad \text{(Completing the square)}
 \end{aligned}\end{split}\]</div>
-
-Thus, we see that the posterior is a normal distribution, <span class="math notranslate nohighlight">\(\mathcal{N}\left(\frac{s^2Y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right)\)</span>.</p>
+<p>Thus, we see that the posterior is a normal distribution, <span class="math notranslate nohighlight">\(\mathcal{N}\left(\frac{s^2Y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right)\)</span>.</p>
 </section>
 <section id="bayesian-model-for-univariate-gaussian-likelihood-with-known-mean">
 <h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean<a class="headerlink" href="#bayesian-model-for-univariate-gaussian-likelihood-with-known-mean" title="Link to this heading">#</a></h3>
@@ -610,12 +612,11 @@ Thus, we see that the posterior is a normal distribution, <span class="math notr
 </section>
 <section id="id3">
 <h3>Bayesian Model for (Univariate) Gaussian Likelihood with Known Mean<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
-<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\sigma^2|Y)\)</span> is then:
+<p><strong>Inference:</strong> The posterior <span class="math notranslate nohighlight">\(p(\sigma^2|Y)\)</span> is then:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 p(\sigma^2 | Y) = \frac{p(Y| \sigma^2)p(\sigma^2)}{p(Y)} = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{-\frac{(Y - \mu)^2}{2\sigma^2}\right\}}^{\text{likelihood}} \overbrace{\frac{\beta^\alpha}{\Gamma(\alpha)} \left( \sigma^2\right)^{-\alpha -1}\mathrm{exp} \left\{-\frac{\beta}{\sigma^2}\right\}}^{\text{prior}}}{p(Y)}
 \end{aligned}\]</div>
-</p>
 <p>We can simplify the posterior as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
@@ -664,19 +665,19 @@ p(\theta | Y) &amp;= const * \theta^{\alpha + Y - 1}\mathrm{exp}\left\{-(N+ \bet
 <section id="point-estimates-from-the-posterior">
 <h3>Point Estimates from the Posterior<a class="headerlink" href="#point-estimates-from-the-posterior" title="Link to this heading">#</a></h3>
 <p>If you absolutely wanted to derive a point estimate for the parameters <span class="math notranslate nohighlight">\(\theta\)</span> in the likelihood from your Bayesian model, there are two common ways to do it:</p>
-<ol class="arabic simple">
-<li><p><em><strong>the posterior mean</strong></em>
+<ol class="arabic">
+<li><p><em><strong>the posterior mean</strong></em></p>
 <div class="math notranslate nohighlight">
 \[
-\theta_{\text{post mean}} = \mathbb{E}_{\theta\sim p(\theta|Y)}\left[ \theta|Y \right] = \int \theta p(\theta|Y) d\theta
-\]</div>
-</p></li>
-<li><p><em><strong>the posterior mode</strong></em> or <em><strong>maximum a posterior (MAP)</strong></em> estimate
+   \theta_{\text{post mean}} = \mathbb{E}_{\theta\sim p(\theta|Y)}\left[ \theta|Y \right] = \int \theta p(\theta|Y) d\theta
+   \]</div>
+</li>
+<li><p><em><strong>the posterior mode</strong></em> or <em><strong>maximum a posterior (MAP)</strong></em> estimate</p>
 <div class="math notranslate nohighlight">
 \[
-\theta_{\text{MAP}} = \mathrm{argmax}_{\theta} p(\theta|Y)
-\]</div>
-</p></li>
+   \theta_{\text{MAP}} = \mathrm{argmax}_{\theta} p(\theta|Y)
+   \]</div>
+</li>
 </ol>
 <p><strong>Question:</strong> is it better to summarize the entire posterior using a point estimate? I.e. why should we keep the posterior distribution around?</p>
 </section>
@@ -707,13 +708,12 @@ p(\theta | Y) &amp;= const * \theta^{\alpha + Y - 1}\mathrm{exp}\left\{-(N+ \bet
 </section>
 <section id="the-coin-toss-example-revisited-yet-again">
 <h3>The Coin Toss Example: Revisited Yet Again<a class="headerlink" href="#the-coin-toss-example-revisited-yet-again" title="Link to this heading">#</a></h3>
-<p>Recall that one way to prevent the MLE from overfitting is to add <em><strong>regularization terms</strong></em>:
+<p>Recall that one way to prevent the MLE from overfitting is to add <em><strong>regularization terms</strong></em>:</p>
 <div class="math notranslate nohighlight">
 \[
 \theta_{\text{MLE Reg}} = \frac{Y + \alpha}{N + \beta}.
 \]</div>
-
-This is very similar to the MAP and posterior mean estimates:</p>
+<p>This is very similar to the MAP and posterior mean estimates:</p>
 <ul class="simple">
 <li><p>MAP: <span class="math notranslate nohighlight">\(\frac{Y + \alpha - 1}{N + \alpha + \beta - 2}\)</span></p></li>
 <li><p>Posterior Mean: <span class="math notranslate nohighlight">\(\frac{Y + \alpha}{N + \alpha + \beta}\)</span></p></li>
@@ -728,34 +728,33 @@ This is very similar to the MAP and posterior mean estimates:</p>
 <section id="law-of-large-numbers-for-bayesian-inference">
 <h3>Law of Large Numbers for Bayesian Inference<a class="headerlink" href="#law-of-large-numbers-for-bayesian-inference" title="Link to this heading">#</a></h3>
 <p>In general, in Bayesian inference we are <strong>less interested asymptotic behavior</strong>. But the properties of the asymptotic distribution of the posterior can be useful.</p>
-<p><strong>Theorem: (Berstein-von Mises</strong>)</p>
+<p><strong>Theorem: (Bernstein-von Mises</strong>)</p>
 <p>“Under some conditions, as <span class="math notranslate nohighlight">\(N\to \infty\)</span> the posterior distribution converges to a Gaussian distribution centred at the MLE with covariance matrix given by a function of the Fisher information matrix at the true population parameter value.”</p>
 <p><strong>Consequences</strong></p>
 <ol class="arabic simple">
 <li><p>The posterior point estimates approach the MLE, with large samples sizes. <br><br></p></li>
-<li><p>It may be valid to approximate the posterior with a Gaussian, with large samples sizes. This will become a very important idea during the second half of the course!</p></li>
+<li><p>It may be valid to approximate the posterior with a Gaussian, with large samples sizes. This will become a very important idea in the second half of the book!</p></li>
 </ol>
 </section>
 <section id="computational-comparisons">
 <h3>Computational Comparisons<a class="headerlink" href="#computational-comparisons" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p><strong>Computation of the MLE is an optimization problem.</strong> Although difficult, there are many established methods for performing optimization (even when the objective function is not convex – i.e. many local optima).</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>Computation of the MLE is an optimization problem.</strong> Although difficult, there are many established methods for performing optimization (even when the objective function is not convex – i.e. many local optima).</p>
 <p>More importantly, there are algorithms to perform general, automatic optimization (e.g. gradient descent) on a large class of functions – that is, we do not need to artisanally solve an optimization problem for each statistical model.<br><br></p>
-<ol class="arabic simple" start="2">
-<li><p><strong>Computation of the posterior (thus far) is an process of choosing the right priors and noting that the posterior distribution is of the same type as the prior.</strong> The derivation is simple so long as we use conjugate priors. But many intuitively appropriate priors (like the inverse gamma and normal priors for a univariate gaussian) are not conjugate. In those cases, it becomes intractable to</p></li>
-</ol>
+</li>
+<li><p><strong>Computation of the posterior (thus far) is an process of choosing the right priors and noting that the posterior distribution is of the same type as the prior.</strong> The derivation is simple so long as we use conjugate priors. But many intuitively appropriate priors (like the inverse gamma and normal priors for a univariate gaussian) are not conjugate. In those cases, it becomes intractable to</p>
 <ul class="simple">
 <li><p>compute posterior mean</p></li>
 <li><p>simulate samples from the posterior (and hence simulate samples from the posterior predictive)</p></li>
 </ul>
+</li>
+</ol>
 </section>
 </section>
 <section id="summary">
 <h2><span class="section-number">4.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>What is the Bayesian modeling processing?</p></li>
-</ol>
+<li><p>What is the Bayesian modeling processing?</p>
 <ul class="simple">
 <li><p><strong>(Model Definition)</strong> Define the joint model over the data and the model parameters <span class="math notranslate nohighlight">\(p(y, \theta)\)</span>. For this, you need to <em><strong>choose</strong></em>:</p>
 <ul>
@@ -766,33 +765,33 @@ This is very similar to the MAP and posterior mean estimates:</p>
 <li><p><strong>(Model Inference)</strong> Learn the best <em><strong>distribution</strong></em> over models that fits your data, <span class="math notranslate nohighlight">\(p(\theta|y) = \frac{p(y|\theta)p(\theta)}{p(y)}\)</span>.</p></li>
 <li><p><strong>(Model Evaluation)</strong> Why is model evaluation hard? How do you evaluate a <em><strong>distribution</strong></em> over models, especially if we’re not doing regression (i.e. we have no covariates)?</p>
 <ul>
-<li><p>Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. <em><strong>sample from the posterior predictive</strong></em>.</p></li>
+<li><p>Use the models in the posterior to generate synthetic data, in order to compare with real data, i.e. <em><strong>sample from the posterior predictive</strong></em>.</p></li>
 <li><p>Compute the marginal <em><strong>log-likelihood</strong></em> of the data (train or test) over the posterior: <span class="math notranslate nohighlight">\(\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta\)</span><br><br></p></li>
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>Why is any of this hard?</p></li>
-</ol>
+</li>
+<li><p>Why is any of this hard?</p>
 <ul class="simple">
 <li><p>How do we choose a prior?</p></li>
-<li><p>How do we compute the posterior distribution? From Piazza: “is there a standard procedure?”</p></li>
+<li><p>How do we compute the posterior distribution? Is there a standard procedure?</p></li>
 <li><p>How do we sample from the posterior predictive?</p></li>
 <li><p>How do we compute the log-likelihood?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="3">
-<li><p>Remember we said that we can get uncertainties from frequentist approaches to modeling too: by bootstrapping! There are even more connections between frequentist and Bayesian approaches:</p></li>
-</ol>
+</li>
+<li><p>Remember we said that we can get uncertainties from frequentist approaches to modeling too: by bootstrapping! There are even more connections between frequentist and Bayesian approaches:</p>
 <ul class="simple">
 <li><p>Regularization of MLEs can be interpreted as posterior modes of Bayesian models! I.e. regularization terms correspond to (sometimes complex) priors!</p></li>
 <li><p>If we want to mimic the frequentist approach of giving one best model we can reduce the posterior to a <em><strong>point estimate</strong></em>, what is wrong with this approach?</p></li>
 <li><p><strong>(Asymptotic Behavior)</strong> For sufficiently nice likelihoods, as the number of observations approach infinity, the posterior distribution approaches a Gaussian distribution with mean (and mode) centered at the MLE!</p></li>
 <li><p><strong>Wait, why do I care about the connections between frequentist and Bayesian approaches again?</strong></p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="exercises">
 <h2><span class="section-number">4.5. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-bayesian-versus-frequentist-inference">
 <span id="ps-hw2"></span><h3>Problem Set: Bayesian versus Frequentist Inference<a class="headerlink" href="#problem-set-bayesian-versus-frequentist-inference" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -867,34 +866,341 @@ y &amp;= f(x) + \epsilon = w_0 + w_1x + w_2x^2 + \ldots + w_Dx^D + \epsilon, \qu
 \end{aligned}\]</div>
 <p>where the <span class="math notranslate nohighlight">\(w_d\)</span>, the <em>parameters</em> of the function <span class="math notranslate nohighlight">\(f\)</span>, are unknown constants, and the degree <span class="math notranslate nohighlight">\(D\)</span> is a hyperparameter.</p>
 <p>You’ll notice that in these datasets, the test input is sampled from a different distribution that the training input: the training input has a gap, there are no training input values in [-0.5, 0.5], where as the test input are sampled across [-1, 1]. This change of the distributions over the <span class="math notranslate nohighlight">\(x\)</span>-values between training and test is called <strong>covariate shift</strong>.</p>
-<p>These toy datasets simulate a very common problem in machine learning: models are fitted on training data, but during deployment they are given data dissimlar to the training data (i.e. the model encounters covariate shift). As such, you should treat <code class="docutils literal notranslate"><span class="pre">x_train</span></code>, <code class="docutils literal notranslate"><span class="pre">y_train</span></code> as data available during model development and evaluation, and <code class="docutils literal notranslate"><span class="pre">x_test</span></code> as data you encounter during model deployment.</p>
-<p>The goal in this assignment is to explore how to manage the risk of a deployed model under covariate shift. The ideas developed in this assignment will become a major focus in the latter part of the course and the foundation of an active area of current research.</p>
+<p>These toy datasets simulate a very common problem in machine learning: models are fitted on training data, but during deployment they are given data dissimilar to the training data (i.e. the model encounters covariate shift). As such, you should treat <code class="docutils literal notranslate"><span class="pre">x_train</span></code>, <code class="docutils literal notranslate"><span class="pre">y_train</span></code> as data available during model development and evaluation, and <code class="docutils literal notranslate"><span class="pre">x_test</span></code> as data you encounter during model deployment.</p>
+<p>The goal in this problem set is to explore how to manage the risk of a deployed model under covariate shift. The ideas developed in this problem set will become a major focus in the latter part of the book and the foundation of an active area of current research.</p>
 </div>
 <ol class="arabic simple">
 <li><p><strong>(Effect of Model Complexity)</strong> Generate a toy dataset with 40 observations (set the parameter <code class="docutils literal notranslate"><span class="pre">number_of_points=20</span></code> for <code class="docutils literal notranslate"><span class="pre">generate_data</span></code>, since twice the number of <code class="docutils literal notranslate"><span class="pre">number_of_points</span></code> will be generated), then  visualize the fit of MLE polynomial models, with degrees <span class="math notranslate nohighlight">\(D = [1, 3, 5, 10, 15, 20, 50, 100]\)</span> - you should train on <code class="docutils literal notranslate"><span class="pre">x_train</span></code> and <strong>visualize by predicting on <code class="docutils literal notranslate"><span class="pre">x_test</span></code> provided by the data generating function (<code class="docutils literal notranslate"><span class="pre">x_test</span></code> is a larger set of test points that includes <code class="docutils literal notranslate"><span class="pre">x_train</span></code>)</strong>. You’ll need to be thoughtful about your visualization so that these different models can be visually compared in a meaningful way. <br><br>
-Discuss the effect of the choice of polynomial degree on the fit of the model (concretely describe why certaint choices are unideal in the context of the problem).</p></li>
+Discuss the effect of the choice of polynomial degree on the fit of the model (concretely describe why certain choices are unideal in the context of the problem).</p></li>
 </ol>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Model Selection)</strong> Later in the course, we will study a number of metrics commonly used for selecting between different MLE models. All of these metric essentially encode Occam’s Razor: select the minimal complexity of model that satisfies some pre-determined modeling goal. <br><br>
-For now, a very simple method for selecting the optimal degree is via cross-validation (by bootstrap):</p></li>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<p>We fit MLE polynomial regressions of degrees <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span> on a dataset with 40 observations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate an Linear Regression model object</span>
+<span class="n">linear_regressor</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># Degrees</span>
+<span class="n">D</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+<span class="c1"># Generate a random training samples from the true distribution over x</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="c1"># Noisy test outcomes from the same cubic function</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x_test</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># List of predictions</span>
+<span class="n">y_test_pred</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">y_train_pred</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Fit MLE polynomial models with different degrees to the dataset</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+    <span class="c1"># Make an instance of the PolynomialFeatures model to add polynomial powers to our covariates</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> 
+    <span class="c1"># Fit a polynomial model</span>
+    <span class="n">x_train_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+    <span class="n">x_test_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+    <span class="n">linear_regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+    <span class="c1"># Make predictions</span>
+    <span class="n">y_test_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test_poly</span><span class="p">))</span>
+    <span class="n">y_train_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">))</span>
+
+<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_test_pred</span><span class="p">)</span>
+<span class="n">y_train_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_train_pred</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the polynomial models</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)):</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="n">y_test_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">4</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE polynomial model'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Degree </span><span class="si">{}</span><span class="s1"> polynomial'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-1-1.png"><img alt="Part I, Question 1, figure 1" class="align-center" src="../_images/part-i-question-1-1.png" style="width: 100%;" />
+</a>
+<p>It’s clear that degree 1 is too simple to fit our training data; degree 3 and 5 appear to both fit the data well and degrees 10, 15 and 20 appear to overfit, in the sense that these models are clearly trying to capture the random and meaningless noise in the data. The problem with our observations is that there’s no way, by simply visualizing the data, that we can tell with certainty what is noise and what is signal in the data set! One way to quantify overfitting is by comparing the difference between training error (or likelihood) and test error (or likelihood).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)):</span>
+    <span class="n">train_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_train</span> <span class="o">-</span> <span class="n">y_train_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">test_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_test</span> <span class="o">-</span> <span class="n">y_test_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Degree </span><span class="si">{}</span><span class="s1">: train mse </span><span class="si">{}</span><span class="s1">, test mse </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">train_mse</span><span class="p">,</span> <span class="n">test_mse</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Degree 1: train mse 0.6541389744609577, test mse 0.5481374937369526
+Degree 3: train mse 0.25001409102611877, test mse 0.3448381041433706
+Degree 5: train mse 0.23933828565129778, test mse 0.4536789156953982
+Degree 10: train mse 0.20052256444638958, test mse 54.54626503567295
+Degree 15: train mse 0.16531646494232405, test mse 2872.1434021619716
+Degree 20: train mse 0.10218784388547375, test mse 5649078.3728004135
+Degree 50: train mse 0.004901139522703403, test mse 335496482258350.0
+Degree 100: train mse 4.049119571098381e-05, test mse 10144558213093.092
+</pre></div>
+</div>
+<p>Indeed the test MSE for degrees 10, 15 and 20 are larger than the training MSE, but the test MSE for the larger degree polynomial models are outrageous! So what’s going on here? From the visualizations of our models, we see that, the higher degree polynomial models take on insane values in place where there is no training data (i.e. in the gap region in the training data), whereas the actual data generating function (a cubic function) is actually quite flat and close to zero in the gap region. This explains the extremely large test MSE - our test data includes x-values from both the training data rich regions as well as the gap region.</p>
+<p>So can we take the higher test MSE to be a sign of overfitting? Well not really - overfitting refers to the phenomenon of models doing well on the training data and very poorly on test data <em><strong>sampled from the same distribution as the training data</strong></em>. In our case, our test data is not sampled from the same places as the training data.</p>
+<p>Let’s generate another toy training dataset from our data generating function and test our models on the new training dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate a random training samples from the true distribution over x</span>
+<span class="n">x_train_new</span><span class="p">,</span> <span class="n">y_train_new</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span> 
+
+<span class="c1"># Fit MLE polynomial models with different degrees to the dataset</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+    <span class="c1"># Make an instance of the PolynomialFeatures model to add polynomial powers to our covariates</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> 
+    <span class="c1"># Fit a polynomial model</span>
+    <span class="n">x_train_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+    <span class="n">x_new_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train_new</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+    <span class="n">linear_regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+    <span class="c1"># Make predictions</span>
+    <span class="n">y_train_pred</span> <span class="o">=</span> <span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">y_new_pred</span> <span class="o">=</span> <span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_new_poly</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="c1"># Compute MSEs</span>
+    <span class="n">train_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_train</span> <span class="o">-</span> <span class="n">y_train_pred</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">test_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_train_new</span> <span class="o">-</span> <span class="n">y_new_pred</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Degree </span><span class="si">{}</span><span class="s1">: train mse </span><span class="si">{}</span><span class="s1">, test mse </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">train_mse</span><span class="p">,</span> <span class="n">test_mse</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Degree 1: train mse 0.6541389744609577, test mse 0.49546807482759486
+Degree 3: train mse 0.25001409102611877, test mse 0.2473585491425815
+Degree 5: train mse 0.23933828565129778, test mse 0.29206096381015917
+Degree 10: train mse 0.20052256444638958, test mse 0.3125686701241528
+Degree 15: train mse 0.16531646494232405, test mse 0.29028024080208303
+Degree 20: train mse 0.10218784388547375, test mse 0.4074665008539373
+Degree 50: train mse 0.004901139522703403, test mse 0.42732865649437424
+Degree 100: train mse 4.049119571098381e-05, test mse 0.43626250188421595
+</pre></div>
+</div>
+<p>It is clear from the model visualizations that degrees 20, 50 and 100 are very inappropriate for our dataset - since these polynomials are beginning to interpolate the data (i.e. going through every single training data point)!</p>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Model Selection)</strong> In <a class="reference internal" href="13-sgd-simulated-annealing.html"><span class="doc">Chapter 16</span></a>, we will study a number of metrics commonly used for selecting between different MLE models. All of these metric essentially encode Occam’s Razor: select the minimal complexity of model that satisfies some pre-determined modeling goal. <br><br>
+For now, a very simple method for selecting the optimal degree is via cross-validation (by bootstrap):</p>
+<ol class="arabic simple">
 <li><p>randomly sample two datasets, <code class="docutils literal notranslate"><span class="pre">x_train</span></code>, <code class="docutils literal notranslate"><span class="pre">x_valid</span></code>, from the data generating function: one for training and one for validation. Fit an MLE  polynomial model of degree <span class="math notranslate nohighlight">\(d\)</span> on the training data and evaluate its performance on the validation data. Over <span class="math notranslate nohighlight">\(S\)</span> number of such randomly sampled pairs of datasets, average the model’s validation performance.</p></li>
 <li><p>plot the validation score as a function of model complexity, the polynomial degree <span class="math notranslate nohighlight">\(d\)</span>.</p></li>
 <li><p>based on the plot, select the the minimal degree that achieves a high average validation performance (i.e. look for the ‘elbow’ of the plot).</p></li>
 </ol>
-<p>Explain why performing model selection by cross-validation mitigates the risk of choosing an undesirable polynomial (identified in Problem 1)?<br><br>
-Implement model selection by cross-validation for the toy dataset generated in Problem 1 using MSE as your performance metric and select an optimal degree from <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>.</p>
+<p>Explain why performing model selection by cross-validation mitigates the risk of choosing an undesirable polynomial (identified in Question 1)?<br><br>
+Implement model selection by cross-validation for the toy dataset generated in Question 1 using MSE as your performance metric and select an optimal degree from <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>.</p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">validation_mse</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Repeat for S number of trials</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+    
+    <span class="c1"># Generate a random training samples from the true distribution over x</span>
+    <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="c1"># Generate a random validation samples from the true distribution over x</span>
+    <span class="n">x_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    
+    <span class="n">mse</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Fit MLE polynomial models with different degrees to the dataset</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+        <span class="c1"># Make an instance of the PolynomialFeatures model to add polynomial powers to our covariates</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> 
+        <span class="c1"># Fit a polynomial model</span>
+        <span class="n">x_train_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+        <span class="n">x_valid_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_valid</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+        <span class="n">linear_regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+        <span class="c1"># Make predictions</span>
+        <span class="n">y_valid_pred</span> <span class="o">=</span> <span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_valid_poly</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">mse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_valid</span> <span class="o">-</span> <span class="n">y_valid_pred</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">validation_mse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>
+
+<span class="n">validation_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">validation_mse</span><span class="p">)</span>
+
+<span class="c1"># Average the validation MSE across trials</span>
+<span class="n">validation_mse</span> <span class="o">=</span> <span class="n">validation_mse</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the average validation mse for each degree</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)),</span> <span class="n">validation_mse</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'average validation MSE'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Average validation MSE versus degree'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Degree'</span><span class="p">,</span>  <span class="n">fontsize</span><span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-2-1.png"><img alt="Part I, Question 2, figure 1" class="align-center" src="../_images/part-i-question-2-1.png" style="width: 100%;" />
+</a>
+<p>It looks like the lowest average validation MSE is achieved at degree 3, although degree 5 also looks competitive in terms of having a low average validation MSE. The advantage of selecting models based on  validation score is that we can more easily identify models that are too complex for the data, these models will tend to overfit to the training data (they are sensitive to minute changes in the training data) and will generally have higher MSE on validation data sampled from the same distribution. The reason we want to compute the <em><strong>average validation MSE</strong></em> over multiple validation datasets is that evaluating the performance of our models on one set of validation data can be misleading!</p>
+</div>
 <ol class="arabic simple" start="3">
 <li><p><strong>(Uncertainty Estimation)</strong> As you have seen in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>, we often use the bootstrap predictive uncertainty of MLE models as an indicator of our confidence in the model’s output. Increasingly, in practice, decisions making are deferred to human experts when the model’s predictive uncertainty is too high. <br><br>
-Given your understanding of the dataset (<code class="docutils literal notranslate"><span class="pre">x_train</span></code> and <code class="docutils literal notranslate"><span class="pre">x_test</span></code>), describe what the model uncertainty <em><strong>should</strong></em> ideally look like across the input space (i.e. if you plotted the model uncertainty as a function of <span class="math notranslate nohighlight">\(x\)</span>, what would it look like)? Justify your answer: consider the context of the problem - the test input has undergone covariate shift and is dissmilar to the training input, what kind of uncertainty would help you mitigate risk under this condition?<br><br>
-A common practice for estimating predictive uncertainty is to fit a large number of (bootstrap) models on the training data (this collection of models is called an <strong>ensemble</strong>), then, at an input <span class="math notranslate nohighlight">\(x\)</span>, use the variance of the ensemble predictions to estimate the uncertainty at <span class="math notranslate nohighlight">\(x\)</span>. Plot the 95% predictive interval of 200 bootstrap MLE polynomial models for each degree <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>, arrange your plots as  subplots in a single figure. For which polynomial degree do you obtain the predictive uncertainty that is most ideal (according to your description above)? Is this the degree you selected in Problem 2? Explain why you would or would not expect the optimal degree in Problem 2 to yield the most ideal uncertainty estimate.<br><br>
+Given your understanding of the dataset (<code class="docutils literal notranslate"><span class="pre">x_train</span></code> and <code class="docutils literal notranslate"><span class="pre">x_test</span></code>), describe what the model uncertainty <em><strong>should</strong></em> ideally look like across the input space (i.e. if you plotted the model uncertainty as a function of <span class="math notranslate nohighlight">\(x\)</span>, what would it look like)? Justify your answer: consider the context of the problem - the test input has undergone covariate shift and is dissimilar to the training input, what kind of uncertainty would help you mitigate risk under this condition?<br><br>
+A common practice for estimating predictive uncertainty is to fit a large number of (bootstrap) models on the training data (this collection of models is called an <strong>ensemble</strong>), then, at an input <span class="math notranslate nohighlight">\(x\)</span>, use the variance of the ensemble predictions to estimate the uncertainty at <span class="math notranslate nohighlight">\(x\)</span>. Plot the 95% predictive interval of 200 bootstrap MLE polynomial models for each degree <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>, arrange your plots as  subplots in a single figure. For which polynomial degree do you obtain the predictive uncertainty that is most ideal (according to your description above)? Is this the degree you selected in Question 2? Explain why you would or would not expect the optimal degree in Question 2 to yield the most ideal uncertainty estimate.<br><br>
 Make the same plots the 95% predictive intervals for degrees <span class="math notranslate nohighlight">\(D=[1,3,5,10,15,20,50,100]\)</span>, with models fitted on larger training datasets - set <code class="docutils literal notranslate"><span class="pre">number_of_points</span></code> to 50, 100, 500, 1000 (arrange all these plots in a single figure). What is happening to the predictions of the ensemble in the training data rich region? What is happening to the predictions of the ensemble in the training data poor region? Are these expected behaviours (relate what you see in both cases to the asymptotic properties of MLE)?
 <br><br>
 When the training data is abundant (<code class="docutils literal notranslate"><span class="pre">number_of_points=1000</span></code>), are any of the 95% predictive intervals ideal (according to your description above)? What does this imply about the feasibility of using the variance of the ensemble predictions to estimate predictive uncertainty at an input <span class="math notranslate nohighlight">\(x\)</span>?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>Let’s first look at a visualization of the training data!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The training data for the ensembles below</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the training data</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Training Data'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-3-1.png"><img alt="Part I, Question 3, figure 1" class="align-center" src="../_images/part-i-question-3-1.png" style="width: 100%;" />
+</a>
+<p>It looks like there is a large gap in the training data, <span class="math notranslate nohighlight">\([-0.5, 0.5]\)</span>! If we want to defer decisions to humans experts when the model is uncertain - i.e. have a higher chance of being wrong - then we might want to do so for test x-values that are very dissimilar to the training data. That is, the farther the test x-value is away from the data the more uncertain we’d want the model to be. As such, we’d expect the model uncertainty to be the highest at <span class="math notranslate nohighlight">\(x=0\)</span> and progressively become lower as we approach the training data (<span class="math notranslate nohighlight">\(x=0.5\)</span>, <span class="math notranslate nohighlight">\(x=-0.5\)</span>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Repeat for S number of trials</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+    
+    <span class="c1"># Bootstrap: resample the training data with replacement</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">x_boot</span><span class="p">,</span> <span class="n">y_boot</span> <span class="o">=</span> <span class="n">x_train</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_train</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    
+    <span class="n">y_test_pred</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Fit MLE polynomial models with different degrees to the dataset</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+        <span class="c1"># Make an instance of the PolynomialFeatures model to add polynomial powers to our covariates</span>
+        <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> 
+        <span class="c1"># Fit a polynomial model</span>
+        <span class="n">x_train_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_boot</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+        <span class="n">x_test_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+        <span class="n">linear_regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">,</span> <span class="n">y_boot</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+        <span class="c1"># Make predictions</span>
+        <span class="n">y_test_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test_poly</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_test_pred</span><span class="p">)</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the 97.5 th percentile of the posterior predictive predictions</span>
+<span class="n">pred_ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Compute the 50 th percentile of the posterior predictive predictions</span>
+<span class="n">pred_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Compute the 2.5 th percentile of the posterior predictive predictions</span>
+<span class="n">pred_lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the polynomial models</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)):</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">4</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span> <span class="c1">#scatter plot the training data</span>
+    
+    <span class="c1"># Plot 95% predictive interval</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">pred_ub</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pred_lb</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">pred_mean</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Degree </span><span class="si">{}</span><span class="s1"> polynomial'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-3-2.png"><img alt="Part I, Question 3, figure 2" class="align-center" src="../_images/part-i-question-3-2.png" style="width: 100%;" />
+</a>
+<p>We see from the above that, the predictive uncertainties of a degree 1 model is approximately constant across <span class="math notranslate nohighlight">\([-1, 1]\)</span> and hence this model is as confident on training data poor regions as it is on training data rich regions.</p>
+<p>The degree 3 model is more uncertain in the training data poor region <span class="math notranslate nohighlight">\([-0.5, 0.5]\)</span>, but its uncertainty doesn’t scale with distance from the training data - meaning, it’s just as uncertain at <span class="math notranslate nohighlight">\(x=0\)</span> as it is at <span class="math notranslate nohighlight">\(x=0.3\)</span>.</p>
+<p>For all models with degree 5 and above, we have higher uncertainty in the gap region <span class="math notranslate nohighlight">\([-0.5, 0.5]\)</span> than in the training data rich regions. But for degrees 10 and above, again the uncertainty does not scale with distance from the training data - meaning, it’s just as uncertain at <span class="math notranslate nohighlight">\(x=0\)</span> as it is at <span class="math notranslate nohighlight">\(x=0.3\)</span>. Furthermore, the uncertainties of these models are extreme! Even their uncertainties on training data rich regions are extremely high (higher than the amount of noise in the data)!</p>
+<p>Given our description of the ideal predictive uncertainty of a model, we might want to choose a degree 5 polynomial. But note that this is not the model we picked via cross-validation in Question 2! There, the law of parsimony (or Occam’s Razor) dictated that we choose a degree 3 polynomial model since it was the minimally complex model that had the best validation performance. Now we see that a degree 3 model may be complex enough capture the signal in our data, but it’s not expressive enough to generate higher predictive uncertainties in <span class="math notranslate nohighlight">\([-0.5, 0.5]\)</span> (generating higher uncertainties in the gap means fitting functions that can go through the data but curve higher or lower in <span class="math notranslate nohighlight">\([-0.5, 0.5]\)</span>, can you see why?).</p>
+<p>So what happens when we have a large number of observations?</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">sample_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">x_train_samples</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">y_train_samples</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sample_size</span><span class="p">:</span>
+    
+    <span class="n">pred_per_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># One training dataset of this size</span>
+    <span class="n">x_train_sample</span><span class="p">,</span> <span class="n">y_train_sample</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">number_of_points</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+    <span class="c1"># Repeat for S number of trials</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
+
+        <span class="c1"># Bootstrap: resample the training data with replacement</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train_sample</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train_sample</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">x_boot</span><span class="p">,</span> <span class="n">y_boot</span> <span class="o">=</span> <span class="n">x_train_sample</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">y_train_sample</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">y_test_pred</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Fit MLE polynomial models with different degrees to the dataset</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+            <span class="c1"># Make an instance of the PolynomialFeatures model to add polynomial powers to our covariates</span>
+            <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> 
+            <span class="c1"># Fit a polynomial model</span>
+            <span class="n">x_train_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_boot</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+            <span class="n">x_test_poly</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span> 
+            <span class="n">linear_regressor</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train_poly</span><span class="p">,</span> <span class="n">y_boot</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> 
+            <span class="c1"># Make predictions</span>
+            <span class="n">y_test_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linear_regressor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test_poly</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">pred_per_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_test_pred</span><span class="p">)</span>  
+        
+    <span class="n">x_train_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_train_sample</span><span class="p">)</span>
+    <span class="n">y_train_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_train_sample</span><span class="p">)</span>
+
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_per_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the polynomial models</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample_size</span><span class="p">)):</span>
+    
+    <span class="n">y_preds</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    
+    <span class="c1"># Compute the 97.5 th percentile of the posterior predictive predictions</span>
+    <span class="n">pred_ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_preds</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Compute the 50 th percentile of the posterior predictive predictions</span>
+    <span class="n">pred_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_preds</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Compute the 2.5 th percentile of the posterior predictive predictions</span>
+    <span class="n">pred_lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_preds</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)):</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train_samples</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">y_train_samples</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span> <span class="c1">#scatter plot the training data</span>
+    
+        <span class="c1"># Plot 95% predictive interval</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">pred_ub</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">pred_lb</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">pred_mean</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'D = </span><span class="si">{}</span><span class="s1">, N = </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">sample_size</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-3-3.png"><img alt="Part I, Question 3, figure 3" class="align-center" src="../_images/part-i-question-3-3.png" style="width: 100%;" />
+</a>
+<p><em>Not covered here: a discussion of the ensembles fitted on larger training sets (what happens in the data-rich and data-poor regions, and whether any of the intervals are ideal when data is abundant).</em></p>
+</div>
 <ol class="arabic simple" start="4">
 <li><p><strong>(Effect of Regularization)</strong> In practice, MLE models are nearly always trained with regularization (since they tend to overfit to the training data). Here, we will explore the effect of adding <span class="math notranslate nohighlight">\(\ell_2\)</span> regularization to our MLE polynomial models (that is, use the <code class="docutils literal notranslate"><span class="pre">Ridge</span></code> regression model from <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> after augmenting your input with polynomial features). <br><br>
 For a toy dataset with 40 observations (<code class="docutils literal notranslate"><span class="pre">number_of_points=20</span></code>), plot the 95% predictive intervals for degrees <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span> and regularization strengths <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">[5e-3,</span> <span class="pre">1e-2,</span> <span class="pre">1e-1,</span> <span class="pre">1e0,</span> <span class="pre">1e1]</span></code> (you should organize these plots in a grid).<br><br>
-Describe the effect of regularization on the bootstrap uncertainties. Looking at these results, are the goals of <span class="math notranslate nohighlight">\(\ell_2\)</span> regularization and obtaining useful predictive uncertatinty estimation neccessarily well-aligned?</p></li>
+Describe the effect of regularization on the bootstrap uncertainties. Looking at these results, are the goals of <span class="math notranslate nohighlight">\(\ell_2\)</span> regularization and obtaining useful predictive uncertainty estimation necessarily well-aligned?</p></li>
 </ol>
 <div class="admonition-exercise-part-ii-bayesian-polynomial-regression admonition">
 <p class="admonition-title">Exercise: Part II: Bayesian Polynomial Regression</p>
@@ -906,61 +1212,59 @@ w_d &amp;\sim \mathcal{N}(0, \alpha)
 \end{aligned}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\alpha\)</span> is a hyperparameter and must be fixed before modeling and inference begins.</p>
 </div>
-<ol class="arabic simple">
-<li><p><strong>(Bayesian Kernel Regression)</strong> Just as we can treat a polynomial regression model like a multi-linear regression model after <em><strong>transforming</strong></em> the input data by adding polynomial features. We can treat Bayesian polynomial regression like Bayesian linear regression on top of the transformed inputs. Formally, the map that takes an input <span class="math notranslate nohighlight">\(\mathbf{x}_n \in \mathbb{R}^{D'}\)</span> and transforms it into a new input <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n) \in \mathbb{R}^{D}\)</span> is called a <strong>feature map</strong>, <span class="math notranslate nohighlight">\(\phi: \mathbb{R}^{D'} \to \mathbb{R}^{D}\)</span>, for 1-dimensional input <span class="math notranslate nohighlight">\(x \in \mathbb{R}\)</span>, the polynomial feature map of degree <span class="math notranslate nohighlight">\(D\)</span> is defined by
+<ol class="arabic">
+<li><p><strong>(Bayesian Kernel Regression)</strong> Just as we can treat a polynomial regression model like a multi-linear regression model after <em><strong>transforming</strong></em> the input data by adding polynomial features. We can treat Bayesian polynomial regression like Bayesian linear regression on top of the transformed inputs. Formally, the map that takes an input <span class="math notranslate nohighlight">\(\mathbf{x}_n \in \mathbb{R}^{D'}\)</span> and transforms it into a new input <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n) \in \mathbb{R}^{D}\)</span> is called a <strong>feature map</strong>, <span class="math notranslate nohighlight">\(\phi: \mathbb{R}^{D'} \to \mathbb{R}^{D}\)</span>, for 1-dimensional input <span class="math notranslate nohighlight">\(x \in \mathbb{R}\)</span>, the polynomial feature map of degree <span class="math notranslate nohighlight">\(D\)</span> is defined by</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\\\phi: \mathbb{R} &amp;\to \mathbb{R}^D\\
-x &amp;\mapsto [1, x, x^2, \ldots, x^D]\\
-\end{aligned}\end{split}\]</div>
-
-<br> Thus, we can write rewrite Bayesian polynomial regression as
+   \\\phi: \mathbb{R} &amp;\to \mathbb{R}^D\\
+   x &amp;\mapsto [1, x, x^2, \ldots, x^D]\\
+   \end{aligned}\end{split}\]</div>
+<p><br> Thus, we can write rewrite Bayesian polynomial regression as</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\\y &amp;= \mathbf{w}^\top \mathbf{x} + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.3)\\
-\mathbf{w} &amp;\sim \mathcal{N}(0, \alpha I_{D\times D})\\
-\end{aligned}\end{split}\]</div>
-
-<br>Denote the <span class="math notranslate nohighlight">\(N\times D\)</span> matrix of transformed inputs by <span class="math notranslate nohighlight">\(\Phi\)</span>, where the <span class="math notranslate nohighlight">\(n\)</span>-th row of the matrix is the <span class="math notranslate nohighlight">\(n\)</span>-th input <span class="math notranslate nohighlight">\(\mathbf{x}_n\)</span> transformed by the feature map, <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n)\)</span>. Using this notation, write out the closed form for the posterior for Bayesian polynomial regression in terms of <span class="math notranslate nohighlight">\(\Phi\)</span> (you don’t need to rederive anything, just make the appropriate substitutions in the formula you derived in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>).</p></li>
+   \\y &amp;= \mathbf{w}^\top \mathbf{x} + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.3)\\
+   \mathbf{w} &amp;\sim \mathcal{N}(0, \alpha I_{D\times D})\\
+   \end{aligned}\end{split}\]</div>
+<p><br>Denote the <span class="math notranslate nohighlight">\(N\times D\)</span> matrix of transformed inputs by <span class="math notranslate nohighlight">\(\Phi\)</span>, where the <span class="math notranslate nohighlight">\(n\)</span>-th row of the matrix is the <span class="math notranslate nohighlight">\(n\)</span>-th input <span class="math notranslate nohighlight">\(\mathbf{x}_n\)</span> transformed by the feature map, <span class="math notranslate nohighlight">\(\phi(\mathbf{x}_n)\)</span>. Using this notation, write out the closed form for the posterior for Bayesian polynomial regression in terms of <span class="math notranslate nohighlight">\(\Phi\)</span> (you don’t need to rederive anything, just make the appropriate substitutions in the formula you derived in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>).</p>
+</li>
 </ol>
-<ol class="arabic simple" start="2">
+<ol class="arabic" start="2">
 <li><p><strong>(Effect of Model Complexity)</strong> For Bayesian kernel regression, you need to pre-determine the number of features (i.e. <span class="math notranslate nohighlight">\(D\)</span>) and the hyperparameter <span class="math notranslate nohighlight">\(\alpha\)</span> in the prior. For a toy dataset with 40 observations (set number_of_points=20), visualize the 95% posterior predictive interval for <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span> and <span class="math notranslate nohighlight">\(\alpha = [0.1, 1, 5, 10, 100]\)</span> (arrange these visualizations in a grid), using Bayesian polynomial regression.
 <br><br>
-Based on your visualizaion, describe in intuitive terms what is the role of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(D\)</span> in determining the shape of the posterior predictive uncertainty.
+Based on your visualization, describe in intuitive terms what is the role of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(D\)</span> in determining the shape of the posterior predictive uncertainty.
 <br><br>
-<em><strong>Hint:</strong></em> Read Problem 3 before implementing Problem 2, you can implement both at the same time.
+<em><strong>Hint:</strong></em> Read Question 3 before implementing Question 2, you can implement both at the same time.
 <br><br>
-<strong>Extra Credit:</strong> When the feature map <span class="math notranslate nohighlight">\(\phi\)</span> is a general (usually non-linear transformation), applying Bayesian linear regression on the transformed input is called <strong>Bayesian Kernel Regression</strong>. Choose your own non-linear feature map <span class="math notranslate nohighlight">\(\phi: \mathbb{R} \to \mathbb{R}^5\)</span> and visualize the 95% posterior predictive interval of the Bayesian kernel regression for your choice of <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span>, <span class="math notranslate nohighlight">\(\alpha = [0.1, 1, 5, 10, 100]\)</span>. Compare the visualization to the that for Bayesian polynomial regression. Does the posterior predictive of your Bayesian kernel regression capture important properties of the posterior predictive of the Bayesian polynomial regression model?
+<strong>Optional:</strong> When the feature map <span class="math notranslate nohighlight">\(\phi\)</span> is a general (usually non-linear transformation), applying Bayesian linear regression on the transformed input is called <strong>Bayesian Kernel Regression</strong>. Choose your own non-linear feature map <span class="math notranslate nohighlight">\(\phi: \mathbb{R} \to \mathbb{R}^5\)</span> and visualize the 95% posterior predictive interval of the Bayesian kernel regression for your choice of <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(D = [1,3,5,10,15,20,50,100]\)</span>, <span class="math notranslate nohighlight">\(\alpha = [0.1, 1, 5, 10, 100]\)</span>. Compare the visualization to the that for Bayesian polynomial regression. Does the posterior predictive of your Bayesian kernel regression capture important properties of the posterior predictive of the Bayesian polynomial regression model?
 <br><br>
 <strong>Note:</strong> we highly recommend that you implement the following feature map:
-<br><br>
+<br><br></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\phi: \mathbb{R}^{D'} &amp;\to \mathbb{R}^D\\
-\mathbf{x} &amp;\mapsto \left[\sqrt{\frac{2}{D}} \cos(w_1^\top x + b_1), \ldots, \sqrt{\frac{2}{D}} \cos(w_D^\top x + b_D)\right]
-\end{aligned}\end{split}\]</div>
-
-<br>where <span class="math notranslate nohighlight">\(b_d \sim [0, 2\pi]\)</span> and <span class="math notranslate nohighlight">\(w_d \sim \mathcal{N}(0, \beta I_{D'\times D'})\)</span> need to be randomly sampled and fixed before modeling and inference. For this exercise, we suggest setting <span class="math notranslate nohighlight">\(\beta=10\)</span>. The features generated by <span class="math notranslate nohighlight">\(\phi\)</span> are called <strong>Random Fourier Features</strong>. As the number of features <span class="math notranslate nohighlight">\(D\)</span> tends to infinity, the resulting Bayesian kernel regression model tends to an important type of Bayesian (nonparametric) model called Gaussian Process model. We will revisit the connection between Bayesian kernel regression and Gaussian processes in the latter part of the course.</p></li>
+   \phi: \mathbb{R}^{D'} &amp;\to \mathbb{R}^D\\
+   \mathbf{x} &amp;\mapsto \left[\sqrt{\frac{2}{D}} \cos(w_1^\top x + b_1), \ldots, \sqrt{\frac{2}{D}} \cos(w_D^\top x + b_D)\right]
+   \end{aligned}\end{split}\]</div>
+<p><br>where <span class="math notranslate nohighlight">\(b_d \sim [0, 2\pi]\)</span> and <span class="math notranslate nohighlight">\(w_d \sim \mathcal{N}(0, \beta I_{D'\times D'})\)</span> need to be randomly sampled and fixed before modeling and inference. For this exercise, we suggest setting <span class="math notranslate nohighlight">\(\beta=10\)</span>. The features generated by <span class="math notranslate nohighlight">\(\phi\)</span> are called <strong>Random Fourier Features</strong>. As the number of features <span class="math notranslate nohighlight">\(D\)</span> tends to infinity, the resulting Bayesian kernel regression model tends to an important type of Bayesian (nonparametric) model called Gaussian Process model.</p>
+</li>
 </ol>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Model Evaluation and Uncertainty Estimation)</strong> Remember that a direct visual comparision of the 95% predictive interval against the training data is impractical! Rather, to evaluate the fit of the Bayesian model on the observed data, we evaluate the marginal log-likelihood of the data under the posterior. Given a test set <span class="math notranslate nohighlight">\(\{(\mathbf{x}^*_m, \mathbf{y}^*_m)\}\)</span>, the log posterior predictive likelihood or, simply, the <strong>log-likelihood</strong> is computed as:
+<ol class="arabic" start="3">
+<li><p><strong>(Model Evaluation and Uncertainty Estimation)</strong> Remember that a direct visual comparison of the 95% predictive interval against the training data is impractical! Rather, to evaluate the fit of the Bayesian model on the observed data, we evaluate the marginal log-likelihood of the data under the posterior. Given a test set <span class="math notranslate nohighlight">\(\{(\mathbf{x}^*_m, \mathbf{y}^*_m)\}\)</span>, the log posterior predictive likelihood or, simply, the <strong>log-likelihood</strong> is computed as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\\ \log \prod_{m=1}^M p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data})\\
-&amp;= \sum_{m=1}^M \log \int_\mathbf{w} p(\mathbf{y}^*_m | \mathbf{x}^*_m, \mathbf{w}) p(\mathbf{w}| \text{Data}) d\mathbf{w}
-\end{aligned}\end{split}\]</div>
-
-<br>i.e. the log-likelihood at a single observation <span class="math notranslate nohighlight">\((\mathbf{x}^*_m, \mathbf{y}^*_m)\)</span> is the log of the likelihood of the observation <em><strong>averaged over all models in the posterior</strong></em>.
+   \\ \log \prod_{m=1}^M p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data}) &amp;= \sum_{m=1}^M \log p(\mathbf{y}^*_m | \mathbf{x}^*_m, \text{Data})\\
+   &amp;= \sum_{m=1}^M \log \int_\mathbf{w} p(\mathbf{y}^*_m | \mathbf{x}^*_m, \mathbf{w}) p(\mathbf{w}| \text{Data}) d\mathbf{w}
+   \end{aligned}\end{split}\]</div>
+<p><br>i.e. the log-likelihood at a single observation <span class="math notranslate nohighlight">\((\mathbf{x}^*_m, \mathbf{y}^*_m)\)</span> is the log of the likelihood of the observation <em><strong>averaged over all models in the posterior</strong></em>.
 <br><br>
-For Bayesian linear regression, with posterior <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_N, \Sigma_N)\)</span> we have that
+For Bayesian linear regression, with posterior <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_N, \Sigma_N)\)</span> we have that</p>
 <div class="math notranslate nohighlight">
 \[
-p(y^*_m | x^*_m, \text{Data}) = \mathcal{N}(\mu^\top\mathbf{x}^*_m, \sigma^2 + (\mathbf{x}^*_m)^\top\Sigma_N\mathbf{x}^*_m)
-\]</div>
-
-where <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the variance of the observation noise.
+   p(y^*_m | x^*_m, \text{Data}) = \mathcal{N}(\mu^\top\mathbf{x}^*_m, \sigma^2 + (\mathbf{x}^*_m)^\top\Sigma_N\mathbf{x}^*_m)
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the variance of the observation noise.
 <br><br>
-For each choice of <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> in Problem 2, compute the log-likelihood of the training data. Examine a models with the higher log-likelihoods and a few with lower log-likelihoods, what is the relationship between log-likelihood and predictive uncertainty? In particular, does a higher log-likelihood indicate “better” predictive uncertainty?</p></li>
+For each choice of <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> in Question 2, compute the log-likelihood of the training data. Examine a models with the higher log-likelihoods and a few with lower log-likelihoods, what is the relationship between log-likelihood and predictive uncertainty? In particular, does a higher log-likelihood indicate “better” predictive uncertainty?</p>
+</li>
 </ol>
 <div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
 <p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
@@ -991,22 +1295,25 @@ For each choice of <span class="math notranslate nohighlight">\(D\)</span> and <
 <li><p>What kinds of needs do these users/communities have?</p></li>
 <li><p>What kinds of constraints do these users/communities have?</p></li>
 </ul>
-<ol class="arabic simple">
-<li><p><strong>(Impact)</strong>  Analyze the broader impact of these polynomial models. Focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Impact)</strong>  Analyze the broader impact of these polynomial models. Focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p>
 <p>Specifically address how predictive uncertainty can impact decision making when the models are deployed.</p>
-</div>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Bayesian versus Frequentist Uncertainty)</strong> Compare the types of predictive uncertainties that are generated by Bayesian models and ensembles. Characterize the advantages and disadvantages of bootstrap uncertainties from an ensemble. Describe an situation where it would be better to compute bootstrap uncertainties rather than posterior predictive uncertainties from a Bayesian model.</p></li>
+</li>
 </ol>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Bayesian versus Frequentist Uncertainty)</strong> Compare the types of predictive uncertainties that are generated by Bayesian models and ensembles. Characterize the advantages and disadvantages of bootstrap uncertainties from an ensemble. Describe an situation where it would be better to compute bootstrap uncertainties rather than posterior predictive uncertainties from a Bayesian model.</p>
 <p><em><strong>Hint:</strong></em> For example, consider situations where the data is scarce versus situations where the data is abundant; consider situations where clinicians can provide guidance on model selection using domain expertise versus situations where we would not know how patterns in the data would extrapolate to new populations of patients.</p>
 <p>Characterize the advantages and disadvantages of posterior predictive uncertainties from a Bayesian model. Describe an application where it is better to use these uncertainties rather than bootstrap uncertainties from an ensemble.</p>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Measuring Uncertainty)</strong> From your experiments, are any of the model evaluation metrics consdiered in this assignment (MSE, log-likelihood) appropriate for evaluating the quality of predictive uncertainty far away from the training data, that is, if we are concerned about the performance of models under covariate shift should we use these metrics to perform model selection?</p></li>
+</li>
 </ol>
+<ol class="arabic" start="3">
+<li><p><strong>(Measuring Uncertainty)</strong> From your experiments, are any of the model evaluation metrics considered in this assignment (MSE, log-likelihood) appropriate for evaluating the quality of predictive uncertainty far away from the training data, that is, if we are concerned about the performance of models under covariate shift should we use these metrics to perform model selection?</p>
 <p>Do our commonly used “best practices” of training machine learning models help or hamper our ability to train models with useful predictive uncertainties?</p>
 <p>What would be a good metric for measuring uncertainty? How would you define “good” uncertainty in the first place?</p>
 <p><em><strong>Hint:</strong></em> Can you formulate a definition of “good” uncertainty without referencing a specific down-stream task?</p>
+</li>
+</ol>
 </section>
 </section>
 <section id="further-reading">

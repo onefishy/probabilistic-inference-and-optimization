@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -483,7 +484,7 @@ document.write(`
 \mathcal{N}\left([120, 4], \left[\begin{array}{cc} 3&amp; 1\\ 1 &amp; 3 \end{array} \right] \right)
 \end{split}\]</div>
 <p>Scatter plot the samples with the Gaussian pdf, connect consecutive samples with a line so that you can see how the sampler moves in the sample space.</p>
-<p>Visually check for convergence of your chain. Apply the appropriate amount of burn-in and thinnning to an appropriate choice of number of total samples.</p>
+<p>Visually check for convergence of your chain. Apply the appropriate amount of burn-in and thinning to an appropriate choice of number of total samples.</p>
 <p>Explore the effect of your choice of initialization on the performance of your sampler.</p>
 <p>Implement a Gibbs sampler to sample from a different bivariate Gaussian:</p>
 <div class="math notranslate nohighlight">
@@ -498,30 +499,22 @@ document.write(`
 <p>Now, if <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span> are jointly normally distributed with <span class="math notranslate nohighlight">\(\mu = [\mu_X, \mu_Y]\)</span> and <span class="math notranslate nohighlight">\(\Sigma = \left[\begin{array}{cc}\sigma^2_X &amp; \rho\sigma_X\sigma_Y\\\rho\sigma_X\sigma_Y &amp; \sigma^2_Y\end{array}\right]\)</span>. The conditionals <span class="math notranslate nohighlight">\(p(Y | X) = f_{Y\vert X}\)</span> and <span class="math notranslate nohighlight">\(p(X | Y) = f_{X\vert Y}\)</span> are both normal with:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\mathbb{E}[Y|x] &amp;= \mu_Y + \rho\frac{\sigma_Y}{\sigma_X}(X - \mu_X), &amp;\text{Var}[Y|x] = \sigma_Y^2(1 - \rho)\\
-\mathbb{E}[X|y] &amp;= \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_Y), &amp;\text{Var}[X|y] = \sigma_X^2(1 - \rho)
+\mathbb{E}[Y|x] &amp;= \mu_Y + \rho\frac{\sigma_Y}{\sigma_X}(X - \mu_X), &amp;\text{Var}[Y|x] = \sigma_Y^2(1 - \rho^2)\\
+\mathbb{E}[X|y] &amp;= \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_Y), &amp;\text{Var}[X|y] = \sigma_X^2(1 - \rho^2)
 \end{aligned}\end{split}\]</div>
 <p><em><strong>Note:</strong></em> The derivation of these forms are algebraically involved but not difficult, we encourage you to do it by hand once (following online notes if you’d like) to get a flavor of how to manipulate Gaussian distributions.</p>
 <p>In our case, we see that we have <span class="math notranslate nohighlight">\(\mu_X = 120, \mu_Y = 4\)</span>, <span class="math notranslate nohighlight">\(\sigma_X = \sigma_Y = \sqrt{3}\)</span>. Then we have <span class="math notranslate nohighlight">\(\rho = \frac{\text{Cov}[X, Y]}{\sigma_X\sigma_Y} = \frac{1}{3}\)</span>.</p>
 <p>Finally, we have that our two conditionals are:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-p(Y | X) &amp;= \mathcal{N}\left( \mu_Y + \rho\frac{\sigma_Y}{\sigma_X}(X - \mu_X), \sigma_Y^2(1 - \rho)\right)\\
-p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_Y), \sigma_X^2(1 - \rho) \right)
+p(Y | X) &amp;= \mathcal{N}\left( \mu_Y + \rho\frac{\sigma_Y}{\sigma_X}(X - \mu_X), \sigma_Y^2(1 - \rho^2)\right)\\
+p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_Y), \sigma_X^2(1 - \rho^2) \right)
 \end{aligned}\end{split}\]</div>
 <p>Our Gibbs Sampling will consists of repeating the following two steps:</p>
 <ul class="simple">
 <li><p>Draw <span class="math notranslate nohighlight">\(Y\)</span> from <span class="math notranslate nohighlight">\(p(Y | x)\)</span></p></li>
 <li><p>Draw <span class="math notranslate nohighlight">\(X\)</span> from <span class="math notranslate nohighlight">\(p(X| y)\)</span></p></li>
 </ul>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Defining all the parts in the bivariate normal distribution</span>
 <span class="n">sigma_x</span> <span class="o">=</span> <span class="mi">3</span><span class="o">**</span><span class="mf">0.5</span>
 <span class="n">sigma_y</span> <span class="o">=</span> <span class="mi">3</span><span class="o">**</span><span class="mf">0.5</span>
@@ -531,9 +524,9 @@ p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_
 
 
 
-<span class="c1">#implementation of the posterior distributions</span>
-<span class="n">p_x_given_y</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_x</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">sigma_x</span> <span class="o">/</span> <span class="n">sigma_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">mu_y</span><span class="p">),</span> <span class="n">sigma_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">),</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">p_y_given_x</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_y</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">sigma_y</span> <span class="o">/</span> <span class="n">sigma_x</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu_x</span><span class="p">),</span> <span class="n">sigma_y</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">),</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#implementation of the conditional distributions</span>
+<span class="n">p_x_given_y</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_x</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">sigma_x</span> <span class="o">/</span> <span class="n">sigma_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">mu_y</span><span class="p">),</span> <span class="p">(</span><span class="n">sigma_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">p_y_given_x</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_y</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">sigma_y</span> <span class="o">/</span> <span class="n">sigma_x</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu_x</span><span class="p">),</span> <span class="p">(</span><span class="n">sigma_y</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1">#implementation of the gibbs sampler</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gibbs</span><span class="p">(</span><span class="n">p_x_given_y</span><span class="p">,</span> <span class="n">p_y_given_x</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">burn</span><span class="p">,</span> <span class="n">thin</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -547,16 +540,6 @@ p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">burn</span> <span class="o">*</span> <span class="n">iters</span><span class="p">)::</span><span class="n">thin</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#design choices for the gibbs sampler</span>
 <span class="n">x_0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
 <span class="n">y_0</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
@@ -566,29 +549,6 @@ p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_
 <span class="n">gibbs_samples</span> <span class="o">=</span> <span class="n">gibbs</span><span class="p">(</span><span class="n">p_x_given_y</span><span class="p">,</span> <span class="n">p_y_given_x</span><span class="p">,</span> <span class="n">iters</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">burn</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">'samples.csv'</span><span class="p">,</span> <span class="n">gibbs_samples</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mean of the multivariate Gaussian</span>
 <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 <span class="c1">#covariance matrix of the multivariate Gaussian</span>
@@ -609,11 +569,9 @@ p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/693b3f909b4c9eef3d86f08ed2890d5fc229f80a758f0b0f4cee90565eebd89d.png" src="../_images/693b3f909b4c9eef3d86f08ed2890d5fc229f80a758f0b0f4cee90565eebd89d.png" />
-</div>
+<a class="reference internal image-reference" href="../_images/solution-11.png"><img alt="Solution, figure 1" class="align-center" src="../_images/solution-11.png" style="width: 100%;" />
+</a>
+<p><em>Not covered here: the effect of the initialization, the second Gaussian, and how the shape of the Gaussian affects the sampler.</em></p>
 </div>
 </section>
 <section id="gibbs-versus-metropolis-hastings-on-a-bivariate-gaussian">
@@ -622,21 +580,15 @@ p(X | Y) &amp;= \mathcal{N}\left( \mu_X + \rho\frac{\sigma_X}{\sigma_Y}(Y - \mu_
 <p>Try a bivariate Gaussian proposal distribution <span class="math notranslate nohighlight">\(\mathcal{N}(X_n, \sigma^2I_{2\times 2})\)</span>, where <span class="math notranslate nohighlight">\(I_{2\times 2}\)</span> is the identity matrix, <span class="math notranslate nohighlight">\(X_n\)</span> is the current sample and <span class="math notranslate nohighlight">\(\sigma^2\)</span> is your choice of variance. Try different values of <span class="math notranslate nohighlight">\(\sigma\)</span>.</p>
 <p>Discuss how does the shape of the Gaussian effect the performance of your sampler.</p>
 <p>How does MH perform in comparison to Gibbs?</p>
-<p>Try a bivariate Gaussian proposal distribution
+<p>Try a bivariate Gaussian proposal distribution</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \mathcal{N}\left(X_n, \left[\begin{array}{cc} 0.4&amp; 0.2\\ 0.2 &amp; 0.4 \end{array} \right] \right)
 \end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(X_n\)</span> is the current sample.</p>
+<p>where <span class="math notranslate nohighlight">\(X_n\)</span> is the current sample.</p>
 <p>Does this proposal distribution perform better or worse than <span class="math notranslate nohighlight">\(\mathcal{N}(X_n, \sigma^2I_{2\times 2})\)</span>? Why do you think it does (or does not)?</p>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implementation of metropolis-hastings with symmetric proposal distribution</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">log_target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">burn_in</span><span class="p">,</span> <span class="n">thinning</span><span class="p">,</span> <span class="n">Sigma</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
     <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
@@ -677,18 +629,12 @@ where <span class="math notranslate nohighlight">\(X_n\)</span> is the current s
 <span class="n">Sigma_prop</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1">#sample from the MH sampler</span>
 <span class="n">MH_samples</span><span class="p">,</span> <span class="n">accepts</span> <span class="o">=</span> <span class="n">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">log_target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">burn_in</span><span class="p">,</span> <span class="n">thinning</span><span class="p">,</span> <span class="n">Sigma</span><span class="o">=</span><span class="n">Sigma_prop</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'acceptance rate:'</span><span class="p">,</span> <span class="n">accepts</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>acceptance rate: 0.7934
+</pre></div>
 </div>
-</details>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define points that include most of the probability mass of the pdf</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">gibbs_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">():</span><span class="n">gibbs_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">():</span><span class="mf">.1</span><span class="p">,</span> <span class="n">gibbs_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">():</span><span class="n">gibbs_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">():</span><span class="mf">.01</span><span class="p">]</span>
 <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
@@ -704,33 +650,26 @@ where <span class="math notranslate nohighlight">\(X_n\)</span> is the current s
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/492c78cb67d3951e4f97eec212ade20b1156032e4062d98b1e86b07697577580.png" src="../_images/492c78cb67d3951e4f97eec212ade20b1156032e4062d98b1e86b07697577580.png" />
-</div>
+<a class="reference internal image-reference" href="../_images/solution-2-1.png"><img alt="Solution, figure 1" class="align-center" src="../_images/solution-2-1.png" style="width: 100%;" />
+</a>
+<p><em>Not covered here: the <span class="math notranslate nohighlight">\(\sigma^2 I_{2\times 2}\)</span> proposals, and the discussion questions.</em></p>
 </div>
 </section>
 <section id="metropolis-hastings-on-a-mixture-of-gaussians">
 <h2>Metropolis Hastings on a Mixture of Gaussians<a class="headerlink" href="#metropolis-hastings-on-a-mixture-of-gaussians" title="Link to this heading">#</a></h2>
-<p>Recall the mixture of two univariate Gaussian example in class where our Metropolis-Hastings sampler was unable to capture both modes in the target distribution.</p>
+<p>Recall the mixture of two univariate Gaussians example in <a class="reference internal" href="../chapters/08-metropolis-hastings-gibbs.html"><span class="doc">Chapter 9</span></a>, where our Metropolis-Hastings sampler was unable to capture both modes in the target distribution.</p>
 <p>Is this because this algorithm is incapable of sampling from this specific distribution of this class of <em><strong>multimodal distributions</strong></em>? Or did we make inappropriate design choices when we specified our sampler?</p>
 <p><strong>Exercise:</strong> play with the variance of the normal proposal distribution (try some very small values and some very large values), what is the effect of the variance have on the performance of your sampler?</p>
 <p>Play with the choice of initialization of the Metropolis-Hastings algorithm, what is the effect of the initialization on the performance of your sampler?</p>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implementation of metropolis-hastings with symmetric proposal distribution</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
     <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">current</span> <span class="o">=</span> <span class="n">init</span>
     <span class="n">accepts</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">):</span>
-        <span class="n">proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">proposal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">U</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">target</span><span class="p">(</span><span class="n">proposal</span><span class="p">)</span> <span class="o">/</span> <span class="n">target</span><span class="p">(</span><span class="n">current</span><span class="p">))):</span>
@@ -756,19 +695,9 @@ where <span class="math notranslate nohighlight">\(X_n\)</span> is the current s
 <span class="n">sigma_sqs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">mus</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
 <span class="n">pis</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
-<span class="n">target</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">pis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">pis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mus</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sigma_sqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of samples</span>
 <span class="n">S</span> <span class="o">=</span> <span class="mi">5000</span>
 <span class="c1">#initialization of the MH sampler</span>
@@ -777,8 +706,8 @@ where <span class="math notranslate nohighlight">\(X_n\)</span> is the current s
 <span class="n">burn_in</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="c1">#keep every n samples</span>
 <span class="n">thinning</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="c1">#proposal variance</span>
-<span class="n">sigma_sq_large</span> <span class="o">=</span> <span class="mf">3.</span>
+<span class="c1">#proposal variance (standard deviation 9)</span>
+<span class="n">sigma_sq_large</span> <span class="o">=</span> <span class="mf">81.</span>
 <span class="c1">#sample from the MH sampler</span>
 <span class="n">samples_large_var</span><span class="p">,</span> <span class="n">accepts</span> <span class="o">=</span> <span class="n">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">=</span><span class="n">sigma_sq_large</span><span class="p">)</span>
 
@@ -788,43 +717,17 @@ where <span class="math notranslate nohighlight">\(X_n\)</span> is the current s
 <span class="n">samples_small_var</span><span class="p">,</span> <span class="n">accepts</span> <span class="o">=</span> <span class="n">MH_sampler</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="o">=</span><span class="n">sigma_sq_small</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">'MH_samples1.csv'</span><span class="p">,</span> <span class="n">samples_small_var</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">'MH_samples2.csv'</span><span class="p">,</span> <span class="n">samples_large_var</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples_large_var</span><span class="p">[</span><span class="mi">200</span><span class="p">:],</span> <span class="s1">'target distribution vs all samples, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">, proposal variance=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq_large</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples_small_var</span><span class="p">[</span><span class="mi">200</span><span class="p">:],</span> <span class="s1">'target distribution vs samples after </span><span class="si">{}</span><span class="s1"> burn-in, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">, proposal variance=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq_small</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples_large_var</span><span class="p">[</span><span class="n">burn_in</span><span class="p">:],</span> <span class="s1">'target distribution vs samples after </span><span class="si">{}</span><span class="s1"> burn-in, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">, proposal variance=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq_large</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">target</span><span class="p">,</span> <span class="n">samples_small_var</span><span class="p">[</span><span class="n">burn_in</span><span class="p">:],</span> <span class="s1">'target distribution vs samples after </span><span class="si">{}</span><span class="s1"> burn-in, S=</span><span class="si">{}</span><span class="s1">, init=</span><span class="si">{}</span><span class="s1">, proposal variance=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">sigma_sq_small</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/44c4624cbe62afa484ee8e2c22025aead0a595d88014337bc6ae7776dafd0798.png" src="../_images/44c4624cbe62afa484ee8e2c22025aead0a595d88014337bc6ae7776dafd0798.png" />
-</div>
+<a class="reference internal image-reference" href="../_images/solution-3-1.png"><img alt="Solution, figure 1" class="align-center" src="../_images/solution-3-1.png" style="width: 100%;" />
+</a>
+<p><em>Not covered here: a discussion of how the proposal variance and the initialization affect the sampler.</em></p>
 </div>
 </section>
 </section>

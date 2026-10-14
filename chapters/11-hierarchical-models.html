@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -444,14 +445,14 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-binomial-model-for-movie-rankings">A Binomial Model for Movie Rankings</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-beta-binomial-model-for-movie-rankings">A Beta-Binomial Model for Movie Rankings</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings">Credible Intervals for Movies with the Most and the Least Number of Ratings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model">Emprirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-ml-ii-for-the-beta-binomial-model">Empirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-moments-for-empirical-bayes-ml-ii">Method of Moments for Empirical Bayes (ML-II)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-and-shrinkage">Empirical Bayes and Shrinkage</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-models-and-empirical-bayes">13.3. Hierarchical Models and Empirical Bayes</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-model-for-movie-rankings">A Hierarchical Model for Movie Rankings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii">Point Estimate Approximations of Inference in Hierachical Models (MAP-II)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierarchical-models-map-ii">Point Estimate Approximations of Inference in Hierarchical Models (MAP-II)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">13.4. Summary</a></li>
@@ -652,14 +653,13 @@ document.write(`
 <section id="what-we-can-do-so-far-models">
 <h3>What We Can Do So Far: Models<a class="headerlink" href="#what-we-can-do-so-far-models" title="Link to this heading">#</a></h3>
 <ol class="arabic simple">
-<li><p><strong>(Likelihood Models with Observed Variables)</strong> When we have observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>, we can model <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> as a random variable <span class="math notranslate nohighlight">\(Y_{\text{Obs}} \sim p(Y |\theta)\)</span> with a known distribution <span class="math notranslate nohighlight">\(p\)</span>.</p></li>
-</ol>
+<li><p><strong>(Likelihood Models with Observed Variables)</strong> When we have observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>, we can model <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> as a random variable <span class="math notranslate nohighlight">\(Y_{\text{Obs}} \sim p(Y |\theta)\)</span> with a known distribution <span class="math notranslate nohighlight">\(p\)</span>.</p>
 <ul class="simple">
 <li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a label, we can model it as a <em>Categorical</em> or <em>Bernoulli</em> variable</p></li>
 <li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is a count, we can model it as a <em>Binomial</em>, <em>Multinomial</em> or <em>Poisson</em></p></li>
 <li><p>if <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> is continuous, we can model it as a <em>Gaussian</em>, <em>Exponential</em>, <em>Dirichlet</em> etc<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
+</li>
 <li><p><strong>(Likelihood Models with Latent Variables)</strong>  When we also have unobserved data <span class="math notranslate nohighlight">\(Z_{\text{Latent}}\)</span>, we can model <span class="math notranslate nohighlight">\(Z_{\text{Latent}}\)</span> and <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span> jointly <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, Z_{\text{Latent}}| \theta)\)</span>.<br><br></p></li>
 <li><p><strong>(Bayesian Models)</strong>  When we are being Bayesian, we <em>assume</em> a prior for <span class="math notranslate nohighlight">\(\theta\)</span>, encoding our knowledge and uncertainty about <span class="math notranslate nohighlight">\(\theta\)</span>. We model parameters and data jointly <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, \theta)\)</span> or <span class="math notranslate nohighlight">\(p(Y_{\text{Obs}}, Z_{\text{Latent}}, \theta)\)</span>.</p></li>
 </ol>
@@ -671,7 +671,7 @@ document.write(`
 <p><strong>II.</strong> <em><strong>Bayesian Inference:</strong></em> for Bayesian models, we compute the posterior distribution <span class="math notranslate nohighlight">\(p(\theta| Y)\)</span>.</p>
 <p>We choose an <em><strong>inference algorithm or method</strong></em> to perform inference:</p>
 <p><strong>I.</strong> <em><strong>Maximum Likelihood Estimation:</strong></em> <br>
-<strong>A.</strong> For <em>models with observed variables</em>, we <em>analytically</em> solve an unconstrained or contrained optimization problem to obtain <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.<br>
+<strong>A.</strong> For <em>models with observed variables</em>, we <em>analytically</em> solve an unconstrained or constrained optimization problem to obtain <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.<br>
 <strong>B.</strong> For <em>latent variable models</em>, we use <em><strong>expectation maximization</strong></em> to approximately find <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.</p>
 <p><strong>II.</strong> <em><strong>Bayesian Inference:</strong></em> <br>
 <strong>A.</strong> If the prior and likelihood are <em><strong>conjugate</strong></em>, <em>analytically</em> derive the posterior distribution<br>
@@ -685,25 +685,25 @@ document.write(`
 <em>Can we find a way to black-box optimize any objective function?</em></p>
 <p><strong>3.</strong> (<em><strong>Hamiltonian Monte Carlo</strong></em>) MCMC samplers can be extremely inefficient in high-dimensions where the samplers struggle to find area of high mass in the target distribution.
 <em>Can we build a proposal distribution with an indicator of where the target distribution mass is located?</em></p>
-<p><strong>4.</strong> (<em><strong>Black-box Variational Inference etc</strong></em>) Variational inference sounds like a great idea but maximizing the ELBO using coordinate ascent is an artisenal process that requires a massive amount of derivations per model.
+<p><strong>4.</strong> (<em><strong>Black-box Variational Inference etc</strong></em>) Variational inference sounds like a great idea but maximizing the ELBO using coordinate ascent is an artisanal process that requires a massive amount of derivations per model.
 <em>Can we find an algorithm to compute/estimate the gradient of the ELBO that is model independent? Can we perform black-box variational inference?</em></p>
 </section>
 <section id="what-happens-after-inference">
 <h3>What Happens After Inference?<a class="headerlink" href="#what-happens-after-inference" title="Link to this heading">#</a></h3>
 <ol class="arabic simple">
-<li><p><strong>(Predictive Evaluation)</strong> In practice, we do not know the true model <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>! Thus, <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> cannot be evaluated by comparison to <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>.</p></li>
-</ol>
+<li><p><strong>(Predictive Evaluation)</strong> In practice, we do not know the true model <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>! Thus, <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> cannot be evaluated by comparison to <span class="math notranslate nohighlight">\(\theta_{\text{True}}\)</span>.</p>
 <ul class="simple">
-<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> we compute <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> on multiple bootstrap samples of the data; for each <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> we sample <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta_{\text{MLE}})\)</span>. We compare these samples with observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.</p></li>
+<li><p><em><strong>Maximum Likelihood Estimation:</strong></em> we compute <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> on multiple bootstrap samples of the data; for each <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> we sample <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta_{\text{MLE}})\)</span>. We compare these samples with observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.</p></li>
 <li><p><em><strong>Bayesian Inference:</strong></em> we sample <span class="math notranslate nohighlight">\(\theta\)</span>’s from the posterior, for each <span class="math notranslate nohighlight">\(\theta\sim p(\theta |Y_{\text{Obs}})\)</span> we sample <span class="math notranslate nohighlight">\(Y \sim p(Y| \theta)\)</span>. We compare these <em><strong>posterior predictive samples</strong></em> with the observed data <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>.<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Uncertainty Evaluation)</strong> Before making decisions with real-life consequence based on your model, you should check the precision of your estimate or uncertainty of you model.</p></li>
-</ol>
+</li>
+<li><p><strong>(Uncertainty Evaluation)</strong> Before making decisions with real-life consequence based on your model, you should check the precision of your estimate or uncertainty of you model.</p>
 <ul class="simple">
-<li><p><em><strong>Maximimum Likelihood Estimation:</strong></em> repeat the MLE computation on many bootstrap samples of <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>. Compute the confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> and the predictive interval for <span class="math notranslate nohighlight">\(Y\)</span>. These intervals indicate <em>precision</em>.</p></li>
+<li><p><em><strong>Maximum Likelihood Estimation:</strong></em> repeat the MLE computation on many bootstrap samples of <span class="math notranslate nohighlight">\(Y_{\text{Obs}}\)</span>. Compute the confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> and the predictive interval for <span class="math notranslate nohighlight">\(Y\)</span>. These intervals indicate <em>precision</em>.</p></li>
 <li><p><em><strong>Bayesian Inference:</strong></em> Compute credible intervals for the posterior <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span> and the predictive intervals of the posterior predictive. These intervals indicate <em>model uncertainty</em>.</p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="the-modeling-process">
 <h3>The Modeling Process<a class="headerlink" href="#the-modeling-process" title="Link to this heading">#</a></h3>
@@ -715,19 +715,19 @@ document.write(`
 <section id="evaluating-the-predictive-distributions">
 <h3>Evaluating the Predictive Distributions<a class="headerlink" href="#evaluating-the-predictive-distributions" title="Link to this heading">#</a></h3>
 <p>How well does the predictive distribution of bootstrapped MLE models or the posterior predictive of a Bayesian model capture the actual observed data?</p>
-<p>We cannot, in general, perform visual chekcks (i.e. plot the predictive and the data). To quantify how well a predictive distribution aligns with the actual data we can compute:</p>
-<ol class="arabic simple">
-<li><p>The KL-divergence between actual data (<em><strong>empirical distirbution</strong></em>) and our predictive distribution.</p></li>
-<li><p>The log-likelihood of the actual data.</p></li>
-</ol>
+<p>We cannot, in general, perform visual checks (i.e. plot the predictive and the data). To quantify how well a predictive distribution aligns with the actual data we can compute:</p>
+<ol class="arabic">
+<li><p>The KL-divergence between actual data (<em><strong>empirical distribution</strong></em>) and our predictive distribution.</p></li>
+<li><p>The log-likelihood of the actual data.</p>
 <p><strong>A.</strong> For MLE models: we can compute <span class="math notranslate nohighlight">\(\log p(Y^{\text{Obs}}| \theta_{\text{MLE}})\)</span> for each bootstrap <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span> and then average the log-likelihood over the number of bootstraps. If there are multiple observations, we would sum the individual log-likelihoods at the end.<br><br></p>
-<p><strong>B.</strong> For Bayesian models: we evaluate the <strong>log-likelihood</strong>, i.e the likelihood of the observed data under the posterior predictive,<br />
+<p><strong>B.</strong> For Bayesian models: we evaluate the <strong>log-likelihood</strong>, i.e the likelihood of the observed data under the posterior predictive,</p>
 <div class="math notranslate nohighlight">
 \[
-  \log \prod_{n=1}^N \int_{\Theta} p(Y^{\text{Obs}}_n | \theta) p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N) d\theta \approx \sum_{n=1}^N\log \frac{1}{S} \sum_{s=1}^S p(Y^{\text{Obs}}_n | \theta_s), 
-  \]</div>
-
-where <span class="math notranslate nohighlight">\(\theta_s\sim p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N)\)</span></p>
+   \log \prod_{n=1}^N \int_{\Theta} p(Y^{\text{Obs}}_n | \theta) p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N) d\theta \approx \sum_{n=1}^N\log \frac{1}{S} \sum_{s=1}^S p(Y^{\text{Obs}}_n | \theta_s),
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_s\sim p(\theta|Y^{\text{Obs}}_1, \ldots, Y^{\text{Obs}}_N)\)</span></p>
+</li>
+</ol>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -878,7 +878,7 @@ where <span class="math notranslate nohighlight">\(\theta_s\sim p(\theta|Y^{\tex
 </section>
 <section id="evaluating-and-quantifying-uncertainty">
 <h3>Evaluating and Quantifying Uncertainty<a class="headerlink" href="#evaluating-and-quantifying-uncertainty" title="Link to this heading">#</a></h3>
-<p>How do we know our model uncertainties (confidence intervals, credible intervals, predcitive intervals, posterior predictive intervals) are any good? What information about the data/model do we want our uncertainties to capture?</p>
+<p>How do we know our model uncertainties (confidence intervals, credible intervals, predictive intervals, posterior predictive intervals) are any good? What information about the data/model do we want our uncertainties to capture?</p>
 <p><strong>Epistemic Uncertainty:</strong> uncertainty due to small number of samples across all scenarios. This can be reduced by more samples!</p>
 <p><strong>Aleatoric Uncertainty:</strong> uncertainty due to the underlying randomness of the data generation process. This cannot be reduced no matter what.</p>
 <p>Can we use log-likelihood of as a metric for the quality of predictive uncertainty?</p>
@@ -1344,8 +1344,8 @@ Wallace &amp; Gromit: The Best of Aardman Animation (1996) : 1.0 (6.0/6.0)
 </div>
 </div>
 </section>
-<section id="emprirical-bayes-ml-ii-for-the-beta-binomial-model">
-<h3>Emprirical Bayes (ML-II) For the Beta-Binomial Model<a class="headerlink" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model" title="Link to this heading">#</a></h3>
+<section id="empirical-bayes-ml-ii-for-the-beta-binomial-model">
+<h3>Empirical Bayes (ML-II) For the Beta-Binomial Model<a class="headerlink" href="#empirical-bayes-ml-ii-for-the-beta-binomial-model" title="Link to this heading">#</a></h3>
 <p>Since the prior has a significant impact on the posterior when the number of ratings is small, we want to choose a prior that is appropriate for the data.</p>
 <p><strong>Idea:</strong> choose the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> for the beta prior such that the expected likelihood of the data, over <span class="math notranslate nohighlight">\(\theta_n \sim Beta(\alpha, \beta)\)</span>, is maximized:</p>
 <div class="math notranslate nohighlight">
@@ -1354,7 +1354,7 @@ p(Y_1, \ldots, Y_N| \alpha, \beta) = \prod_{n=1}^N \int_0^1 Bin(Y_n|R_n, \theta_
 \end{aligned}\]</div>
 <p>where <span class="math notranslate nohighlight">\(B\)</span> is the beta function. The marginal likelihood of the data <span class="math notranslate nohighlight">\(p(Y_1, \ldots, Y_N| a, b)\)</span> is called <em><strong>evidence</strong></em>.</p>
 <p>This method of choosing the hyperparameters of the prior based on the data is called <em><strong>empirical Bayes</strong></em> or <em><strong>type-II maximum likelihood</strong></em>.</p>
-<p><strong>Question:</strong> doens’t this violate the principle of choosing the prior independent of the data?</p>
+<p><strong>Question:</strong> doesn’t this violate the principle of choosing the prior independent of the data?</p>
 </section>
 <section id="method-of-moments-for-empirical-bayes-ml-ii">
 <h3>Method of Moments for Empirical Bayes (ML-II)<a class="headerlink" href="#method-of-moments-for-empirical-bayes-ml-ii" title="Link to this heading">#</a></h3>
@@ -1364,7 +1364,7 @@ p(Y_1, \ldots, Y_N| \alpha, \beta) = \prod_{n=1}^N \int_0^1 Bin(Y_n|R_n, \theta_
 \mathbb{E}\left[Y_n\right] &amp;=  R_n \frac{\alpha}{\alpha + \beta}\\
 \text{Var}\left[Y_n\right] &amp;= \frac{R_n \alpha\beta}{(\alpha + \beta)^2}\frac{\alpha + \beta + R_n}{\alpha + \beta + 1}
 \end{aligned}\end{split}\]</div>
-<p>Now we can make the simplyfying approximations that the <span class="math notranslate nohighlight">\(Y_n\)</span>’s are iid data from the <em>same</em> binomial, i.e. all have the same moments as above. Then we can use empirical moments to approximate the theoretical moments and solve for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>:</p>
+<p>Now we can make the simplifying approximations that the <span class="math notranslate nohighlight">\(Y_n\)</span>’s are iid data from the <em>same</em> binomial, i.e. all have the same moments as above. Then we can use empirical moments to approximate the theoretical moments and solve for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \widehat{\mathbb{E}}\left[\frac{Y_n}{R_n}\right] &amp;=  \frac{\alpha}{\alpha + \beta}\\
@@ -1420,17 +1420,17 @@ p(Y_1, \ldots, Y_N| \alpha, \beta) = \prod_{n=1}^N \int_0^1 Bin(Y_n|R_n, \theta_
 Y_n|\theta_n &amp;\sim Bin(R_n, \theta_n)
 \end{aligned}\end{split}\]</div>
 <p>This is an example of a <em><strong>hierarchical model</strong></em> – a model with multiple layers of unknown variables.</p>
-<p>There are overlaps between hierarchical models and latent variable models. Generally, we want the hiearchy in a <em><strong>hierarchical model</strong></em> to express scientifically meaningful conditional relationships. In <em><strong>latent variable models</strong></em> we want the latent variable to represent unknown aspects of the data rather than unknown parameters of our model.</p>
+<p>There are overlaps between hierarchical models and latent variable models. Generally, we want the hierarchy in a <em><strong>hierarchical model</strong></em> to express scientifically meaningful conditional relationships. In <em><strong>latent variable models</strong></em> we want the latent variable to represent unknown aspects of the data rather than unknown parameters of our model.</p>
 </section>
-<section id="point-estimate-approximations-of-inference-in-hierachical-models-map-ii">
-<h3>Point Estimate Approximations of Inference in Hierachical Models (MAP-II)<a class="headerlink" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii" title="Link to this heading">#</a></h3>
+<section id="point-estimate-approximations-of-inference-in-hierarchical-models-map-ii">
+<h3>Point Estimate Approximations of Inference in Hierarchical Models (MAP-II)<a class="headerlink" href="#point-estimate-approximations-of-inference-in-hierarchical-models-map-ii" title="Link to this heading">#</a></h3>
 <p>The posterior of the hierarchical model for movie ratings is <span class="math notranslate nohighlight">\(p(\alpha, \beta, \theta_1, \ldots, \theta_N | Y_1, \ldots, Y_N)\)</span>, but since we know how <span class="math notranslate nohighlight">\(\theta_n\)</span> is conditioned on <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>, it is often easier to marginalize out <span class="math notranslate nohighlight">\(\theta_n\)</span> and work with <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>.</p>
-<p>The central idea is that by infering the posterior <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>, <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are influenced by the entire data set and thus ratings poor movies can <em><strong>borrow statistical strength</strong></em> from ratings rich movies through the way <span class="math notranslate nohighlight">\(\theta_n\)</span> depends on <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>.</p>
+<p>The central idea is that by inferring the posterior <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>, <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are influenced by the entire data set and thus ratings poor movies can <em><strong>borrow statistical strength</strong></em> from ratings rich movies through the way <span class="math notranslate nohighlight">\(\theta_n\)</span> depends on <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>.</p>
 <p>However, performing full Bayesian inference on hierarchical models can be difficult. Thus, we can make a point estimate approximation of <span class="math notranslate nohighlight">\(p(\alpha, \beta |Y_1, \ldots, Y_N)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\alpha^*, \beta^* = \text{argmax}_{\alpha, \beta} p(\alpha, \beta |Y_1, \ldots, Y_N).\]</div>
 <p>When we perform the usual Bayesian inference on <span class="math notranslate nohighlight">\(p(Y_n|\theta_n)p(\theta_n|\alpha^*, \beta^*)\)</span>, this is called the <em><strong>type-II MAP method</strong></em>.</p>
-<p>But when <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are uniform random varibles, the above becomes:</p>
+<p>But when <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> are uniform random variables, the above becomes:</p>
 <div class="math notranslate nohighlight">
 \[\alpha^*, \beta^* = \text{argmax}_{\alpha, \beta} p(Y_1, \ldots, Y_N |\alpha, \beta),\]</div>
 <p>When we perform the usual Bayesian inference on <span class="math notranslate nohighlight">\(p(Y_n|\theta_n)p(\theta_n|\alpha^*, \beta^*)\)</span>, this is just our empirical Bayes or type-II MLE method!</p>
@@ -1438,7 +1438,7 @@ Y_n|\theta_n &amp;\sim Bin(R_n, \theta_n)
 </section>
 <section id="summary">
 <h2><span class="section-number">13.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The questions we ask today are “When should we be Bayesian? How Bayesian should we be?”</p>
+<p>The questions we ask in this chapter are “When should we be Bayesian? How Bayesian should we be?”</p>
 <p>Consider the kidney cancer data set from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>:
 We posit that the observed number of cases of kidney cancer, <span class="math notranslate nohighlight">\(y_j\)</span>, for the <span class="math notranslate nohighlight">\(j\)</span>-th county (with total population <span class="math notranslate nohighlight">\(n_j\)</span>) is a Poisson random variable that depends on the true underlying cancer rate, <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
 <div class="math notranslate nohighlight">
@@ -1485,9 +1485,8 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 <a class="reference internal image-reference" href="../_images/shrinkage.png"><img alt="../_images/shrinkage.png" src="../_images/shrinkage.png" style="width: 544px;" />
 </a>
 </figure>
-<ol class="arabic simple" start="5">
-<li><p><strong>(Broader Impact)</strong> Why should we care so much about which model to choose?</p></li>
-</ol>
+<ol class="arabic" start="5">
+<li><p><strong>(Broader Impact)</strong> Why should we care so much about which model to choose?</p>
 <ul class="simple">
 <li><p>Which downstream decisions might be affected by the predictions of this model and how? So what if I underestimate cancer rates? So what if I overestimate?</p></li>
 <li><p>Which counties are affected by the overfitting tendencies of MLE?</p></li>
@@ -1495,9 +1494,8 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 <li><p>Who lives in these counties?</p></li>
 <li><p>If your model negatively affects individual lives, would the negative effects be random or exacerbate systemic inequalities?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="6">
-<li><p><strong>(The Small Data within Big Data Problem)</strong> The small data with big data problem is everywhere in machine learning. It might appear under names like “cohort imbalance”, “sampling bias”.</p></li>
-</ol>
+</li>
+<li><p><strong>(The Small Data within Big Data Problem)</strong> The small data with big data problem is everywhere in machine learning. It might appear under names like “cohort imbalance”, “sampling bias”.</p>
 <ul>
 <li><p>Health care: women, people of non-european descent, folks without insurance (and primary care) etc are extremely underrepresented</p></li>
 <li><p>What can go wrong with modeling data with an underrepresented cohort?</p>
@@ -1508,17 +1506,18 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 </li>
 <li><p>Why can’t you just collect more data? <br><br></p></li>
 </ul>
-<ol class="arabic simple" start="7">
-<li><p><strong>(Why Should Engineers and ML Researchers Care About Broader Impact?)</strong> Is it your responsibility as an engineer to care about broader impact? To what extent is this your responsibility?</p></li>
-</ol>
+</li>
+<li><p><strong>(Why Should Engineers and ML Researchers Care About Broader Impact?)</strong> Is it your responsibility as an engineer to care about broader impact? To what extent is this your responsibility?</p>
 <ul class="simple">
 <li><p>If you’re just an engineer in a long ML pipeline in an industry setting, how much should you care about broader impact? Don’t company have a legal and ethics department that handles all that?</p></li>
 <li><p>If you’re just a in-house attorney or social scientist at a tech company, what properties of MLE, Bayesian, Empirical Bayes and Hierarchical Bayes models should you know?</p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="exercises">
 <h2><span class="section-number">13.5. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-modeling-kidney-cancer-data">
 <span id="ps-hw5b"></span><h3>Problem Set: Modeling Kidney Cancer Data<a class="headerlink" href="#problem-set-modeling-kidney-cancer-data" title="Link to this heading">#</a></h3>
 <p>In this problem, we will continue to work with the US Kidney Cancer Data set, <code class="docutils literal notranslate"><span class="pre">kcancer.csv</span></code>. This is a dataset of kidney cancer frequencies across the US over 5 years on a per county basis.</p>
@@ -1537,10 +1536,148 @@ y_j | \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldot
 <li><p><strong>(Empirical Bayes)</strong> Using Empirical Bayes and moment matching, choose values for the hyperparameters <span class="math notranslate nohighlight">\(\alpha, \beta\)</span> based on your data. Use these values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> to obtain posterior distributions for each county.</p></li>
 </ol>
 <p><em><strong>Hint:</strong></em> You’ll first need to derive the fact that the <em><strong>evidence</strong></em> for a Poisson-Gamma model has a Negative Binomial distribution.<br><br></p>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Posterior Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the posterior mean cancer rate estimates vs the county population size, highlight these means in green.</p></li>
-</ol>
+<ol class="arabic" start="3">
+<li><p><strong>(Posterior Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the posterior mean cancer rate estimates vs the county population size, highlight these means in green.</p>
 <p>Using the scatter plot, explain why using the posterior means (from our model) to estimate cancer rates is preferable to studying the raw rates themselves.</p>
+</li>
+</ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># data_df is the dataframe of your data</span>
+<span class="c1"># estimates is a numpy array of cancer rate estimates, one for each county</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">data_df</span><span class="p">,</span> <span class="n">estimates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"grey"</span><span class="p">)</span>
+    <span class="n">bot_kcancer_counties</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'pct_mortality'</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">300</span><span class="p">]</span>
+    <span class="n">top_kcancer_counties</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'pct_mortality'</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:</span><span class="mi">300</span><span class="p">]</span>
+    <span class="n">top_kcancer_counties</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">bot_kcancer_counties</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'scatter'</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="s2">"pop"</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">"pct_mortality"</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">logx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">estimates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">],</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">estimates</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"green"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0003</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"../data/kcancer.csv"</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'dc'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="n">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Part I, Question 1, figure 1" class="align-center" src="../_images/part-i-question-1-12.png" />
+<p>It looks like the counties with the highest and lowest raw cancer rates are also the counties with lower populations. This pattern indicates that the raw cancer rates (MLE estimates) may be overfitting to outliers in the data and the cancer rates of counties with fewer people are more exaggerated.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<p>We note that the Gamma-Poisson model is conjugate, that is, the posterior, posterior predictive and prior predictive all have closed forms. In particular, the posterior distribution is a Gamma distribution and the prior predictive is a Negative Binomial Distribution.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(\theta_j | y_j) &amp;\propto Poisson(y_j; 5 \cdot n_j \cdot \theta_j) Gamma(\theta_j; \alpha, \beta)\\
+&amp;\propto e^{-5 \cdot n_j \cdot \theta_j} \left(5 \cdot n_j \cdot \theta_j\right)^{y_j} \theta_j^{\alpha - 1} e^{-\beta\theta_j}\\
+&amp;= e^{-\left(5 \cdot n_j \cdot \theta_j + \beta\theta_j\right)} \theta_j^{\alpha + y_j - 1} \left(5 \cdot n_j\right)^{y_j}\\
+&amp;\propto e^{-\left(5 \cdot n_j  + \beta\right)\theta_j} \theta_j^{\alpha + y_j - 1}
+\end{aligned}\end{split}\]</div>
+<p>We see that <span class="math notranslate nohighlight">\(p(\theta_j | y_j)\)</span> is a Gamma distribution, <span class="math notranslate nohighlight">\(Gamma(\alpha + y_j, 5 n_j  + \beta)\)</span>.</p>
+<p>Recall that the prior predictive, <span class="math notranslate nohighlight">\(p(y_j)\)</span>, can computed by</p>
+<div class="math notranslate nohighlight">
+\[
+p(y_j) = \frac{p(y_j | \theta_j) p(\theta_j)}{p(\theta_j | y_j)}.
+\]</div>
+<p>In our case, this becomes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(y_j) &amp;= \frac{Poisson(y_j; 5 \cdot n_j \cdot \theta_j) Gamma(\theta_j; \alpha, \beta)}{Gamma(\alpha + y_j, 5 n_j  + \beta)}\\
+&amp;= \frac{\frac{\left(5 \cdot n_j \cdot \theta_j\right)^{y_j}}{y_j!} e^{-5 \cdot n_j \cdot \theta_j} \frac{\beta^\alpha}{\Gamma(\alpha)} \theta_j^{\alpha - 1} e^{-\beta\theta_j}}{\frac{\left(5 n_j  + \beta\right)^{\left( \alpha + y_j\right)}}{\Gamma\left(\alpha + y_j\right)} \theta_j^{\alpha + y_j - 1} e^{-\left(5 n_j  + \beta\right) \theta_j}}\\
+&amp;= \frac{\beta^\alpha\Gamma\left(\alpha + y_j\right)  \left(5 \cdot n_j\right)^{y_j} \theta_j^{\alpha + y_j - 1}e^{-\left(5 \cdot n_j  + \beta\right)\theta_j}}{y_j!\Gamma(\alpha) \left(5 n_j  + \beta\right)^{\left( \alpha + y_j\right)}\theta_j^{\alpha + y_j - 1} e^{-\left(5 n_j  + \beta\right) \theta_j}}\\
+&amp;= \frac{\beta^\alpha\Gamma\left(\alpha + y_j\right)  \left(5 \cdot n_j\right)^{y_j}}{y_j!\Gamma(\alpha) \left(5 n_j  + \beta\right)^{\left( \alpha + y_j\right)}}\\
+&amp;= \frac{\Gamma\left(\alpha + y_j\right)}{y_j!\Gamma(\alpha)}\frac{\beta^\alpha}{\left(5 n_j  + \beta\right)^{\alpha}} \frac{\left(5 \cdot n_j\right)^{y_j}}{\left(5 n_j  + \beta\right)^{y_j}}\\
+&amp;= \frac{\Gamma\left((\alpha + y_j - 1) + 1\right)}{y_j!\Gamma(\alpha)} \left( \frac{\beta}{5 n_j  + \beta}\right)^\alpha \left( \frac{5 \cdot n_j}{5 n_j  + \beta}\right)^{y_j}\\
+&amp;= \frac{(\alpha + y_j - 1)\Gamma\left((\alpha + y_j - 2) + 1\right)}{y_j!\Gamma(\alpha)} \left( \frac{\beta}{5 n_j  + \beta}\right)^\alpha \left( \frac{5 \cdot n_j}{5 n_j  + \beta}\right)^{y_j}\\
+&amp;\vdots\\
+&amp;= \frac{(\alpha + y_j - 1)!}{y_j!\Gamma(\alpha)}\left( \frac{\beta}{5 n_j  + \beta}\right)^\alpha \left( \frac{5 \cdot n_j}{5 n_j  + \beta}\right)^{y_j}\\
+&amp;= \frac{(\alpha + y_j - 1)!}{y_j!(\alpha - 1)!}\left( \frac{\beta}{5 n_j  + \beta}\right)^\alpha \left( \frac{5 \cdot n_j}{5 n_j  + \beta}\right)^{y_j}\\
+&amp;= \binom{\alpha + y_j - 1}{y_j}\left( \frac{\beta}{5 n_j  + \beta}\right)^\alpha \left( \frac{5 \cdot n_j}{5 n_j  + \beta}\right)^{y_j}
+\end{aligned}\end{split}\]</div>
+<p>In the above, we’ve used the relation <span class="math notranslate nohighlight">\(\Gamma(n + 1) = n\Gamma(n)\)</span> to obtain:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\Gamma\left(\alpha + y_j\right) &amp;= (\alpha + y_j - 1)!\\
+\Gamma(\alpha) &amp;= (\alpha - 1)!
+\end{aligned}\end{split}\]</div>
+<p>Thus, <span class="math notranslate nohighlight">\(p(y_j)\)</span> can be parametrized as <span class="math notranslate nohighlight">\(NegBin\left(\alpha, \frac{5 n_j}{5 n_j  + \beta}\right)\)</span>. From this, we can compute the mean and variance of <span class="math notranslate nohighlight">\(y_j\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}[y_j] &amp;= \frac{5 n_j \alpha }{\beta}\\
+\mathrm{Var}[y_j]&amp;= \frac{(5 n_j)^2\alpha}{\beta^2} + \frac{5 n_j\alpha}{\beta}
+\end{aligned}\end{split}\]</div>
+<p>In Type-II MAP methods, typically, we choose a distribution involving the data and the hyperparameters, like the evidence, <span class="math notranslate nohighlight">\(p(y_j | \alpha, \beta)\)</span>, or the joint distribution of the data and the hyperparameters, <span class="math notranslate nohighlight">\(p(y_j, \alpha, \beta)\)</span>. We then seek  values of <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> that maximizes the “likelihood” of the data given by these functions. Note that maximizing <span class="math notranslate nohighlight">\(p(y_j | \alpha, \beta)\)</span> and <span class="math notranslate nohighlight">\(p(y_j, \alpha, \beta)\)</span> may be difficult (especially when these functions have multiple local optima). Thus, another approach is to estimate <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> by performing moment matching. That is, we set the expectation and variance of these distributions to values computed from the data; using these equations we can solve for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>.</p>
+<p>Unfortunately, obtaining an valid estimate of <span class="math notranslate nohighlight">\(\mathbb{E}[y_j]\)</span> (and <span class="math notranslate nohighlight">\(\mathrm{Var}[y_j]\)</span>) requires us to have multiple samples of <span class="math notranslate nohighlight">\(y_j\)</span>, for a fixed <span class="math notranslate nohighlight">\(j\)</span>, and to average them. Instead, what we have are samples from different <span class="math notranslate nohighlight">\(y_j\)</span>’s (each from a different distribution). If we are permitted to be a bit sloppy, we can treat the set of <span class="math notranslate nohighlight">\(y_j\)</span> values are samples from the same distribution. That is, we simply set</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\bar{y}_j = \frac{1}{N}\sum^N_{j=1} y_j &amp;= \mathbb{E}[y_j],\\
+sample\_var[y_j]&amp;= \mathrm{Var}[y_j].
+\end{aligned}\end{split}\]</div>
+<p>If we want to be more precise, we’d want to adjust the number of deaths, <span class="math notranslate nohighlight">\(y_j\)</span>, in the <span class="math notranslate nohighlight">\(j\)</span>-th county, by the population of the county. That is, we set</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\overline{\frac{y_j}{n_j}} = \frac{1}{N}\sum^N_{j=1} \frac{y_j}{n_j} &amp;= \frac{5 \alpha }{\beta},\\
+sample\_var\left[\frac{y_j}{n_j}\right]= \frac{25\alpha}{\beta^2} + \frac{5\alpha}{n_j\beta} &amp;= \mathbb{E}\left[\frac{y_j}{n_j}\right] \left( \frac{5}{\beta} + \frac{1}{n_j}\right).
+\end{aligned}\end{split}\]</div>
+<p>In order to make use of all of our data, we further substitute the empirical mean of the population, <span class="math notranslate nohighlight">\(\bar{n}_j\)</span>, for <span class="math notranslate nohighlight">\(n_j\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">adjusted_y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'dc'</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">]</span>
+<span class="n">y_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">adjusted_y</span><span class="p">)</span>
+<span class="n">y_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">adjusted_y</span><span class="p">)</span>
+<span class="n">pop_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'empirical cancer population adjusted mean: '</span><span class="p">,</span> <span class="n">y_mean</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'empirical cancer population adjusted var: '</span><span class="p">,</span> <span class="n">y_var</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'empirical population mean: '</span><span class="p">,</span> <span class="n">pop_mean</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>empirical cancer population adjusted mean:  5.786552354108626e-05
+empirical cancer population adjusted var:  2.527523010812238e-09
+empirical population mean:  160512.41021522647
+</pre></div>
+</div>
+<p>Substituting the empirical values into the two equations above, we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathtt{5.78655235411e-05}&amp;= \frac{5\alpha }{\beta},\\
+\mathtt{2.52752301081e-09}&amp;= \mathtt{5.78655235411e-05}\left(\frac{5}{\beta} + \frac{1}{\mathtt{160512.410215}}\right).
+\end{aligned}\end{split}\]</div>
+<p>Solving for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>, we get</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\alpha &amp;= \frac{\mathtt{5.78655235411e-05}\cdot\beta}{5}\\
+\beta &amp;= \frac{5}{\frac{\mathtt{2.52752301081e-09}}{\mathtt{5.78655235411e-05}} - \frac{1}{\mathtt{160512.410215}}}
+\end{aligned}\end{split}\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">beta</span> <span class="o">=</span> <span class="mf">5.</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_var</span> <span class="o">/</span> <span class="n">y_mean</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">pop_mean</span><span class="p">)</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="n">y_mean</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">/</span> <span class="mi">5</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'alpha: '</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'beta: '</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>alpha:  1.545173491879693
+beta:  133514.17193888978
+</pre></div>
+</div>
+<p>Since we already know the closed form of the posterior distribution, <span class="math notranslate nohighlight">\(Gamma(\theta_j; \alpha + y_j, 5 n_j  + \beta)\)</span>, we can directly compute the posterior mean or posterior mode estimate of <span class="math notranslate nohighlight">\(\theta_j\)</span>. Or we can sample from <span class="math notranslate nohighlight">\(Gamma(\alpha + y_j, 5 n_j  + \beta)\)</span> and compute the mean or mode from the samples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">post_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">'dc'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">beta</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s1">'pop'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5000</span><span class="p">)])</span>
+<span class="n">theta_post_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">post_samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>We can now plot the posterior mean estimate of the cancer death rate, <span class="math notranslate nohighlight">\(\theta_j\)</span> for each county along with the empirical cancer death rate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">estimates</span><span class="o">=</span><span class="n">theta_post_mean</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Part I, Question 3, figure 1" class="align-center" src="../_images/part-i-question-3-11.png" />
+<p>We see that the posterior mean estimates of cancer rates for counties with lower populations have shrunk towards the population average. The estimated rates for low-population counties using our Bayesian model are less extreme.</p>
 </div>
 <div class="admonition-exercise-part-ii-hierarchical-bayes admonition">
 <p class="admonition-title">Exercise: Part II: Hierarchical Bayes</p>
@@ -1553,13 +1690,97 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 \beta &amp;\sim Ga(c, d)
 \end{aligned}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(a, b, c, d\)</span> are hyperparameters.</p>
-<ol class="arabic simple">
-<li><p><strong>(Posterior Marginal Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the mean of the posterior marginal distribution over <span class="math notranslate nohighlight">\(\theta_j\)</span>, i.e. <span class="math notranslate nohighlight">\(p(\theta_j|y_1, \ldots, y_N)\)</span>, vs the county population size (in log scale), highlight these means in orange.</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Posterior Marginal Means)</strong> Produce a scatter plot of the raw cancer rates (pct mortality) vs the county population size (in log scale). Highlight the top 300 raw cancer rates in red. Highlight the bottom 300 raw cancer rates in blue. Finally, on the same plot again, scatter plot the mean of the posterior marginal distribution over <span class="math notranslate nohighlight">\(\theta_j\)</span>, i.e. <span class="math notranslate nohighlight">\(p(\theta_j|y_1, \ldots, y_N)\)</span>, vs the county population size (in log scale), highlight these means in orange.</p>
 <p>You should use <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> to sample from the posterior. Compare <code class="docutils literal notranslate"><span class="pre">pymc3</span></code>’s sampler with your sampler from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, what is the difference (if any) in the performance of these samplers?<br><br></p>
-<ol class="arabic simple" start="2">
+</li>
 <li><p><strong>(Hierarchical Bayes vs Empirical Bayes)</strong> Compare the shrinkage of the posterior marginal means of the hierarchical model to the shrinkage of the posterior means from the Bayesian model with empirical Bayes estimates for <span class="math notranslate nohighlight">\(\alpha, \beta\)</span>. What is the difference in shrinkage between the full hierarchical model and the Bayesian model with empirical Bayes?</p></li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 1</p>
+<p>We implement the hierarchical model in <code class="docutils literal notranslate"><span class="pre">pymc3</span></code>!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymc3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymc3</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+
+<span class="c1">#hyperparameters of hierarchical model</span>
+<span class="n">a</span><span class="o">=</span><span class="mi">9</span>
+<span class="n">b</span><span class="o">=</span><span class="mi">6</span>
+<span class="n">c</span><span class="o">=</span><span class="mi">9</span>
+<span class="n">d</span><span class="o">=</span><span class="mf">0.00001</span>
+ 
+<span class="c1">#define hierarchical model in pymc3</span>
+<span class="k">with</span> <span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">hiearchical_model</span><span class="p">:</span>
+    <span class="c1">#hyperprior on alpha</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="s1">'alpha'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+    <span class="c1">#hyperprior on beta</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="s1">'beta'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+    <span class="c1">#3,000 priors on theta</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="s1">'theta'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="c1">#convert rate into number of disease incidents</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="c1">#likelihood</span>
+    <span class="n">y_obs</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#sample 1000 samples from the posterior of the hierarchical model</span>
+<span class="c1">#using 1000 iterations to tune the sampler</span>
+<span class="c1">#the default sampler for pymc3 is the No-U-Turn Sampler (NUTS), a type of HMC</span>
+<span class="k">with</span> <span class="n">hiearchical_model</span><span class="p">:</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#defined burn-in</span>
+<span class="n">burn_in</span> <span class="o">=</span> <span class="mf">.1</span>
+<span class="c1">#define thinning</span>
+<span class="n">thin</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="c1">#select the county to visualize the traceplot for theta</span>
+<span class="n">county</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#plot the traceplots for one theta and alpha and beta</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="s1">'theta'</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">county</span><span class="p">])</span>
+<span class="n">theta_trace</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="s1">'theta'</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">burn_in</span> <span class="o">*</span> <span class="n">N</span><span class="p">)::</span><span class="n">thin</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">county</span><span class="p">]</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">theta_trace</span><span class="p">)),</span> <span class="n">theta_trace</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'trace plot for theta_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">county</span><span class="p">))</span>
+
+<span class="n">alpha_trace</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="s1">'alpha'</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">burn_in</span> <span class="o">*</span> <span class="n">N</span><span class="p">)::</span><span class="n">thin</span><span class="p">]</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha_trace</span><span class="p">)),</span> <span class="n">alpha_trace</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'trace plot for alpha'</span><span class="p">)</span>
+
+<span class="n">beta_trace</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="s1">'beta'</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">burn_in</span> <span class="o">*</span> <span class="n">N</span><span class="p">)::</span><span class="n">thin</span><span class="p">]</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">beta_trace</span><span class="p">)),</span> <span class="n">beta_trace</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'trace plot for beta'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-1-11.png"><img alt="Part II, Question 1, figure 1" class="align-center" src="../_images/part-ii-question-1-11.png" style="width: 100%;" />
+</a>
+<p>It looks like that the chain for the posterior marginal of <span class="math notranslate nohighlight">\(\theta_0\)</span> has converged, and the chains for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> looks ok as well. Certainly, the traceplots of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> look much better here than for the Metropolis-Hastings-in-Gibbs sampler from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">theta_samples</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="s1">'theta'</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">burn_in</span> <span class="o">*</span> <span class="n">N</span><span class="p">)::</span><span class="n">thin</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+<span class="n">theta_post_mean_hier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">theta_samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">estimates</span><span class="o">=</span><span class="n">theta_post_mean_hier</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Part II, Question 1, figure 2" class="align-center" src="../_images/part-ii-question-1-21.png" />
+<p><em>This plot is from the original <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> run (not re-run). It was drawn with the original plotting helper, which colours the top 300 raw rates blue and the bottom 300 red (the reverse of the question); the posterior means are in green.</em></p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 2</p>
+<p>Plotting the posterior mean estimates of <span class="math notranslate nohighlight">\(\theta_j\)</span> from the hierarchical model, we see that the counties with least population shows the most amount of shrinkage! More so than in the case where we did Bayesian modeling with Empirical Bayes estimates of the prior <span class="math notranslate nohighlight">\(\theta_j\)</span>.</p>
+<p>This plot now tells us that the underlying cancer rates inferred from our model are similar across the country (all the rates are around 0.005%) with some random variations (i.e. some counties have higher rates and others have lower rates), but <strong>this variation is no longer correlated with population size</strong>.</p>
+<p>This model of cancer rates is much better aligned with our scientific understanding of biological and environmental causes of cancer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">theta_samples</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="s1">'theta'</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">burn_in</span> <span class="o">*</span> <span class="n">N</span><span class="p">)::</span><span class="n">thin</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+<span class="n">theta_post_mean_hier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">theta_samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">scatter_plot_cancer_rates</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">estimates</span><span class="o">=</span><span class="n">theta_post_mean_hier</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Part II, Question 2, figure 1" class="align-center" src="../_images/part-ii-question-2-12.png" />
+<p><em>This plot is from the original <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> run (not re-run). It was drawn with the original plotting helper, which colours the top 300 raw rates blue and the bottom 300 red (the reverse of the question); the posterior means are in green.</em></p>
 </div>
 <div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
 <p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
@@ -1590,15 +1811,15 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 <li><p>What kinds of needs do these users/communities have?</p></li>
 <li><p>What kinds of constraints do these users/communities have?<br><br></p></li>
 </ul>
-<ol class="arabic simple">
-<li><p><strong>(Computational Footprint)</strong>  In the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, we considered the broader impact of the this hierarchical model for kidney cancer: we examined under what circumstances a hierachical model for kidney cancer is more preferable to a MLE model or a Bayesian model with hand-picked priors. In this problem, we compare hierarchical Bayes and empirical Bayes.</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Computational Footprint)</strong>  In the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, we considered the broader impact of the this hierarchical model for kidney cancer: we examined under what circumstances a hierarchical model for kidney cancer is more preferable to a MLE model or a Bayesian model with hand-picked priors. In this problem, we compare hierarchical Bayes and empirical Bayes.</p>
 <p>In practical terms, what are the real-life advantages and drawbacks of implementing an empirical Bayesian model compared with an hierarchical Bayesian model?</p>
-<p><strong>Hint:</strong> for example, compare how tractable it is to implement the inference algorithm for each model, compare how easy it is to for the inference method for each model to converge (would you know that your training has converged?). Consider also: how easily could a practitioner diagnose the training process and how could they evaluate the model fit and what kinds of computational resurces would be required to train each model.</p>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Mitigation of Potential Negative Impacts)</strong> Based on your answers for the previous question and your broader impact analysis from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, what information would the model designer/engineer need to disclose to the end-users to mitigate potentially negative impacts?</p></li>
+<p><strong>Hint:</strong> for example, compare how tractable it is to implement the inference algorithm for each model, compare how easy it is to for the inference method for each model to converge (would you know that your training has converged?). Consider also: how easily could a practitioner diagnose the training process and how could they evaluate the model fit and what kinds of computational resources would be required to train each model.</p>
+</li>
+<li><p><strong>(Mitigation of Potential Negative Impacts)</strong> Based on your answers for the previous question and your broader impact analysis from the <a class="reference internal" href="08-metropolis-hastings-gibbs.html#ps-hw4b"><span class="std std-ref">Chapter 9 problem set</span></a>, what information would the model designer/engineer need to disclose to the end-users to mitigate potentially negative impacts?</p>
+<p><strong>Hint:</strong> consider how your end-user would be able to validate the model (how would they know if the model is working or has ceased to work once it has been deployed), how should the end-user choose between implementing a hierarchical Bayesian model or an empirical Bayesian model, how could the end-user identify and mitigate negative impacts (if they occur).</p>
+</li>
 </ol>
-<p><strong>Hint:</strong> consider how your end-user would be able to validate the model (how would they know if the model is working or has ceased to work once it has been deployed), how should the end-user choose between implementing a hiearchical Bayesian model or an empirical Bayesian model, how could the end-user identify and mitigate negative impacts (if they occur).</p>
 </div>
 </section>
 </section>
@@ -1695,14 +1916,14 @@ y_j| \theta_j &amp;\sim Poisson(5 \cdot n_j \cdot \theta_j), \quad j = 1, \ldots
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-binomial-model-for-movie-rankings">A Binomial Model for Movie Rankings</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-beta-binomial-model-for-movie-rankings">A Beta-Binomial Model for Movie Rankings</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#credible-intervals-for-movies-with-the-most-and-the-least-number-of-ratings">Credible Intervals for Movies with the Most and the Least Number of Ratings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emprirical-bayes-ml-ii-for-the-beta-binomial-model">Emprirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-ml-ii-for-the-beta-binomial-model">Empirical Bayes (ML-II) For the Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#method-of-moments-for-empirical-bayes-ml-ii">Method of Moments for Empirical Bayes (ML-II)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#empirical-bayes-and-shrinkage">Empirical Bayes and Shrinkage</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-models-and-empirical-bayes">13.3. Hierarchical Models and Empirical Bayes</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-model-for-movie-rankings">A Hierarchical Model for Movie Rankings</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierachical-models-map-ii">Point Estimate Approximations of Inference in Hierachical Models (MAP-II)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-estimate-approximations-of-inference-in-hierarchical-models-map-ii">Point Estimate Approximations of Inference in Hierarchical Models (MAP-II)</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">13.4. Summary</a></li>

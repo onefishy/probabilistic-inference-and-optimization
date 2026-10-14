@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -495,33 +496,29 @@ D_{\text{KL}}[\mathcal{N}(\mu_1, \Sigma_1) \| \mathcal{N}(\mu_2, \Sigma_2)] = \f
 </section>
 <section id="forward-vs-reverse-kl">
 <h2>Forward vs Reverse KL<a class="headerlink" href="#forward-vs-reverse-kl" title="Link to this heading">#</a></h2>
-<p>When we fit an isotropic Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_q, \Sigma_q)\)</span> to a non-isotropic target Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_p, \Sigma_p)\)</span> using the KL-divergence, we mean to find
+<p>When we fit an isotropic Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_q, \Sigma_q)\)</span> to a non-isotropic target Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_p, \Sigma_p)\)</span> using the KL-divergence, we mean to find</p>
 <div class="math notranslate nohighlight">
 \[
 \mu^*_q, \Sigma^*_q = \underset{\mu_q, \Sigma_q}{\text{argmin}} D_{\text{KL}}[\mathcal{N}(\mu_q, \Sigma_q) \| \mathcal{N}(\mu_p, \Sigma_p)]
 \]</div>
-
-This is often called minimizing the <em><strong>reverse KL-divergence</strong></em>.
-We can analytically solve this optimization problem, when we do, we get that
+<p>This is often called minimizing the <em><strong>reverse KL-divergence</strong></em>.
+We can analytically solve this optimization problem, when we do, we get that</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mu^*_q &amp;= \mu_p\\
 (\Sigma^*_q)_{ii} &amp;= \frac{1}{(\Sigma_p^{-1})_{ii}}
 \end{aligned}\end{split}\]</div>
-
-But remember that choosing to minimize KL-divergence when we approximate <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_p, \Sigma_p)\)</span> is arbitrary. That is, we could have chosen another divergence measure. In particular, we could have chosen to minimize the <em><strong>forward KL-divergence</strong></em>:
+<p>But remember that choosing to minimize KL-divergence when we approximate <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_p, \Sigma_p)\)</span> is arbitrary. That is, we could have chosen another divergence measure. In particular, we could have chosen to minimize the <em><strong>forward KL-divergence</strong></em>:</p>
 <div class="math notranslate nohighlight">
 \[
 \mu^*_q, \Sigma^*_q = \underset{\mu_q, \Sigma_q}{\text{argmin}} D_{\text{KL}}[\mathcal{N}(\mu_p, \Sigma_p)\|\mathcal{N}(\mu_q, \Sigma_q)]
 \]</div>
-
-Analytically solve the above optimization problem gives us
+<p>Analytically solve the above optimization problem gives us</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mu^*_q &amp;= \mu_p\\
 (\Sigma_q)_{ii} &amp;= (\Sigma_p)_{ii}
 \end{aligned}\end{split}\]</div>
-</p>
 </section>
 <section id="which-kl-divergence-should-we-optimize">
 <h2>Which KL-Divergence Should We Optimize?<a class="headerlink" href="#which-kl-divergence-should-we-optimize" title="Link to this heading">#</a></h2>
@@ -531,20 +528,101 @@ Analytically solve the above optimization problem gives us
 \underset{\mu_q, \Sigma_q}{\text{argmin}} D_{\text{KL}}[\mathcal{N}(\mu_q, \Sigma_q) \| \mathcal{N}(\mu_p, \Sigma_p)] \overset{?}{=}  \underset{\mu_q, \Sigma_q}{\text{argmin}} D_{\text{KL}}[\mathcal{N}(\mu_p, \Sigma_p)\|\mathcal{N}(\mu_q, \Sigma_q)]
 \]</div>
 <p>If not, which type of KL-divergence should we use when fitting an isotropic Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_q, \Sigma_q)\)</span> to a non-isotropic target Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu_p, \Sigma_p)\)</span>?</p>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># functions to compute the optimal variational distribution under reverse and forward KL</span>
 <span class="n">reverse_kl</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">:</span> <span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Sigma_p</span><span class="p">))</span><span class="o">**-</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">forward_kl</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">:</span> <span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Sigma_p</span><span class="p">)))</span>
 </pre></div>
 </div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mean of the multivariate Gaussian</span>
+<span class="n">mu_p</span> <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="c1">#covariance matrix of the multivariate Gaussian</span>
+<span class="n">Sigma_p</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1">#optimal variational distribution using KL-divergence</span>
+<span class="n">mu_q</span><span class="p">,</span> <span class="n">Sigma_q</span> <span class="o">=</span> <span class="n">reverse_kl</span><span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">)</span>
+<span class="c1">#optimal variational distribution using forward KL-divergence</span>
+<span class="n">mu_q_forward</span><span class="p">,</span> <span class="n">Sigma_q_forward</span> <span class="o">=</span> <span class="n">forward_kl</span><span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">)</span>
+
+<span class="c1">#define points that include most of the probability mass of the pdf</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">112</span><span class="p">:</span><span class="mi">128</span><span class="p">:</span><span class="mf">.01</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mf">.01</span><span class="p">]</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="c1">#get the value of the target pdf at those points</span>
+<span class="n">z_p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+<span class="c1">#get the value of the variational pdf at those points</span>
+<span class="n">z_q</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_q</span><span class="p">,</span> <span class="n">Sigma_q</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+<span class="n">z_q_forward</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_q_forward</span><span class="p">,</span> <span class="n">Sigma_q_forward</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="c1">#plot the target density against variational densities</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="c1">#variational approximation using KL</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_p</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_p</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_q</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Blues'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Isotropic Gaussian q Approximation of an Correlated Gaussian p using D_KL(q||p)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">112</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+<span class="c1">#variational approximation using forward KL</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_p</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_p</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z_q_forward</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Blues'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Isotropic Gaussian q Approximation of an Correlated Gaussian p using D_KL(p||q)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">112</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
 </div>
-</details>
+<a class="reference internal image-reference" href="../_images/solution-12.png"><img alt="Solution, figure 1" class="align-center" src="../_images/solution-12.png" style="width: 100%;" />
+</a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="mi">4000</span>
+<span class="c1">#get samples from the target distribution</span>
+<span class="n">p_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_p</span><span class="p">,</span> <span class="n">Sigma_p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+<span class="c1">#get samples from the variational distribution</span>
+<span class="n">q_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_q</span><span class="p">,</span> <span class="n">Sigma_q</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+<span class="n">q_forward_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_q_forward</span><span class="p">,</span> <span class="n">Sigma_q_forward</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+
+<span class="n">x_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+<span class="n">x_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+
+<span class="n">y_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+<span class="n">y_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+
+<span class="c1">#plot the marginals of the target and the variational distributions</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of x under p'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'tomato'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of y under p'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of x under q using D_KL(q||p)'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">q_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'steelblue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of y under q using D_KL(q||p)'</span><span class="p">)</span>
+
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'mediumvioletred'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of x under q using D_KL(p||q)'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">q_forward_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'palevioletred'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'marginal distribution of y under q using D_KL(p||q)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/solution-21.png"><img alt="Solution, figure 2" class="align-center" src="../_images/solution-21.png" style="width: 100%;" />
+</a>
+<p><em>Not covered here: a written answer to which KL-divergence to use.</em></p>
 </div>
 </section>
 <section id="pymc3">
@@ -620,8 +698,7 @@ Analytically solve the above optimization problem gives us
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#sample 1000 samples from the posterior of the model, using 1000 iterations to tune the sampler</span>
-<span class="c1">#the default sampler for pymc3 is a type of MCMC sampler called No-U-turn HMC, </span>
-<span class="c1">#which we have not covered in class</span>
+<span class="c1">#the default sampler for pymc3 is the No-U-Turn Sampler (NUTS), a type of HMC</span>
 <span class="k">with</span> <span class="n">bayesian_model</span><span class="p">:</span>
     <span class="c1">#specifying a specific sampler</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Metropolis</span><span class="p">(</span><span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">theta</span><span class="p">,</span> <span class="n">mu</span><span class="p">])</span>

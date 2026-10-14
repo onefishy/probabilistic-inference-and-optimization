@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -433,7 +434,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression-models">Linear Regression Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parameterize-a-non-linear-trend">How Would You Parameterize a Non-linear Trend?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-geometry-of-logistic-regression">Review of the Geometry of Logistic Regression</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-ellipitical-decision-boundary">How would you parametrize a ellipitical decision boundary?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-elliptical-decision-boundary">How would you parametrize a elliptical decision boundary?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary">How would you parametrize an arbitrary complex decision boundary?</a></li>
 </ul>
 </li>
@@ -530,22 +531,21 @@ document.write(`
 <h2><span class="section-number">21.1. </span>Regression as Generalized Linear Models<a class="headerlink" href="#regression-as-generalized-linear-models" title="Link to this heading">#</a></h2>
 <section id="linear-regression-models">
 <h3>Linear Regression Models<a class="headerlink" href="#linear-regression-models" title="Link to this heading">#</a></h3>
-<p>Here is a generalized linear model (GLM) you’ve known since day one!
+<p>Here is a generalized linear model (GLM) you’ve known since day one!</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mu &amp;= \mathbf{w}^\top \mathbf{X}^{(n)}\\
 Y^{(n)}&amp;\sim \mathcal{N}(\mu, \sigma^2)
 \end{aligned}\end{split}\]</div>
-
-Alternatively, we can write this model as</p>
+<p>Alternatively, we can write this model as</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-    Y^{(n)} = \mathbf{w}^\top \mathbf{X}^{(n)} + \epsilon; \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+Y^{(n)} = \mathbf{w}^\top \mathbf{X}^{(n)} + \epsilon; \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
 \end{aligned}\]</div>
 <p>That is, injecting covariates into a normal likelihood is precisely linear regression! Just like in the case of logistic regression, we can form scientific hypotheses by examining the parameters of a linear regression model:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
 \end{aligned}\]</div>
 </section>
 <section id="how-would-you-parameterize-a-non-linear-trend">
@@ -565,19 +565,18 @@ Alternatively, we can write this model as</p>
 </figure>
 <p>That is, we model <span class="math notranslate nohighlight">\(p(y=1 | \mathbf{w}, \mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x})\)</span>. Where <span class="math notranslate nohighlight">\(\mathbf{w}^\top \mathbf{x}=0\)</span> is the equation of the decision boundary.</p>
 </section>
-<section id="how-would-you-parametrize-a-ellipitical-decision-boundary">
-<h3>How would you parametrize a ellipitical decision boundary?<a class="headerlink" href="#how-would-you-parametrize-a-ellipitical-decision-boundary" title="Link to this heading">#</a></h3>
+<section id="how-would-you-parametrize-a-elliptical-decision-boundary">
+<h3>How would you parametrize a elliptical decision boundary?<a class="headerlink" href="#how-would-you-parametrize-a-elliptical-decision-boundary" title="Link to this heading">#</a></h3>
 <figure class="align-center" id="fig-16-fig1">
 <a class="reference internal image-reference" href="../_images/fig1.png"><img alt="../_images/fig1.png" src="../_images/fig1.png" style="width: 461px;" />
 </a>
 </figure>
-<p>We can say that the decision boundary is given by a <em><strong>quadratic function</strong></em> of the input:
+<p>We can say that the decision boundary is given by a <em><strong>quadratic function</strong></em> of the input:</p>
 <div class="math notranslate nohighlight">
 \[
 w_1x^2_1 + w_2x^2_2 + w_3 = 0
 \]</div>
-
-We say that we can fit such a decision boundary using logistic regression with degree 2 polynomial features</p>
+<p>We say that we can fit such a decision boundary using logistic regression with degree 2 polynomial features</p>
 </section>
 <section id="how-would-you-parametrize-an-arbitrary-complex-decision-boundary">
 <h3>How would you parametrize an arbitrary complex decision boundary?<a class="headerlink" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary" title="Link to this heading">#</a></h3>
@@ -644,18 +643,17 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <section id="neural-networks-are-universal-function-approximators">
 <h3>Neural Networks are Universal Function Approximators<a class="headerlink" href="#neural-networks-are-universal-function-approximators" title="Link to this heading">#</a></h3>
 <p>So what kind of functions can be approximated by neural networks?</p>
-<p><strong>Theorem: (Hornik, Stinchombe, White, 1989)</strong> Fix a “nice” activation function <span class="math notranslate nohighlight">\(f\)</span>. For any continuous function <span class="math notranslate nohighlight">\(g\)</span> on a compact set <span class="math notranslate nohighlight">\(K\)</span>, there exists a feedforward neural network with activation <span class="math notranslate nohighlight">\(f\)</span>, having only a single hidden layer, which approximates <span class="math notranslate nohighlight">\(g\)</span> to within an arbitrary degree of precision on <span class="math notranslate nohighlight">\(K\)</span>.</p>
+<p><strong>Theorem: (Hornik, Stinchcombe, White, 1989)</strong> Fix a “nice” activation function <span class="math notranslate nohighlight">\(f\)</span>. For any continuous function <span class="math notranslate nohighlight">\(g\)</span> on a compact set <span class="math notranslate nohighlight">\(K\)</span>, there exists a feedforward neural network with activation <span class="math notranslate nohighlight">\(f\)</span>, having only a single hidden layer, which approximates <span class="math notranslate nohighlight">\(g\)</span> to within an arbitrary degree of precision on <span class="math notranslate nohighlight">\(K\)</span>.</p>
 <p>For this reason, we call neural networks <em><strong>universal function approximators</strong></em>.</p>
 </section>
 <section id="neural-networks-regression">
 <h3>Neural Networks Regression<a class="headerlink" href="#neural-networks-regression" title="Link to this heading">#</a></h3>
 <p><strong>Model for Regression:</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\sim \mathcal{N}(\mu, \sigma^2)\)</span>, <span class="math notranslate nohighlight">\(\mu = g_\mathbf{W}(\mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a neural network with parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.</p>
-<p><strong>Training Objective:</strong> find <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> to maximize the likelihood of our data. This is equivalent to minimizing the Mean Square Error,
+<p><strong>Training Objective:</strong> find <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> to maximize the likelihood of our data. This is equivalent to minimizing the Mean Square Error,</p>
 <div class="math notranslate nohighlight">
 \[
 \max_{\mathbf{W}}\, \mathrm{MSE}(\mathbf{W}) = \frac{1}{N}\sum^N_{n=1} \left(y_n - g_\mathbf{W}(x_n)\right)^2
 \]</div>
-</p>
 <p><strong>Optimizing the Training Objective:</strong> For linear regression (when <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a linear function), we computed the gradient of the MSE with respective to the model parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, set it equal to zero and solved for the optimal <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> analytically (see the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>). For logistic regression, we computed the gradient and used (stochastic) gradient descent to “solve for where the gradient is zero”.</p>
 <p>Can we do the same when <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a neural network?</p>
 </section>
@@ -684,13 +682,16 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 </section>
 <section id="backpropagation-gradient-descent-for-neural-networks">
 <h3>Backpropagation: Gradient Descent for Neural Networks<a class="headerlink" href="#backpropagation-gradient-descent-for-neural-networks" title="Link to this heading">#</a></h3>
-<p>The <em><strong>backpropagation</strong></em> algorithm consists of three phases:
-0. (<strong>Initialize</strong>) intialize the network parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span></p>
+<p>The <em><strong>backpropagation</strong></em> algorithm consists of three phases:</p>
+<ol class="arabic simple" start="0">
+<li><p>(<strong>Initialize</strong>) initialize the network parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span></p></li>
+<li><p>Repeat:</p>
 <ol class="arabic simple">
-<li><p>Repeat:</p></li>
 <li><p>(<strong>Forward Pass</strong>) compute all intermediate values <span class="math notranslate nohighlight">\(s_{ij}^l\)</span> and <span class="math notranslate nohighlight">\(a_{ij}^l\)</span> for the given covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span></p></li>
 <li><p>(<strong>Backward Pass</strong>) compute all the gradients <span class="math notranslate nohighlight">\(\frac{\partial \mathcal{L}}{\partial w^l_{ij}}\)</span></p></li>
 <li><p>(<strong>Update Parameters</strong>) update each parameter by <span class="math notranslate nohighlight">\(-\eta \frac{\partial \mathcal{L}}{\partial w^l_{ij}}\)</span></p></li>
+</ol>
+</li>
 </ol>
 <figure class="align-center" id="fig-16-graph-structure">
 <a class="reference internal image-reference" href="../_images/graph_structure.png"><img alt="../_images/graph_structure.png" src="../_images/graph_structure.png" style="width: 428px;" />
@@ -752,7 +753,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <p>Linear models are easy to interpret. Once we’ve found the MLE of the model parameters, we can formulate scientific hypotheses about the relationship between the outcome <span class="math notranslate nohighlight">\(Y\)</span> and the covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
 \end{aligned}\]</div>
 <p>What do the weights of a neural network tell you about the relationship between the covariates and the outcome?</p>
 <figure class="align-center">
@@ -791,7 +792,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <section id="right-for-the-right-reasons">
 <h3>Right for the Right Reasons?<a class="headerlink" href="#right-for-the-right-reasons" title="Link to this heading">#</a></h3>
 <p>In <em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em>, the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
-<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highlighted regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
 <figure class="align-center" id="fig-16-shap">
 <a class="reference internal image-reference" href="../_images/shap.png"><img alt="../_images/shap.png" src="../_images/shap.png" style="width: 724px;" />
 </a>
@@ -822,7 +823,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 </table></section>
 <section id="generalization-of-deep-models">
 <h3>Generalization of Deep Models<a class="headerlink" href="#generalization-of-deep-models" title="Link to this heading">#</a></h3>
-<p>Just as in the case of linear and polynomial models, we can prevent nerual networks from overfitting (i.e. poor generalization due to high variance) by regularization or by ensembling a large number of models.</p>
+<p>Just as in the case of linear and polynomial models, we can prevent neural networks from overfitting (i.e. poor generalization due to high variance) by regularization or by ensembling a large number of models.</p>
 <p>However, a new body of work like <a class="reference external" href="https://mltheory.org/deep.pdf" rel="noreferrer" target="_blank">Deep Double Descent: Where Bigger Models and More Data Hurt</a> show that very wide neural networks (with far more parameters than there are data observations) actually ceases to overfit as the width surpasses a certain threshold. In fact, as the width of a neural network approaches infinity, training the neural network becomes kernel regression (this kernel is called the <em><strong>neural tangent kernel</strong></em>)!</p>
 <figure class="align-center" id="fig-16-dd">
 <img alt="../_images/dd.jpg" src="../_images/dd.jpg" />
@@ -831,9 +832,8 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 </section>
 <section id="summary">
 <h2><span class="section-number">21.6. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><strong>(Why is NN a Big Deal?)</strong> Neural networks are universal function approximators that are easy to compute with and easy to train.</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Why is NN a Big Deal?)</strong> Neural networks are universal function approximators that are easy to compute with and easy to train.</p>
 <ul class="simple">
 <li><p>Specifically, we can build a very very complex function using very <strong>simple</strong> and <strong>numerically stable</strong> functions and <strong>fast</strong> operations (like <strong>vectorized</strong> addition, multiplication and simple non-linear function evaluation). In fact, we can approximate any “nice” non-linear function arbitrarily well with a neural network.</p></li>
 <li><p>It’s easy to find the MLE of NN parameters by gradient descent, since computing the gradient is just recursively applying the chain rule of differentiation.</p></li>
@@ -843,7 +843,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <a class="reference internal image-reference" href="../_images/backprop.jpg"><img alt="../_images/backprop.jpg" src="../_images/backprop.jpg" style="width: 100%;" />
 </a>
 </figure>
-<ol class="arabic simple" start="2">
+</li>
 <li><p><strong>(Why is NN So Good at Modeling Data?)</strong> Instead of thinking about NNs as representing very complex regression functions or very complex decision boundaries, we can think of NNs as:</p></li>
 </ol>
 <ul class="simple">
@@ -861,7 +861,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <p>Linear models are easy to interpret. Once we’ve found the MLE of the model parameters, we can formulate scientific hypotheses about the relationship between the outcome <span class="math notranslate nohighlight">\(Y\)</span> and the covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
 \end{aligned}\]</div>
 <p>What do the weights of a neural network tell you about the relationship between the covariates and the outcome?</p>
 <figure class="align-center" id="fig-16-summary-fig5">
@@ -940,7 +940,7 @@ Typically, at each node, we want to take a weighted sum of the values of the pre
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-regression-models">Linear Regression Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parameterize-a-non-linear-trend">How Would You Parameterize a Non-linear Trend?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#review-of-the-geometry-of-logistic-regression">Review of the Geometry of Logistic Regression</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-ellipitical-decision-boundary">How would you parametrize a ellipitical decision boundary?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-a-elliptical-decision-boundary">How would you parametrize a elliptical decision boundary?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-would-you-parametrize-an-arbitrary-complex-decision-boundary">How would you parametrize an arbitrary complex decision boundary?</a></li>
 </ul>
 </li>

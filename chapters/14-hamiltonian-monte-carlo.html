@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -432,7 +433,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-generalized-linear-models">18.1. Hierarchical Generalized Linear Models</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-linear-models">Generalized Linear Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation">Kidney Cancer Dataset: Pooling vs Fully Independent Estimation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierarchical-vs-non-hierarchical-models">Kidney Cancer Dataset : Hierarchical vs Non-Hierarchical Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer">A Hierarchical Generalized Linear Model for Kidney Cancer</a></li>
 </ul>
 </li>
@@ -449,7 +450,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-motion-as-differential-equations">Hamiltonian Motion as Differential Equations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-exact-integration">Hamiltonian Monte Carlo: with Exact Integration</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#correctness-of-hmc-with-exact-integration">Correctness of HMC with Exact Integration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-sympletic-integrators">Approximating Flows: Sympletic Integrators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-symplectic-integrators">Approximating Flows: Symplectic Integrators</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-adjusting-for-error">Approximating Flows: Adjusting for Error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-the-leap-frog-integrator">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-with-leap-frog-integrator-in-action">HMC with Leap Frog Integrator in Action</a></li>
@@ -491,7 +492,7 @@ document.write(`
 <div class="tip admonition">
 <p class="admonition-title">In this chapter</p>
 <ol class="arabic simple">
-<li><p>Hierachical Generalized Linear Models</p></li>
+<li><p>Hierarchical Generalized Linear Models</p></li>
 <li><p>Sampling as Optimization</p></li>
 <li><p>Hamiltonian Monte Carlo</p></li>
 </ol>
@@ -527,61 +528,55 @@ document.write(`
 <h3>Generalized Linear Models<a class="headerlink" href="#generalized-linear-models" title="Link to this heading">#</a></h3>
 <p>We can add covariates to all the other common statistical models of data <span class="math notranslate nohighlight">\(Y^{(n)} \sim p(Y^{(n)}|\theta^{(n)})\)</span>!</p>
 <p>The general scheme is:</p>
-<ol class="arabic simple">
-<li><p>Set <span class="math notranslate nohighlight">\(\mathbb{E}[Y^{(n)}] = \theta^{(n)} = g(\mathbf{w}^\top \mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g\)</span> is typically a non-linear function called the <em><strong>link function</strong></em></p></li>
-</ol>
+<ol class="arabic">
+<li><p>Set <span class="math notranslate nohighlight">\(\mathbb{E}[Y^{(n)}] = \theta^{(n)} = g(\mathbf{w}^\top \mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g\)</span> is typically a non-linear function called the <em><strong>link function</strong></em></p>
 <p><em>Note:</em> in literature, <span class="math notranslate nohighlight">\(g^{-1}\)</span> is called the link function.<br><br></p>
-<ol class="arabic simple" start="2">
+</li>
 <li><p>Set the variance according to how the variance of <span class="math notranslate nohighlight">\(p(Y^{(n)}|\theta^{(n)})\)</span> depends on <span class="math notranslate nohighlight">\(\theta\)</span>, <span class="math notranslate nohighlight">\(\mathrm{Var}[Y^{(n)}] = \phi f(\theta^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(\phi\)</span> is a constant.</p></li>
 </ol>
 <p>These models are called <em><strong>generalized linear models</strong></em>. Logistic regression is so called because <span class="math notranslate nohighlight">\(g^{-1}\)</span> is the <em><strong>logistic function</strong></em>.</p>
 </section>
 <section id="kidney-cancer-dataset-pooling-vs-fully-independent-estimation">
 <h3>Kidney Cancer Dataset: Pooling vs Fully Independent Estimation<a class="headerlink" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation" title="Link to this heading">#</a></h3>
-<p>Rather than modeling the total incidents of kidney cancer, we collect information for each individual in each county. We can explain how the cancer rate depends on demogaphics.
+<p>Rather than modeling the total incidents of kidney cancer, we collect information for each individual in each county. We can explain how the cancer rate depends on demographics.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \theta^{(n)} &amp;= \text{sigm}\left(\mathbf{w}^\top\mathbf{X}^{(n)}\right)\\
 Y^{(n)} &amp;\sim Ber(\theta^{(n)})
 \end{aligned}\end{split}\]</div>
-
-<strong>1.</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> is the cancer status of <span class="math notranslate nohighlight">\(n\)</span>-th individual<br>
+<p><strong>1.</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> is the cancer status of <span class="math notranslate nohighlight">\(n\)</span>-th individual<br>
 <strong>2.</strong> <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span> include income, level of education, access to preventative care, cost of living etc<br>
 <strong>3.</strong> <span class="math notranslate nohighlight">\(\theta^{(n)}\)</span> is the underlying cancer rate for the <span class="math notranslate nohighlight">\(n\)</span>-th individual.</p>
-<p><strong>Pooled Estimation:</strong> In the above model, we pooled the data across all counties. We implicitly assume that the cancer rate <span class="math notranslate nohighlight">\(\theta^{(n)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> in the <strong>same way for every individual</strong>.
+<p><strong>Pooled Estimation:</strong> In the above model, we pooled the data across all counties. We implicitly assume that the cancer rate <span class="math notranslate nohighlight">\(\theta^{(n)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> in the <strong>same way for every individual</strong>.</p>
 <div class="math notranslate nohighlight">
 \[
 \text{Prob}[Y^{n} = 1 | \mathbf{X}^{(n)}] = \text{sigm}\left(-1 * \text{income} + 2 * \text{BMI} + \ldots\right)
 \]</div>
-
-<strong>Independent Estimation:</strong>
-Alternatively, we can estimate a <span class="math notranslate nohighlight">\(\mathbf{w}^{(c)}\)</span> for each county <span class="math notranslate nohighlight">\(c\)</span>, fully independently:
+<p><strong>Independent Estimation:</strong>
+Alternatively, we can estimate a <span class="math notranslate nohighlight">\(\mathbf{w}^{(c)}\)</span> for each county <span class="math notranslate nohighlight">\(c\)</span>, fully independently:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
 Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
 \end{aligned}\end{split}\]</div>
-
-We implicitly assume that the way <span class="math notranslate nohighlight">\(\theta^{(n, c)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> <strong>varies for every county independently</strong>.
+<p>We implicitly assume that the way <span class="math notranslate nohighlight">\(\theta^{(n, c)}\)</span> depends on demographic factors <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> <strong>varies for every county independently</strong>.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \text{Prob}[Y^{(n, 1)} = 1 | \mathbf{X}^{(n, 1)}] &amp;= \text{sigm}\left(0.1 * \text{income} - 0.2 * \text{BMI} + \ldots\right)\\
 \text{Prob}[Y^{(n, 100)} = 1 | \mathbf{X}^{(n, 100)}] &amp;= \text{sigm}\left(-1 * \text{income} + 2 * \text{BMI} + \ldots\right)
 \end{aligned}\end{split}\]</div>
-</p>
 </section>
-<section id="kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">
-<h3>Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models<a class="headerlink" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models" title="Link to this heading">#</a></h3>
-<p><strong>Bayesian Model:</strong> Instead of assuming that the cancer rates in differen counties are fully independent. We can assume that the rates are <strong>similar but differ from each other stochastically</strong>.
+<section id="kidney-cancer-dataset-hierarchical-vs-non-hierarchical-models">
+<h3>Kidney Cancer Dataset : Hierarchical vs Non-Hierarchical Models<a class="headerlink" href="#kidney-cancer-dataset-hierarchical-vs-non-hierarchical-models" title="Link to this heading">#</a></h3>
+<p><strong>Bayesian Model:</strong> Instead of assuming that the cancer rates in different counties are fully independent. We can assume that the rates are <strong>similar but differ from each other stochastically</strong>.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mathbf{w}^{(c)} &amp;\sim p(\mathbf{w} | \phi)\\
 \theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
 Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
 \end{aligned}\end{split}\]</div>
-</p>
 <p>where <span class="math notranslate nohighlight">\(\phi\)</span> is the set of hyperparameters of this model (i.e. you have to specify it). The prior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \phi)\)</span> expresses our belief that <span class="math notranslate nohighlight">\(\theta^{(n, c)}\)</span>’s are similar.</p>
-<p><strong>Hierachical Model:</strong> Rather than choosing <span class="math notranslate nohighlight">\(\phi\)</span> arbitrarily, we can <strong>infer <span class="math notranslate nohighlight">\(\phi\)</span> from the data</strong> by putting a prior on it.
+<p><strong>Hierarchical Model:</strong> Rather than choosing <span class="math notranslate nohighlight">\(\phi\)</span> arbitrarily, we can <strong>infer <span class="math notranslate nohighlight">\(\phi\)</span> from the data</strong> by putting a prior on it.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \phi &amp; \sim p(\phi| a)\\
@@ -589,8 +584,7 @@ Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
 \theta^{(n, c)} &amp;= \text{sigm}\left((\mathbf{w}^{(c)})^\top\mathbf{X}^{(n, c)}\right)\\
 Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
 \end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(a\)</span> is the set of hyperparameters of this model (i.e. you have to specify it).</p>
+<p>where <span class="math notranslate nohighlight">\(a\)</span> is the set of hyperparameters of this model (i.e. you have to specify it).</p>
 </section>
 <section id="a-hierarchical-generalized-linear-model-for-kidney-cancer">
 <h3>A Hierarchical Generalized Linear Model for Kidney Cancer<a class="headerlink" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer" title="Link to this heading">#</a></h3>
@@ -630,12 +624,11 @@ Y^{(n, c)} &amp;\sim Ber(\theta^{(n, c)})
 \pi(q) = \frac{1}{Z}\exp\left\{ -\frac{U(q)}{T}\right\},\;\; T \text{ is a constant}
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(Z\)</span> is the normalizing constant of the exponential part. The Gibbs distribution has a physical interpretation: <span class="math notranslate nohighlight">\(\pi(q)\)</span> is the likelihood of being in state <span class="math notranslate nohighlight">\(q\)</span> given the energy <span class="math notranslate nohighlight">\(U(q)\)</span> of state <span class="math notranslate nohighlight">\(q\)</span> and the temperature <span class="math notranslate nohighlight">\(T\)</span>. For now, we set <span class="math notranslate nohighlight">\(T=1\)</span>.</p>
-<p>Using the same relationship, we can turn a probability distribution into an energy function
+<p>Using the same relationship, we can turn a probability distribution into an energy function</p>
 <div class="math notranslate nohighlight">
 \[
 U(q) = - \log \pi(q).
 \]</div>
-</p>
 <p><strong>Motto:</strong> negative gradient of the energy function points to the direct of steepest decrease in <span class="math notranslate nohighlight">\(U\)</span> and the <strong>steepest increase</strong> in <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
 </section>
 <section id="the-connection-between-optimization-and-sampling">
@@ -684,8 +677,8 @@ U(q) = - \log \pi(q).
 </section>
 <section id="gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles">
 <h3>Gradient Descent with Random Momentum: Simulating Mechanics of Moving Particles<a class="headerlink" href="#gradient-descent-with-random-momentum-simulating-mechanics-of-moving-particles" title="Link to this heading">#</a></h3>
-<p>To randomly sample from <span class="math notranslate nohighlight">\(\pi\)</span> we need to perform gradient-baesed descent on <span class="math notranslate nohighlight">\(U\)</span> with some randomness to make sure we move around. But we need to make sure this randomness is controlled (i.e. doesn’t overwhelm the information in the gradient).</p>
-<p>What if we performed gradient descent with an initial random momentum? That is, we simulated the way a particle with mass would move on the graph of <span class="math notranslate nohighlight">\(U\)</span> if we started its motion with a push (an intitial direction and magnitude of force):</p>
+<p>To randomly sample from <span class="math notranslate nohighlight">\(\pi\)</span> we need to perform gradient-based descent on <span class="math notranslate nohighlight">\(U\)</span> with some randomness to make sure we move around. But we need to make sure this randomness is controlled (i.e. doesn’t overwhelm the information in the gradient).</p>
+<p>What if we performed gradient descent with an initial random momentum? That is, we simulated the way a particle with mass would move on the graph of <span class="math notranslate nohighlight">\(U\)</span> if we started its motion with a push (an initial direction and magnitude of force):</p>
 <p><strong>I.</strong> at first, the particle would tend to travel in the direction of the initialization<br>
 <strong>II.</strong> eventually, gravity will pull it towards the minima (it will perform gradient descent)</p>
 <figure class="align-center" id="fig-14-rollercoaster">
@@ -698,12 +691,15 @@ U(q) = - \log \pi(q).
 <p>We can now sketch a sampler of <span class="math notranslate nohighlight">\(\pi\)</span> based on the simulations physical explorations of the graph of it’s energy function <span class="math notranslate nohighlight">\(U\)</span>:</p>
 <ol class="arabic simple">
 <li><p>start at a random <span class="math notranslate nohighlight">\(q\)</span>, pick a mass <span class="math notranslate nohighlight">\(M\)</span></p></li>
-<li><p>repeat:</p></li>
+<li><p>repeat:</p>
+<ol class="arabic simple">
 <li><p>start at the current sample <span class="math notranslate nohighlight">\(q_{\text{current}}\)</span></p></li>
 <li><p>pick a random momentum vector (random direction and magnitude of force)</p></li>
 <li><p>simulate, for a period of <span class="math notranslate nohighlight">\(T\)</span> seconds, the movement of a particle with mass <span class="math notranslate nohighlight">\(M\)</span> moving on the graph of <span class="math notranslate nohighlight">\(U\)</span> with this momentum</p></li>
 <li><p>the <span class="math notranslate nohighlight">\(q\)</span>-coordinate(s) of where the particle lands at the <span class="math notranslate nohighlight">\(T\)</span>-th second is the new sample <span class="math notranslate nohighlight">\(q_{\text{new}}\)</span></p></li>
 <li><p>set <span class="math notranslate nohighlight">\(q_{\text{current}}\leftarrow q_{\text{new}}\)</span></p></li>
+</ol>
+</li>
 </ol>
 <figure class="align-center" id="fig-14-gibbs">
 <a class="reference internal image-reference" href="../_images/gibbs.jpg"><img alt="../_images/gibbs.jpg" src="../_images/gibbs.jpg" style="width: 431px;" />
@@ -717,19 +713,17 @@ U(q) = - \log \pi(q).
 <section id="hamiltonian-motion-as-differential-equations">
 <h3>Hamiltonian Motion as Differential Equations<a class="headerlink" href="#hamiltonian-motion-as-differential-equations" title="Link to this heading">#</a></h3>
 <p>What does it mean to simulate the movement of a particle on the graph of <span class="math notranslate nohighlight">\(U\)</span>? It means to exchange potential energy (height) with kinetic energy (related to speed) in a way that obeys the <em><strong>conservation of total energy</strong></em>.</p>
-<p>A physical properties of system with position <span class="math notranslate nohighlight">\(q(t)\)</span> and momentum <span class="math notranslate nohighlight">\(p(t)\)</span> is described by a function <span class="math notranslate nohighlight">\(H(q, p)\)</span> called the <em><strong>Hamiltonian</strong></em>. We will always choose a Hamiltonian that decomposes as the sum of potential and kinetic energy as follows:
+<p>A physical properties of system with position <span class="math notranslate nohighlight">\(q(t)\)</span> and momentum <span class="math notranslate nohighlight">\(p(t)\)</span> is described by a function <span class="math notranslate nohighlight">\(H(q, p)\)</span> called the <em><strong>Hamiltonian</strong></em>. We will always choose a Hamiltonian that decomposes as the sum of potential and kinetic energy as follows:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 \underbrace{H(q, p)}_{\text{total}} = \underbrace{U(q(t))}_{\text{potential}} + \underbrace{K(p(t))}_{\text{kinetic}}
 \end{aligned}\]</div>
-
-How the system <span class="math notranslate nohighlight">\((q, p)\)</span> changes over time is described by the partial derivatives of <span class="math notranslate nohighlight">\(H\)</span>:
+<p>How the system <span class="math notranslate nohighlight">\((q, p)\)</span> changes over time is described by the partial derivatives of <span class="math notranslate nohighlight">\(H\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 \frac{dq}{dt} = \underbrace{\frac{\partial H}{\partial p}}_{\text{function of $t$}},\quad\quad \frac{dp}{dt} = \underbrace{-\frac{\partial H}{\partial q}}_{\text{function of $t$}}
 \end{aligned}\]</div>
-
-This forms a system of <em><strong>differential equations</strong></em> – equations describing the derivatives/gradients of a function. We call this a <em><strong>Hamiltonian system</strong></em>.</p>
+<p>This forms a system of <em><strong>differential equations</strong></em> – equations describing the derivatives/gradients of a function. We call this a <em><strong>Hamiltonian system</strong></em>.</p>
 <p>Say the system is at <span class="math notranslate nohighlight">\((q_0, p_0)\)</span> at time <span class="math notranslate nohighlight">\(t=0\)</span>, the system’s state at time <span class="math notranslate nohighlight">\(t = T\)</span> is given by <strong>integrating</strong> the differential equations from <span class="math notranslate nohighlight">\(t=0\)</span> to <span class="math notranslate nohighlight">\(t=T\)</span> and solving for constants based on <span class="math notranslate nohighlight">\(q(0) = q_0\)</span>, <span class="math notranslate nohighlight">\(p(0) = p_0\)</span>. The map <span class="math notranslate nohighlight">\(\phi(T)\)</span> transforming the state <span class="math notranslate nohighlight">\((q_0, p_0)\)</span> to the state at <span class="math notranslate nohighlight">\((q_T, p_T)\)</span> is called the <em><strong>flow</strong></em> of the Hamiltonian system. The principle of conservation of total energy says that <span class="math notranslate nohighlight">\(H(q, p)\)</span> is constant along every point <span class="math notranslate nohighlight">\(q_t, p_t\)</span> on every flow.</p>
 </section>
 <section id="hamiltonian-monte-carlo-with-exact-integration">
@@ -737,11 +731,14 @@ This forms a system of <em><strong>differential equations</strong></em> – equa
 <p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>. We fix <span class="math notranslate nohighlight">\(t = T\)</span>.</p>
 <ol class="arabic simple" start="0">
 <li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
-<li><p>repeat:</p></li>
+<li><p>repeat:</p>
+<ol class="arabic simple">
 <li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
 <span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp\{-K(p)\}\)</span>.</p></li>
-<li><p>(<strong>simulate movment</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
+<li><p>(<strong>simulate movement</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
 <li><p>accept <span class="math notranslate nohighlight">\(q^{(current)}\)</span> as a new sample: <span class="math notranslate nohighlight">\(q^{(current)} \leftarrow q^{(\text{time }T)}\)</span>.</p></li>
+</ol>
+</li>
 </ol>
 <p><strong>Questions:</strong> is this a correct way to sample from <span class="math notranslate nohighlight">\(\pi\)</span>? But isn’t the integration in Step B hard?</p>
 </section>
@@ -750,34 +747,31 @@ This forms a system of <em><strong>differential equations</strong></em> – equa
 <p>Two important properties of Hamiltonian dynamics:</p>
 <p>I. (<strong>Reversibility</strong>) The flow <span class="math notranslate nohighlight">\(\phi(T)\)</span> of a Hamiltonian system is one-to-one and onto for every interval length <span class="math notranslate nohighlight">\(T\)</span>, i.e. given <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span> we can compute the point of origin <span class="math notranslate nohighlight">\((q^{(\text{time }0)}, p^{(\text{time }0)})\)</span>.</p>
 <p>II. (<strong>Volume Preserving</strong>) It’s easy to verify that the vector field of a Hamiltonian system is divergence free, which will imply that the flow <span class="math notranslate nohighlight">\(\phi(T)\)</span> is volume preserving – if <span class="math notranslate nohighlight">\(A\subset \mathbb{R}^D\)</span> has volume <span class="math notranslate nohighlight">\(V\)</span> then the image of <span class="math notranslate nohighlight">\(A\)</span> under <span class="math notranslate nohighlight">\(\phi(T)\)</span> has volume <span class="math notranslate nohighlight">\(V\)</span>.</p>
-<p>The above two properties imply detailed balance for HMC with respect to the joint distribution (see readings):
+<p>The above two properties imply detailed balance for HMC with respect to the joint distribution (see readings):</p>
 <div class="math notranslate nohighlight">
 \[\pi(q, p) = \frac{1}{Z} \exp\{-H(q, p) \}.\]</div>
-
-But we can rewrite the joint distribution <span class="math notranslate nohighlight">\(\pi(q, p)\)</span>:
+<p>But we can rewrite the joint distribution <span class="math notranslate nohighlight">\(\pi(q, p)\)</span>:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\begin{aligned} 
+\[\begin{split}\begin{aligned}
 \pi(q, p) = \frac{1}{Z} \exp\{-U(q) - K(p) \} &amp;= \exp\{-U(q)\} \frac{1}{Z}\exp\{-K(p)\}\\
 &amp;= \exp\{\log(\pi(q)) \} \frac{1}{Z}\exp\{-K(p)\}\\
 &amp;= \pi(q)\frac{1}{Z}\exp\{-K(p)\}
 \end{aligned}\end{split}\]</div>
-
-That is, <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are independent. Hence, sampling from <span class="math notranslate nohighlight">\(\pi(q, p)\)</span> and ignoring <span class="math notranslate nohighlight">\(p\)</span> gives us samples from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<p>That is, <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are independent. Hence, sampling from <span class="math notranslate nohighlight">\(\pi(q, p)\)</span> and ignoring <span class="math notranslate nohighlight">\(p\)</span> gives us samples from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
 <p><strong>Question:</strong> What about irreducibility and aperiodicity?</p>
 </section>
-<section id="approximating-flows-sympletic-integrators">
-<h3>Approximating Flows: Sympletic Integrators<a class="headerlink" href="#approximating-flows-sympletic-integrators" title="Link to this heading">#</a></h3>
-<p>Simulating Hamiltonian dynamics for a time period of length <span class="math notranslate nohighlight">\(T\)</span>, using the flow <span class="math notranslate nohighlight">\(\phi(T)\)</span>, requires that we integrate the equations in the Hamiltonian system with respect to <span class="math notranslate nohighlight">\(t\)</span>,
+<section id="approximating-flows-symplectic-integrators">
+<h3>Approximating Flows: Symplectic Integrators<a class="headerlink" href="#approximating-flows-symplectic-integrators" title="Link to this heading">#</a></h3>
+<p>Simulating Hamiltonian dynamics for a time period of length <span class="math notranslate nohighlight">\(T\)</span>, using the flow <span class="math notranslate nohighlight">\(\phi(T)\)</span>, requires that we integrate the equations in the Hamiltonian system with respect to <span class="math notranslate nohighlight">\(t\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[\frac{dq}{dt} = \frac{\partial H}{\partial p}, \quad\quad \frac{dp}{dt} = -\frac{\partial H}{\partial q}\]</div>
-
-This is generally intractable to do analytically! In HMC, we approximate the dynamics by:</p>
+<p>This is generally intractable to do analytically! In HMC, we approximate the dynamics by:</p>
 <ol class="arabic simple">
 <li><p>discretizing the time period <span class="math notranslate nohighlight">\([0, T]\)</span> into <span class="math notranslate nohighlight">\(L\)</span> chunks each with length <span class="math notranslate nohighlight">\(\epsilon\)</span>.</p></li>
 <li><p><strong>approximating</strong> the flow for a time period of length <span class="math notranslate nohighlight">\(\epsilon\)</span>.</p></li>
 </ol>
 <p>A common method of approximating the flow is called the <em><strong>leap-frog integrator</strong></em>. This integrator has the special property of being <strong>reversible</strong> and <strong>volume-preserving</strong>.</p>
-<p>This means that replacing exact Hamiltonian dynmaics in HMC with the leap-frog integration will not obviously ruin detailed balance!</p>
+<p>This means that replacing exact Hamiltonian dynamics in HMC with the leap-frog integration will not obviously ruin detailed balance!</p>
 </section>
 <section id="approximating-flows-adjusting-for-error">
 <h3>Approximating Flows: Adjusting for Error<a class="headerlink" href="#approximating-flows-adjusting-for-error" title="Link to this heading">#</a></h3>
@@ -813,19 +807,20 @@ This is generally intractable to do analytically! In HMC, we approximate the dyn
 <p>Given a target distribution <span class="math notranslate nohighlight">\(\pi\)</span>, we</p>
 <ol class="arabic simple">
 <li><p>turn <span class="math notranslate nohighlight">\(\pi(q)\)</span> into a potential energy function <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>.</p></li>
-<li><p>generate samples <span class="math notranslate nohighlight">\(\{ q_s\}\)</span> by approximately simulating Hamiltonian dynamics for a particle (i.e. realistic movement on the graph of <span class="math notranslate nohighlight">\(U(q)\)</span>) with random intialization.</p></li>
+<li><p>generate samples <span class="math notranslate nohighlight">\(\{ q_s\}\)</span> by approximately simulating Hamiltonian dynamics for a particle (i.e. realistic movement on the graph of <span class="math notranslate nohighlight">\(U(q)\)</span>) with random initialization.</p></li>
 <li><p>for each sample we need to accept based on a Metropolis-Hastings mechanism because the simulation is not exact.</p></li>
 </ol>
 <p><strong>Design choices:</strong></p>
-<ol class="arabic simple">
-<li><p>(<strong>Advanced</strong>) kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span> – needs to be one such that you can easily sample from its Gibbs distribuion <span class="math notranslate nohighlight">\(\frac{1}{Z} \exp(-K(p))\)</span>.</p></li>
+<ol class="arabic">
+<li><p>(<strong>Advanced</strong>) kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span> – needs to be one such that you can easily sample from its Gibbs distribution <span class="math notranslate nohighlight">\(\frac{1}{Z} \exp(-K(p))\)</span>.</p></li>
 <li><p>(<strong>Advanced</strong>) integrator to approximate Hamiltonian flow – this needs to be volume-preserving and reversible.</p></li>
-<li><p>(<strong>Everyone</strong>) number and size of discrete time steps for discrete integrators.</p></li>
-</ol>
+<li><p>(<strong>Everyone</strong>) number and size of discrete time steps for discrete integrators.</p>
 <p>What happens when the step sizes are large and we take many steps? What happens when the step sizes are tiny and we take few?</p>
+</li>
+</ol>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Example: Euclidean-Gaussian Kinetic Energy</p>
-<p>Let <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution so that <span class="math notranslate nohighlight">\(U(q) = -\log(\pi(q))\)</span> defines our potential energy function. Let’s choose the mass of this system to be a matrix <span class="math notranslate nohighlight">\(M = m \mathbf{I}_{D\times D}\)</span>. Then the <em><strong>Euclidea-Guassian kinetic energy</strong></em> function is defined as</p>
+<p>Let <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution so that <span class="math notranslate nohighlight">\(U(q) = -\log(\pi(q))\)</span> defines our potential energy function. Let’s choose the mass of this system to be a matrix <span class="math notranslate nohighlight">\(M = m \mathbf{I}_{D\times D}\)</span>. Then the <em><strong>Euclidean-Gaussian kinetic energy</strong></em> function is defined as</p>
 <div class="math notranslate nohighlight">
 \[
 K(p) = \frac{1}{2} p^\top M^{-1} p + \frac{1}{2}\log|M| + \frac{D}{2} \log(2\pi)
@@ -845,21 +840,30 @@ K(p) = \frac{1}{2} p^\top M^{-1} p + \frac{1}{2}\log|M| + \frac{D}{2} \log(2\pi)
 <p>Thus, HMC with the above choices becomes</p>
 <ol class="arabic simple" start="0">
 <li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
-<li><p>repeat:</p></li>
+<li><p>repeat:</p>
+<ol class="arabic simple">
 <li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
 <span class="math notranslate nohighlight">\(p^{(current)} \sim \mathcal{N}(0, M)\)</span>.</p></li>
-<li><p>(<strong>simulate movement</strong>) simulate Hamiltonian motion for <span class="math notranslate nohighlight">\(L\)</span> steps each with time interval <span class="math notranslate nohighlight">\(\epsilon\)</span>, using the leap-frog integrator.
-1. Repeat for T - 1 times, for <span class="math notranslate nohighlight">\(p^{(\text{step } 0)} = p^{(current)}\)</span>, <span class="math notranslate nohighlight">\(q^{(\text{step } 0)} = q^{(current)}\)</span>:</p>
+<li><p>(<strong>simulate movement</strong>) simulate Hamiltonian motion for <span class="math notranslate nohighlight">\(L\)</span> steps each with time interval <span class="math notranslate nohighlight">\(\epsilon\)</span>, using the leap-frog integrator.</p>
+<ol class="arabic simple">
+<li><p>Repeat for T - 1 times, for <span class="math notranslate nohighlight">\(p^{(\text{step } 0)} = p^{(current)}\)</span>, <span class="math notranslate nohighlight">\(q^{(\text{step } 0)} = q^{(current)}\)</span>:</p>
 <ol class="arabic simple">
 <li><p>(<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1/2)} \leftarrow  p^{(\text{step } t)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t)})\)</span></p></li>
 <li><p>(<strong>full-step update for momentum</strong>) <span class="math notranslate nohighlight">\(q^{(\text{step } t + 1)} \leftarrow q^{(\text{step } t)} + \epsilon \frac{1}{m} p^{(\text{step } t + 1/2)}\)</span></p></li>
 <li><p>(<strong>half-step update for momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } t + 1)} \leftarrow  p^{(\text{step } t + 1/2)} - \epsilon/2 \frac{\partial U}{\partial q}(q^{(\text{step } t + 1)})\)</span></p></li>
 </ol>
 </li>
+</ol>
+</li>
 <li><p>(<strong>reverse momentum</strong>) <span class="math notranslate nohighlight">\(p^{(\text{step } T)} \leftarrow -p^{(\text{step } T)}\)</span></p></li>
-<li><p>(<strong>correction for simulation error</strong>) implement Metropolis-Hasting accept mechanism:
-1. compute <span class="math notranslate nohighlight">\(\alpha = \min\left(1, \exp\left\{H(q^{(current)}, p^{(current)}) - H(q^{(\text{step } T)}, p^{(\text{step } T)})\right\} \right)\)</span>
-2. sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span>, if <span class="math notranslate nohighlight">\(U \leq \alpha\)</span> then accept, else keep old sample</p></li>
+<li><p>(<strong>correction for simulation error</strong>) implement Metropolis-Hasting accept mechanism:</p>
+<ol class="arabic simple">
+<li><p>compute <span class="math notranslate nohighlight">\(\alpha = \min\left(1, \exp\left\{H(q^{(current)}, p^{(current)}) - H(q^{(\text{step } T)}, p^{(\text{step } T)})\right\} \right)\)</span></p></li>
+<li><p>sample <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span>, if <span class="math notranslate nohighlight">\(U \leq \alpha\)</span> then accept, else keep old sample</p></li>
+</ol>
+</li>
+</ol>
+</li>
 </ol>
 </div>
 </section>
@@ -870,23 +874,25 @@ K(p) = \frac{1}{2} p^\top M^{-1} p + \frac{1}{2}\log|M| + \frac{D}{2} \log(2\pi)
 </section>
 <section id="summary">
 <h2><span class="section-number">18.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions
+<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions</p>
 <div class="math notranslate nohighlight">
 \[
 U(q) = - \log \pi(q), \quad \pi(q) = \frac{1}{Z}\exp\left\{ \frac{-U(q)}{T}\right\},\; T=1
 \]</div>
-
-This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<p>This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
 <section id="id2">
 <h3>Hamiltonian Monte Carlo: with Exact Integration<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>Let <span class="math notranslate nohighlight">\(\pi(q)\)</span> be our target distribution with <span class="math notranslate nohighlight">\(q\in \mathbb{R}^D\)</span>. We turn <span class="math notranslate nohighlight">\(\pi\)</span> into an energy function <span class="math notranslate nohighlight">\(U(q)\)</span> by <span class="math notranslate nohighlight">\(U(q) = - \log(\pi(q))\)</span>. We choose a kinetic energy function <span class="math notranslate nohighlight">\(K(p)\)</span>. We fix <span class="math notranslate nohighlight">\(t = T\)</span>.</p>
 <ol class="arabic simple" start="0">
 <li><p>start with a random <span class="math notranslate nohighlight">\(q^{(0)}\in\mathbb{R}^D\)</span></p></li>
-<li><p>repeat:</p></li>
+<li><p>repeat:</p>
+<ol class="arabic simple">
 <li><p>(<strong>kick-off</strong>) sample a random momentum from the Gibbs distribution of <span class="math notranslate nohighlight">\(K(p)\)</span>, i.e.
 <span class="math notranslate nohighlight">\(p^{(current)} \sim \frac{1}{Z} \exp\{-K(p)\}\)</span>.</p></li>
-<li><p>(<strong>simulate movment</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
+<li><p>(<strong>simulate movement</strong>) simulate Hamiltonian motion for a time interval of length <span class="math notranslate nohighlight">\(T\)</span>, i.e. start at <span class="math notranslate nohighlight">\((q^{(current)}, p^{(current)})\)</span> and find <span class="math notranslate nohighlight">\((q^{(\text{time }T)}, p^{(\text{time }T)})\)</span>. You need to integrate <span class="math notranslate nohighlight">\(\frac{dq}{dt} = \frac{\partial H}{\partial p}, \frac{dp}{dt} = -\frac{\partial H}{\partial q}\)</span>!</p></li>
 <li><p>accept <span class="math notranslate nohighlight">\(q^{(current)}\)</span> as a new sample: <span class="math notranslate nohighlight">\(q^{(current)} \leftarrow q^{(\text{time }T)}\)</span>.<br><br></p></li>
+</ol>
+</li>
 </ol>
 <figure class="align-center" id="fig-14-summary-skate">
 <a class="reference internal image-reference" href="../_images/skate.jpg"><img alt="../_images/skate.jpg" src="../_images/skate.jpg" style="width: 100%;" />
@@ -920,39 +926,34 @@ This allows us to use gradient information when we sample from <span class="math
 <h2><span class="section-number">18.5. </span>Frequently Asked Questions About HMC<a class="headerlink" href="#frequently-asked-questions-about-hmc" title="Link to this heading">#</a></h2>
 <section id="commonly-asked-questions-about-hmc">
 <h3>Commonly Asked Questions About HMC<a class="headerlink" href="#commonly-asked-questions-about-hmc" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p><strong>Question:</strong> HMC seems complicated, do I really need to use it?<br>
-<strong>Answer:</strong> Yes.</p></li>
-</ol>
+<strong>Answer:</strong> Yes.</p>
 <p>For complex models of interest (non-conjugate, hierarchical, latent variable) HMC is the least complicated sampler you can use to perform reliable inference.<br><br></p>
-<ol class="arabic simple" start="2">
+</li>
 <li><p><strong>Question:</strong> Ok, but can I treat the theory as a black-box, i.e. can I just press some <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> button?<br>
-<strong>Answer:</strong> No.</p></li>
-</ol>
+<strong>Answer:</strong> No.</p>
 <p>HMC (like all samplers) must be tuned. That is, for many models and datasets, <code class="docutils literal notranslate"><span class="pre">model.sample()</span></code> will not have good performance. You need the theory to tell you which design choices need to be adjusted and in what way.</p>
-<p>In class, everyone struggled with finding <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> documentation on how to compare models using WAIC and <strong>no one caught the <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> error about the WAIC computation</strong>:</p>
+<p>It is hard to find <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> documentation on how to compare models using WAIC, and <strong>the <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> error about the WAIC computation is easy to miss</strong>:</p>
 <blockquote>
 <div><p>/root/venv/lib/python3.7/site-packages/arviz/stats/stats.py:1460: UserWarning: For one or more samples the posterior variance of the log predictive densities exceeds 0.4. This could be indication of WAIC starting to fail. <br>
 See <a class="reference external" href="http://arxiv.org/abs/1507.04544" rel="noreferrer" target="_blank">http://arxiv.org/abs/1507.04544</a> for details</p>
 </div></blockquote>
 <p>Practitioner’s rely on black-box machine learning tools to analyze data and rely on complex ML metrics (like the WAIC) to assess the validity of their analysis. The insights resulting from this process gets translated into policies that potentially effect millions.</p>
 <p>What should/can a practitioner do when not only their models fail but their metrics ALSO fail?<br><br></p>
-<ol class="arabic simple" start="3">
+</li>
 <li><p><strong>Question:</strong> But I don’t need to implement it since <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> has already done so, right?<br>
-<strong>Answer:</strong> Wrong.</p></li>
-</ol>
+<strong>Answer:</strong> Wrong.</p>
 <p>You need to implement HMC. Because <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> is not going to scale well for Bayesian inference for models with neural network likelihoods and large datasets. <br><br></p>
-<ol class="arabic simple" start="4">
+</li>
 <li><p><strong>Question:</strong> Why don’t you just GIVE ME YOUR IMPLEMENTATION OF HMC!!!!!!<br>
-<strong>Answer:</strong> It won’t help.</p></li>
-</ol>
+<strong>Answer:</strong> It won’t help.</p>
 <p>The main problem with HMC isn’t with implementing the leap-frog steps, it’s the way you define your energy functions.</p>
 <p>Last year, many groups chose to copy a version of HMC from somewhere random online, this group of people had the MOST trouble with debugging when trying to RUN HMC on different models: debugging other people’s code can be way harder than your own (I swear I’m not lying)!<br><br></p>
-<ol class="arabic simple" start="5">
+</li>
 <li><p><strong>Question:</strong> We worked so hard to derive HMC, it had better be the bestest sampler and can be applied to any Bayesian model for any dataset, right?<br>
-<strong>Answer:</strong> No.</p></li>
-</ol>
-<p>HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see this weeks readings). Futhermore, HMC <strong>does not scale well to large datasets</strong>.</p>
+<strong>Answer:</strong> No.</p>
+<p>HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see the readings at the end of this chapter). Furthermore, HMC <strong>does not scale well to large datasets</strong>.</p>
 <ul class="simple">
 <li><p>HMC can still fail to mix!</p>
 <ul>
@@ -966,12 +967,12 @@ See <a class="reference external" href="http://arxiv.org/abs/1507.04544" rel="no
 </li>
 <li><p>Each leap-frog step in HMC requires computing the gradient over the ENTIRE dataset!</p>
 <ul>
-<li><p>Possibile solution: Stochastic Gradient HMC
+<li><p>Possible solution: Stochastic Gradient HMC
 <strong>Note:</strong> we lose asymptotic correctness!<br><br></p></li>
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="6">
+</li>
 <li><p><strong>Question:</strong> What is the broader impact of HMC?</p></li>
 </ol>
 </section>
@@ -1107,9 +1108,9 @@ See <a class="reference external" href="http://arxiv.org/abs/1507.04544" rel="no
 </div>
 <section id="inference-for-bayesian-logistic-regression-models">
 <h4>Inference for Bayesian Logistic Regression Models<a class="headerlink" href="#inference-for-bayesian-logistic-regression-models" title="Link to this heading">#</a></h4>
-<p>In <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>, we studied the problem of how to evaluate the classification probabilites outputed by a Logistic Regression model using calibration plots. Calibration plots are computed using observed data (data that is part of or similar to our training set). In this problem set, we evaluate the usefulness of the predictive uncertainties Logistic Regression models and Bayesian Logistic Regression models for test data that are dissimilar to our training data. These test data points are called <em><strong>out of distribution (OOD) points</strong></em>. Just as in the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we want the predictive uncertainties from our models to help us distinguish <em><strong>in-distribution</strong></em> test data (test data that are similar to data on which we trained our model) and OOD test data. Again, in many safety-critical applications of ML, we want human-experts to override model decisions if the model is operating on extremely unfamiliar data.</p>
-<div class="admonition-exercise-part-i-interpreting-the-classification-probabilites-of-logistic-regression-as-uncertainties admonition">
-<p class="admonition-title">Exercise: Part I: Interpreting the Classification Probabilites of Logistic Regression as Uncertainties</p>
+<p>In <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>, we studied the problem of how to evaluate the classification probabilities output by a Logistic Regression model using calibration plots. Calibration plots are computed using observed data (data that is part of or similar to our training set). In this problem set, we evaluate the usefulness of the predictive uncertainties Logistic Regression models and Bayesian Logistic Regression models for test data that are dissimilar to our training data. These test data points are called <em><strong>out of distribution (OOD) points</strong></em>. Just as in the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we want the predictive uncertainties from our models to help us distinguish <em><strong>in-distribution</strong></em> test data (test data that are similar to data on which we trained our model) and OOD test data. Again, in many safety-critical applications of ML, we want human-experts to override model decisions if the model is operating on extremely unfamiliar data.</p>
+<div class="admonition-exercise-part-i-interpreting-the-classification-probabilities-of-logistic-regression-as-uncertainties admonition">
+<p class="admonition-title">Exercise: Part I: Interpreting the Classification Probabilities of Logistic Regression as Uncertainties</p>
 <p> </p>
 </div>
 <p><strong>Exercise 1: (Classifying OOD MNIST Digits)</strong> In <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>, we interpreted the output of a Logistic Regression model - the classification probability - as an indicator of the confidence of the model when it is classifying a specific data point (e.g. when the probability is close to 0.5, we say that the model is not confident in classifying the data point as class 1 or 0). Explain why this is a reasonable interpretation of the classification probability.</p>
@@ -1119,7 +1120,7 @@ See <a class="reference external" href="http://arxiv.org/abs/1507.04544" rel="no
 <p>In this dataset, the classes are balanced (we take 600 images of each digit). Report the accuracy of your trained classifier, based on this, decide whether or not this is a good model.</p>
 <p>Next, for the predefined set of six test images,
 <code class="docutils literal notranslate"><span class="pre">test_point_1</span></code>, …, <code class="docutils literal notranslate"><span class="pre">test_point_6</span></code>,
-report the classification probabiliy for each image under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test images.</p>
+report the classification probability for each image under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test images.</p>
 <p>So is this classifier a good model? Does your analysis of the model’s performance via its predictive accuracy agree with your analysis of the model’s performance via its predictive uncertainties? Conclude whether or not you would feel comfortable using this model in a real-life setting?</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
@@ -1242,7 +1243,7 @@ report the classification probabiliy for each image under your trained model. In
 <p>In this dataset, the classes are balanced (we have 100 points in each class). Report the accuracy of your trained classifier, based on this, decide whether or not this is a good model.</p>
 <p>Next, for the predefined set of test points,
 <code class="docutils literal notranslate"><span class="pre">test_points</span></code>,
-report the classification probabiliy for each test point under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test points, identify which of these test points are in-distribution and which ones are OOD.</p>
+report the classification probability for each test point under your trained model. Interpreting these probabilities as uncertainty, i.e. model confidence, do these predictive uncertainties make sense? <strong>Hint:</strong> compare the predictive uncertainties to the visualizations of these test points, identify which of these test points are in-distribution and which ones are OOD.</p>
 <p>Relate your analysis of the behaviour of Logistic Regression on this toy dataset to its performance on MNIST. Can you come up with some hypotheses for exactly when the classification probability indicates an inappropriate amount of certainty when predicting on test points?</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
@@ -1306,7 +1307,7 @@ report the classification probabiliy for each test point under your trained mode
 <div class="admonition-exercise-part-ii-interpreting-the-uncertainties-of-bayesian-logistic-regression admonition">
 <p class="admonition-title">Exercise: Part II: Interpreting the Uncertainties of Bayesian Logistic Regression</p>
 <p><strong>Exercise 3: (Classifying OOD Data for a Toy Dataset with Bayesian Logistic Regression)</strong>
-In Exercise 2 and 3, we examined one source of uncertainty from a logistic model: the classification probability. There is another source of uncertainty: uncertainty over the model itself (which decision boundaries can fit the dataset).</p>
+In Exercises 1 and 2, we examined one source of uncertainty from a logistic model: the classification probability. There is another source of uncertainty: uncertainty over the model itself (which decision boundaries can fit the dataset).</p>
 <p>Use your own implementation of HMC (see the algorithm earlier in this chapter) to sample from the posterior of the following Bayesian Logistic Regression model for our toy dataset:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
@@ -1330,7 +1331,7 @@ Y^{(n)} &amp;\sim Ber(\text{sigm}(w_2 X_1^{(n)} + w_1 X_2^{(n)} + w_0))
 <span class="n">thinning_factor</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>where <code class="docutils literal notranslate"><span class="pre">logistic.coef_</span></code> and <code class="docutils literal notranslate"><span class="pre">logistic.intercept_</span></code> are the learned parameters of your <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Logistic regression model you trained in Exercise 3.</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">logistic.coef_</span></code> and <code class="docutils literal notranslate"><span class="pre">logistic.intercept_</span></code> are the learned parameters of your <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> Logistic regression model you trained in Exercise 2.</p>
 <p>Visualize the decision boundaries corresponding to the posterior samples from your Bayesian Logistic Regression model (see <a class="reference internal" href="../labs/lab-06-logistic-regression.html"><span class="doc">Lab 6</span></a>). What do the distribution of decision boundaries tell you about the model’s predictive uncertainties for each of the test points (particularly the OOD points)?</p>
 </div>
 <p><strong>Exercise 4: (Epistemic Uncertainty from Bayesian Logistic Regression)</strong> Since the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span> is a distribution over multiple models (i.e. decision boundaries) and each model outputs a classification probability for each test data point, the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D}))\)</span> defines a distribution of classification probabilities for each test point. The variance of the distribution over classification probabilities is one way of quantifying the amount of <em><strong>epistemic uncertainty</strong></em> - uncertainty due to lack of observed training data - of the model at a particular test point.</p>
@@ -1350,7 +1351,7 @@ Y^{(n)} &amp;\sim Ber(\text{sigm}(\mathbf{w}^\top \phi(\mathbf{X}^{(n)}) ))
 <p>Visualize the decision boundaries corresponding to the samples in the bootstrap ensemble. Are the epistemic uncertainties of this ensemble able to distinguish in-distribution test points from OOD ones? Relate the amount of epistemic uncertainty at a particular data point to the decision boundaries of the models in the ensemble. Using this geometric relationship, explain whether or not the epistemic uncertainties of our bootstrap ensemble is capable of distinguishing <strong>all</strong> possible OOD points.</p>
 <div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
 <p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
-<p><strong>Exercise 7: (The Need for Useful Uncertainties in Classification)</strong> Explain why OOD detection may be crucial for classifiers deployed in risk-adverse applications. Be concrete: choose a real-life domain application, identify the affected communities and the real-life consequences of an incorrect classification, explain <em>exactly</em> how OOD detection can help mitigate the risk of an incorrect classification. Feel free to use the following list of articles to help construct your answer.</p>
+<p><strong>Exercise 7: (The Need for Useful Uncertainties in Classification)</strong> Explain why OOD detection may be crucial for classifiers deployed in risk-averse applications. Be concrete: choose a real-life domain application, identify the affected communities and the real-life consequences of an incorrect classification, explain <em>exactly</em> how OOD detection can help mitigate the risk of an incorrect classification. Feel free to use the following list of articles to help construct your answer.</p>
 <p><strong>Reference:</strong></p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://www.nytimes.com/2018/02/09/technology/facial-recognition-race-artificial-intelligence.html" rel="noreferrer" target="_blank">Facial Recognition Is Accurate, if You’re a White Guy</a></p></li>
@@ -1358,9 +1359,9 @@ Y^{(n)} &amp;\sim Ber(\text{sigm}(\mathbf{w}^\top \phi(\mathbf{X}^{(n)}) ))
 <li><p><a class="reference external" href="https://www.nytimes.com/2020/06/24/technology/facial-recognition-arrest.html" rel="noreferrer" target="_blank">Wrongfully Accused by an Algorithm</a></p></li>
 <li><p><a class="reference external" href="https://www.pnas.org/content/pnas/early/2020/05/19/1919012117.full.pdf" rel="noreferrer" target="_blank">Gender imbalance in medical imaging datasets produces biased classifiers for computer-aided diagnosis</a></p></li>
 </ol>
-<p><strong>Exercise 8: (Comparing Bayesian and Frequnetist Epistemic Uncertainties)</strong> In the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we saw that the epistemic uncertainties of frequentist and Bayesian uncertainties can be desirable or undesirable depending on the number of observations and the choices of hyperparameters (e.g. polynomial degree, variance of the prior in the Bayesian model, regularization strength of the models in the ensemble). For Bayesian and frequentist ensembles of classifiers, based on empirical results above, conjecture which factors affect the quality of epistemic uncertainties of Bayesian and bootstrap ensemble classifiers, respectively. Support your answer with what we know about the properties of Logistic Regression models.</p>
+<p><strong>Exercise 8: (Comparing Bayesian and Frequentist Epistemic Uncertainties)</strong> In the <a class="reference internal" href="04-bayesian-vs-frequentist.html#ps-hw2"><span class="std std-ref">Chapter 4 problem set</span></a>, we saw that the epistemic uncertainties of frequentist and Bayesian uncertainties can be desirable or undesirable depending on the number of observations and the choices of hyperparameters (e.g. polynomial degree, variance of the prior in the Bayesian model, regularization strength of the models in the ensemble). For Bayesian and frequentist ensembles of classifiers, based on empirical results above, conjecture which factors affect the quality of epistemic uncertainties of Bayesian and bootstrap ensemble classifiers, respectively. Support your answer with what we know about the properties of Logistic Regression models.</p>
 <p>In order to obtain epistemic uncertainties that can distinguish in-distribution and OOD points, what settings of hyperparameters do we need for Bayesian and bootstrap ensemble classifiers, respectively?</p>
-<p><strong>Exercise 10: (Is OOD Detection Enough for Risk Adverse Applications?)</strong> In the risk adverse real-life application you identified in Exercise 1, is accurate OOD detection enough to mitigate unwanted outcomes of deploying our model? That is, when classifiers are used in real-life applications where incorrect predictions can have disasterous consequence, what specific failure modes can these models experience? Are all of these failure modes addressed by proper detection of OOD inputs?</p>
+<p><strong>Exercise 9: (Is OOD Detection Enough for Risk-Averse Applications?)</strong> In the risk-averse real-life application you identified in Exercise 7, is accurate OOD detection enough to mitigate unwanted outcomes of deploying our model? That is, when classifiers are used in real-life applications where incorrect predictions can have disastrous consequence, what specific failure modes can these models experience? Are all of these failure modes addressed by proper detection of OOD inputs?</p>
 </div>
 </section>
 </section>
@@ -1452,7 +1453,7 @@ Y^{(n)} &amp;\sim Ber(\text{sigm}(\mathbf{w}^\top \phi(\mathbf{X}^{(n)}) ))
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-generalized-linear-models">18.1. Hierarchical Generalized Linear Models</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-linear-models">Generalized Linear Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-pooling-vs-fully-independent-estimation">Kidney Cancer Dataset: Pooling vs Fully Independent Estimation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierachical-vs-non-hiearchical-models">Kidney Cancer Dataset : Hierachical vs Non-Hiearchical Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kidney-cancer-dataset-hierarchical-vs-non-hierarchical-models">Kidney Cancer Dataset : Hierarchical vs Non-Hierarchical Models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-hierarchical-generalized-linear-model-for-kidney-cancer">A Hierarchical Generalized Linear Model for Kidney Cancer</a></li>
 </ul>
 </li>
@@ -1469,7 +1470,7 @@ Y^{(n)} &amp;\sim Ber(\text{sigm}(\mathbf{w}^\top \phi(\mathbf{X}^{(n)}) ))
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-motion-as-differential-equations">Hamiltonian Motion as Differential Equations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-exact-integration">Hamiltonian Monte Carlo: with Exact Integration</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#correctness-of-hmc-with-exact-integration">Correctness of HMC with Exact Integration</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-sympletic-integrators">Approximating Flows: Sympletic Integrators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-symplectic-integrators">Approximating Flows: Symplectic Integrators</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approximating-flows-adjusting-for-error">Approximating Flows: Adjusting for Error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hamiltonian-monte-carlo-with-the-leap-frog-integrator">Hamiltonian Monte Carlo: with the Leap Frog Integrator</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hmc-with-leap-frog-integrator-in-action">HMC with Leap Frog Integrator in Action</a></li>

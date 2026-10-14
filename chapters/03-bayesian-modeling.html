@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -446,7 +447,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3.3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-model-revisited">The Coin Toss Model: Revisited</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incoporating-prior-beliefs">Incoporating Prior Beliefs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incorporating-prior-beliefs">Incorporating Prior Beliefs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-for-the-beta-binomial-model">Posterior for the Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-posterior-bayesian-update">Interpreting the Posterior: Bayesian Update</a></li>
@@ -518,28 +519,29 @@ document.write(`
 <h2><span class="section-number">3.1. </span>Review of the Method of Maximum Likelihood<a class="headerlink" href="#review-of-the-method-of-maximum-likelihood" title="Link to this heading">#</a></h2>
 <section id="the-method-of-maximum-likelihood">
 <h3>The Method of Maximum Likelihood<a class="headerlink" href="#the-method-of-maximum-likelihood" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p><strong>(Model)</strong> Assume observations from <span class="math notranslate nohighlight">\(N\)</span> number of <em><strong>independently and identically distributed</strong></em> outcomes, <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span>, with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span> and where <span class="math notranslate nohighlight">\(\theta\)</span> is the set of parameters of the distribution <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span>. The likelihood function is
+<ol class="arabic">
+<li><p><strong>(Model)</strong> Assume observations from <span class="math notranslate nohighlight">\(N\)</span> number of <em><strong>independently and identically distributed</strong></em> outcomes, <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span>, with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span> and where <span class="math notranslate nohighlight">\(\theta\)</span> is the set of parameters of the distribution <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span>. The likelihood function is</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
- \mathcal{L}(\theta) = \prod_{n=1}^N p(y_n | \theta)
-\end{aligned}\]</div>
-</p></li>
+   \mathcal{L}(\theta) = \prod_{n=1}^N p(y_n | \theta)
+   \end{aligned}\]</div>
+</li>
 <li><p><strong>(Inference)</strong>
-We estimate <span class="math notranslate nohighlight">\(\theta\)</span> using the <em><strong>maximium likelihood estimate</strong></em>, defined as
+We estimate <span class="math notranslate nohighlight">\(\theta\)</span> using the <em><strong>maximum likelihood estimate</strong></em>, defined as</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
- \theta_{\text{MLE}} = \underset{\theta}{\mathrm{argmax}}\; \mathcal{L}(\theta) = \underset{\theta}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | \theta)
- \end{aligned}\]</div>
-</p></li>
-<li><p><strong>(Inference Method)</strong></p></li>
-</ol>
+   \theta_{\text{MLE}} = \underset{\theta}{\mathrm{argmax}}\; \mathcal{L}(\theta) = \underset{\theta}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | \theta)
+   \end{aligned}\]</div>
+</li>
+<li><p><strong>(Inference Method)</strong></p>
 <ul class="simple">
 <li><p><em>Unconstrained Optimization:</em> if <span class="math notranslate nohighlight">\(\theta\)</span> doesn’t need to satisfy any special property, then it’s as simple as setting the <em><strong>gradient</strong></em> of the likelihood equal to zero and solving!
 <strong>(Except it’s not that simple!)</strong><br><br></p></li>
 <li><p><em>Constrained Optimization:</em> if <span class="math notranslate nohighlight">\(\theta\)</span> needs to satisfy special properties, then it’s as simple as setting the gradient of the <em><strong>Lagrangian</strong></em> of the likelihood and the constraint equal to zero and solving!
 <strong>(Except it’s not that simple!)</strong></p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="evaluating-the-mle">
 <h3>Evaluating the MLE<a class="headerlink" href="#evaluating-the-mle" title="Link to this heading">#</a></h3>
@@ -586,7 +588,7 @@ When the sample size is “small”, the MLE can be</p>
 \[
 \mathrm{MSE}_{\theta_{\text{MLE}}} = \underbrace{\mathbb{E}\left[(\theta_{\text{MLE}} - \mathbb{E}[\theta_{\text{MLE}}])^2\right]}_{\text{variance}} + \underbrace{\left( \mathbb{E}[\theta_{\text{MLE}}] - \theta\right)^2}_{\text{bias}}
 \]</div>
-<p>Although we want an unbiased estimator, the above decomposition says that if the variance of the estimator is high our espected error will nonetheless be high.</p>
+<p>Although we want an unbiased estimator, the above decomposition says that if the variance of the estimator is high our expected error will nonetheless be high.</p>
 <p>The <em><strong>variance-bias trade-off</strong></em> refers to the phenomenon that, in many cases, when estimators have low bias they have high corresponding variance (and vice versa), and hence high MSE.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Decomposition of MSE</p>
@@ -628,14 +630,13 @@ So we see that <span class="math notranslate nohighlight">\(\widehat{\theta}_1\)
 </section>
 <section id="limitations-of-mle-overfitting-under-scarcity-of-data">
 <h3>Limitations of MLE: Overfitting Under Scarcity of Data<a class="headerlink" href="#limitations-of-mle-overfitting-under-scarcity-of-data" title="Link to this heading">#</a></h3>
-<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. From what we’ve see before, the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is
+<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. From what we’ve see before, the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[
 \theta_{\text{MLE}} = \frac{3}{3} = 1.
 \]</div>
-
-Is this a good estimate of the bias of the coin? What can we do to make this estimate better?</p>
-<p>Suppose that we have two YouTube videos with 4/5 likes and 3,500/5,000 likes respectively. We can model the probability that a viewer will like each video as two Bernoulli distribtutions, <span class="math notranslate nohighlight">\(Ber(\theta_1)\)</span>, <span class="math notranslate nohighlight">\(Ber(\theta_2)\)</span>, where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the “inherent” likeability of each video.</p>
+<p>Is this a good estimate of the bias of the coin? What can we do to make this estimate better?</p>
+<p>Suppose that we have two YouTube videos with 4/5 likes and 3,500/5,000 likes respectively. We can model the probability that a viewer will like each video as two Bernoulli distributions, <span class="math notranslate nohighlight">\(Ber(\theta_1)\)</span>, <span class="math notranslate nohighlight">\(Ber(\theta_2)\)</span>, where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the “inherent” likeability of each video.</p>
 <p>Again, we can compute the MLE of the Bernoulli parameters:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -719,31 +720,28 @@ Y_n \sim \mathcal{N}(\mu, \sigma^2)
 <h2><span class="section-number">3.3. </span>The Beta-Binomial Model<a class="headerlink" href="#the-beta-binomial-model" title="Link to this heading">#</a></h2>
 <section id="the-coin-toss-model-revisited">
 <h3>The Coin Toss Model: Revisited<a class="headerlink" href="#the-coin-toss-model-revisited" title="Link to this heading">#</a></h3>
-<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. The MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is
+<p>Suppose that we have three observations from a Bernoulli distribution, <span class="math notranslate nohighlight">\(Ber(\theta)\)</span>: <span class="math notranslate nohighlight">\(\{ H, H, H\}\)</span>. The MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[
 \theta_{\text{MLE}} = \frac{3}{3} = 1.
 \]</div>
-
-This is a clear case of the MLE overfitting to the observed data.</p>
-<p>Last time, you’d suggested tying the estimate to some fixed reasonable number, for example,
+<p>This is a clear case of the MLE overfitting to the observed data.</p>
+<p>Last time, you’d suggested tying the estimate to some fixed reasonable number, for example,</p>
 <div class="math notranslate nohighlight">
 \[
 \theta_{\text{MLE Reg}} = \frac{H + 1}{N + 2},
 \]</div>
-
-and in general,
+<p>and in general,</p>
 <div class="math notranslate nohighlight">
 \[
 \theta_{\text{MLE Reg}} = \frac{H + \alpha}{N + \beta}.
 \]</div>
-
-The terms <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are called <em><strong>regularization terms</strong></em> .</p>
+<p>The terms <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are called <em><strong>regularization terms</strong></em> .</p>
 <p><strong>Question:</strong> What is the effect of <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> on our estimate? What values should we choose for <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span>?</p>
 </section>
-<section id="incoporating-prior-beliefs">
-<h3>Incoporating Prior Beliefs<a class="headerlink" href="#incoporating-prior-beliefs" title="Link to this heading">#</a></h3>
-<p>Our choise of the regularization terms, <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span>, depends on our prior beliefs about the coin. The way we chose to incorporate these beliefs doesn’t indicate any uncertainty.</p>
+<section id="incorporating-prior-beliefs">
+<h3>Incorporating Prior Beliefs<a class="headerlink" href="#incorporating-prior-beliefs" title="Link to this heading">#</a></h3>
+<p>Our choice of the regularization terms, <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span>, depends on our prior beliefs about the coin. The way we chose to incorporate these beliefs doesn’t indicate any uncertainty.</p>
 <p>Alternatively, we can incorporate our prior belief about <span class="math notranslate nohighlight">\(\theta\)</span> as a distribution, this is called the <em><strong>prior distribution</strong></em>. Since <span class="math notranslate nohighlight">\(\theta\)</span> is a number between 0 and 1, a beta distribution is an appropriate choice.</p>
 <figure class="align-center" id="fig-03-beta">
 <a class="reference internal image-reference" href="../_images/beta.jpg"><img alt="../_images/beta.jpg" src="../_images/beta.jpg" style="width: 438px;" />
@@ -769,13 +767,12 @@ p(\theta | Y) = \frac{\overbrace{p(Y| \theta)}^{\text{likelihood}} \overbrace{p(
 </section>
 <section id="posterior-for-the-beta-binomial-model">
 <h3>Posterior for the Beta-Binomial Model<a class="headerlink" href="#posterior-for-the-beta-binomial-model" title="Link to this heading">#</a></h3>
-<p>In our case, the posterior is given by
+<p>In our case, the posterior is given by</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 p(\theta | Y) = \frac{p(Y| \theta)p(\theta)}{p(Y)} = \frac{\overbrace{{N \choose Y}\theta^{Y}(1- \theta)^{N-Y}}^{\text{binomial pdf}} \overbrace{\frac{1}{B(\alpha, \beta)} \theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}^{\text{beta pdf}}}{p(Y)}
 \end{aligned}\]</div>
-
-We can rewrite the posterior as</p>
+<p>We can rewrite the posterior as</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 p(\theta | Y) = const * \theta^{(Y+\alpha) - 1}(1 - \theta)^{(N-Y + \beta) - 1}
@@ -925,29 +922,29 @@ p(\theta | Y) = const * \theta^{(Y+\alpha) - 1}(1 - \theta)^{(N-Y + \beta) - 1}
 <section id="the-bayesian-modeling-process">
 <h3>The Bayesian Modeling Process<a class="headerlink" href="#the-bayesian-modeling-process" title="Link to this heading">#</a></h3>
 <p>In order to make statements about <span class="math notranslate nohighlight">\(Y\)</span>, the outcome, and <span class="math notranslate nohighlight">\(\theta\)</span>, parameters of the distribution generating the data, we form the joint distribution over both variables and use the various marginals/conditional distributions to reason about <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>we form the <em><strong>joint distribution</strong></em> over both variables <span class="math notranslate nohighlight">\(p(Y, \theta) = p(Y | \theta) p(\theta)\)</span>.</p></li>
-<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,
+<li><p>we can condition on the observed outcome to make inferences about <span class="math notranslate nohighlight">\(\theta\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[
-p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
-\]</div>
-
-where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p></li>
-<li><p>before any data is observed, we can simulate data by using our prior
+   p(\theta | Y) = \frac{p(Y, \theta)}{p(Y)}
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> is called the <em><strong>posterior distribution</strong></em> and <span class="math notranslate nohighlight">\(p(Y)\)</span> is called the <em><strong>evidence</strong></em>.</p>
+</li>
+<li><p>before any data is observed, we can simulate data by using our prior</p>
 <div class="math notranslate nohighlight">
 \[
-p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
-\]</div>
-
-where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p></li>
-<li><p>after observing data, we can simulate new data simliar to the observed data by using our posterior
+   p(Y^*) = \int_\Theta p(Y^*, \theta) d\theta = \int_\Theta p(Y^* | \theta) p(\theta) d\theta
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*)\)</span> is called the <em><strong>prior predictive</strong></em>.</p>
+</li>
+<li><p>after observing data, we can simulate new data similar to the observed data by using our posterior</p>
 <div class="math notranslate nohighlight">
 \[
-p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
-\]</div>
-
-where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p></li>
+   p(Y^*|Y) = \int_\Theta p(Y^*, \theta|Y) d\theta = \int_\Theta p(Y^* | \theta) p(\theta | Y) d\theta
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new data and <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span> is called the <em><strong>posterior predictive</strong></em>.</p>
+</li>
 </ol>
 </section>
 <section id="evaluating-bayesian-models">
@@ -958,7 +955,7 @@ where <span class="math notranslate nohighlight">\(Y^*\)</span> represents new d
 <li><p>we sample values of <span class="math notranslate nohighlight">\(\theta_n\)</span> from the posterior, <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>.</p></li>
 <li><p>we sample an outcome <span class="math notranslate nohighlight">\(Y_n\)</span> from <span class="math notranslate nohighlight">\(p(Y|\theta_n)\)</span> for each posterior sample <span class="math notranslate nohighlight">\(\theta_n\)</span>.</p></li>
 </ol>
-<p>The set <span class="math notranslate nohighlight">\(Y_n\)</span> we obtain emprirically represents the posterior predictve distribution <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span>.</p>
+<p>The set <span class="math notranslate nohighlight">\(Y_n\)</span> we obtain empirically represents the posterior predictive distribution <span class="math notranslate nohighlight">\(p(Y^*|Y)\)</span>.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Aside</p>
 <p>How do we evaluate the quality of our Bayesian model: how appropriate was our choice of prior? How appropriate was our choice of noise structure for the data (i.e. how appropriate is our choice of likelihood)?</p>
@@ -1018,7 +1015,7 @@ In the Beta-Binomial model, is there a choice of the hyperparameters of the prio
 </div>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Aside</p>
-<p>There is a general purpose technique for creating non-informative priors, called <em><strong>Jeffreys priors</strong></em>, which places less prior weight on parameter values where the likelihood function is flat. This prevents the prior from having undue influency on the posterior.</p>
+<p>There is a general purpose technique for creating non-informative priors, called <em><strong>Jeffreys priors</strong></em>, which places less prior weight on parameter values where the likelihood function is flat. This prevents the prior from having undue influence on the posterior.</p>
 <p>There are many resources that cover the construction of Jeffreys priors for common likelihoods.</p>
 </div>
 </section>
@@ -1026,19 +1023,17 @@ In the Beta-Binomial model, is there a choice of the hyperparameters of the prio
 <section id="summary">
 <h2><span class="section-number">3.5. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>How do we evaluate the fit of our MLE model?</p></li>
-</ol>
+<li><p>How do we evaluate the fit of our MLE model?</p>
 <ul class="simple">
 <li><p>With regression it’s easy, you plug <span class="math notranslate nohighlight">\(x_n\)</span> into <span class="math notranslate nohighlight">\(f_{\theta_\text{MLE}}(x)\)</span> and then compare the prediction <span class="math notranslate nohighlight">\(\widehat{y}_n\)</span> with <span class="math notranslate nohighlight">\(y\)</span>. But what if we don’t have any inputs, <span class="math notranslate nohighlight">\(x_n\)</span>, what if we just have <span class="math notranslate nohighlight">\(y_n\)</span>? In this case we would not be able to predict a <span class="math notranslate nohighlight">\(\widehat{y}_n\)</span> for a specific <span class="math notranslate nohighlight">\(y_n\)</span>.<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>What are the potential drawbacks of MLE (in particular, under data scarcity)?</p></li>
-</ol>
+</li>
+<li><p>What are the potential drawbacks of MLE (in particular, under data scarcity)?</p>
 <ul class="simple">
 <li><p>What are some common fixes for the drawbacks of MLE?</p></li>
 <li><p>What are some potential issues with these fixes?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="3">
+</li>
 <li><p>What is the point of adding priors to our models? Specifically how does adding priors to our model mitigate some of the drawbacks of MLE?<br><br></p></li>
 <li><p>How should we interpret the posterior of a Bayesian model and why?<br><br></p></li>
 <li><p>What is a posterior predictive? What is the relationship between the posterior predictive and the posterior? What is the point of deriving the posterior predictive (i.e. once we derive the posterior isn’t that enough)?<br><br></p></li>
@@ -1048,7 +1043,7 @@ In the Beta-Binomial model, is there a choice of the hyperparameters of the prio
 </section>
 <section id="exercises">
 <h2><span class="section-number">3.6. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-review-of-statistical-modeling-and-scientific-computing">
 <span id="ps-hw1"></span><h3>Problem Set: Review of Statistical Modeling and Scientific Computing<a class="headerlink" href="#problem-set-review-of-statistical-modeling-and-scientific-computing" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -1074,66 +1069,341 @@ In the Beta-Binomial model, is there a choice of the hyperparameters of the prio
 <h4>Problem Description<a class="headerlink" href="#problem-description" title="Link to this heading">#</a></h4>
 <p>In the competitive rubber chicken retail market, the success of a company is built on satisfying the exacting standards of a consumer base with refined and discriminating taste. In particular, customer product reviews are all important. But how should we judge the quality of a product based on customer reviews?</p>
 <p>On Amazon, the first customer review statistic displayed for a product is the <em><strong>average rating</strong></em>. The following are the main product pages for two competing rubber chicken products, manufactured by Lotus World and Toysmith respectively:</p>
-<p>Lotus World |  Toysmith</p>
-<ul class="simple">
-<li><p>|  -
-<img src="../_static/figs/lotus1.png" alt="alt" style="max-width:100%"> |  <img src="../_static/figs/toysmith1.png" alt="alt" style="max-width:100%"></p></li>
-</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Lotus World</p></th>
+<th class="head"><p>Toysmith</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img src="../_static/figs/lotus1.png" alt="alt" style="max-width:100%"></p></td>
+<td><p><img src="../_static/figs/toysmith1.png" alt="alt" style="max-width:100%"></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Clicking on the ‘customer review’ link on the product pages takes us to a detailed break-down of the reviews. In particular, we can now see the number of times a product is rated a given rating (between 1 and 5 stars).</p>
-<p>Lotus World |  Toysmith</p>
-<ul class="simple">
-<li><p>|  -
-<img src="../_static/figs/lotus2.png" alt="alt" style="max-width:100%"> |  <img src="../_static/figs/toysmith2.png" alt="alt" style="max-width:100%"></p></li>
-</ul>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Lotus World</p></th>
+<th class="head"><p>Toysmith</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img src="../_static/figs/lotus2.png" alt="alt" style="max-width:100%"></p></td>
+<td><p><img src="../_static/figs/toysmith2.png" alt="alt" style="max-width:100%"></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>In the following, we will ask you to build statistical models to compare these two products using the observed rating. Larger versions of the images are available in the data set accompanying this notebook.</p>
 <div class="admonition-exercise-part-i-a-maximum-likelihood-model admonition">
 <p class="admonition-title">Exercise: Part I: A Maximum Likelihood Model</p>
-<ol class="arabic simple">
-<li><p><strong>(Model Building)</strong> Suppose that for each product, we can model the probability of the value each new rating as the following vector:
+<ol class="arabic">
+<li><p><strong>(Model Building)</strong> Suppose that for each product, we can model the probability of the value each new rating as the following vector:</p>
 <div class="math notranslate nohighlight">
 \[
-\theta = [\theta_1, \theta_2, \theta_3, \theta_4, \theta_5]
-\]</div>
-
-where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the probability that a given customer will give the product <span class="math notranslate nohighlight">\(i\)</span> number of stars. That is, each new rating (a value between 1 and 5) has a categorical distribution <span class="math notranslate nohighlight">\(Cat(\theta)\)</span>. Represent the observed ratings of an Amazon product as a vector <span class="math notranslate nohighlight">\(R = [r_1, r_2, r_3, r_4, r_5]\)</span> where, for example, <span class="math notranslate nohighlight">\(r_4\)</span> is the number of <span class="math notranslate nohighlight">\(4\)</span>-star reviews out of a total of <span class="math notranslate nohighlight">\(N\)</span> ratings. Write down the likelihood of <span class="math notranslate nohighlight">\(R\)</span>. That is, what is <span class="math notranslate nohighlight">\(p(R| \theta)\)</span>?</p></li>
-</ol>
+   \theta = [\theta_1, \theta_2, \theta_3, \theta_4, \theta_5]
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_i\)</span> is the probability that a given customer will give the product <span class="math notranslate nohighlight">\(i\)</span> number of stars. That is, each new rating (a value between 1 and 5) has a categorical distribution <span class="math notranslate nohighlight">\(Cat(\theta)\)</span>. Represent the observed ratings of an Amazon product as a vector <span class="math notranslate nohighlight">\(R = [r_1, r_2, r_3, r_4, r_5]\)</span> where, for example, <span class="math notranslate nohighlight">\(r_4\)</span> is the number of <span class="math notranslate nohighlight">\(4\)</span>-star reviews out of a total of <span class="math notranslate nohighlight">\(N\)</span> ratings. Write down the likelihood of <span class="math notranslate nohighlight">\(R\)</span>. That is, what is <span class="math notranslate nohighlight">\(p(R| \theta)\)</span>?</p>
 <p><strong>Note:</strong> The observed ratings for each product should be read off the image files included in the dataset.</p>
-</div>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Model Fitting)</strong> Find the maximum likelihood estimator of <span class="math notranslate nohighlight">\(\theta\)</span> for the Lotus World model; find the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> for the Toysmith model. You need to make a reasonably mathematical argument for why your estimate actually maximizes the likelihood (i.e. recall the criteria for a point to be a global optima of a function).</p></li>
+</li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<p>If each rating is distributed as a Categorical, then if we have <span class="math notranslate nohighlight">\(N\)</span> number of independent observations of ratings and count up the total number <span class="math notranslate nohighlight">\(r_i\)</span> for each star, then <span class="math notranslate nohighlight">\(R = [r_1, r_2, r_3, r_4, r_5]\)</span> is distributed as a multinomial variable. That is, the likelihood for <span class="math notranslate nohighlight">\(R\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\theta) = \underbrace{\frac{n!}{r_1!\ldots r_5!} \theta_1^{r_1}\ldots \theta_5^{r_5}}_{\text{multinomial pdf}}
+\]</div>
+<p>For Lotus, we estimate that the observed ratings vector is <span class="math notranslate nohighlight">\([10\;\; 6\;\; 10\;\; 28\;\; 109]\)</span> (depending on how you round, you might get a slightly different vector). Thus, the likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}_{\text{lotus}}(\theta) = \frac{n!}{10!6!10!28!109!} \theta_1^{10}\theta_2^{6}\theta_3^{10}\theta_4^{28}\theta_5^{109}.
+\]</div>
+<p>For Toysmith, we estimate that the observed ratings vector is <span class="math notranslate nohighlight">\([57\;\; 33\;\; 29\;\; 45\;\; 246]\)</span>. Thus, the likelihood is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}_{\text{toysmith}}(\theta) = \frac{n!}{57!33!29!45!246!} \theta_1^{57}\theta_2^{33}\theta_3^{29}\theta_4^{45}\theta_5^{246}.
+\]</div>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Model Fitting)</strong> Find the maximum likelihood estimator of <span class="math notranslate nohighlight">\(\theta\)</span> for the Lotus World model; find the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> for the Toysmith model. You need to make a reasonably mathematical argument for why your estimate actually maximizes the likelihood (i.e. recall the criteria for a point to be a global optima of a function).</p>
 <p><em>Note:</em> I recommend deriving the MLE using the general expression of the likelihood. That is, derive the posterior using the variable <span class="math notranslate nohighlight">\(R\)</span>, then afterwards plug in your specific values of <span class="math notranslate nohighlight">\(R\)</span> for each product.</p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<p>Recall that the MLE is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \mathrm{argmax}_{\theta}\; \mathcal{L}(\theta).
+\]</div>
+<p>Equivalently, the MLE can also be defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \mathrm{argmax}_{\theta}\; \log\mathcal{L}(\theta).
+\]</div>
+<p>We will choose to work with the second definition since it involves a simpler objective function:</p>
+<div class="math notranslate nohighlight">
+\[
+\log\mathcal{L}(\theta) = \log[const] + \sum_{i=1}^5r_i\log\theta_i.
+\]</div>
+<p>We need to remember that while we want to maximize the log-likelihood over <span class="math notranslate nohighlight">\(\theta\)</span>, we also need to ensure that <span class="math notranslate nohighlight">\(\theta\)</span> defines a proper probability distribution over 5 categories, that is, <span class="math notranslate nohighlight">\(\sum_{i=1}^5 \theta_i = 1\)</span>. Thus, we must solve a <em><strong>constrained optimization problem</strong></em>:</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\theta}\; \log\mathcal{L}(\theta),\; \text{subject to }\sum_{i=1}^5 \theta_i = 1.
+\]</div>
+<p>From <a class="reference internal" href="02-maximum-likelihood.html"><span class="doc">Chapter 2</span></a>, we know that the solution to the above problem must be a stationary point of the gradient of its corresponding Lagrangian:</p>
+<div class="math notranslate nohighlight">
+\[
+J(\theta, \lambda) = \log\mathcal{L}(\theta) - \lambda \left(\sum_{i=1}^5 \theta_i - 1\right).
+\]</div>
+<p>Recall that the gradient of the Lagrangian is a vector of its partial derivatives:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla J = \left[\frac{\partial J}{\partial \theta_1} \ldots \frac{\partial J}{\partial \theta_5} \frac{\partial J}{\partial \lambda}\right]
+\]</div>
+<p>Setting <span class="math notranslate nohighlight">\(\nabla J\)</span> to zero and solving for <span class="math notranslate nohighlight">\(\theta, \lambda\)</span> yield the stationary points:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\begin{cases}
+\frac{\partial J}{\partial \theta_i} = \frac{r_i}{\theta_i} - \lambda = 0&amp;\\
+\frac{\partial J}{\partial \lambda} = \sum_{i=1}^5 \theta_i - 1 = 0
+\end{cases}
+\end{aligned}\end{split}\]</div>
+<p>From the above, we see that the partial derivatives with respect to <span class="math notranslate nohighlight">\(\theta_i\)</span> have a unique root at:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_i = \frac{r_i}{\lambda},
+\]</div>
+<p>substituting these solution into the equation <span class="math notranslate nohighlight">\(\sum_{i=1}^5 \theta_i - 1 = 0\)</span> and solving for <span class="math notranslate nohighlight">\(\lambda\)</span> yields</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{i=1}^5 r_i = \lambda.
+\]</div>
+<p>Thus, the gradient of the Lagrangian has a unique stationary point at <span class="math notranslate nohighlight">\(\theta = [\theta_1 \ldots \theta_5]\)</span>, where</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_i = \frac{r_i}{\sum_{i=1}^5 r_i}.
+\]</div>
+<p>Since the log-likelihood is concave and the constraint is affine, at the unique stationary point we have the solution to the constrained optimization problem</p>
+<div class="math notranslate nohighlight">
+\[
+\max_{\theta}\; \log\mathcal{L}(\theta),\; \text{subject to }\sum_{i=1}^5 \theta_i = 1.
+\]</div>
+<p>Therefore, the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> is given by</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \left[\frac{r_1}{\sum_{i=1}^5 r_i} \ldots \frac{r_5}{\sum_{i=1}^5 r_i}\right].
+\]</div>
+<p>Now we can use the observed ratings vector <span class="math notranslate nohighlight">\(R\)</span> to compute the MLE of <span class="math notranslate nohighlight">\(\theta\)</span> for each product.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{\text{lotus}}_{\text{MLE}} &amp;= \left[\frac{10}{163}\; \frac{6}{163}\; \frac{10}{163}\; \frac{28}{163}\; \frac{109}{163}\right] = [.06\; .04\; .06\; .17\; .67]\\
+\theta^{\text{toysmith}}_{\text{MLE}} &amp;= \left[\frac{57}{410}\; \frac{33}{410}\; \frac{29}{410}\; \frac{45}{410}\; \frac{246}{410}\right] = [.14\; .08\; .07\; .11\; .6]\\
+\end{aligned}\end{split}\]</div>
+<p>Notice that these estimates of <span class="math notranslate nohighlight">\(\theta\)</span> are precisely the percentages reported by Amazon to summarize the customer ratings! So this gives a reason for why reporting these percentage summaries are reasonable.</p>
+</div>
 <ol class="arabic simple" start="3">
 <li><p><strong>(Model Interpretation)</strong> Based on your MLE of <span class="math notranslate nohighlight">\(\theta\)</span>’s for both models, do you feel confident deciding if one product is superior to another? Why or why not?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>It is tempting to say that Lotus makes a better product since it receives, comparatively, a larger percentage of 4 and 5 star reviews; Lotus also receives, comparatively, a smaller percentage of 1 star reviews. But Lotus also has less than half the total number of reviews of Toysmith. It would be equally reasonable to argue that the lack of 1 star reviews, or some of the 4 or 5 star reviews for Lotus are “outliers”.</p>
+</div>
 <div class="admonition-exercise-part-ii-a-bayesian-model admonition">
 <p class="admonition-title">Exercise: Part II: A Bayesian Model</p>
-<ol class="arabic simple">
-<li><p><strong>(Model Building)</strong> Suppose you are told that customer opinions are very polarized in the retail world of rubber chickens, that is, most reviews will be 5 stars or 1 stars (with little middle ground). What would be an appropriate <span class="math notranslate nohighlight">\(\alpha\)</span> for the Dirichlet prior on <span class="math notranslate nohighlight">\(\theta\)</span>? Recall that the Dirichlet pdf is given by:
+<ol class="arabic">
+<li><p><strong>(Model Building)</strong> Suppose you are told that customer opinions are very polarized in the retail world of rubber chickens, that is, most reviews will be 5 stars or 1 stars (with little middle ground). What would be an appropriate <span class="math notranslate nohighlight">\(\alpha\)</span> for the Dirichlet prior on <span class="math notranslate nohighlight">\(\theta\)</span>? Recall that the Dirichlet pdf is given by:</p>
 <div class="math notranslate nohighlight">
 \[
-p_{\Theta}(\theta) = \frac{1}{B(\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1}, \quad B(\alpha) = \frac{\prod_{i=1}^k\Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^k\alpha_i\right)},
-\]</div>
-
-where <span class="math notranslate nohighlight">\(\theta_i \in (0, 1)\)</span> and <span class="math notranslate nohighlight">\(\sum_{i=1}^k \theta_i = 1\)</span>, <span class="math notranslate nohighlight">\(\alpha_i &gt; 0 \)</span> for <span class="math notranslate nohighlight">\(i = 1, \ldots, k\)</span>.</p></li>
+   p_{\Theta}(\theta) = \frac{1}{B(\alpha)} \prod_{i=1}^k \theta_i^{\alpha_i - 1}, \quad B(\alpha) = \frac{\prod_{i=1}^k\Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^k\alpha_i\right)},
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_i \in (0, 1)\)</span> and <span class="math notranslate nohighlight">\(\sum_{i=1}^k \theta_i = 1\)</span>, <span class="math notranslate nohighlight">\(\alpha_i &gt; 0 \)</span> for <span class="math notranslate nohighlight">\(i = 1, \ldots, k\)</span>.</p>
+</li>
 </ol>
 </div>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Inference)</strong> Analytically derive the posterior distribution (using the likelihoods you derived in Part I) for each product.</p></li>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 1</p>
+<p>Recall that the <em><strong>hyperparameters</strong></em> of the Dirichlet prior control the concentration of probability mass toward the five number 1, 2, 3, 4, 5. That is, if the prior is <span class="math notranslate nohighlight">\(\alpha = [1\; 1\; 1\; 1\; 1]\)</span> then the probability mass is equally distributed on points where <span class="math notranslate nohighlight">\(\sum_{i=1}^5 \theta_i = 1\)</span> with out biasing it towards any number, that is, <span class="math notranslate nohighlight">\(\theta\)</span>’s sampled from this Dirichlet will likely have equal values for <span class="math notranslate nohighlight">\(\theta_i\)</span>. If the prior is <span class="math notranslate nohighlight">\(\alpha = [100\; 1\; 1\; 1\; 1]\)</span>, then the probability mass will be skewed towards having higher values of <span class="math notranslate nohighlight">\(\theta_1\)</span>.</p>
+<p>A plausible prior that reflects a very polarized customer base might be <span class="math notranslate nohighlight">\(\alpha = [100\; 1\; 1\; 1\; 100]\)</span>.</p>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Inference)</strong> Analytically derive the posterior distribution (using the likelihoods you derived in Part I) for each product.</p>
+<p><em>Note:</em> I recommend deriving the posterior using the general expression of a Dirichlet pdf. That is, derive the posterior using the variable <span class="math notranslate nohighlight">\(\alpha\)</span>, then afterwards plug in your specific values of <span class="math notranslate nohighlight">\(\alpha\)</span> when you need to.</p>
+</li>
 </ol>
-<p><em>Note:</em> I recommend deriving the posterior using the general expression of a Dirichelet pdf. That is, derive the posterior using the variable <span class="math notranslate nohighlight">\(\alpha\)</span>, then afterwards plug in your specific values of <span class="math notranslate nohighlight">\(\alpha\)</span> when you need to.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 2</p>
+<p>The posterior <span class="math notranslate nohighlight">\(p(\theta|R)\)</span> is given by</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta|R) = \frac{p(R | \theta) p(\theta)}{p(R)} = \frac{\frac{n!}{\prod_{i=1}^5 r_i!} \prod_{i=1}^5\theta_i^{r_i}* \frac{1}{B(\alpha)} \prod_{i=1}^5 \theta_i^{\alpha_i - 1}}{p(R)}
+\]</div>
+<p>We can simplify the posterior as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(\theta|R) &amp;= \frac{const* \prod_{i=1}^5\theta_i^{r_i} \prod_{i=1}^5 \theta_i^{\alpha_i - 1}}{p(R)}\\
+&amp;= \frac{const* \prod_{i=1}^5\theta_i^{r_i} \theta_i^{\alpha_i - 1}}{p(R)}\\
+&amp;= \frac{const* \prod_{i=1}^5\theta_i^{\alpha_i + r_i - 1}}{p(R)}\\
+&amp;= const * \prod_{i=1}^5\theta_i^{\alpha_i + r_i - 1}
+\end{aligned}\end{split}\]</div>
+<p>The posterior looks like another Dirichlet distribution <span class="math notranslate nohighlight">\(Dir(\alpha)\)</span> with <span class="math notranslate nohighlight">\(\alpha = [\alpha_1 + r_1\;\; \alpha_2 + r_2\;\; \alpha_3 + r_3\;\; \alpha_4 + r_4\;\; \alpha_5 + r_5]\)</span>!</p>
+<p>So, the posterior for Lotus is a Dirichlet with</p>
+<div class="math notranslate nohighlight">
+\[
+\alpha = [100 + 10\;\; 1 + 6 \;\; 1 + 10\;\; 1 + 28\;\; 100 + 109] = [110\;\; 7\;\; 11\;\; 29\;\; 209];
+\]</div>
+<p>the posterior for Toysmith is a Dirichlet with</p>
+<div class="math notranslate nohighlight">
+\[
+\alpha = [100 + 57\;\; 1 + 33\;\; 1 + 29\;\; 1 + 45\;\; 100 + 246] = [157\;\; 34\;\; 30\;\; 46\;\; 346].
+\]</div>
+</div>
 <ol class="arabic simple" start="3">
-<li><p><strong>(The Maximum A Posterior Estimate)</strong> Analytically or empirically compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. How do these estimates compare with the MLE? Just for this problem, compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product using a Dirichelet prior with hyperparameters <span class="math notranslate nohighlight">\(\alpha = [1, 1, 1, 1, 1]\)</span>. Make a conjecture about the effect of the prior on the difference between the MAP estimates and the MLE’s of <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><strong>(The Maximum A Posterior Estimate)</strong> Analytically or empirically compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Question 1. How do these estimates compare with the MLE? Just for this problem, compute the MAP estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product using a Dirichlet prior with hyperparameters <span class="math notranslate nohighlight">\(\alpha = [1, 1, 1, 1, 1]\)</span>. Make a conjecture about the effect of the prior on the difference between the MAP estimates and the MLE’s of <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 3</p>
+<p>The MAP estimate is the mode of the posterior. Since the posteriors are Dirichlet, the modes are given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_i = \frac{\alpha_i - 1}{\sum_{i=1}^5 \alpha_i - 5}, \text{ if $\alpha_i &gt; 1$}
+\]</div>
+<p>Thus, we can compute</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{\text{lotus}}_{\text{MAP}} &amp;= [0.3\;\;0.017\;\;0.028\;\;0.078\;\;0.58]\\
+\theta^{\text{toysmith}}_{\text{MAP}} &amp;= [0.26\;\;0.054\;\;0.048\;\;0.074\;\;0.57]
+\end{aligned}\end{split}\]</div>
+<p>Recall that the MLE of the <span class="math notranslate nohighlight">\(\theta\)</span>’s are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{\text{lotus}}_{\text{MLE}} &amp;= [0.06\; 0.04\; 0.06\; 0.17\; 0.67]\\
+\theta^{\text{toysmith}}_{\text{MLE}} &amp;= [0.14\; 0.08\; 0.07\; 0.11\; 0.6]\\
+\end{aligned}\end{split}\]</div>
+<p>We see that <span class="math notranslate nohighlight">\(\theta^{\text{lotus}}_{\text{MAP}}\)</span> lowered the probability for 5-star ratings and increased the probability of 1-star ratings, <strong>by a large margin</strong>. While <span class="math notranslate nohighlight">\(\theta^{\text{toysmith}}_{\text{MAP}}\)</span> lowered the probability for 5-star ratings and increased the probability of 1-star ratings by a smaller amount. For both products, the MAP estimate lowered the probability of non-extreme ratings (2-4 stars). This trend makes sense since our prior assumes that customers tend to give extreme ratings. Under the MAP estimates of <span class="math notranslate nohighlight">\(\theta\)</span>, we see that Lotus has less of an obvious advantage – the probability of 5-star ratings for both products are now similar.</p>
+<p>Rather than analytically computing the posterior mode, we can find it empirically. That is, we can sample from the posterior and compute the most likely value for these samples. Typically this is done by binning the samples along the domain space and selecting the bin with the largest number of samples. There are a number of <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy</span></code> functions that will perform the binning. The accuracy of your estimate of the mode depends on the granularity of the bins (for example, if you’re building a 1-D histogram with two bins your mode estimate will be way off, where as a histogram with 100 bins might perform better). In this case, for simplicity, we estimate the posterior mode by sampling from the posterior and histogramming each component <span class="math notranslate nohighlight">\(\theta_i\)</span> of the samples. In general, the mode of a joint distribution cannot be estimated by taking the mode of the individual marginals. However, since the Dirichlet distribution is unimodal when <span class="math notranslate nohighlight">\(\alpha_i&gt; 1\)</span>, this estimation, while crude, is not unreasonable.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="c1">#sample from the lotus posterior</span>
+<span class="n">lotus_posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">dirichlet</span><span class="p">([</span><span class="mi">110</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">209</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+<span class="c1">#sample from the toysmith posterior</span>
+<span class="n">toysmith_posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">dirichlet</span><span class="p">([</span><span class="mi">157</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">346</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+
+<span class="c1">#visualize these posterior samples</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">lotus_posterior_samples</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Lotus: histogram of posterior samples of theta_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">toysmith_posterior_samples</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Toysmith: histogram of posterior samples of theta_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-3-1.png"><img alt="Part II, Question 3, figure 1" class="align-center" src="../_images/part-ii-question-3-1.png" style="width: 100%;" />
+</a>
+<p>We see that the mode of the posterior samples closely resemble the MAP estimates we derived analytically for each product.</p>
+<p><em>Not covered here: the MAP estimates under the uniform prior <span class="math notranslate nohighlight">\(\alpha = [1, 1, 1, 1, 1]\)</span>, and the conjecture about the effect of the prior.</em></p>
+</div>
 <ol class="arabic simple" start="4">
-<li><p><strong>(The Posterior Mean Estimate)</strong> Analytically or empirically compute the posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. How do these estimates compare with the MAP estimates and the MLE?</p></li>
+<li><p><strong>(The Posterior Mean Estimate)</strong> Analytically or empirically compute the posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span> for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Question 1. How do these estimates compare with the MAP estimates and the MLE?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 4</p>
+<p>The means of our Dirichlet distribution is given by</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\alpha_i}{\sum_{i=1}^5 \alpha_i}.
+\]</div>
+<p>Thus, we can compute</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\theta^{\text{lotus}}_{\text{Post Mean}} &amp;= [0.3, 0.019, 0.03, 0.079, 0.57]\\
+\theta^{\text{toysmith}}_{\text{Post Mean}} &amp;= [0.26, 0.055, 0.049, 0.075, 0.56]
+\end{aligned}\end{split}\]</div>
+<p>These estimates are very similar to the MAP estimates and are quite different from the MLE.</p>
+<p>Again, we can empirically estimate the posterior mean. That is, we sample from the posterior and compute the mean of those samples.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lotus_posterior_mean</span> <span class="o">=</span> <span class="n">lotus_posterior_samples</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">toysmith_posterior_mean</span> <span class="o">=</span> <span class="n">toysmith_posterior_samples</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'lotus'</span><span class="p">,</span> <span class="n">lotus_posterior_mean</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'toysmith'</span><span class="p">,</span> <span class="n">toysmith_posterior_mean</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lotus [0.30082613 0.01903371 0.02991358 0.07938425 0.57084233]
+toysmith [0.2562429  0.05545415 0.04880784 0.07501581 0.5644793 ]
+</pre></div>
+</div>
+<p>Again, we see that the empirical estimates of the posterior means are similar to the values we derived analytically.</p>
+</div>
 <ol class="arabic simple" start="5">
-<li><p><strong>(The Posterior Predictive Estimate)</strong> Sample 1000 rating vectors from the posterior predictive for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Problem 1. Use the average of the posterior predictive samples to estimate <span class="math notranslate nohighlight">\(\theta\)</span>. How do these estimates compare with the MAP, MLE, posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span>?</p></li>
+<li><p><strong>(The Posterior Predictive Estimate)</strong> Sample 1000 rating vectors from the posterior predictive for each product, using the <span class="math notranslate nohighlight">\(\alpha\)</span>’s you chose in Question 1. Use the average of the posterior predictive samples to estimate <span class="math notranslate nohighlight">\(\theta\)</span>. How do these estimates compare with the MAP, MLE, posterior mean estimate of <span class="math notranslate nohighlight">\(\theta\)</span>?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 5</p>
+<p>To sample from the posterior predictive, we sample <span class="math notranslate nohighlight">\(N\)</span> samples of <span class="math notranslate nohighlight">\(\theta\)</span> from the posterior. Each sample of <span class="math notranslate nohighlight">\(\theta\)</span> parametrizes a distinct multinomial model. We sample an outcome <span class="math notranslate nohighlight">\(Y\)</span> from each of these models. Taking the average value of these samples, we can estimate the percentage of 1-star reviews, 2-star reviews etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lotus_posterior_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="mi">163</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">lotus_posterior_samples</span><span class="p">])</span>
+<span class="n">toysmith_posterior_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="mi">410</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">toysmith_posterior_samples</span><span class="p">])</span>
+
+<span class="n">lotus_posterior_pred_mean</span> <span class="o">=</span> <span class="n">lotus_posterior_pred</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">toysmith_posterior_pred_mean</span> <span class="o">=</span> <span class="n">toysmith_posterior_pred</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'lotus'</span><span class="p">,</span> <span class="n">lotus_posterior_pred_mean</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'toysmith'</span><span class="p">,</span> <span class="n">toysmith_posterior_pred_mean</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lotus [49.006   3.137   4.8936 12.8978 93.0656]
+toysmith [104.917   22.8216  20.1068  30.6664 231.4882]
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lotus_posterior_pred_mean_percent</span> <span class="o">=</span> <span class="n">lotus_posterior_pred_mean</span> <span class="o">/</span> <span class="n">lotus_posterior_pred_mean</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">toysmith_posterior_pred_mean_percent</span> <span class="o">=</span> <span class="n">toysmith_posterior_pred_mean</span> <span class="o">/</span> <span class="n">toysmith_posterior_pred_mean</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'lotus'</span><span class="p">,</span> <span class="n">lotus_posterior_pred_mean_percent</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'toysmith'</span><span class="p">,</span> <span class="n">toysmith_posterior_pred_mean_percent</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lotus [0.30065031 0.0192454  0.03002209 0.07912761 0.5709546 ]
+toysmith [0.25589512 0.05566244 0.04904098 0.0747961  0.56460537]
+</pre></div>
+</div>
+<p>It looks like that the percentages of star ratings estimated from the posterior predictive are very similar to the MAP and posterior mean estimates of the <span class="math notranslate nohighlight">\(\theta\)</span>’s of the two products!</p>
+</div>
 <ol class="arabic simple" start="6">
 <li><p><strong>(Model Evaluation)</strong> Compute the 95% credible interval of <span class="math notranslate nohighlight">\(\theta\)</span> for each product (<em>Hint: compute the 95% credible interval for each <span class="math notranslate nohighlight">\(\theta_i\)</span>, <span class="math notranslate nohighlight">\(i=1, \ldots, 5\)</span></em>). For which product is the posterior mean and MAP estimate more reliable and why?</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 6</p>
+<p>Just as in the <a class="reference internal" href="01-overview.html#ps-hw0"><span class="std std-ref">Chapter 1 problem set</span></a>, we empirically compute the 95% credible interval for <span class="math notranslate nohighlight">\(\theta\)</span> by sampling from the posterior and then taking the empirical 95% interval of the samples. Again, we estimate the interval for <span class="math notranslate nohighlight">\(\theta\)</span> by estimating the 95% credible interval of each <span class="math notranslate nohighlight">\(\theta_i\)</span> from the posterior marginal distribution.</p>
+<p>Note that this is again a simplification. The multivariate version of <span class="math notranslate nohighlight">\(n\%\)</span> credible intervals is <em>credible region</em>, a region in the parameter space over which contains n% of the pdf’s probability mass. A 95% confidence region for a general joint posterior distribution may not be a box but, rather, a complex shape. Our approximation of the 95% confidence region by the confidence intervals of the marginal posterior distributions defines a bounding box around this region and, in general, may be wider than necessary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lotus_lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">lotus_posterior_samples</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">lotus_ub</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">lotus_posterior_samples</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">toysmith_lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">toysmith_posterior_samples</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">toysmiths_ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">toysmith_posterior_samples</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'lotus 2.5%'</span><span class="p">,</span> <span class="n">lotus_lb</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'lotus 97.5%'</span><span class="p">,</span> <span class="n">lotus_ub</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'toysmith 2.5%'</span><span class="p">,</span> <span class="n">toysmith_lb</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'toysmith 97.5%'</span><span class="p">,</span> <span class="n">toysmiths_ub</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lotus 2.5% [0.25415424 0.00760864 0.01505252 0.05351941 0.51903437]
+lotus 97.5% [0.34898777 0.03499885 0.04965096 0.10971106 0.62179894]
+
+
+toysmith 2.5% [0.22292189 0.03885184 0.03290497 0.05534909 0.52540982]
+toysmith 97.5% [0.29125427 0.07495462 0.06735598 0.09737386 0.60327188]
+</pre></div>
+</div>
+<p>We see that the credible intervals for both products have comparable width – i.e. no model is more “certain” about <span class="math notranslate nohighlight">\(\theta\)</span> than the other.</p>
+<p>Since the confidence intervals (especially for the 5-star probability and the 1-star probability) overlap a great deal it may be unreasonable to use our point estimates (MAP, MLE etc) to rank the two products.</p>
+</div>
 <div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
 <p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
 <p>Starting in 2020, major machine learning conferences are beginning to ask authors as well as reviewers to explicitly consider the broader impact of new machine learning methods. To properly evaluate the potential good or harm that a piece of technology (AI or not) can do to the general public, we need to be aware that no technology is deployed in ideal conditions or in perfectly neutral contexts. In order to assess the potential broader impact of technology, we need to analyze the social systems/institutions of which these technologies will become a part.</p>
@@ -1167,13 +1437,23 @@ where <span class="math notranslate nohighlight">\(\theta_i \in (0, 1)\)</span> 
 <li><p><strong>(Impact)</strong> Analyze the broader impact of models of product popularity/quality when used for ranking. Specifically, focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
 </ol>
 </div>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Comparison of Ranking Systems)</strong></p></li>
-</ol>
-<p>Recall that on Amazon, the first customer review statistic displayed for a product is the average rating. What is potentially problemmatic with ranking products based on the average customer rating?</p>
+<ol class="arabic" start="2">
+<li><p><strong>(Comparison of Ranking Systems)</strong></p>
+<p>Recall that on Amazon, the first customer review statistic displayed for a product is the average rating. What is potentially problematic with ranking products based on the average customer rating?</p>
 <p>Which point estimate (MAP, MLE, posterior mean or posterior predictive estimate) of <span class="math notranslate nohighlight">\(\theta\)</span>, if any, would you feel choose to rank the two Amazon products? Why?</p>
 <p><em>Hint: think about which of these estimates are equivalent (if any). If they are not equivalent, what are the special properties of each estimate? What aspect of the data or the model is each estimate good at capturing?</em></p>
 <p><strong>Note:</strong> we’re not looking for “the correct answer” here. We are looking for a sound decision based on a statistically correct interpretation of your models.</p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part III, Question 2</p>
+<p>There are two immediate issues with using an “average star rating” to rank products:</p>
+<ol class="arabic simple">
+<li><p>An average star rating can obscure the difference between a mediocre product (one that receives 100 two or three star reviews) and a polarizing product (one that receives 50 five star reviews and 50 one star reviews). We can, no doubt, all think of instances where distinguishing between a mediocre product and a polarizing product makes all the difference in the world (to consumers).</p></li>
+<li><p>Another problem with averaging star ratings is a general statistical weakness of using averages to rate things. We’ve seen this problem pop up in many previous examples, when small sample sizes heavily skew averages towards extreme values.</p></li>
+</ol>
+<p><em>Not covered here: which point estimate of <span class="math notranslate nohighlight">\(\theta\)</span>, if any, to use to rank the two products.</em></p>
+</div>
 </section>
 </section>
 </section>
@@ -1273,7 +1553,7 @@ where <span class="math notranslate nohighlight">\(\theta_i \in (0, 1)\)</span> 
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-beta-binomial-model">3.3. The Beta-Binomial Model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-coin-toss-model-revisited">The Coin Toss Model: Revisited</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incoporating-prior-beliefs">Incoporating Prior Beliefs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#incorporating-prior-beliefs">Incorporating Prior Beliefs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">The Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-for-the-beta-binomial-model">Posterior for the Beta-Binomial Model</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-posterior-bayesian-update">Interpreting the Posterior: Bayesian Update</a></li>

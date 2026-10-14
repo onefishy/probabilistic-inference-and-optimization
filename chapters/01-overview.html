@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -429,7 +430,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-course-about">1.1. What is this course about?</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-book-about">1.1. What is this book about?</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-model-patterns-in-data">How Do We Model Patterns in Data?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-model">What is a Model?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-notion-of-error">A Notion of Error</a></li>
@@ -439,7 +440,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-regression">A Statistical Model for Regression</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-fitness">How Do We Quantify Fitness?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Fitting</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximimum-likelihood-and-minimum-mean-square-error">Maximimum Likelihood and Minimum Mean Square Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood-and-minimum-mean-square-error">Maximum Likelihood and Minimum Mean Square Error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-interpretation">Model Interpretation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-bayesian-model">What is a Bayesian Model?</a></li>
@@ -456,7 +457,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-interactions-do-we-need-to-think-about-when-we-design-ml-models">What Interactions Do We Need to Think About When We Design ML Models?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-promises-of-human-ai-systems">The Promises of Human + AI Systems</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-human-ai-systems">The Perils of Human + AI Systems</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benifits-of-machine-learning">The Potential Social Benifits of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benefits-of-machine-learning">The Potential Social Benefits of Machine Learning</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-negative-social-impacts-of-machine-learning">The Negative Social Impacts of Machine Learning</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-happening">Why Is This Happening?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-problem-solving-frameworks-for-machine-learning">Alternative Problem Solving Frameworks for Machine Learning</a></li>
@@ -496,8 +497,8 @@ document.write(`
 </div>
 </details>
 </div>
-<section id="what-is-this-course-about">
-<h2><span class="section-number">1.1. </span>What is this course about?<a class="headerlink" href="#what-is-this-course-about" title="Link to this heading">#</a></h2>
+<section id="what-is-this-book-about">
+<h2><span class="section-number">1.1. </span>What is this book about?<a class="headerlink" href="#what-is-this-book-about" title="Link to this heading">#</a></h2>
 <section id="how-do-we-model-patterns-in-data">
 <h3>How Do We Model Patterns in Data?<a class="headerlink" href="#how-do-we-model-patterns-in-data" title="Link to this heading">#</a></h3>
 <p>This is a scatter plot of home prices vs square footage of some homes in southern California.</p>
@@ -528,12 +529,11 @@ document.write(`
 </section>
 <section id="a-notion-of-error">
 <h3>A Notion of Error<a class="headerlink" href="#a-notion-of-error" title="Link to this heading">#</a></h3>
-<p>An <em><strong>absolute residual</strong></em> is the absolute difference between the actual price of a home and the price predicted by the line for a given square footage:
+<p>An <em><strong>absolute residual</strong></em> is the absolute difference between the actual price of a home and the price predicted by the line for a given square footage:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathtt{Residual}_n = y_n - \hat{y}_n
 \]</div>
-</p>
 <figure class="align-center" id="fig-01-fig34">
 <a class="reference internal image-reference" href="../_images/fig34.jpg"><img alt="../_images/fig34.jpg" src="../_images/fig34.jpg" style="width: 354px;" />
 </a>
@@ -541,31 +541,31 @@ document.write(`
 </section>
 <section id="how-do-we-quantify-the-overall-error">
 <h3>How do we quantify the overall error?<a class="headerlink" href="#how-do-we-quantify-the-overall-error" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p><strong>(Max absolute deviation)</strong> Count only the biggest “error”
+<ol class="arabic">
+<li><p><strong>(Max absolute deviation)</strong> Count only the biggest “error”</p>
 <div class="math notranslate nohighlight">
 \[
-\max_n |y_n - \hat{y}_n| 
-\]</div>
-</p></li>
-<li><p><strong>(Sum of absolute deviations)</strong> Add up all the “errors”
+   \max_n |y_n - \hat{y}_n|
+   \]</div>
+</li>
+<li><p><strong>(Sum of absolute deviations)</strong> Add up all the “errors”</p>
 <div class="math notranslate nohighlight">
 \[
-\sum_n |y_n - \hat{y}_n| 
-\]</div>
-</p></li>
-<li><p><strong>(Sum of squared errors)</strong> Add up the squares of the “errors”
+   \sum_n |y_n - \hat{y}_n|
+   \]</div>
+</li>
+<li><p><strong>(Sum of squared errors)</strong> Add up the squares of the “errors”</p>
 <div class="math notranslate nohighlight">
 \[
-\sum_n |y_n - \hat{y}_n|^2 
-\]</div>
-</p></li>
-<li><p><strong>(Mean squared errors)</strong> We can also average the squared “errors”.
+   \sum_n |y_n - \hat{y}_n|^2
+   \]</div>
+</li>
+<li><p><strong>(Mean squared errors)</strong> We can also average the squared “errors”.</p>
 <div class="math notranslate nohighlight">
 \[
-\frac{1}{N}\sum_{n=1}^N |y_n - \hat{y}_n|^2 
-\]</div>
-</p></li>
+   \frac{1}{N}\sum_{n=1}^N |y_n - \hat{y}_n|^2
+   \]</div>
+</li>
 </ol>
 <p>Again, <span class="math notranslate nohighlight">\(y_n\)</span> is the observed target, <span class="math notranslate nohighlight">\(\hat{y}_n\)</span> is the predicted target.</p>
 </section>
@@ -573,19 +573,19 @@ document.write(`
 <h3>Model Fitting<a class="headerlink" href="#model-fitting" title="Link to this heading">#</a></h3>
 <p><strong>Question:</strong> What do we mean by choosing “best” line, <span class="math notranslate nohighlight">\(\hat{y} = w_1x + w_0\)</span>?</p>
 <p>The <em><strong>model fitting</strong></em> process:</p>
-<ol class="arabic simple">
-<li><p><em>Choose</em> an overall error metric. This metric is called the <em><strong>loss function</strong></em> or <em><strong>training objective</strong></em>:
+<ol class="arabic">
+<li><p><em>Choose</em> an overall error metric. This metric is called the <em><strong>loss function</strong></em> or <em><strong>training objective</strong></em>:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathcal{L}(w_1, w_0) = \frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2, \quad\quad \text{(Mean Squared Error Loss)}
-\]</div>
-</p></li>
-<li><p>Set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the loss function is <strong>minimized</strong>:
+   \mathcal{L}(w_1, w_0) = \frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2, \quad\quad \text{(Mean Squared Error Loss)}
+   \]</div>
+</li>
+<li><p>Set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the loss function is <strong>minimized</strong>:</p>
 <div class="math notranslate nohighlight">
 \[
-\underset{w_0, w_1}{\mathrm{argmin}}\mathcal{L}(w_1, w_0) = \underset{w_0, w_1}{\mathrm{argmin}}\frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2 
-\]</div>
-</p></li>
+   \underset{w_0, w_1}{\mathrm{argmin}}\mathcal{L}(w_1, w_0) = \underset{w_0, w_1}{\mathrm{argmin}}\frac{1}{N}\sum_{n=1}^N |y_n - (w_1x_n + w_0)|^2
+   \]</div>
+</li>
 <li><p>Choose a method of minimizing the loss function.</p></li>
 </ol>
 <p><strong>Note:</strong> For linear regression, we can minimize <span class="math notranslate nohighlight">\(\mathcal{L}\)</span> analytically. We cannot do this for every model!</p>
@@ -606,12 +606,11 @@ document.write(`
 <section id="what-is-a-statistical-model">
 <h3>What is a Statistical Model?<a class="headerlink" href="#what-is-a-statistical-model" title="Link to this heading">#</a></h3>
 <p>Perhaps our <strong>choice</strong> of an overall error can be less arbitrary if we explain how, we believe, the residual arise.</p>
-<p><strong>Belief:</strong> The theoretical relationship between price and square footage (<span class="math notranslate nohighlight">\(x\)</span>) is given by <span class="math notranslate nohighlight">\(f(x)\)</span>. But, in real-life, due to unpredictable circumstances observed prices (<span class="math notranslate nohighlight">\(y\)</span>) differ from <span class="math notranslate nohighlight">\(f(x)\)</span> by some random amount, <span class="math notranslate nohighlight">\(\epsilon\)</span>, called <em><strong>noise</strong></em>:
+<p><strong>Belief:</strong> The theoretical relationship between price and square footage (<span class="math notranslate nohighlight">\(x\)</span>) is given by <span class="math notranslate nohighlight">\(f(x)\)</span>. But, in real-life, due to unpredictable circumstances observed prices (<span class="math notranslate nohighlight">\(y\)</span>) differ from <span class="math notranslate nohighlight">\(f(x)\)</span> by some random amount, <span class="math notranslate nohighlight">\(\epsilon\)</span>, called <em><strong>noise</strong></em>:</p>
 <div class="math notranslate nohighlight">
 \[
 y = f(x) + \epsilon, \quad \epsilon \sim p(\epsilon)
 \]</div>
-</p>
 <p>A <em><strong>statistical model</strong></em> is one that explicitly accounts for uncertainty or randomness.</p>
 </section>
 <section id="a-statistical-model-for-regression">
@@ -625,51 +624,46 @@ y = f(x) + \epsilon, \quad \epsilon \overset{\text{iid}}{\sim} \mathcal{N}(0, 1)
 </section>
 <section id="how-do-we-quantify-fitness">
 <h3>How Do We Quantify Fitness?<a class="headerlink" href="#how-do-we-quantify-fitness" title="Link to this heading">#</a></h3>
-<p>Given our statistical model, a natural way for quantifying how well <span class="math notranslate nohighlight">\(f(x) = w_1x + w_0\)</span> fits the data is by checking how likely our choice of <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span> makes the observed data, i.e. compute
+<p>Given our statistical model, a natural way for quantifying how well <span class="math notranslate nohighlight">\(f(x) = w_1x + w_0\)</span> fits the data is by checking how likely our choice of <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span> makes the observed data, i.e. compute</p>
 <div class="math notranslate nohighlight">
 \[
 \mathcal{L}(w_1, w_0) = \prod_{n=1}^N p(y_n|x_n, w_1, w_0).
 \]</div>
-
-The function <span class="math notranslate nohighlight">\(\mathcal{L}(w_1, w_0)\)</span> is called the <em><strong>likelihood function</strong></em>.</p>
+<p>The function <span class="math notranslate nohighlight">\(\mathcal{L}(w_1, w_0)\)</span> is called the <em><strong>likelihood function</strong></em>.</p>
 <p><strong>Exercise:</strong> suppose we have two models, <span class="math notranslate nohighlight">\(f(x) = 3x + 2\)</span> and <span class="math notranslate nohighlight">\(f(x) = 10 - x\)</span>. Suppose that <span class="math notranslate nohighlight">\(\mathcal{L}(w_1=3, w_0=2) = 10.2\)</span> and <span class="math notranslate nohighlight">\(\mathcal{L}(w_1=-1, w_0=10) = 0.002\)</span>. Which model is a better fit for the data and why?</p>
 </section>
 <section id="id1">
 <h3>Model Fitting<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p><strong>Question:</strong> What do we mean by choosing “best” line, <span class="math notranslate nohighlight">\(\hat{y} = f(x) = w_1x + w_0\)</span>?</p>
 <p>The <em><strong>model fitting</strong></em> process:</p>
-<ol class="arabic simple">
-<li><p><em>Choose</em> a method of estimation for statistical models. For example, set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the likelihood of the data is <strong>maximized</strong>:
+<ol class="arabic">
+<li><p><em>Choose</em> a method of estimation for statistical models. For example, set up the problem of finding coefficients or <em><strong>parameters</strong></em>, <span class="math notranslate nohighlight">\(w_0, w_1\)</span>, such that the likelihood of the data is <strong>maximized</strong>:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathrm{argmax}_{w_0, w_1}\mathcal{L}(w_1, w_0) = \mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0) 
-\]</div>
-</p></li>
+   \mathrm{argmax}_{w_0, w_1}\mathcal{L}(w_1, w_0) = \mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0)
+   \]</div>
+</li>
 <li><p>Choose a method of computing the estimate. For example, choose a way to maximize the likelihood.</p></li>
 </ol>
 </section>
-<section id="maximimum-likelihood-and-minimum-mean-square-error">
-<h3>Maximimum Likelihood and Minimum Mean Square Error<a class="headerlink" href="#maximimum-likelihood-and-minimum-mean-square-error" title="Link to this heading">#</a></h3>
-<p>Given our statistical model
+<section id="maximum-likelihood-and-minimum-mean-square-error">
+<h3>Maximum Likelihood and Minimum Mean Square Error<a class="headerlink" href="#maximum-likelihood-and-minimum-mean-square-error" title="Link to this heading">#</a></h3>
+<p>Given our statistical model</p>
 <div class="math notranslate nohighlight">
 \[
 y = f(x) + \epsilon, \quad \epsilon \overset{\text{iid}}{\sim} \mathcal{N}(0, 1)
 \]</div>
-
-Maximimizing the likelihood is equivalent to minimizing the mean squared error:
+<p>Maximizing the likelihood is equivalent to minimizing the mean squared error:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0) \equiv \mathrm{argmin}_{w_0, w_1}\frac{1}{N}\sum_{i=1}^N |y_i - (w_1x_1 + w_0)|^2 
+\mathrm{argmax}_{w_0, w_1}\prod_{n=1}^N p(y_n|x_n, w_1, w_0) \equiv \mathrm{argmin}_{w_0, w_1}\frac{1}{N}\sum_{i=1}^N |y_i - (w_1x_1 + w_0)|^2
 \]</div>
-</p>
-<p><em>Hint: note that</em>
+<p><em>Hint: note that</em></p>
 <div class="math notranslate nohighlight">
 \[\prod_{n=1}^Np(y_n|x_n, w_1, w_0) = \frac{1}{\sqrt{2\pi 1}^N} \exp\left\{-\frac{\sum_{i=1}^N(y_n - (w_1x_n + w_0))^2}{2 * 1} \right\}\]</div>
-
-<em>and that</em>
+<p><em>and that</em></p>
 <div class="math notranslate nohighlight">
 \[\log p(y|x, w_1, w_0) = N\log\left(\frac{1}{\sqrt{2\pi 1}}\right) - \frac{\sum_{i=1}^N(y_n - (w_1x_n + w_0))^2}{2 * 1} \]</div>
-</p>
 </section>
 <section id="model-evaluation">
 <h3>Model Evaluation<a class="headerlink" href="#model-evaluation" title="Link to this heading">#</a></h3>
@@ -691,7 +685,7 @@ Maximimizing the likelihood is equivalent to minimizing the mean squared error:
 <section id="what-is-a-bayesian-model">
 <h3>What is a Bayesian Model?<a class="headerlink" href="#what-is-a-bayesian-model" title="Link to this heading">#</a></h3>
 <p>In addition to a statistical model that explains trends <span class="math notranslate nohighlight">\(f(x)\)</span> and observation noise <span class="math notranslate nohighlight">\(\epsilon\)</span>, we also want to incorporate our <strong>prior beliefs</strong> about the model. Finally, we want to obtain a measure of <strong>uncertainty</strong> for our parameter estimates as well as our predictions.</p>
-<p>Our Bayesian model for linear regression:
+<p>Our Bayesian model for linear regression:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 y &amp;= w_1x + w_0 +\epsilon\\
@@ -699,18 +693,17 @@ y &amp;= w_1x + w_0 +\epsilon\\
 w_1 &amp;\sim p(w_1)\\
 w_0 &amp;\sim p(w_0)\\
 \end{aligned}\end{split}\]</div>
-</p>
 <p>where the prior <span class="math notranslate nohighlight">\(p(w_i)\)</span> may express that we want <span class="math notranslate nohighlight">\(w_i\)</span> to be non-negative and not too large.</p>
 </section>
 <section id="model-inference">
 <h3>Model Inference<a class="headerlink" href="#model-inference" title="Link to this heading">#</a></h3>
 <p>How do we “learn” the parameters in a Bayesian model?</p>
-<p>Baye’s Rule gives us a way to obtain a distribution over <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the data <span class="math notranslate nohighlight">\((x_1, y_1), \ldots, (x_N, y_N)\)</span>:</p>
+<p>Bayes’ Rule gives us a way to obtain a distribution over <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the data <span class="math notranslate nohighlight">\((x_1, y_1), \ldots, (x_N, y_N)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N) \propto \underbrace{\left(\prod_{n=1}^N p(y_n|x_n, w_1, w_0)\right)}_{\text{How well params fit the data}} \underbrace{p(w_1)p(w_0)}_{\text{How well the params fit priors}}
 \]</div>
-<p>The distirbution <span class="math notranslate nohighlight">\(p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N)\)</span> is called the <em><strong>poseterior</strong></em> and gives the likelihood of a pair of parameters <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the observed data.</p>
+<p>The distribution <span class="math notranslate nohighlight">\(p(w_1, w_0 | x_1, \ldots, x_N, y_1, \ldots, y_N)\)</span> is called the <em><strong>posterior</strong></em> and gives the likelihood of a pair of parameters <span class="math notranslate nohighlight">\(w_1, w_0\)</span> given the observed data.</p>
 <p>We see that the likelihood score of the parameters under the posterior is influence both by how well the parameters fit the data and how well the parameters fit our prior beliefs.</p>
 </section>
 <section id="bayesian-linear-regression">
@@ -750,7 +743,7 @@ w_0 &amp;\sim \mathcal{N}(0, 1)\\
 <section id="is-accuracy-enough">
 <h3>Is Accuracy Enough?<a class="headerlink" href="#is-accuracy-enough" title="Link to this heading">#</a></h3>
 <p>We mentioned that we can get predictive uncertainty from maximum likelihood models by bootstrapping and that Bayesian models naturally give us a sense of predictive uncertainty. These are useful properties that are important for real-life applications.</p>
-<p>When machine learning models are applied to safety-critical, risk-adverse domains such as precision health care, financial and criminal justice systems, reliable measurements of a model’s predictive uncertainty may be as crucial as correctness of its predictions.</p>
+<p>When machine learning models are applied to safety-critical, risk-averse domains such as precision health care, financial and criminal justice systems, reliable measurements of a model’s predictive uncertainty may be as crucial as correctness of its predictions.</p>
 <figure class="align-center" id="fig-01-health">
 <a class="reference internal image-reference" href="../_images/health.jpg"><img alt="../_images/health.jpg" src="../_images/health.jpg" style="width: 527px;" />
 </a>
@@ -797,7 +790,7 @@ w_0 &amp;\sim \mathcal{N}(0, 1)\\
 <section id="how-do-you-communicate-ml-predictions-and-does-it-matter">
 <h3>How Do You Communicate ML Predictions, And Does It Matter?<a class="headerlink" href="#how-do-you-communicate-ml-predictions-and-does-it-matter" title="Link to this heading">#</a></h3>
 <p>In <em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em> (Lee et al, Nature Biomedical Engineering, 2019), the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
-<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highlighted regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
 <figure class="align-center" id="fig-01-shap">
 <a class="reference internal image-reference" href="../_images/shap.png"><img alt="../_images/shap.png" src="../_images/shap.png" style="width: 724px;" />
 </a>
@@ -831,9 +824,9 @@ w_0 &amp;\sim \mathcal{N}(0, 1)\\
 </figure>
 <p>Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.</p>
 </section>
-<section id="the-potential-social-benifits-of-machine-learning">
-<h3>The Potential Social Benifits of Machine Learning<a class="headerlink" href="#the-potential-social-benifits-of-machine-learning" title="Link to this heading">#</a></h3>
-<p><em><strong>Artifcial intellegence</strong></em> or <em><strong>machine learning</strong></em> models are becoming increasinglly ubiquitous in modern life. These models have already made meaningful impact on many of the most pressing problems we face today.</p>
+<section id="the-potential-social-benefits-of-machine-learning">
+<h3>The Potential Social Benefits of Machine Learning<a class="headerlink" href="#the-potential-social-benefits-of-machine-learning" title="Link to this heading">#</a></h3>
+<p><em><strong>Artificial intelligence</strong></em> or <em><strong>machine learning</strong></em> models are becoming increasingly ubiquitous in modern life. These models have already made meaningful impact on many of the most pressing problems we face today.</p>
 <figure class="align-center" id="fig-01-benifits">
 <a class="reference internal image-reference" href="../_images/benifits.jpeg"><img alt="../_images/benifits.jpeg" src="../_images/benifits.jpeg" style="width: 702px;" />
 </a>
@@ -876,35 +869,32 @@ w_0 &amp;\sim \mathcal{N}(0, 1)\\
 <section id="summary">
 <h2><span class="section-number">1.2. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p><strong>(Fitting Probabilistic Models)</strong> Given a probabilistic model with parameters <span class="math notranslate nohighlight">\(\theta\)</span>, i.e. a model that explicitly accounts for the noise in the data. We learn <span class="math notranslate nohighlight">\(\theta\)</span> that maximizes the likelihood of the observed data.</p></li>
-</ol>
+<li><p><strong>(Fitting Probabilistic Models)</strong> Given a probabilistic model with parameters <span class="math notranslate nohighlight">\(\theta\)</span>, i.e. a model that explicitly accounts for the noise in the data. We learn <span class="math notranslate nohighlight">\(\theta\)</span> that maximizes the likelihood of the observed data.</p>
 <ul class="simple">
 <li><p><strong>Sanity Check:</strong> What is the noise model for the binomial model of coin tosses?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Maximizing the Likelihood)</strong> Maximizing the likelihood over <span class="math notranslate nohighlight">\(\theta\)</span> is an <em>optimization problem</em>. In an optimization problem, we by convention turn every maximization problem (e.g. maximize <span class="math notranslate nohighlight">\(g(\theta)\)</span>) into a minimization problem (e.g. minimize <span class="math notranslate nohighlight">\(-g(\theta)\)</span>) and then:</p></li>
-</ol>
+</li>
+<li><p><strong>(Maximizing the Likelihood)</strong> Maximizing the likelihood over <span class="math notranslate nohighlight">\(\theta\)</span> is an <em>optimization problem</em>. In an optimization problem, we by convention turn every maximization problem (e.g. maximize <span class="math notranslate nohighlight">\(g(\theta)\)</span>) into a minimization problem (e.g. minimize <span class="math notranslate nohighlight">\(-g(\theta)\)</span>) and then:</p>
 <ul class="simple">
 <li><p>if there are no constraints, we identify the stationary points of the objective function and verify that the objective function is convex. In this case, the stationary points are local min, and every local min is a global min.<br><br></p></li>
 <li><p>if there are constraints, we identify the stationary points of the Lagrangian and verify that the objective function is convex and the equality constraints are affine. In this case, every stationary point is a global min.<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="3">
+</li>
 <li><p><strong>(Why MLE)</strong> Why should we learn <span class="math notranslate nohighlight">\(\theta\)</span> to maximize the likelihood? What is the philosophical basis for performing MLE?<br><br></p></li>
-<li><p><strong>(What Are Desirable Properties of Estimators)</strong> If we have a method to produce an estimate <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> of the true model parameters <span class="math notranslate nohighlight">\(\theta\)</span>, what properties would we want from our estimate?</p></li>
-</ol>
+<li><p><strong>(What Are Desirable Properties of Estimators)</strong> If we have a method to produce an estimate <span class="math notranslate nohighlight">\(\widehat{\theta}\)</span> of the true model parameters <span class="math notranslate nohighlight">\(\theta\)</span>, what properties would we want from our estimate?</p>
 <ul class="simple">
 <li><p><em><strong>(Consistency)</strong></em> What is consistency and why do we, as practitioners, care?</p></li>
 <li><p><em><strong>(Unbiasedness)</strong></em> What is unbiasedness and why do we, as practitioners, care?</p></li>
 <li><p><em><strong>(Minimum Variance)</strong></em> What is minimum variance and why do we, as practitioners, care?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="5">
-<li><p><strong>(Why Not MLE)</strong> Which properties does MLE have? And which ones does it lack? What does this mean for practiioners using MLE - what do we need to watch out for?<br><br></p></li>
+</li>
+<li><p><strong>(Why Not MLE)</strong> Which properties does MLE have? And which ones does it lack? What does this mean for practitioners using MLE - what do we need to watch out for?<br><br></p></li>
 <li><p><strong>(Uncertainty)</strong> We said that maximize the likelihood gives us one “best” estimate of the model parameters. But how can we get uncertainty on our estimates (e.g. what is bootstrapping)?</p></li>
 </ol>
 </section>
 <section id="exercises">
 <h2><span class="section-number">1.3. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-review-of-statistical-modeling-and-scientific-computing">
 <span id="ps-hw0"></span><h3>Problem Set: Review of Statistical Modeling and Scientific Computing<a class="headerlink" href="#problem-set-review-of-statistical-modeling-and-scientific-computing" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -930,84 +920,401 @@ w_0 &amp;\sim \mathcal{N}(0, 1)\\
 <p class="admonition-title">Exercise: Part I: Maximum Likelihood Estimators for Linear Regression</p>
 <p> </p>
 </div>
-<p><em>(Material covered in CS109A or equivalent)</em></p>
 <p>In this problem, you are given a dataset with a single predictor <span class="math notranslate nohighlight">\(X\)</span> representing patient age (in years) and a single outcome <span class="math notranslate nohighlight">\(y\)</span> representing diastolic blood pressure (in mm Hg), and your task is to fit a linear model to the data. The fitted model will be deployed in a hospital setting, where the model predictions will inform patient treatment.</p>
 <p>The dataset is saved as <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code> in CSV (Comma Separated Values) format and can be read using the <code class="docutils literal notranslate"><span class="pre">.read_csv()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> library.</p>
-<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:
+<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 y &amp;= f(x) + \epsilon = w_1x + w_0 + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.5)
 \end{aligned}\]</div>
-
-where <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>, the <em>parameters</em> of the function <span class="math notranslate nohighlight">\(f\)</span>, are unknown constants.</p>
-<ol class="arabic simple">
-<li><p><strong>(Model Building)</strong> Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(p(y|x, w_1, w_0)\)</span>, for a single observation <span class="math notranslate nohighlight">\((x, y)\)</span>. Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(\prod_{n=1}^N p(y_n|x_n, w_1, w_0)\)</span> for an entire dataset of <span class="math notranslate nohighlight">\(N\)</span> number of observations.</p></li>
-</ol>
+<p>where <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>, the <em>parameters</em> of the function <span class="math notranslate nohighlight">\(f\)</span>, are unknown constants.</p>
+<ol class="arabic">
+<li><p><strong>(Model Building)</strong> Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(p(y|x, w_1, w_0)\)</span>, for a single observation <span class="math notranslate nohighlight">\((x, y)\)</span>. Write the analytical expression for the likelihood function <span class="math notranslate nohighlight">\(\prod_{n=1}^N p(y_n|x_n, w_1, w_0)\)</span> for an entire dataset of <span class="math notranslate nohighlight">\(N\)</span> number of observations.</p>
 <p><em>Hint: for a given <span class="math notranslate nohighlight">\(x\)</span> and fixed parameters, what is the distribution of <span class="math notranslate nohighlight">\(y\)</span>?</em></p>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Defining a Learning Objective)</strong> The Maximum Likelihood Estimators (MLE) of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> are defined as
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<p>Since <span class="math notranslate nohighlight">\(\epsilon\)</span> in the above model is a random variable, so is <span class="math notranslate nohighlight">\(y\)</span>. Since <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> are constants, the distribution of <span class="math notranslate nohighlight">\(y\)</span> should be that of <span class="math notranslate nohighlight">\(\epsilon\)</span> translated by <span class="math notranslate nohighlight">\(f(x)\)</span>. That is,</p>
+<div class="math notranslate nohighlight">
+\[
+p(y|x, w_1, w_0) = \mathcal{N}(y; w_1x + w_0, 0.5) = \frac{1}{\sqrt{2\pi 0.5}} \exp\left\{-\frac{(y - (w_1x + w_0))^2}{2 * 0.5} \right\}.
+\]</div>
+<p>The joint likelihood for an entire dataset of <span class="math notranslate nohighlight">\(N\)</span> observations is therefore:</p>
+<div class="math notranslate nohighlight">
+\[
+\prod_{n=1}^N p(y_n|x_n, w_1, w_0) =\prod_{n=1}^N \frac{1}{\sqrt{2\pi 0.5}} \exp\left\{-\frac{(y_n - (w_1x_n + w_0))^2}{2 * 0.5} \right\} = \left(\frac{1}{\sqrt{2\pi 0.5}}\right)^N \exp\left\{-\frac{\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2}{2 * 0.5} \right\}.
+\]</div>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Defining a Learning Objective)</strong> The Maximum Likelihood Estimators (MLE) of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> are defined as</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-w^{\text{MLE}}_1, w^{\text{MLE}}_0 = \underset{w_1, w_0}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n|x_n, w_1, w_0)
+   w^{\text{MLE}}_1, w^{\text{MLE}}_0 = \underset{w_1, w_0}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n|x_n, w_1, w_0)
+   \end{aligned}\]</div>
+<p>Show that finding <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> that maximizes the likelihood is equivalent to finding parameters that minimize the Mean Squared Error (MSE) of your model.<br><br>
+<em>Hint: show that maximizing the log likelihood is equivalent to minimizing the MSE.</em></p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<p>Recall that the logarithmic functions are monotone – if <span class="math notranslate nohighlight">\(z_1 &lt; z_2\)</span> then <span class="math notranslate nohighlight">\(\log(z_1) &lt; \log(z_2)\)</span>. This means that the values <span class="math notranslate nohighlight">\(w_1, w_0\)</span> that will maximize the likelihood <span class="math notranslate nohighlight">\(\prod_{n=1}^N p(y | x, w_1, w_0)\)</span> are the same ones that will maximize the log-likelihood <span class="math notranslate nohighlight">\(\log \prod_{n=1}^N p(y | x, w_1, w_0)\)</span> (and vice versa). Hence, maximizing the likelihood is equivalent to maximizing the log-likelihood:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+w^{\text{MLE}}_1, w^{\text{MLE}}_0 = \underset{w_1, w_0}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | x_n, w_1, w_0) = \underset{w_1, w_0}{\mathrm{argmax}}\; \log \left[\prod_{n=1}^N p(y_n | x_n, w_1, w_0)\right].
 \end{aligned}\]</div>
-
-Show that finding <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span> that maximizes the likelihood is equivalent to finding parameters that minimize the Mean Squared Error (MSE) of your model.<br><br>
-<em>Hint: show that maximizing the log likelihood is equivalent to minimizing the MSE.</em></p></li>
-</ol>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Model Fitting)</strong> Analytically derive the formulae for MLE of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>. Describe what information you would need in order <em><strong>prove</strong></em> that the parameters you derived maximizes the likelihood (or minimizes the MSE)?</p></li>
-</ol>
+<p>Now the log-likelihood can be simplified, applying the properties of logarithmic functions</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\log \left[\prod_{n=1}^N p(y_n | x_n, w_1, w_0)\right] &amp;= \log \left[\left(\frac{1}{\sqrt{2\pi 0.5}}\right)^N \exp\left\{-\frac{\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2}{2 * 0.5} \right\}\right]\\
+&amp;= N \log \left[ \frac{1}{\sqrt{2\pi 0.5}} \right] -\frac{\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2}{2 * 0.5}.
+\end{aligned}\end{split}\]</div>
+<p>Note that the first term, <span class="math notranslate nohighlight">\(N \log \left[ \frac{1}{\sqrt{2\pi 0.5}} \right]\)</span>, in the simplified expression of the log-likelihood is a constant (doesn’t depend on <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>), therefore, maximizing the log-likelihood is equivalent to minimizing the term that is subtracted from the first term:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{w_1, w_0}{\mathrm{argmax}} \log \left[\prod_{n=1}^N p(y_n | x_n, w_1, w_0)\right] &amp;\equiv \underset{w_1, w_0}{\mathrm{argmin}} \frac{\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2}{2 * 0.5}\\
+&amp;\equiv \underset{w_1, w_0}{\mathrm{argmin}}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\\
+&amp;\equiv \underset{w_1, w_0}{\mathrm{argmin}}\frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2
+\end{aligned}\end{split}\]</div>
+<p>The last equivalence in the above is the expression for the minimum MSE estimates for <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>.</p>
+<p>Thus, we see that maximizing the log-likelihood (and hence the likelihood) is equivalent to minimizing the mean squared error.</p>
+</div>
+<ol class="arabic" start="3">
+<li><p><strong>(Model Fitting)</strong> Analytically derive the formulae for MLE of <span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_0\)</span>. Describe what information you would need in order <em><strong>prove</strong></em> that the parameters you derived maximizes the likelihood (or minimizes the MSE)?</p>
 <p><strong>Optional but Useful:</strong> express your derivation of the MLE in matrix notation (i.e. <a class="reference external" href="https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf" rel="noreferrer" target="_blank">perform matrix calculus</a>).</p>
 <p><em>Hint: this part requires multivariate calculus.</em></p>
-<ol class="arabic simple" start="4">
-<li><p><strong>(Model Evaluation)</strong> Using the <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> class from <code class="docutils literal notranslate"><span class="pre">sklearn.linear_model</span></code>, fit a linear regression model to the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code>. When you call the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> function of <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code>, the default is to find parameters that minimize MSE.</p></li>
+</li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>From Question 2, we see that maximizing the likelihood is equivalent to minimizing the MSE:</p>
+<div class="math notranslate nohighlight">
+\[
+w^{\text{MLE}}_1, w^{\text{MLE}}_0 = \underset{w_1, w_0}{\mathrm{argmin}}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2.
+\]</div>
+<p>From calculus, we know that the global minimum of a function over the entire domain of possible inputs must occur at stationary points (points where the gradient is zero) if such a global min exists at all. So we first compute the gradient of the expression for MSE, which is a vector of the two partial derivatives of the MSE:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla_{w_1, w_0}\left( \frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\right) = \left[\frac{\partial}{\partial w_1}\left(\frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\right), \frac{\partial}{\partial w_0}\left(\frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\right) \right].
+\]</div>
+<p>Each partial derivative can be computed as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{\partial}{\partial w_1}\left(\frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\right) &amp;= \frac{1}{N}\sum_{n=1}^N -2x_n (y_n - (w_1x_n + w_0))\\
+\frac{\partial}{\partial w_0}\left(\frac{1}{N}\sum_{n=1}^N (y_n - (w_1x_n + w_0))^2\right) &amp;= \frac{1}{N}\sum_{n=1}^N -2(y_n - (w_1x_n + w_0))\\
+\end{aligned}\end{split}\]</div>
+<p>We set the gradient to zero and solve for the stationary point <span class="math notranslate nohighlight">\((w^*_0, w^*_1)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+0 = \frac{1}{N}\sum_{n=1}^N -2x_n (y_n - (w_1x_n + w_0)) &amp;\\
+0 = \frac{1}{N}\sum_{n=1}^N -2(y_n - (w_1x_n + w_0)) &amp;
+\end{cases}\end{split}\]</div>
+<p>You can solve the above system of linear equations in any number of ways. For example, we can solve the second equation for <span class="math notranslate nohighlight">\(w_0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+0 &amp;= \frac{1}{N}\sum_{n=1}^N -2(y_n - (w_1x_n + w_0))\\
+&amp;= \sum_{n=1}^N y_n - \sum_{n=1}^N w_1x_n - N * w_0\\
+w_0 &amp;= \frac{1}{N} \sum_{n=1}^N y_n - \frac{1}{N}\sum_{n=1}^N w_1x_n
+\end{aligned}\end{split}\]</div>
+<p>Then we can substitute our solution for <span class="math notranslate nohighlight">\(w_0\)</span> into the first equation and solve for <span class="math notranslate nohighlight">\(w_1\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+0 &amp;= \frac{1}{N}\sum_{n=1}^N -2x_n \left(y_n - \left(w_1x_n + \frac{1}{N} \sum_{n=1}^N y_n - \frac{1}{N}\sum_{n=1}^N w_1x_n\right)\right)\\
+&amp;= \sum_{n=1}^N x_n y_n - w_1 \sum_{n=1}^Nx^2_n - \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n + w_1 \frac{1}{N} \left(\sum_{n=1}^N x_n\right)^2\\
+w_1 &amp;= \frac{\sum_{n=1}^N x_n y_n - \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n}{\sum_{n=1}^Nx^2_n - \frac{1}{N} \left(\sum_{n=1}^N x_n\right)^2}
+\end{aligned}\end{split}\]</div>
+<p>To summarize, we’ve derived that the gradient has a unique stationary point at</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{cases}
+w^*_0 = \frac{1}{N} \sum_{n=1}^N y_n - \frac{1}{N}\sum_{n=1}^N w^*_1x_n&amp;\\
+w^*_1 = \frac{\sum_{n=1}^N x_n y_n - \frac{1}{N} \sum_{n=1}^N x_n  \sum_{n=1}^N y_n}{\sum_{n=1}^Nx^2_n - \frac{1}{N} \left(\sum_{n=1}^N x_n\right)^2}&amp; .
+\end{cases}\end{split}\]</div>
+<p>In order to show that the MSE is minimized at the point <span class="math notranslate nohighlight">\((w^*_0, w^*_1)\)</span>, we need to show that the mean square error of our linear model is convex. This means, in case you are interested, we need to compute the Hessian of the MSE function (the ‘second derivative’) and verify that it is positive definite (the multivariable version of ‘the second derivative is positive’).</p>
+<p><strong>Derivation in Matrix Notation</strong></p>
+<p>Let <span class="math notranslate nohighlight">\(w\)</span> denote a vector of both the slope and the intercept, <span class="math notranslate nohighlight">\(w = [w_1\;\; w_0]^\top \in \mathbb{R}^{2\times 1}\)</span>. Let <span class="math notranslate nohighlight">\(\mathbf{x}_n\)</span> represent a vector with the <span class="math notranslate nohighlight">\(n\)</span>-th input and a constant 1, <span class="math notranslate nohighlight">\( \mathbf{x}_n = [x_n\;\; 1]\)</span>. Thus, we can represent <span class="math notranslate nohighlight">\(w_1 * x_n + w_0\)</span> as the inner product of two vectors, <span class="math notranslate nohighlight">\(w^\top\mathbf{x}_n\)</span>.</p>
+<p>Thus, the mean square error can be expressed as</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{N}\sum_{n=1}^N (y_n - w^\top\mathbf{x}_n)^2.
+\]</div>
+<p>We can further simplify the MLE expression by introducing more matrix notation. Let <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> denote the vector of observed output, <span class="math notranslate nohighlight">\(\mathbf{y} = [y_1\;\; \ldots y_N]^\top \in \mathbb{R}^N\)</span>. Let <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> be the matrix of inputs, augmented with a column of 1’s, <span class="math notranslate nohighlight">\(\mathbf{X} = \left[\begin{array}{cc} x_1 &amp; 1\\\vdots &amp;\vdots\\ x_N &amp; 1 \end{array}\right]\)</span>. Then we can recognize that the sum of squares in the MSE expression is the inner product of two vectors</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{N}\sum_{n=1}^N (y_n - w^\top\mathbf{x}_n)^2 = \frac{1}{N} (\mathbf{y} - \mathbf{X}w)^\top (\mathbf{y} - \mathbf{X}w).
+\]</div>
+<p>When minimizing the matrix form of the MSE, we take the <em><strong>matrix derivative</strong></em> with respect to the vector <span class="math notranslate nohighlight">\(w\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\nabla_w \frac{1}{N} (\mathbf{y} - \mathbf{X}w)^\top (\mathbf{y} - \mathbf{X}w) &amp;= \frac{1}{N}\nabla_w  (\mathbf{y} - \mathbf{X}w)^\top (\mathbf{y} - \mathbf{X}w)\\
+&amp;=  \frac{1}{N}\nabla_w (\mathbf{y}^\top - w^\top\mathbf{X}^\top)(\mathbf{y} - \mathbf{X}w)\\
+&amp;= \frac{1}{N}\nabla_w (\mathbf{y}^\top\mathbf{y} - w^\top\mathbf{X}^\top\mathbf{y} - \mathbf{y}^\top\mathbf{X}w + w^\top\mathbf{X}^\top\mathbf{X}w)\\
+&amp;= \frac{1}{N}\nabla_w (\mathbf{y}^\top\mathbf{y} - 2w^\top\mathbf{X}^\top\mathbf{y} + w^\top\mathbf{X}^\top\mathbf{X}w)\\
+&amp;= \frac{1}{N} \left( -2\mathbf{y}^\top\mathbf{X} + w^\top (X^\top X + X^\top X)\right)
+\end{aligned}\end{split}\]</div>
+<p>We set the derivative to 0 and solve for the roots:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\frac{1}{N} \left( -2\mathbf{y}^\top\mathbf{X} + w^\top (X^\top X + X^\top X)\right) &amp;= 0\\
+-\mathbf{y}^\top\mathbf{X} + w^\top X^\top X&amp;= 0\\
+w^\top X^\top X &amp;= \mathbf{y}^\top\mathbf{X}\\
+w^\top &amp;= \mathbf{y}^\top\mathbf{X}(X^\top X)^{-1}\\
+w &amp;= (X^\top X)^{-1}\mathbf{X}^\top\mathbf{y}.
+\end{aligned}\end{split}\]</div>
+</div>
+<ol class="arabic" start="4">
+<li><p><strong>(Model Evaluation)</strong> Using the <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> class from <code class="docutils literal notranslate"><span class="pre">sklearn.linear_model</span></code>, fit a linear regression model to the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code>. When you call the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> function of <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code>, the default is to find parameters that minimize MSE.</p>
 <p>Visualize the linear function you fitted as well as the data in one plot.
 Visualize a histogram of the residuals.</p>
 <p>Interpret the clinical meaning of the parameters <span class="math notranslate nohighlight">\(w_0, w_1\)</span>.</p>
 <p>Using the plots and your interpretation of the model parameters, argue for whether or not your model is appropriate for the data.</p>
 <p><em>Hint: look at the assumptions you’ve made in your modeling process, which assumptions are supported by the data, which are contradicted by the data?</em></p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 4</p>
+<p>First, we read in the data as a <code class="docutils literal notranslate"><span class="pre">pandas</span></code> <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> using the <code class="docutils literal notranslate"><span class="pre">.read_csv()</span></code> function from <code class="docutils literal notranslate"><span class="pre">pandas</span></code>. We inspect the first 5 rows of the data frame.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'../data/HW0_data.csv'</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>          x          y
+0 -1.989678   1.493437
+1  4.031862  24.280045
+2  1.356093  22.583479
+3 -5.069544  -6.976054
+4  2.464958  22.710081
+</pre></div>
+</div>
+<p>We get a sense of the data by scatter plotting it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">'y'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'x'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'y'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Scatter Plot of the Dataset Given'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Part I, Question 4, figure 1" class="align-center" src="../_images/part-i-question-4-1.png" />
+<p>We make an instance of the <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> class and fit it to our data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">linear_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'y'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">linear_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using our fitted <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> model, we predict the <span class="math notranslate nohighlight">\(y\)</span> values given the <span class="math notranslate nohighlight">\(x\)</span> values of our training data. From this, we compute the residuals (individual prediction errors).</p>
+<p>From the fitted <code class="docutils literal notranslate"><span class="pre">LinearRegression</span></code> model we extract the regression parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#use fitted model to predict on training data</span>
+<span class="n">y_predict</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="c1">#compute residuals</span>
+<span class="n">residuals</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y_predict</span>
+<span class="c1">#extract MLE for slope</span>
+<span class="n">slope_mle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">linear_model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1">#extract MLE for intercept</span>
+<span class="n">intercept_mle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">linear_model</span><span class="o">.</span><span class="n">intercept_</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1">#scatter plot training data</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">'y'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span>
+<span class="c1">#plot predction as a trend line</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'MLE model: </span><span class="si">{}</span><span class="s1">x + </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slope_mle</span><span class="p">,</span> <span class="n">intercept_mle</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'x'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'y'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of the MLE model and training data'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+
+<span class="c1">#plot a histogram of the residuals</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Histogram of residuals'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Residual value'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Relative frequency'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-4-2.png"><img alt="Part I, Question 4, figure 2" class="align-center" src="../_images/part-i-question-4-2.png" style="width: 100%;" />
+</a>
+<p>From the histogram of the residuals (on the right), we can see that the residuals are not normally distributed as we assumed in our model. From the plot of the training data with our fitted model, we can see that (1) the trend or mean of the data looks to be linear, as we assumed, but (2) the y-values are not distributed about the trend in an equally noisy way. That is, for some values of <span class="math notranslate nohighlight">\(x\)</span> the <span class="math notranslate nohighlight">\(y\)</span> values vary greatly from the trend (the noise is high) and for some <span class="math notranslate nohighlight">\(x\)</span> values the <span class="math notranslate nohighlight">\(y\)</span> values closely follow the trend (the noise is low). I.e. the noise variance depends on the value of <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>We may conclude that a linear model may still be a good fit for the data, but our assumption that the noise is normally distributed and independent from <span class="math notranslate nohighlight">\(x\)</span> do not seem to hold.</p>
+<p><em>Not covered here: the clinical interpretation of the parameters <span class="math notranslate nohighlight">\(w_0, w_1\)</span>.</em></p>
+</div>
 <div class="admonition-exercise-part-ii-bayesian-linear-regression admonition">
 <p class="admonition-title">Exercise: Part II: Bayesian Linear Regression</p>
 <p> </p>
 </div>
-<p><em>(Material covered in CS109 B or equivalent)</em></p>
 <p>In this problem, your task is to perform Bayesian linear regression on the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code>.</p>
-<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:
+<p>Assume that the outcome <span class="math notranslate nohighlight">\(y\)</span> can be modeled by the following process:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 y &amp;= f(x) + \epsilon = w_1x + w_0 + \epsilon, \quad \epsilon \sim \mathcal{N}(0, 0.5)\\
 w_0 &amp;\sim \mathcal{N}(0, 1)\\
 w_1 &amp;\sim \mathcal{N}(0, 0.5)
 \end{aligned}\end{split}\]</div>
-
-In this model, we assume the same likelihood as in Part I, but we also include priors for <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span>: <span class="math notranslate nohighlight">\(p(w_0) = \mathcal{N}(0, 1)\)</span>, <span class="math notranslate nohighlight">\(p(w_1) = \mathcal{N}(0, 0.5)\)</span></p>
-<ol class="arabic simple">
-<li><p><strong>(Inference)</strong> Analytically derive the joint posterior distribution over the parameters. That is, analytically compute<br><br>
+<p>In this model, we assume the same likelihood as in Part I, but we also include priors for <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span>: <span class="math notranslate nohighlight">\(p(w_0) = \mathcal{N}(0, 1)\)</span>, <span class="math notranslate nohighlight">\(p(w_1) = \mathcal{N}(0, 0.5)\)</span></p>
+<ol class="arabic">
+<li><p><strong>(Inference)</strong> Analytically derive the joint posterior distribution over the parameters. That is, analytically compute<br><br></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) = \frac{\left(\prod_{n=1}^Np(y_n|x_n, w_1, w_0)\right)p(w_1)p(w_0)}{\prod_{n=1}^Np(y_n|x_n)}.\\
-\end{aligned}\end{split}\]</div>
-
-<br><em>Hint: The posterior of a model with a Gaussian (or normal) likelihood and Gaussian priors is yet again Gaussian. This derivation is included in many machine learning textbooks like Machine Learning: a Probabilistic Perspective by Murphy or Pattern Recognition and Machine Learning by Bishop. This derivation also appears online in many course notes - you are welcomed to use any and all available resources.</em></p></li>
+   p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) = \frac{\left(\prod_{n=1}^Np(y_n|x_n, w_1, w_0)\right)p(w_1)p(w_0)}{\prod_{n=1}^Np(y_n|x_n)}.\\
+   \end{aligned}\end{split}\]</div>
+<p><br><em>Hint: The posterior of a model with a Gaussian (or normal) likelihood and Gaussian priors is yet again Gaussian. This derivation is included in many machine learning textbooks like Machine Learning: a Probabilistic Perspective by Murphy or Pattern Recognition and Machine Learning by Bishop. This derivation also appears online in many course notes - you are welcomed to use any and all available resources.</em></p>
+</li>
 </ol>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Model Interpretation)</strong> Visualize the <em><strong>joint posterior</strong></em> over the parameters, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y, x)\)</span> for the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code> (you may use a scatter plot of samples drawn from the posterior or a contour map/heat map of the pdf). In separate plots, visualize the <em><strong>marginal posterior</strong></em> distribution over each parameter,
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 1</p>
+<p>Using the matrix notation we introduced in Part I, Question 3, we can rewrite the likelihood using matrix notation:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_0\\
-p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_1\\
+p(y_1, \ldots, y_n | x_1, \ldots, x_n, w_0, w_1) &amp;= \prod_{n=1}^N\frac{1}{\sqrt{2\pi\sigma^2}} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}(y_n - (w_1x_n + w_0))^2\right\}\\
+&amp;= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}\sum_{n=1}^N(y_n - (w_1x_n + w_0))^2\right\}\\
+&amp;= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}(\mathbf{y} - \mathbf{X}w)^\top (\mathbf{y} - \mathbf{X}w)\right\}\\
+&amp;= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2}(\mathbf{y} - \mathbf{X}w)^\top(\sigma^2I_{N})^{-1} (\mathbf{y} - \mathbf{X}w)\right\}\\
+&amp;= \mathcal{N}(\mathbf{y}; \mathbf{X}w, \sigma^2I_{N})
 \end{aligned}\end{split}\]</div>
-
-Is the information contained in the joint posterior <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span> equivalent to the information contained in the two marginals <span class="math notranslate nohighlight">\(p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n), p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>? That is, what does each distribution tell you?</p></li>
-</ol>
+<p>where <span class="math notranslate nohighlight">\(I_{N}\)</span> is the <span class="math notranslate nohighlight">\(N\times N\)</span> identity matrix. We see that the joint likelihood is just a multivariate Gaussian with mean <span class="math notranslate nohighlight">\(\mathbf{X}w\)</span> and a diagonal covariance matrix (the entries on the diagonal of this matrix is <span class="math notranslate nohighlight">\(\sigma^2\)</span>). Let’s denote <span class="math notranslate nohighlight">\(\sigma^2I_{N}\)</span> by <span class="math notranslate nohighlight">\(\Sigma\)</span>.</p>
+<p>Let’s also express the prior as a multivariate Gaussian. Since the <span class="math notranslate nohighlight">\(p(w_0)\)</span>, <span class="math notranslate nohighlight">\(p(w_1)\)</span> are both univariate Gaussians and we’ve assumed in our prior that they are independent, the joint distribution over <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span> is a bivariate Gaussian with mean <span class="math notranslate nohighlight">\(m = [0\;\; 0]\)</span> and covariance matrix <span class="math notranslate nohighlight">\(S = \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right]\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+w\sim \mathcal{N}\left([0\;\; 0], \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right] \right).
+\end{split}\]</div>
+<p>Now the posterior can be expressed as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(w | \mathbf{y}, \mathbf{X}) &amp;= \frac{p(\mathbf{y} | \mathbf{X}, w)p(w)}{p(\mathbf{y} | \mathbf{X})}\\
+&amp;= \frac{\frac{1}{\sqrt{2\pi|\Sigma|}^N} \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{X}w - \mathbf{y})^\top\Sigma^{-1}(\mathbf{X}w - \mathbf{y})\right\} \frac{1}{\sqrt{2\pi|S|}^2} \mathrm{exp}\left\{-\frac{1}{2} (w - m)^\top S^{-1}(w - m)\right\}}{p(\mathbf{y} | \mathbf{X})}\\
+&amp;= \frac{const * \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{X}w - \mathbf{y})^\top\Sigma^{-1}(\mathbf{X}w - \mathbf{y}) -\frac{1}{2} (w - m)^\top S^{-1}(w - m)\right\}}{const}\\
+&amp;=const * \mathrm{exp}\left\{-\frac{1}{2}\left(\mathbf{y}^\top\Sigma^{-1}\mathbf{y} - 2\mathbf{y}^\top \Sigma^{-1}\mathbf{X}w + w^\top\mathbf{X}^\top\Sigma^{-1}\mathbf{X}w + w^\top S^{-1}w - 2m^\top S^{-1} w + m^\top S^{-1}m \right)  \right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left(\mathbf{y}^\top\Sigma^{-1}\mathbf{y} + m^\top S^{-1}m\right) \right\}\mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) w - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right) w\right)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) w - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right) w\right)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top A w - 2b w\right)\right\}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(A = \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right)\)</span> and <span class="math notranslate nohighlight">\(b = \left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right)\)</span>.</p>
+<p>In the last line of the above, we see that the inside of the exponential function is almost a matrix square, to <em><strong>complete the square</strong></em> (and factor the expression) we need to add and subtract the term <span class="math notranslate nohighlight">\(bA^{-1} b^\top\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+p(w | \mathbf{y}, \mathbf{X}) &amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top A w - 2b w\right)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left(w^\top A w - 2b w + bA^{-1} b^\top- bA^{-1} b^\top\right)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}\left((w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top) - bA^{-1} b^\top\right)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ \frac{1}{2} bA^{-1} b^\top\right\}\mathrm{exp}\left\{ -\frac{1}{2}(w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}\\
+&amp;= const * \mathrm{exp}\left\{ -\frac{1}{2}(w - A^{-1}b^\top)^\top A(w - A^{-1}b^\top)\right\}.
+\end{aligned}\end{split}\]</div>
+<p>Finally, we see that the posterior <span class="math notranslate nohighlight">\(p(w | \mathbf{y}, \mathbf{X})\)</span> has the form of a multivariate Gaussian, with mean <span class="math notranslate nohighlight">\(A^{-1}b^\top\)</span> and covariance <span class="math notranslate nohighlight">\(A^{-1}\)</span>. That is,</p>
+<div class="math notranslate nohighlight">
+\[
+p(w | \mathbf{y}, \mathbf{X}) = \mathcal{N}\left(\left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right)^{-1} \left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right)^\top, \left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right)^{-1}\right).
+\]</div>
+<p>In our case, we have that <span class="math notranslate nohighlight">\(\Sigma^{-1} = 2I_{N}\)</span>, <span class="math notranslate nohighlight">\(m = [0\;\; 0]\)</span> and <span class="math notranslate nohighlight">\(S = \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right]\)</span>. Hence, our posterior mean is</p>
+<div class="math notranslate nohighlight">
+\[
+\left(S^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right)^{-1} \left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + m^\top S^{-1} \right)^\top = \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1} \left(2\mathbf{X}^\top\mathbf{y} \right).
+\]</div>
+<p>Our posterior covariance is</p>
+<div class="math notranslate nohighlight">
+\[
+(S^{-1} + 2\mathbf{X}^\top\mathbf{X})^{-1}
+\]</div>
+</div>
+<ol class="arabic" start="2">
+<li><p><strong>(Model Interpretation)</strong> Visualize the <em><strong>joint posterior</strong></em> over the parameters, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y, x)\)</span> for the dataset in <code class="docutils literal notranslate"><span class="pre">HW0_data.csv</span></code> (you may use a scatter plot of samples drawn from the posterior or a contour map/heat map of the pdf). In separate plots, visualize the <em><strong>marginal posterior</strong></em> distribution over each parameter,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+   p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_0\\
+   p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) &amp;= \int_{w_0} p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n) dw_1\\
+   \end{aligned}\end{split}\]</div>
+<p>Is the information contained in the joint posterior <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span> equivalent to the information contained in the two marginals <span class="math notranslate nohighlight">\(p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n), p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>? That is, what does each distribution tell you?</p>
 <p>Compute the variance of the marginal posterior distributions <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span> empirically using samples from <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>. What do the width of these intervals tell you about your confidence in the model’s estimation of the parameters?</p>
 <p><em>Hint: it is not necessary to analytically derive the marginals <span class="math notranslate nohighlight">\(p(w_i | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>. Recall that you can perform marginalization of a variable by sampling from the joint distribution and disregarding that variable.</em></p>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Prediction)</strong> In Bayesian linear regression, we obtain a distribution over possible parameters given the data, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>, rather than a single <em><strong>point-estimate</strong></em> of the ‘best’ parameters. This means that when we predict an outcome for, say, <span class="math notranslate nohighlight">\(x=2\)</span> we get a distribution over possible values of <span class="math notranslate nohighlight">\(y\)</span> rather than a single <span class="math notranslate nohighlight">\(y\)</span>. The distribution over the predicted <span class="math notranslate nohighlight">\(y\)</span> for a given <span class="math notranslate nohighlight">\(x\)</span> is called the <em><strong>posterior predictive</strong></em>, and is denoted <span class="math notranslate nohighlight">\(p(y|x)\)</span>.</p></li>
+</li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 2</p>
+<p>From Question 1, we see that the posterior <span class="math notranslate nohighlight">\(p(w | \mathbf{y}, \mathbf{X})\)</span> is a bivariate Gaussian with mean <span class="math notranslate nohighlight">\(\mu\)</span> and covariance <span class="math notranslate nohighlight">\(\Sigma\)</span> defined as below:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mu &amp;= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1} \left(2\mathbf{X}^\top\mathbf{y} \right)\\
+\Sigma &amp;= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1}\\
+\end{aligned}\end{split}\]</div>
+<p>We visualize the joint posterior by sampling 200 points from <span class="math notranslate nohighlight">\(\mathcal{N}(\mu, \Sigma)\)</span> and scatter plotting these points.</p>
+<p>For the posterior marginal distribution <span class="math notranslate nohighlight">\(p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>, we simply histogram the first coordinates (representing <span class="math notranslate nohighlight">\(w_1\)</span>) of these 200 samples (disregarding the second coordinate). The same can be done for <span class="math notranslate nohighlight">\(p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
+<span class="n">y_matrix</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">prior_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">prior_precision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">prior_variance</span><span class="p">)</span>
+
+<span class="c1">#defining the posterior variance</span>
+<span class="n">joint_variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">prior_precision</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">))</span>
+<span class="c1">#defining the posterior mean</span>
+<span class="n">joint_mean</span> <span class="o">=</span> <span class="n">joint_variance</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_matrix</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1">#sampling 200 points from the posterior</span>
+<span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">joint_mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">joint_variance</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1">#visualize the joint posterior</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'samples from the joint posterior'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'w_1'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'w_0'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of the joint posterior'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-2-1.png"><img alt="Part II, Question 2, figure 1" class="align-center" src="../_images/part-ii-question-2-1.png" style="width: 100%;" />
+</a>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1">#visualize the posterior marginal of w_1</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Values of w_1'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Relative Frequency'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of the posterior marginal of w_1'</span><span class="p">)</span>
+<span class="c1">#visualize the posterior marginal of w_0</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Values of w_0'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Relative Frequency'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Visualization of the posterior marginal of w_0'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-2-2.png"><img alt="Part II, Question 2, figure 2" class="align-center" src="../_images/part-ii-question-2-2.png" style="width: 100%;" />
+</a>
+<p>The information contained in the joint posterior is not equivalent to the two marginals. The posterior marginals alone tell you how each parameter is distributed but they cannot tell you how the two parameters are correlated, and such correlations are important for understanding how the parameters are related. For example, if the slope is estimated to be 4, then in order to produce a good fit for the data, our choices of the intercept must be limited to a specific range. The joint posterior distribution describes both the independent distributions of each parameter as well as their correlation (from the visualization of the joint, you can see that the Gaussian has a slight negative trend – i.e. slope and intercept are negatively correlated).</p>
+<p>We can also summarize each marginal posterior by its median and its 95% interval:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">slope_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">slope_higher</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">97.5</span><span class="p">)</span>
+<span class="n">slope_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">intercept_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">)</span>
+<span class="n">intercept_higher</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mf">97.5</span><span class="p">)</span>
+<span class="n">intercept_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">bayesian_interval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[[</span><span class="n">intercept_mean</span><span class="p">,</span> <span class="n">intercept_lower</span><span class="p">,</span> <span class="n">intercept_higher</span><span class="p">],</span> 
+                           <span class="p">[</span><span class="n">slope_mean</span><span class="p">,</span> <span class="n">slope_lower</span><span class="p">,</span> <span class="n">slope_higher</span><span class="p">]],</span>
+                     <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">'intercept'</span><span class="p">,</span> <span class="s1">'slope'</span><span class="p">],</span>
+                     <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'posterior median'</span><span class="p">,</span> <span class="s1">'posterior 2.5 Percentile'</span><span class="p">,</span> <span class="s1">'posterior 97.5 Percentile'</span><span class="p">])</span>
+<span class="n">bayesian_interval_df</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>           posterior median  posterior 2.5 Percentile  \
+intercept          8.814749                  8.676089   
+slope              5.216748                  5.186977   
+
+           posterior 97.5 Percentile  
+intercept                   8.962666  
+slope                       5.243561
+</pre></div>
+</div>
+<p><em>Not covered here: the empirical variances of the marginal posteriors, and what the widths of these intervals say about our confidence in the estimates.</em></p>
+</div>
+<ol class="arabic" start="3">
+<li><p><strong>(Prediction)</strong> In Bayesian linear regression, we obtain a distribution over possible parameters given the data, <span class="math notranslate nohighlight">\(p(w_1, w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)\)</span>, rather than a single <em><strong>point-estimate</strong></em> of the ‘best’ parameters. This means that when we predict an outcome for, say, <span class="math notranslate nohighlight">\(x=2\)</span> we get a distribution over possible values of <span class="math notranslate nohighlight">\(y\)</span> rather than a single <span class="math notranslate nohighlight">\(y\)</span>. The distribution over the predicted <span class="math notranslate nohighlight">\(y\)</span> for a given <span class="math notranslate nohighlight">\(x\)</span> is called the <em><strong>posterior predictive</strong></em>, and is denoted <span class="math notranslate nohighlight">\(p(y|x)\)</span>.</p>
 <p>Visualize the <strong>95% posterior predictive interval</strong> (this is the interval that includes 95% of the posterior predictive values) for the training data – this is usually visualized as a shaded tube containing the 95% of the posterior predictive values for each test <span class="math notranslate nohighlight">\(x\)</span>-value.</p>
 <p>What does the 95% posterior predictive interval tell you about the model’s uncertainty in its predictions?</p>
+</li>
+</ol>
 <div class="admonition-exercise-part-iii-broader-impact-analysis admonition">
 <p class="admonition-title">Exercise: Part III: Broader Impact Analysis</p>
 <p>You’ve now modeled the same set of data using non-Bayesian and Bayesian regression models. In both paradigms it’s possible to identify a ‘best’ set of model parameters (in the non-Bayesian approach, we compute the MLE; in the Bayesian approach, we can compute the mean or mode of the posterior). For the Bayesian model, we also quantified our uncertainty in the model parameters as well as our uncertainty in the model’s predictions. So which model, if any, should we deploy in real life?</p>
@@ -1042,10 +1349,11 @@ Is the information contained in the joint posterior <span class="math notranslat
 <ol class="arabic simple">
 <li><p><strong>(Impact)</strong> Analyze the broader impact of these two models. Specifically, focus on anticipating ways these models can interact with other components of the decision systems in which they will be deployed, identifying end-users, affected communities as well as anticipating the effects (positive and negative) on affected communities (in particular, does the model have the same effect on all subpopulations in the affected communities?).</p></li>
 </ol>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Mitigation)</strong> Which model, if any, would you recommend to deploy? Why?</p></li>
-</ol>
+<ol class="arabic" start="2">
+<li><p><strong>(Mitigation)</strong> Which model, if any, would you recommend to deploy? Why?</p>
 <p>What information should the ML designer/engineer disclose to the end-users to mitigate potential negative impacts?</p>
+</li>
+</ol>
 </section>
 </section>
 <section id="further-reading">
@@ -1132,7 +1440,7 @@ Is the information contained in the joint posterior <span class="math notranslat
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-course-about">1.1. What is this course about?</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-this-book-about">1.1. What is this book about?</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-model-patterns-in-data">How Do We Model Patterns in Data?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-model">What is a Model?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-notion-of-error">A Notion of Error</a></li>
@@ -1142,7 +1450,7 @@ Is the information contained in the joint posterior <span class="math notranslat
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-statistical-model-for-regression">A Statistical Model for Regression</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-do-we-quantify-fitness">How Do We Quantify Fitness?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model Fitting</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximimum-likelihood-and-minimum-mean-square-error">Maximimum Likelihood and Minimum Mean Square Error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood-and-minimum-mean-square-error">Maximum Likelihood and Minimum Mean Square Error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-evaluation">Model Evaluation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-interpretation">Model Interpretation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-bayesian-model">What is a Bayesian Model?</a></li>
@@ -1159,7 +1467,7 @@ Is the information contained in the joint posterior <span class="math notranslat
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-interactions-do-we-need-to-think-about-when-we-design-ml-models">What Interactions Do We Need to Think About When We Design ML Models?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-promises-of-human-ai-systems">The Promises of Human + AI Systems</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-perils-of-human-ai-systems">The Perils of Human + AI Systems</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benifits-of-machine-learning">The Potential Social Benifits of Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-potential-social-benefits-of-machine-learning">The Potential Social Benefits of Machine Learning</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-negative-social-impacts-of-machine-learning">The Negative Social Impacts of Machine Learning</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-is-this-happening">Why Is This Happening?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-problem-solving-frameworks-for-machine-learning">Alternative Problem Solving Frameworks for Machine Learning</a></li>

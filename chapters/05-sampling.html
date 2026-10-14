@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -519,7 +520,7 @@ document.write(`
 <h3>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h3>
 <p>Note that nearly <em>every</em> computation for Bayesian models requires us being able to obtain samples from the posterior:</p>
 <ol class="arabic simple">
-<li><p>Generating synethtic data from the posterior predictive require us to sample from the model parameters from the posterior, and then sample data given each of these parameters samples.</p></li>
+<li><p>Generating synthetic data from the posterior predictive require us to sample from the model parameters from the posterior, and then sample data given each of these parameters samples.</p></li>
 <li><p>Empirically computing the posterior predictive mean requires samples from the posterior.</p></li>
 <li><p>Evaluating the fit of the Bayesian model, i.e. empirically computing the marginal data log-likelihood, requires us to average the likelihood of the data over parameter samples from the posterior.</p></li>
 </ol>
@@ -537,10 +538,10 @@ document.write(`
 <p>Fix an integer <span class="math notranslate nohighlight">\(c &gt; N\)</span> and fix integers <span class="math notranslate nohighlight">\(a, b &gt; 0\)</span>.</p>
 <ol class="arabic simple">
 <li><p>seed: set an integer <span class="math notranslate nohighlight">\(0\leq s_0 &lt; c\)</span></p></li>
-<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times: <div class="math notranslate nohighlight">
-\[s_n = (as_{n-1} + b)_{\text{mod } c}\]</div>
-</p></li>
+<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times:</p></li>
 </ol>
+<div class="math notranslate nohighlight">
+\[s_n = (as_{n-1} + b)_{\text{mod } c}\]</div>
 <p>Output is an array of random integers <span class="math notranslate nohighlight">\([s_0, \ldots, s_N]\)</span> in <span class="math notranslate nohighlight">\([0, c]\)</span>.</p>
 <p>For an array of random real numbers in <span class="math notranslate nohighlight">\([0, 1]\)</span>, we compute <span class="math notranslate nohighlight">\(\left[\frac{s_0}{c}, \ldots, \frac{s_N}{c}\right]\)</span>.</p>
 <p>We’ll see that <strong>the simulation of all random variables is based on the simulation of the uniform distribution over <span class="math notranslate nohighlight">\([0, 1]\)</span></strong>!</p>
@@ -584,12 +585,11 @@ document.write(`
 <h2><span class="section-number">6.2. </span>Inverse CDF Sampling<a class="headerlink" href="#inverse-cdf-sampling" title="Link to this heading">#</a></h2>
 <section id="the-cumulative-distribution-function">
 <h3>The Cumulative Distribution Function<a class="headerlink" href="#the-cumulative-distribution-function" title="Link to this heading">#</a></h3>
-<p>Recall that the <em><strong>cumulative distribution function (CDF)</strong></em> of a real-valued random variable <span class="math notranslate nohighlight">\(X\)</span> with continuous pdf <span class="math notranslate nohighlight">\(f_X\)</span> is defined as
+<p>Recall that the <em><strong>cumulative distribution function (CDF)</strong></em> of a real-valued random variable <span class="math notranslate nohighlight">\(X\)</span> with continuous pdf <span class="math notranslate nohighlight">\(f_X\)</span> is defined as</p>
 <div class="math notranslate nohighlight">
 \[
 F_X(a) = \mathbb{P}[X \leq a] = \int_{-\infty}^a f_X(t) dt
 \]</div>
-</p>
 <figure class="align-center" id="fig-05-cdf">
 <a class="reference internal image-reference" href="../_images/cdf.jpg"><img alt="../_images/cdf.jpg" src="../_images/cdf.jpg" style="width: 100%;" />
 </a>
@@ -618,15 +618,15 @@ F_X(a) = \mathbb{P}[X \leq a] = \int_{-\infty}^a f_X(t) dt
 <li><p>we know the analytical form of the inverse of the CDF of <span class="math notranslate nohighlight">\(X\)</span>, <span class="math notranslate nohighlight">\(F^{-1}_X\)</span>.</p></li>
 </ul>
 <p>To simulate <span class="math notranslate nohighlight">\(X\)</span>, we repeat for <span class="math notranslate nohighlight">\(N\)</span> number of samples:</p>
-<ol class="arabic simple">
-<li><p>sample
+<ol class="arabic">
+<li><p>sample</p>
 <div class="math notranslate nohighlight">
 \[U_n \sim U(0, 1)\]</div>
-</p></li>
-<li><p>compute
+</li>
+<li><p>compute</p>
 <div class="math notranslate nohighlight">
 \[X_n = F^{-1}_X(U_n)\]</div>
-</p></li>
+</li>
 </ol>
 <p><strong>Question:</strong> How do we simulate multivariate random variables? What if we don’t have the analytical form of <span class="math notranslate nohighlight">\(F^{-1}_X\)</span>?</p>
 </section>
@@ -636,7 +636,7 @@ F_X(a) = \mathbb{P}[X \leq a] = \int_{-\infty}^a f_X(t) dt
 <p><em><strong>Proof:</strong></em> Recall that the CDF of <span class="math notranslate nohighlight">\(Y\)</span> is defined by <span class="math notranslate nohighlight">\(F_Y(x) = \mathbb{P}[Y \leq x]\)</span>. Now, we can write</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-F_Y(x) &amp;= \mathbb{P}[Y \leq x]&amp;\\ 
+F_Y(x) &amp;= \mathbb{P}[Y \leq x]&amp;\\
 &amp;= \mathbb{P}[F_X^{−1}(U) \leq x],&amp;(\text{since $Y = F_X(U)$})\\
 &amp;= \mathbb{P}[F_X(F_X^{−1}(U)) \leq F_X(x)],&amp;(\text{since $F_X$ is strictly increasing})\\
 &amp;= \mathbb{P}[U \leq F_X(x)],&amp;(\text{since $F_X^{-1}$ is the inverse of $F_X$})\\
@@ -645,13 +645,12 @@ F_Y(x) &amp;= \mathbb{P}[Y \leq x]&amp;\\
 </section>
 <section id="simulating-an-exponential-random-variable">
 <h3>Simulating an Exponential Random Variable<a class="headerlink" href="#simulating-an-exponential-random-variable" title="Link to this heading">#</a></h3>
-<p>We’ll use a uniform random variable <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span> to simulate a exponential variable <span class="math notranslate nohighlight">\(X\sim Exp(\lambda)\)</span>. Recall that the exponential CDF is
+<p>We’ll use a uniform random variable <span class="math notranslate nohighlight">\(U\sim U(0, 1)\)</span> to simulate a exponential variable <span class="math notranslate nohighlight">\(X\sim Exp(\lambda)\)</span>. Recall that the exponential CDF is</p>
 <div class="math notranslate nohighlight">
 \[
 F_X(x) = 1 - e^{-\lambda x}.
 \]</div>
-</p>
-<p>The inverse of the CDF can be found by solving for the input, <span class="math notranslate nohighlight">\(x\)</span>, of the CDF
+<p>The inverse of the CDF can be found by solving for the input, <span class="math notranslate nohighlight">\(x\)</span>, of the CDF</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 y &amp;= 1 - e^{-\lambda x}\\
@@ -659,8 +658,7 @@ e^{-\lambda x} &amp;= 1 - y\\
 -\lambda x &amp;= \log(1 - y)\\
 x &amp;= -\frac{1}{\lambda}\log(1 - y)
 \end{aligned}\end{split}\]</div>
-
-where we take <span class="math notranslate nohighlight">\(\log\)</span> to be base <span class="math notranslate nohighlight">\(e\)</span>.</p>
+<p>where we take <span class="math notranslate nohighlight">\(\log\)</span> to be base <span class="math notranslate nohighlight">\(e\)</span>.</p>
 <p>Thus, <span class="math notranslate nohighlight">\(F_X^{-1}(y) = -\frac{1}{\lambda}\log(1 - y)\)</span>.</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
@@ -784,7 +782,7 @@ where we take <span class="math notranslate nohighlight">\(\log\)</span> to be b
 <li><p>sample a random height, <span class="math notranslate nohighlight">\(U_k \sim U(0, 1)\)</span></p></li>
 <li><p>if <span class="math notranslate nohighlight">\(U_k &lt; \frac{f_X(Y_k)}{Mg(Y_k)}\)</span> then accept <span class="math notranslate nohighlight">\(Y_k\)</span> as a sample, else reject</p></li>
 </ol>
-<p><strong>Question:</strong> How long does it take to accumulate <span class="math notranslate nohighlight">\(N\)</span> samples? What is the effect of the choice of the proposal distribution <span class="math notranslate nohighlight">\(g\)</span> have on the sampling process? Now that we can sample from any distribution, this class is over right?</p>
+<p><strong>Question:</strong> How long does it take to accumulate <span class="math notranslate nohighlight">\(N\)</span> samples? What is the effect of the choice of the proposal distribution <span class="math notranslate nohighlight">\(g\)</span> have on the sampling process? Now that we can sample from any distribution, we’re done, right?</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Rejection Sampling: Proof of Correctness</p>
 <p>We need to show that the accepted samples <span class="math notranslate nohighlight">\(Y\)</span> have same distribution as <span class="math notranslate nohighlight">\(X\)</span>. In particular, we’ll show that the CDF of the accepted samples is equal to <span class="math notranslate nohighlight">\(F_X\)</span>:</p>
@@ -792,7 +790,7 @@ where we take <span class="math notranslate nohighlight">\(\log\)</span> to be b
 \[
 \mathbb{P}\left[ Y \leq a\; \left\vert\; U \leq \frac{f_X(Y)}{Mg(Y)}\right. \right] = F_X(a).
 \]</div>
-<p>Using Baye’s rule for probabilities, we get that</p>
+<p>Using Bayes’ rule for probabilities, we get that</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mathbb{P}\left[\left.U \leq \frac{f_X(Y)}{Mg(Y)} \; \right\vert\; Y \leq a  \right] &amp;= \frac{\mathbb{P}\left[Y \leq a,\; U \leq \frac{f_X(Y)}{Mg(Y)} \right]}{\mathbb{P}\left[ Y \leq a\right]}\\
@@ -816,12 +814,11 @@ where we take <span class="math notranslate nohighlight">\(\log\)</span> to be b
 </section>
 <section id="rejection-sampling-efficiency">
 <h3>Rejection Sampling: Efficiency<a class="headerlink" href="#rejection-sampling-efficiency" title="Link to this heading">#</a></h3>
-<p>Given a proposal <span class="math notranslate nohighlight">\(Y=y\)</span>, the probability of accepting it is
+<p>Given a proposal <span class="math notranslate nohighlight">\(Y=y\)</span>, the probability of accepting it is</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{P}\left[\left.U\leq \frac{f(Y)}{Mg(Y)} \right\vert Y=y\right] = \frac{f(y)}{Mg(y)}.
 \]</div>
-</p>
 <p>So the overall probability <span class="math notranslate nohighlight">\(p\)</span> of accepting any given proposal can be computed by integrating out <span class="math notranslate nohighlight">\(y\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
@@ -834,7 +831,7 @@ p &amp;= \int_{\mathbb{R}} \frac{f(y)}{Mg(y)} g(y)dy \\
 <section id="simulating-a-normal-random-variable">
 <h3>Simulating a Normal Random Variable<a class="headerlink" href="#simulating-a-normal-random-variable" title="Link to this heading">#</a></h3>
 <p>We note that if we can simulate a standard normal variable <span class="math notranslate nohighlight">\(X\sim \mathcal{N}(0, 1)\)</span>, then we can simulate any normal variable <span class="math notranslate nohighlight">\(Y\sim \mathcal{N}(\mu, \sigma^2)\)</span> by setting <span class="math notranslate nohighlight">\(Y = \sigma* X + \mu\)</span>.</p>
-<p>We also observe that since the standard normal distirbution is symmetric about <span class="math notranslate nohighlight">\(X=0\)</span>, we only need to simulate samples from the non-negative side of <span class="math notranslate nohighlight">\(\mathcal{N}(0, 1)\)</span> and then independently sample a sign (+ or -) for each sample using a Bernoulli distribution with <span class="math notranslate nohighlight">\(\theta = 0.5\)</span>.</p>
+<p>We also observe that since the standard normal distribution is symmetric about <span class="math notranslate nohighlight">\(X=0\)</span>, we only need to simulate samples from the non-negative side of <span class="math notranslate nohighlight">\(\mathcal{N}(0, 1)\)</span> and then independently sample a sign (+ or -) for each sample using a Bernoulli distribution with <span class="math notranslate nohighlight">\(\theta = 0.5\)</span>.</p>
 <p>Simulating the positive half of the normal distribution means we need to scale the normal pdf by a factor of 2, so that is integrates to 1 over the nonnegative real numbers.</p>
 <p>A natural candidate for a pdf to cover the non-negative half of the standard normal pdf is the exponential pdf.</p>
 <div class="cell tag_hide-cell docutils container">
@@ -934,31 +931,32 @@ p(\mu, \sigma^2 | Y)  = \frac{\overbrace{\frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{
 <section id="gibbs-sampling-algorithm">
 <h3>Gibbs Sampling: Algorithm<a class="headerlink" href="#gibbs-sampling-algorithm" title="Link to this heading">#</a></h3>
 <p>To simulate <span class="math notranslate nohighlight">\(N\)</span> samples of a <span class="math notranslate nohighlight">\(D\)</span>-dimensional multivariate random variable <span class="math notranslate nohighlight">\(X\)</span> with pdf <span class="math notranslate nohighlight">\(f_X\)</span>, we</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>initialization: choose any <span class="math notranslate nohighlight">\(x^{(0)} = \left[x^{(0)}_1\;\; \ldots\;\; x^{(0)}_D\right]\)</span></p></li>
-<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times: sample <span class="math notranslate nohighlight">\(x^{(n+1)} = \left[x^{(n+1)}_1\;\; \ldots\;\; x^{(n+1)}_D\right]\)</span> by</p></li>
-</ol>
+<li><p>iterate <span class="math notranslate nohighlight">\(N\)</span> times: sample <span class="math notranslate nohighlight">\(x^{(n+1)} = \left[x^{(n+1)}_1\;\; \ldots\;\; x^{(n+1)}_D\right]\)</span> by</p>
 <p>a. initialization: sample <span class="math notranslate nohighlight">\(X^{(n+1)}_1\)</span> from the conditional distribution</p>
 <div class="math notranslate nohighlight">
 \[f_X\left(X_1 \,|\, X_2 = x^{(n)}_2,\;\ldots,\; X_D = x^{(n)}_D\right)\]</div>
-<p>b. iterate from <span class="math notranslate nohighlight">\(d = 2\)</span> througbh <span class="math notranslate nohighlight">\(d=D\)</span>: sample <span class="math notranslate nohighlight">\(x^{(n+1)}_d\)</span> from the conditional distribution</p>
+<p>b. iterate from <span class="math notranslate nohighlight">\(d = 2\)</span> through <span class="math notranslate nohighlight">\(d=D\)</span>: sample <span class="math notranslate nohighlight">\(x^{(n+1)}_d\)</span> from the conditional distribution</p>
 <div class="math notranslate nohighlight">
 \[f_X\left(X_d \,|\, X_1 = x^{(n+1)}_1,\; \ldots,\; X_{d-1} = x^{(n+1)}_{d-1},\; X_{d+1} = x^{(n)}_{d+1},\; \ldots,\; X_D = x^{(n)}_D\right)\]</div>
+</li>
+</ol>
 <p><strong>Claim:</strong> When <span class="math notranslate nohighlight">\(N\)</span> is large enough, the latter portion of the samples we obtain will be from the distribution of <span class="math notranslate nohighlight">\(X\)</span>.</p>
 <p><strong>Question:</strong> Why is this algorithm a valid sampler? That is, how do we prove that the samples we obtain are actually distributed as <span class="math notranslate nohighlight">\(f_X\)</span>? What is the effect of the initialization <span class="math notranslate nohighlight">\(x^{(0)}\)</span>?</p>
 </section>
 <section id="simulating-the-posterior-of-a-normal-normal-inverse-gamma-model">
 <h3>Simulating the Posterior of a Normal-Normal-Inverse Gamma Model<a class="headerlink" href="#simulating-the-posterior-of-a-normal-normal-inverse-gamma-model" title="Link to this heading">#</a></h3>
 <p>Let <span class="math notranslate nohighlight">\(Y \sim \mathcal{N}(\mu, \sigma^2)\)</span>, with both parameters unknown. We place a normal prior on <span class="math notranslate nohighlight">\(\mu\)</span>, <span class="math notranslate nohighlight">\(\mu\sim\mathcal{N}(m, s^2)\)</span>, and an gamma prior on <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(\sigma^2\sim IG(\alpha, \beta)\)</span>.</p>
-<ol class="arabic simple">
-<li><p><span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> is a normal pdf,
+<ol class="arabic">
+<li><p><span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> is a normal pdf,</p>
 <div class="math notranslate nohighlight">
 \[\mathcal{N}\left(\mu; \frac{s^2y + \sigma^2m}{s^2 + \sigma^2}, s^2\sigma^2\right).\]</div>
-</p></li>
-<li><p><span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span> is an inverse gamma pdf,
+</li>
+<li><p><span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span> is an inverse gamma pdf,</p>
 <div class="math notranslate nohighlight">
 \[IG\left(\sigma^2; \alpha + 0.5, \frac{(y-\mu)^2}{2} + \beta\right).\]</div>
-</p></li>
+</li>
 </ol>
 <p>We choose an arbitrary initial point <span class="math notranslate nohighlight">\((\mu_0, \sigma^2_0) \in \mathbb{R}^2\)</span>, and then sample the next point by  sampling from the conditionals <span class="math notranslate nohighlight">\(p(\mu| Y, \sigma^2)\)</span> and <span class="math notranslate nohighlight">\(p(\sigma^2| Y, \mu)\)</span>, in order.</p>
 <div class="cell tag_hide-cell docutils container">
@@ -1035,15 +1033,13 @@ By translating and scaling we can simulate a random variable <span class="math n
 </section>
 <section id="how-to-evaluate-a-sampler">
 <h3>How to Evaluate a Sampler<a class="headerlink" href="#how-to-evaluate-a-sampler" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p><strong>Correctness:</strong> Every sampler must come with a <em><strong>proof</strong></em> of correctness - that is, the numbers produced by the sampler have the distribution <span class="math notranslate nohighlight">\(p(X)\)</span>. Many intuitively sensible ways of sampling can fail to be correct.</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>Correctness:</strong> Every sampler must come with a <em><strong>proof</strong></em> of correctness - that is, the numbers produced by the sampler have the distribution <span class="math notranslate nohighlight">\(p(X)\)</span>. Many intuitively sensible ways of sampling can fail to be correct.</p>
 <p><strong>Question:</strong> Why isn’t it sufficient to “histogram” the samples and check that they are distributed like <span class="math notranslate nohighlight">\(p(X)\)</span>?<br><br></p>
-<ol class="arabic simple" start="2">
-<li><p><strong>Efficiency:</strong> Every sampler must be analyzed for it’s efficiency - that is, how many times the procedure must run before it accepts a sample. You should also be aware of how the efficiency is affected by the dimension of <span class="math notranslate nohighlight">\(X\)</span>.</p></li>
-</ol>
+</li>
+<li><p><strong>Efficiency:</strong> Every sampler must be analyzed for it’s efficiency - that is, how many times the procedure must run before it accepts a sample. You should also be aware of how the efficiency is affected by the dimension of <span class="math notranslate nohighlight">\(X\)</span>.</p>
 <p><strong>Question:</strong> How do inverse CDF and rejection compare in terms of efficiency?<br><br></p>
-<ol class="arabic simple" start="3">
+</li>
 <li><p><strong>Sufficiency of repetition:</strong> Some samplers like Gibbs comes with the guarantee that if you repeat the procedure enough times (asymptotically), you will eventually be sampling from <span class="math notranslate nohighlight">\(p(X)\)</span>. But exactly how many times is enough?</p></li>
 </ol>
 </section>
@@ -1052,49 +1048,45 @@ By translating and scaling we can simulate a random variable <span class="math n
 <p>Recall that the primary objects of interest in a Bayesian model are the <em><strong>posterior distribution</strong></em> over parameters and the <em><strong>posterior predictive distribution</strong></em> over observations.</p>
 <p>Evaluating the model, forming scientific hypothesis about the data and making predictions all require <strong>sampling</strong> from one of the two distributions.</p>
 <p>When the prior is conjugate for the likelihood, the posterior pdf can be derived in closed form. Often, such a posterior is easy to sample from (using inverse CDF or rejection sampling). However, restricting ourselves to such simple likelihoods and priors limits our ability to model complex real-life data!</p>
-<p>Our goal is to develop a set of different procedures that allow us to sample from arbitrary distributions. I.e. <strong>samplers will make Bayesian inference more “generic”, less “artisenal”</strong>.</p>
+<p>Our goal is to develop a set of different procedures that allow us to sample from arbitrary distributions. I.e. <strong>samplers will make Bayesian inference more “generic”, less “artisanal”</strong>.</p>
 </section>
 <section id="what-if-we-want-posterior-point-estimates">
 <h3>What If We Want Posterior Point Estimates?<a class="headerlink" href="#what-if-we-want-posterior-point-estimates" title="Link to this heading">#</a></h3>
-<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as
+<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[\theta] = \int_\Theta \theta\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S \theta_s,\, \theta_s \sim p(\theta | Y)
 \]</div>
-</p>
-<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected vaue of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:
+<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected value of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y)
 \]</div>
-</p>
 <p><strong>Question:</strong> But is this estimate consistent? Unbiased? Of minimal variance?</p>
 </section>
 </section>
 <section id="summary">
 <h2><span class="section-number">6.6. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<ol class="arabic simple" start="0">
-<li><p>What’s a good strategy for learning/organizing the info in this class?</p></li>
-</ol>
+<ol class="arabic" start="0">
+<li><p>What’s a good strategy for learning/organizing the info in this book?</p>
 <p>Every topic is potentially really technical and really deep (e.g. do I need to read a text book on measure-theoretic foundations of probability theory first?), how do you manage diminishing margins of return and your finite energy?</p>
 <ul class="simple">
-<li><p><em><strong>Ask: what is this good for?</strong></em> Let the tasks and real-life questions guide you to the piece of theory that is necessary to address these tasts/questions <strong>productively</strong> and <strong>responsibly</strong>.<br><br></p></li>
-<li><p><em><strong>Ask: why do I care?</strong></em> Remember <strong>the big-picture story</strong> of the class, each topic is linked to the next and builds on the previous. You can Google the details later.</p></li>
+<li><p><em><strong>Ask: what is this good for?</strong></em> Let the tasks and real-life questions guide you to the piece of theory that is necessary to address these tasks/questions <strong>productively</strong> and <strong>responsibly</strong>.<br><br></p></li>
+<li><p><em><strong>Ask: why do I care?</strong></em> Remember <strong>the big-picture story</strong> of the book, each topic is linked to the next and builds on the previous. You can Google the details later.</p></li>
 </ul>
-<ol class="arabic simple">
-<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p></li>
-</ol>
-<ul class="simple">
-<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
-<li><p><em><strong>(Marginal Data Log-Likelihood: Secretely Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:
+</li>
+<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p>
+<ul>
+<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synthetic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
+<li><p><em><strong>(Marginal Data Log-Likelihood: Secretly Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:</p>
 <div class="math notranslate nohighlight">
 \[\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta\]</div>
-<br><br></p></li>
+<p><br><br></p>
+</li>
 </ul>
-<ol class="arabic simple" start="2">
+</li>
 <li><p>Why is sampling hard (can’t we <code class="docutils literal notranslate"><span class="pre">numpy.random.something</span></code>)?<br><br></p></li>
-<li><p>Basic strategy of sampling:</p></li>
-</ol>
+<li><p>Basic strategy of sampling:</p>
 <ul class="simple">
 <li><p>build up a set of simple distributions that we can pseudo-randomly sample from (e.g. Uniform)</p></li>
 <li><p>transform samples from our simple distributions into samples from complex distributions:</p>
@@ -1105,22 +1097,22 @@ By translating and scaling we can simulate a random variable <span class="math n
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="4">
-<li><p>How do I evaluate the quality of my samples?</p></li>
-</ol>
+</li>
+<li><p>How do I evaluate the quality of my samples?</p>
 <ul class="simple">
 <li><p>Can I histogram my samples and compare it with the graph of my target pdf?</p></li>
 <li><p>There’s a whole lot of math that came with my sampler, do I need to care?</p></li>
 <li><p>Can I customize or change the sampling algorithm?</p></li>
 <li><p>If I know that my sampler is correct (e.g. produces actual samples from my target pdf) do I care about any other properties?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="5">
-<li><p><strong>But do I REALLY need to be Bayesian???</strong></p></li>
-</ol>
+</li>
+<li><p><strong>But do I REALLY need to be Bayesian???</strong></p>
 <ul class="simple">
 <li><p>Uncertainty is obviously important in many high-impact tasks (e.g. Bayesian Modeling of Uncertainty in Ensembles of Climate Models)<br><br></p></li>
 <li><p>Even if I <em><strong>ONLY</strong></em> care about prediction, the averaged predictions from an <em>ensemble</em> of models is very often better in terms of accuracy, and Bayesian posteriors naturally given you an <em>ensemble</em> of models. Averaging the predictions of models in the Bayesian posterior is called <em><strong>Bayesian averaging</strong></em> and it can be better in terms of accuracy than even bootstrap ensembles!</p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="further-reading">
 <h2><span class="section-number">6.7. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>

@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -515,7 +516,7 @@ document.write(`
 <h2><span class="section-number">15.1. </span>Logistic Regression<a class="headerlink" href="#logistic-regression" title="Link to this heading">#</a></h2>
 <section id="coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates">
 <h3>Coin-Toss Revisited: Modeling a Bernoulli Variable with Covariates<a class="headerlink" href="#coin-toss-revisited-modeling-a-bernoulli-variable-with-covariates" title="Link to this heading">#</a></h3>
-<p>Let’s revisit our model for coin-toss: we’d assumed that the outcomes <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> were independently and identically distributed as Bernoulli’s, <span class="math notranslate nohighlight">\(Y^{(n)} \sim Ber(\theta)\)</span>. Today, we will re-examine the <em><strong>identical</strong></em> part of the modeling assumptions.</p>
+<p>Let’s revisit our model for coin-toss: we’d assumed that the outcomes <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> were independently and identically distributed as Bernoulli’s, <span class="math notranslate nohighlight">\(Y^{(n)} \sim Ber(\theta)\)</span>. In this chapter, we will re-examine the <em><strong>identical</strong></em> part of the modeling assumptions.</p>
 <p>Realistically, the probability of <span class="math notranslate nohighlight">\(Y^{(n)} = 1\)</span> depends on variables like force, angle, spin etc.</p>
 <p>Let <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)} \in \mathbb{R}^D\)</span> be <span class="math notranslate nohighlight">\(D\)</span> number of such measurements of the <span class="math notranslate nohighlight">\(n\)</span>-th toss. We model the probability of <span class="math notranslate nohighlight">\(Y^{(n)} = 1\)</span> as a function of these <em><strong>covariates</strong></em> <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span>:</p>
 <div class="math notranslate nohighlight">
@@ -555,7 +556,7 @@ A regression problem is where we predict a <strong>quantitative</strong> outcome
 </ul>
 <p><strong>How Do We Classify?</strong>
 The data for classification consists of a set of tuples <span class="math notranslate nohighlight">\((\mathbf{x}^{(n)}, y^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{x}^{(n)}\in \mathbb{R}^D\)</span> is a set of predictors/covariates (e.g. age, income etc) for the <span class="math notranslate nohighlight">\(n\)</span>-th observation and <span class="math notranslate nohighlight">\(y^{(n)}\)</span> is the binary label (e.g. did the person receive the loan). The set of observations that are labeled <span class="math notranslate nohighlight">\(y=0\)</span> are called class 0 and the set labeled <span class="math notranslate nohighlight">\(y=1\)</span> are called class 1.</p>
-<p>The goal is learn a function <span class="math notranslate nohighlight">\(f(\mathbf{x})\)</span> so that given a new set of covariates <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> we can predict the correpsonding label <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>The goal is learn a function <span class="math notranslate nohighlight">\(f(\mathbf{x})\)</span> so that given a new set of covariates <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> we can predict the corresponding label <span class="math notranslate nohighlight">\(y\)</span>.</p>
 <p>Suppose our data has a small number of predictors, by visualizing the data we can intuitively check how easy it is to separate the classes. In the following example, we have two covariates. We scatter plot the covariates (pictured as crosses and bars), we then indicate data belonging to class 1 by visualizing them as blue crosses and those belonging to class 0 as red bars.</p>
 <figure class="align-center" id="fig-12-fig0">
 <a class="reference internal image-reference" href="../_images/fig0.png"><img alt="../_images/fig0.png" src="../_images/fig0.png" style="width: 301px;" />
@@ -599,23 +600,22 @@ The data for classification consists of a set of tuples <span class="math notran
 <li><p><code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p></li>
 </ol>
-<p>Suppose that the parameters you found are:
+<p>Suppose that the parameters you found are:</p>
 <div class="math notranslate nohighlight">
 \[
 p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
 \]</div>
-</p>
 <p>What are the parameters telling us about the most influential attribute for predicting loan approval? What does this say about our data?</p>
 </section>
 <section id="with-great-explanatory-power-comes-great-responsibility">
 <h3>With Great Explanatory Power Comes Great Responsibility!<a class="headerlink" href="#with-great-explanatory-power-comes-great-responsibility" title="Link to this heading">#</a></h3>
-<p>So in the previous predictve model for loan application model we’d use the follwing covariates:</p>
+<p>So in the previous predictive model for loan application model we’d use the following covariates:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">x_1</span></code> representing gender: 0 for male, 1 for female</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p></li>
 </ol>
-<p>We were pleased that using covariates we can hypothesize <strong>why</strong> the outcome <span class="math notranslate nohighlight">\(y\)</span> is a certain way - why is the loan approved or denied. But just because we can collect the data for the covariates does it mean that we should use them? It particular, in our logistic model on the previous slide, the most impactful factor on a loan decision was gender, does this seem reasonable? Should we use this model in real-life loan decisions?</p>
+<p>We were pleased that using covariates we can hypothesize <strong>why</strong> the outcome <span class="math notranslate nohighlight">\(y\)</span> is a certain way - why is the loan approved or denied. But just because we can collect the data for the covariates does it mean that we should use them? It particular, in our logistic model above, the most impactful factor on a loan decision was gender, does this seem reasonable? Should we use this model in real-life loan decisions?</p>
 <p>In models that are built on human data, covariates containing information that infringes on the rights of the subject to remain anonymous or to keep potentially non-relevant and biasing information out of the decision making process are called <strong>sensitive</strong> or <strong>protected attributes</strong>.</p>
 <section id="when-not-to-use-sensitive-protected-attributes">
 <h4>When not to use sensitive/protected attributes<a class="headerlink" href="#when-not-to-use-sensitive-protected-attributes" title="Link to this heading">#</a></h4>
@@ -630,17 +630,17 @@ p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
 <div><p>“A lender’s policies, even when applied equally to all its credit applicants, may have a negative effect on certain applicants. For example, a lender may have a policy of not making single family home loans for less than $60,000. This policy might exclude a high number of applicants who have lower income levels or lower home values than the rest of the applicant pool. That uneven effect of the policy is called disparate impact.”</p>
 </div></blockquote>
 <p>How do modelers and engineers prevent their models from creating disparate impact for protected classes of people? One of the key ways to check for disparate impact is to compare model decisions on protected classes against model decisions against the population (for example, we can compare the percentages of loans the model approves for men and for women). But in order perform these checks, we need access to protected attributes!</p>
-<p>Often times, the models we are auditing for disparate impact are “black-boxes”, that is, the inner workings of the model (as well as details like the training procedure) are all proprietary information and we only have access to the models inputs and outputs, <span class="math notranslate nohighlight">\((x_2, x_3, y)\)</span> (note that the black-box model is not using the protected attribute gender <span class="math notranslate nohighlight">\(x_1\)</span>). In these cases, we can train a proxy model on covariates including protected attributes as well as the predictions of the black-box model, and then analyze our proxy model as an approximation to the black-box model. If we suppose that our logistic regression model in the previous slide was a proxy model that is trained to approximate a black-box model, then our proxy model is telling us that the black-box model’s decisions are highly correlated with gender and hence it’s decisions may cause disparate impact! This is a case where we needed to look at protected attributes in order to check for regulartory compliance!</p>
+<p>Often times, the models we are auditing for disparate impact are “black-boxes”, that is, the inner workings of the model (as well as details like the training procedure) are all proprietary information and we only have access to the models inputs and outputs, <span class="math notranslate nohighlight">\((x_2, x_3, y)\)</span> (note that the black-box model is not using the protected attribute gender <span class="math notranslate nohighlight">\(x_1\)</span>). In these cases, we can train a proxy model on covariates including protected attributes as well as the predictions of the black-box model, and then analyze our proxy model as an approximation to the black-box model. If we suppose that our logistic regression model above was a proxy model that is trained to approximate a black-box model, then our proxy model is telling us that the black-box model’s decisions are highly correlated with gender and hence it’s decisions may cause disparate impact! This is a case where we needed to look at protected attributes in order to check for regulatory compliance!</p>
 <p>So why is this happening - why is a black-box model that is trained on data stripped of gender information making decisions that are highly correlated with gender? There are many possible explanations for this, but one common reason for this is that gender is a <strong>confounding variable</strong>, that is, some combination of income and loan amount is secretly encoding for gender (e.g. let’s say that in your data set, all the men earn 50k-60k and apply for exactly $10,000 of loans) and the black-box model is <em><strong>implicitly</strong></em> relying on gender to make loan decisions.</p>
 </section>
 <section id="appropriate-usage-of-sensitive-protected-attributes">
 <h4>Appropriate usage of sensitive/protected attributes<a class="headerlink" href="#appropriate-usage-of-sensitive-protected-attributes" title="Link to this heading">#</a></h4>
-<p>So now we see that protected attributes can be extremely useful when we are auditing models for regulatory compliance, should we collect sensitive or protected attributes all the time and as many of them as possible? Unfortunately, it’s not so simple: some industries are required by law to collect sensitive attribute data, while others are prohibited from doing so, still others infer sensitive attributes from collected data for compliance checking purposes (e.g. using income and other covariates to infer gender or zip codes to infer race). While useful for antidiscrimnatory purposes, collecting or infering sensitive protected attribute is nonetheless full of challenges and potential pitfalls (for example, protected attributes you infered can violate the subject’s right to non-disclosure!) - references in this section addresses the issues of appropriate usage of sensitive attributes.</p>
-<p>Furthermore, <strong>how</strong> you collect and ecnode ata can deeply impact your fairness/compliance analysis. For example, application forms that include two options for gender and three boxes for race may cause us to incorrectly aggregate subjects who do not fall neatly into these boxes under categories that are inappropriate (and by the way, we’ve not been carefully distinguishing gender and sex in this discussion, but they maybe treated differently under different bodies of laws. Also, are they equivalent concepts to our human subjects from whom we are collecting the data? What are we really trying to measure by collecting gender or sex data?). Such misleading categorization can cause us to miss cases of disparate impact in our analysis, since we have simply missed out on important subgroups of the population.</p>
+<p>So now we see that protected attributes can be extremely useful when we are auditing models for regulatory compliance, should we collect sensitive or protected attributes all the time and as many of them as possible? Unfortunately, it’s not so simple: some industries are required by law to collect sensitive attribute data, while others are prohibited from doing so, still others infer sensitive attributes from collected data for compliance checking purposes (e.g. using income and other covariates to infer gender or zip codes to infer race). While useful for antidiscriminatory purposes, collecting or inferring sensitive protected attribute is nonetheless full of challenges and potential pitfalls (for example, protected attributes you inferred can violate the subject’s right to non-disclosure!) - references in this section addresses the issues of appropriate usage of sensitive attributes.</p>
+<p>Furthermore, <strong>how</strong> you collect and encode ata can deeply impact your fairness/compliance analysis. For example, application forms that include two options for gender and three boxes for race may cause us to incorrectly aggregate subjects who do not fall neatly into these boxes under categories that are inappropriate (and by the way, we’ve not been carefully distinguishing gender and sex in this discussion, but they maybe treated differently under different bodies of laws. Also, are they equivalent concepts to our human subjects from whom we are collecting the data? What are we really trying to measure by collecting gender or sex data?). Such misleading categorization can cause us to miss cases of disparate impact in our analysis, since we have simply missed out on important subgroups of the population.</p>
 <p>If you feel like we’re now treading in the unfamiliar territories of social science or law, you are not mistaken! When we work with human data, the interpretation of the data and hence our analysis hinges on our ability to meaningfully understand the data in social contexts and in human terms. Just as we need to consult physicist domain experts when we are building a statistical model for physical data, medical experts when we are building models for medical data, when we build models that have social impact we have to proceed carefully under the advisement of experts on our social/legal systems.</p>
-<p><strong>References for Issues Involving Proper Use of Protected Attributes</strong>
-0. <a href="https://journals.sagepub.com/doi/10.1177/0891243215584758">New Categories Are Not Enough: Rethinking the Measurement of Sex and Gender in Social Surveys</a></p>
-<ol class="arabic simple">
+<p><strong>References for Issues Involving Proper Use of Protected Attributes</strong></p>
+<ol class="arabic simple" start="0">
+<li><p><a href="https://journals.sagepub.com/doi/10.1177/0891243215584758">New Categories Are Not Enough: Rethinking the Measurement of Sex and Gender in Social Surveys</a></p></li>
 <li><p><a href="https://www.pewsocialtrends.org/2015/11/06/chapter-1-estimates-of-multiracial-adults-and-other-racial-and-ethnic-groups-across-various-question-formats/"> Estimates of Multiracial Adults and Other Racial and Ethnic Groups Across Various Question Formats</a></p></li>
 <li><p><a href="https://arxiv.org/pdf/1806.03281.pdf">Blind Justice: Fairness with Encrypted Sensitive Attributes</a></p></li>
 <li><p><a href="https://arxiv.org/pdf/1912.06171.pdf">Awareness in Practice: Tensions in Access to Sensitive Attribute Data for Antidiscrimination</a></p></li>
@@ -700,14 +700,15 @@ p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
 </section>
 <section id="gradient-descent-the-algorithm">
 <h3>Gradient Descent: the Algorithm<a class="headerlink" href="#gradient-descent-the-algorithm" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>start at random place: <span class="math notranslate nohighlight">\(\mathbf{w}^{(0)}\leftarrow \textbf{random}\)</span></p></li>
-<li><p>until (stopping condition satisfied):</p></li>
-</ol>
+<li><p>until (stopping condition satisfied):</p>
 <p>a. compute gradient at <span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>:
 gradient (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>) = <span class="math notranslate nohighlight">\(\nabla_{\mathbf{w}}\)</span> loss_function (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>)</p>
 <p>b. take a step in the negative gradient direction:
 <span class="math notranslate nohighlight">\(\mathbf{w}^{(t+1)} \leftarrow \mathbf{w}^{(t)}\)</span> - <span class="math notranslate nohighlight">\(\eta\)</span> * gradient (<span class="math notranslate nohighlight">\(\mathbf{w}^{(t)}\)</span>)</p>
+</li>
+</ol>
 <p>Here <span class="math notranslate nohighlight">\(\eta\)</span> is called the <em><strong>learning rate</strong></em>.</p>
 </section>
 <section id="diagnosing-design-choices-with-the-trajectory">
@@ -938,13 +939,19 @@ tx + (1-t) y \in S,\quad t\in [0, 1].
 <p class="admonition-title">Going deeper: But Does It Always Converge?</p>
 <p>We’ve seen that if we choose the learning rate to be too large (say for example <code class="docutils literal notranslate"><span class="pre">1e10</span></code> then gradient descent can fail to converge even if the function <span class="math notranslate nohighlight">\(f\)</span> is convex. But how large is “too large”. There are two cases to consider</p>
 <ol class="arabic simple">
-<li><p>You have some prior knowledge about how smooth the function <span class="math notranslate nohighlight">\(f\)</span> is – i.e. how quickly <span class="math notranslate nohighlight">\(f\)</span> can increase or decrease. Then using this you can choose a learning rate that will provably guaratee convergence<br><br></p></li>
-<li><p>In most cases, the objective function (like the log-likelihood) may be too complex to reason about. In which case,</p></li>
-<li><p>we do a scientific “guess-and-check” to determine the learning rate:
-1. we find a learning rate that is large enough to cause gradient descent to diverge
-2. we find a leanring rate that is small enough to cause gradient descent to converge too slowly
-3. we choose a range of values between the large rate and the small rate and try them all to determine the optimal rate<br><br></p></li>
+<li><p>You have some prior knowledge about how smooth the function <span class="math notranslate nohighlight">\(f\)</span> is – i.e. how quickly <span class="math notranslate nohighlight">\(f\)</span> can increase or decrease. Then using this you can choose a learning rate that will provably guarantee convergence<br><br></p></li>
+<li><p>In most cases, the objective function (like the log-likelihood) may be too complex to reason about. In which case,</p>
+<ol class="arabic simple">
+<li><p>we do a scientific “guess-and-check” to determine the learning rate:</p>
+<ol class="arabic simple">
+<li><p>we find a learning rate that is large enough to cause gradient descent to diverge</p></li>
+<li><p>we find a learning rate that is small enough to cause gradient descent to converge too slowly</p></li>
+<li><p>we choose a range of values between the large rate and the small rate and try them all to determine the optimal rate<br><br></p></li>
+</ol>
+</li>
 <li><p>alternatively, we can choose the step-size <span class="math notranslate nohighlight">\(\eta\)</span> adaptively (e.g. when the gradient is large we can set <span class="math notranslate nohighlight">\(\eta\)</span> to be moderate to small and when the gradient is small we can set <span class="math notranslate nohighlight">\(\eta\)</span> to be larger). There are a number of adaptive step-size regimes that you may want to look up and implement for your specific problem.</p></li>
+</ol>
+</li>
 </ol>
 <p>The prior knowledge required to choose <span class="math notranslate nohighlight">\(\eta\)</span> for provable convergence is called Lipschitz continuity. If we knew that <span class="math notranslate nohighlight">\(f\)</span> is convex, differentiable and that there is a constant <span class="math notranslate nohighlight">\(L&gt;0\)</span> such that <span class="math notranslate nohighlight">\(\|\nabla f(x) - \nabla f(y)\|_2 \leq L\|x -y\|_2\)</span>, then if we choose a fixed step size to be <span class="math notranslate nohighlight">\(\eta \leq \frac{1}{L}\)</span> then gradient descent <strong>provably</strong> converges to the global minimum of <span class="math notranslate nohighlight">\(f\)</span> as the number of iterations <span class="math notranslate nohighlight">\(N\)</span> goes to infinity. The constant <span class="math notranslate nohighlight">\(L\)</span> is called the <em><strong>Lipschitz constant</strong></em>.</p>
 <p><strong>But How Quickly Can We Get There?</strong>
@@ -964,47 +971,43 @@ Just because we know gradient descent will converge it doesn’t mean that it wi
 \[
 \nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
 \]</div>
-<p>Imagine if the size of your dataset <span class="math notranslate nohighlight">\(N\)</span> is in the millions. Naively evaluating the gardient <strong>just once</strong> may take up to seconds or minutes, thus running gradient descent until convergence may be unachievable in practice!</p>
+<p>Imagine if the size of your dataset <span class="math notranslate nohighlight">\(N\)</span> is in the millions. Naively evaluating the gradient <strong>just once</strong> may take up to seconds or minutes, thus running gradient descent until convergence may be unachievable in practice!</p>
 <p><strong>Idea:</strong> Maybe we don’t need to use the entire data set to evaluate the gradient during each step of gradient descent. Maybe we can approximate the gradient at <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> well enough with just a subset of the data.</p>
 </section>
 </section>
 <section id="summary">
 <h2><span class="section-number">15.4. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p>For a set of observations <span class="math notranslate nohighlight">\(y\)</span>, we can collect additional data <span class="math notranslate nohighlight">\(x\)</span> and model the <em><strong>conditional distribution</strong></em> <span class="math notranslate nohighlight">\(p(Y|X)\)</span>. This is exactly regression and classification models do, they use <em><strong>covariates</strong></em> <span class="math notranslate nohighlight">\(x\)</span> to predict the <em><strong>outcome</strong></em> <span class="math notranslate nohighlight">\(y\)</span>.</p>
-<ol class="arabic simple">
-<li><p><strong>(Conditional Models)</strong> Why do we need additional data <span class="math notranslate nohighlight">\(x\)</span>? Why isn’t it sufficient to just model <span class="math notranslate nohighlight">\(y\)</span> as a binomial, Guassian or a mixture of Gaussians?</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>(Conditional Models)</strong> Why do we need additional data <span class="math notranslate nohighlight">\(x\)</span>? Why isn’t it sufficient to just model <span class="math notranslate nohighlight">\(y\)</span> as a binomial, Gaussian or a mixture of Gaussians?</p>
 <ul class="simple">
 <li><p>to predict</p></li>
 <li><p>to explain</p></li>
 <li><p>to model finer grain variations in y<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Classification)</strong> For binary data (like whether or not an individual has kidney cancer), we can model <span class="math notranslate nohighlight">\(p(Y|X)\)</span> as a Bernoulli
+</li>
+<li><p><strong>(Classification)</strong> For binary data (like whether or not an individual has kidney cancer), we can model <span class="math notranslate nohighlight">\(p(Y|X)\)</span> as a Bernoulli</p>
 <div class="math notranslate nohighlight">
 \[
-Y^{(n)} \sim Ber\left(\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right)\right).
-\]</div>
-
-Geomtrically, <span class="math notranslate nohighlight">\(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\)</span> gives the distance from a decision boundary that separates <span class="math notranslate nohighlight">\(y=1\)</span> from <span class="math notranslate nohighlight">\(y=0\)</span>, and we convert this distance into a probability using the sigmoid function <span class="math notranslate nohighlight">\(\mathrm{sigm}\)</span>.</p></li>
+   Y^{(n)} \sim Ber\left(\mathrm{sigm}\left(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\right)\right).
+   \]</div>
+<p>Geometrically, <span class="math notranslate nohighlight">\(f\left(\mathbf{X}^{(n)}; \mathbf{w}\right)\)</span> gives the distance from a decision boundary that separates <span class="math notranslate nohighlight">\(y=1\)</span> from <span class="math notranslate nohighlight">\(y=0\)</span>, and we convert this distance into a probability using the sigmoid function <span class="math notranslate nohighlight">\(\mathrm{sigm}\)</span>.</p>
+</li>
 </ol>
 <figure class="align-center" id="fig-12-summary-fig0">
 <a class="reference internal image-reference" href="../_images/fig0.png"><img alt="../_images/fig0.png" src="../_images/fig0.png" style="width: 301px;" />
 </a>
 </figure>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Maximizing the Likelihood)</strong> We want to maximize the log Bernoulli likelihood of <span class="math notranslate nohighlight">\(y\)</span> (conditioned on <span class="math notranslate nohighlight">\(x\)</span>) over model parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>, but the zeros of the gradient of the log-likelihood cannot be analytically solved for!
+<ol class="arabic" start="3">
+<li><p><strong>(Maximizing the Likelihood)</strong> We want to maximize the log Bernoulli likelihood of <span class="math notranslate nohighlight">\(y\)</span> (conditioned on <span class="math notranslate nohighlight">\(x\)</span>) over model parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>, but the zeros of the gradient of the log-likelihood cannot be analytically solved for!</p>
 <div class="math notranslate nohighlight">
 \[
-\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
-\]</div>
-
-But just because we can’t analytically find the zeros of the gradient, it doesn’t mean that the gradient is useless! The gradient of a loss function points to the direction of the greatest rate of increase, hence <em><strong>the negative gradient points to the direction of the fastest way of decreasing the loss function</strong></em>.</p></li>
-</ol>
+   \nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
+   \]</div>
+<p>But just because we can’t analytically find the zeros of the gradient, it doesn’t mean that the gradient is useless! The gradient of a loss function points to the direction of the greatest rate of increase, hence <em><strong>the negative gradient points to the direction of the fastest way of decreasing the loss function</strong></em>.</p>
 <p>When we iteratively decrease the loss function by changing <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> in the direction of the negative gradient, this is called <em><strong>gradient descent</strong></em>.<br><br></p>
-<ol class="arabic simple" start="4">
-<li><p><strong>(Properties of Gradient Descent)</strong> Gradient descent sounds like we can optimize any function without work, is it as good as it sounds?</p></li>
-</ol>
+</li>
+<li><p><strong>(Properties of Gradient Descent)</strong> Gradient descent sounds like we can optimize any function without work, is it as good as it sounds?</p>
 <ul class="simple">
 <li><p>What do I need to know in order to use gradient descent?</p></li>
 <li><p>Is gradient descent guaranteed to converge?</p></li>
@@ -1014,45 +1017,45 @@ But just because we can’t analytically find the zeros of the gradient, it does
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="5">
-<li><p><strong>(The Challenges of Conditional Models)</strong> Conditional models have so much potential to generate scientific understanding of our data but they are also the most frequently misused!</p></li>
-</ol>
+</li>
+<li><p><strong>(The Challenges of Conditional Models)</strong> Conditional models have so much potential to generate scientific understanding of our data but they are also the most frequently misused!</p>
 <p>Suppose that you fit a logistic regression model to predict whether a loan application should be approved. Suppose that you have three covariates:</p>
 <p><code class="docutils literal notranslate"><span class="pre">x_1</span></code> representing gender: 0 for male, 1 for female<br>
 <code class="docutils literal notranslate"><span class="pre">x_2</span></code> for the income<br>
 <code class="docutils literal notranslate"><span class="pre">x_3</span></code> for the loan amount</p>
-<p>Suppose that the parameters you found are:
+<p>Suppose that the parameters you found are:</p>
 <div class="math notranslate nohighlight">
 \[
-p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
-\]</div>
-
-What can I conclude about the loan decisions data that this model was fitted on? Can I deploy this model for usage?</p>
+   p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
+   \]</div>
+<p>What can I conclude about the loan decisions data that this model was fitted on? Can I deploy this model for usage?</p>
 <ul>
 <li><p><strong>Bias in your conclusions is exponentially exacerbated by bias in the data collection process.</strong><br><br></p>
 <ul>
 <li><p><strong>What information are you asking for?</strong> If you ask the wrong question, the covariates you collect are at best unpredictive, and <em><strong>at worse they can mask the signal in the data</strong></em>.</p>
-<p>In many data collection processes, one finds that the questionaire might be using “sex” and “gender” interchangeably, or “race” and “ethnicity” interchageably. But the former (depending on field and context) frequently refers to biological invariants (like chromosomes and genetic lineage), whereas the latter frequently refers to lived experiences (related to identity, culture etc). <strong>Caveat:</strong> although we collect data on race and sex as if delineation in these categories are more “immutable” or “factual”, many have/do argue that these concepts are also social constructs (see discussion on false binaries and false aggregtaion)!</p>
-<p>When you ask for “sex” are you asking about a person’s chromosomal information, becaues you’re studying chromosomal related diseases, or are you asking about their experiences with the US medical system and how their health outcome is affected by their gendery identity OR the identity that people tend to assume of them? <strong>For example:</strong> women, especially women of color, tend to be under-diagnosed and mis-diagnosed due to gendered treatments of patients.</p>
-<p>To complicate matters, the terms “gender” and “sex” can have very specific legal definitions – that may not align with defintions in medical or sociological contexts! For example, the language of the Equal Credit Opportunity Act is written in terms of “sex”, however, this term is not defined in the ECOA. The Consumer Financial Protection Bureau interprets (in their operating philosophy) this term to include both sexual orientation and gender identity.  <br><br></p>
+<p>In many data collection processes, one finds that the questionnaire might be using “sex” and “gender” interchangeably, or “race” and “ethnicity” interchangeably. But the former (depending on field and context) frequently refers to biological invariants (like chromosomes and genetic lineage), whereas the latter frequently refers to lived experiences (related to identity, culture etc). <strong>Caveat:</strong> although we collect data on race and sex as if delineation in these categories are more “immutable” or “factual”, many have/do argue that these concepts are also social constructs (see discussion on false binaries and false aggregation)!</p>
+<p>When you ask for “sex” are you asking about a person’s chromosomal information, because you’re studying chromosomal related diseases, or are you asking about their experiences with the US medical system and how their health outcome is affected by their gender identity OR the identity that people tend to assume of them? <strong>For example:</strong> women, especially women of color, tend to be under-diagnosed and mis-diagnosed due to gendered treatments of patients.</p>
+<p>To complicate matters, the terms “gender” and “sex” can have very specific legal definitions – that may not align with definitions in medical or sociological contexts! For example, the language of the Equal Credit Opportunity Act is written in terms of “sex”, however, this term is not defined in the ECOA. The Consumer Financial Protection Bureau interprets (in their operating philosophy) this term to include both sexual orientation and gender identity.  <br><br></p>
 </li>
-<li><p><strong>Did you already bias the answer?</strong> If you gave confusing, misleading or incorrect options for answers (think about when you were frustrated with the concept quizzes!), then the covariates you collect are at best unpredictive, and <em><strong>at worse they can mask the signal in the data</strong></em>.</p>
+<li><p><strong>Did you already bias the answer?</strong> If you gave confusing, misleading or incorrect options for answers, then the covariates you collect are at best unpredictive, and <em><strong>at worse they can mask the signal in the data</strong></em>.</p>
 <p>In many data collection processes, one finds that the respondent is forced into a category that is unrepresentative of their experience, like having “Asian” as a broad racial category that includes South Asian, East Asian, South East Asian, like providing binary choices for gender or sex.</p>
-<p>If you are looking for disparaties in health outcomes, you might miss disparaties amongst important smaller subgroups within broad group of “Asian”, since health outcomes are often affected by income and  Asian-Americans have the largest in-group income disparity. <br><br></p>
+<p>If you are looking for disparities in health outcomes, you might miss disparities amongst important smaller subgroups within broad group of “Asian”, since health outcomes are often affected by income and  Asian-Americans have the largest in-group income disparity. <br><br></p>
 </li>
 <li><p><strong>Should you be asking for this information?</strong> The complexity of asking a seemingly simple question can seem overwhelming, often we resort to over-collecting (collecting every piece of information that we can think of) or under-collecting (not collecting any sensitive attribute). <br><br></p>
-<p><strong>Why you might not want to</strong> But respondents (e.g. patients, applicants for benefits) can be suspicious that their data can be used precisely to discriminate against them on the basis of protected attributes. Note that data collection have often historically been used to oppress, not to up-lift, vunerable communities. So collecting this data without clear purpose can compromise user trust and constitute a privacy threat if this data is not well protected.<br><br></p>
-<p><strong>Why you should</strong> However, in order to make sure our model is not disproportionately negatively impacting vunerable subgroups and that we are in compliancenb with laws like the EOCA, we need to check for disparate impact on protected groups. But in order to do that, we need to have access to sensitive attributes.<br><br></p>
+<p><strong>Why you might not want to</strong> But respondents (e.g. patients, applicants for benefits) can be suspicious that their data can be used precisely to discriminate against them on the basis of protected attributes. Note that data collection have often historically been used to oppress, not to up-lift, vulnerable communities. So collecting this data without clear purpose can compromise user trust and constitute a privacy threat if this data is not well protected.<br><br></p>
+<p><strong>Why you should</strong> However, in order to make sure our model is not disproportionately negatively impacting vulnerable subgroups and that we are in compliance with laws like the EOCA, we need to check for disparate impact on protected groups. But in order to do that, we need to have access to sensitive attributes.<br><br></p>
 </li>
 </ul>
 </li>
 <li><p><strong>Is correlation causation?</strong><br><br></p>
 <ul class="simple">
-<li><p>It appears that the sex of the applicant the logistic regression model has the greatest influence on the prediction of the model, does this mean that the human decision makers were biased? (<strong>Hint:</strong> not necssarily, but it might be a hypothesis to explore to retroactively detect potential regulatory violation in this dataset.)<br><br></p></li>
+<li><p>It appears that the sex of the applicant the logistic regression model has the greatest influence on the prediction of the model, does this mean that the human decision makers were biased? (<strong>Hint:</strong> not necessarily, but it might be a hypothesis to explore to retroactively detect potential regulatory violation in this dataset.)<br><br></p></li>
 <li><p>If the interpretations of the coefficients of the logistic regression model does not imply human bias in the data, then can we use this model for real life loan decisions? (<strong>Hint:</strong> the answer is NO. It would be an violation!)</p></li>
 </ul>
 </li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="further-reading">
 <h2><span class="section-number">15.5. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>

@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -450,7 +451,7 @@ document.write(`
 <div class="tip admonition">
 <p class="admonition-title">In this lab</p>
 <ol class="arabic simple">
-<li><p>Monte Carlo Estimation of a Gener Integral</p></li>
+<li><p>Monte Carlo Estimation of a General Integral</p></li>
 <li><p>Practice: Implementing Monte Carlo Integration</p></li>
 </ol>
 </div>
@@ -492,31 +493,27 @@ document.write(`
 </section>
 <section id="rewriting-an-arbitrary-definite-integral-as-an-expectation">
 <h2>Rewriting an Arbitrary Definite Integral as an Expectation<a class="headerlink" href="#rewriting-an-arbitrary-definite-integral-as-an-expectation" title="Link to this heading">#</a></h2>
-<p>We want to rewrite the following expression as an expectation:
+<p>We want to rewrite the following expression as an expectation:</p>
 <div class="math notranslate nohighlight">
 \[
 \int_{\Omega} f(x) dx = \int_{\Omega} g(x)h(x) dx.
 \]</div>
-
-Let <span class="math notranslate nohighlight">\(V\)</span> denote the integral of <span class="math notranslate nohighlight">\(h\)</span> over <span class="math notranslate nohighlight">\(\Omega\)</span>:
+<p>Let <span class="math notranslate nohighlight">\(V\)</span> denote the integral of <span class="math notranslate nohighlight">\(h\)</span> over <span class="math notranslate nohighlight">\(\Omega\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 V = \int_{\Omega} h(x)dx.
 \]</div>
-
-Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \frac{1}{V}h(x)dx = 1\)</span>. Hence, <span class="math notranslate nohighlight">\(\frac{1}{V}h(x)\)</span> is a valid pdf over <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
-<p>Then we can write:
+<p>Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \frac{1}{V}h(x)dx = 1\)</span>. Hence, <span class="math notranslate nohighlight">\(\frac{1}{V}h(x)\)</span> is a valid pdf over <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
+<p>Then we can write:</p>
 <div class="math notranslate nohighlight">
 \[
 \int_{\Omega} f(x) dx = \int_{\Omega} \left(Vg(x)\right)\left(\frac{1}{V}h(x)\right)dx.
 \]</div>
-</p>
-<p>We recognize the above integral as an expectation, and hence can estimated using Monte Carlo methods:
+<p>We recognize the above integral as an expectation, and hence can estimated using Monte Carlo methods:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{X\sim \frac{1}{V}h(X)}[Vg(X)] \approx V\sum_{s=1}^S g(X_s),\; X_s\sim \frac{1}{V}h(X).
 \]</div>
-</p>
 </section>
 <section id="how-do-you-factor-the-integrand-f">
 <h2>How Do You Factor the Integrand <span class="math notranslate nohighlight">\(f\)</span>?<a class="headerlink" href="#how-do-you-factor-the-integrand-f" title="Link to this heading">#</a></h2>
@@ -570,17 +567,9 @@ I = \int_{0}^{1} \frac{3x^2}{x^3 - x^2 - 11x - 4} dx = \mathbb{E}_{X\sim h(X)}\l
 <p>The naive Monte Carlo estimator for <span class="math notranslate nohighlight">\(I\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[
-\widehat{I} = \sum_{s=1}^S \frac{1}{X_s^3 - X_s^2 - 11X_s -4},\; X_s\sim h(X).
+\widehat{I} = \frac{1}{S}\sum_{s=1}^S \frac{1}{X_s^3 - X_s^2 - 11X_s -4},\; X_s\sim h(X).
 \]</div>
 <p>We implement this estimator below:</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implementation of inverse CDF sampling</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">inverse_cdf_sampling</span><span class="p">(</span><span class="n">CDF_inv</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
     <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
@@ -618,28 +607,13 @@ I = \int_{0}^{1} \frac{3x^2}{x^3 - x^2 - 11x - 4} dx = \mathbb{E}_{X\sim h(X)}\l
 <span class="nb">print</span><span class="p">(</span><span class="s1">'variance of </span><span class="si">{}</span><span class="s1"> number of monte carlo estimates: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">estimates</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean of 500 number of monte carlo estimates: -0.0840213302768032
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mean of 500 number of monte carlo estimates: -0.0840213302768032
 variance of 500 number of monte carlo estimates: 3.4118616765217585e-06
 </pre></div>
 </div>
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
 <p>The sample variance of the naive Monte Carlo is already small, but we can still consider some variance reduction techniques. In particular, we can consider importance sampling.</p>
 <p><strong>Importance Sampling</strong></p>
 <p>If we want to compute the importance sampling estimate we need an importance distribution for <span class="math notranslate nohighlight">\(h\)</span>. Since <span class="math notranslate nohighlight">\(h\)</span> is a distribution on <span class="math notranslate nohighlight">\([0, 1]\)</span>, it’s natural to consider the beta distribution as an importance distribution.</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#definte the beta pdf</span>
 <span class="n">beta_pdf</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">beta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span>
 
@@ -653,28 +627,13 @@ variance of 500 number of monte carlo estimates: 3.4118616765217585e-06
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/f8a1a9eba1e0066ea5320988a3a8a0d04aee7d256debee0ef4f146a867a36754.png" src="../_images/f8a1a9eba1e0066ea5320988a3a8a0d04aee7d256debee0ef4f146a867a36754.png" />
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
+<img alt="Solution, figure 1" class="align-center" src="../_images/solution-1.png" />
 <p>Implementing the importance sampling estimate is straight-forward:</p>
 <div class="math notranslate nohighlight">
 \[
 I \approx \widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{h(X_s)}{q(X_s)} g(X_s),\; X_s \sim Beta(5, 1)
 \]</div>
 <p>We just need to sample from the Beta, compute the importance weights <span class="math notranslate nohighlight">\(\frac{h(X_s)}{q(X_s)}\)</span> and compute <span class="math notranslate nohighlight">\(g(X_s)\)</span>.</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implement importance sampling MC</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">importance_sampling_MC</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="n">estimates</span> <span class="o">=</span> <span class="p">[]</span>
@@ -708,34 +667,19 @@ I \approx \widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{h(X_s)}{q(X_s)
 <span class="n">estimates</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">importance_sampling_MC</span><span class="p">(</span><span class="n">beta_sampler</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">'mean of </span><span class="si">{}</span><span class="s1"> number of importance sampling monte carlo estimates: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimates</span><span class="p">)))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of </span><span class="si">{}</span><span class="s1"> number of importance sampling monte carlo estimates: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">estimates</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>    
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of </span><span class="si">{}</span><span class="s1"> number of importance sampling monte carlo estimates: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">estimates</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mean of 500 number of importance sampling monte carlo estimates: -0.08496357680015376
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mean of 500 number of importance sampling monte carlo estimates: -0.08496357680015376
 variance of 500 number of importance sampling monte carlo estimates: 0.00018620123953831943
 </pre></div>
 </div>
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
-<p>The variance of importance sampling Monte Carlo is higher than that of the naive Monte Carlo! Weren’t we promised that importance sampling was a variance reduction method? Looking at the “Nitty Gritty” slides page on importance sampling, we realize that an important criteria was that:</p>
+<p>The variance of importance sampling Monte Carlo is higher than that of the naive Monte Carlo! Weren’t we promised that importance sampling was a variance reduction method? Looking at the discussion of the design of <span class="math notranslate nohighlight">\(q\)</span> (“Nitty Gritty of Importance Sampling”) in <a class="reference internal" href="../chapters/06-monte-carlo-integration.html"><span class="doc">Chapter 7</span></a>, we realize that an important criteria was that:</p>
 <ol class="arabic simple">
 <li><p>the importance distribution <span class="math notranslate nohighlight">\(q\)</span> look like the nominal distribution <span class="math notranslate nohighlight">\(h\)</span>, otherwise the importance weights become heterogenous (polarized)</p></li>
 <li><p>the importance distribution is roughly proportional to <span class="math notranslate nohighlight">\(h|g|\)</span>.</p></li>
 </ol>
 <p>Let’s plot both the weights from one of the trials and <span class="math notranslate nohighlight">\(h|g|\)</span> to diagnose the problem.</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
@@ -743,23 +687,8 @@ variance of 500 number of importance sampling monte carlo estimates: 0.000186201
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/f07173e337c7051e5f2aedf0091c53948f06d9e2b2d96fab2771774c671c4b2f.png" src="../_images/f07173e337c7051e5f2aedf0091c53948f06d9e2b2d96fab2771774c671c4b2f.png" />
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
+<img alt="Solution, figure 2" class="align-center" src="../_images/solution-2.png" />
 <p>We see that the majority of the weights are below 1.0, so these samples have a “small effect” on the overall estimate. We might conjecture that maybe this is why the variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> is higher (try confirming this conjecture by computing the <em><strong>effective sample size</strong></em>!).</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
@@ -770,14 +699,8 @@ variance of 500 number of importance sampling monte carlo estimates: 0.000186201
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/1dbd70a6482f8dd2280f75c0a1aaa78ce7d863a61f363b9a4cc161663ac43ab0.png" src="../_images/1dbd70a6482f8dd2280f75c0a1aaa78ce7d863a61f363b9a4cc161663ac43ab0.png" />
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
+<a class="reference internal image-reference" href="../_images/solution-3.png"><img alt="Solution, figure 3" class="align-center" src="../_images/solution-3.png" style="width: 100%;" />
+</a>
 <p>From this visualization we see that our importance distribution doesn’t look very much like the product <span class="math notranslate nohighlight">\(h|g|\)</span>. Maybe this is the source of the higher variance of our importance sampling Monte Carlo estimate.</p>
 <p>To test our hypothesis, you can try to pick an importance distribution that looks more proportional to <span class="math notranslate nohighlight">\(h|g|\)</span> and see if using that distribution will decrease the variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span>.</p>
 </div>

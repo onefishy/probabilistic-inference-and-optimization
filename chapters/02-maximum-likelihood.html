@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -543,7 +544,7 @@ document.write(`
 \]</div>
 <p>is one way to quantify the probability of the coin to land heads up on any given toss.</p>
 <p>Alternatively, we can interpret this fraction to represent the fraction of heads that would appear in a large (infinite) number of such experiments.</p>
-<p><strong>Question 1:</strong> Is this estimate of the bias valid? I.e. does <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> acurately capture the property of interest?</p>
+<p><strong>Question 1:</strong> Is this estimate of the bias valid? I.e. does <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> accurately capture the property of interest?</p>
 <p><strong>Question 2:</strong> Is this the “best” way to estimate the bias? For example, is the quantity</p>
 <div class="math notranslate nohighlight">
 \[
@@ -556,13 +557,12 @@ document.write(`
 <h2><span class="section-number">2.2. </span>A Statistical Model for a Coin Toss<a class="headerlink" href="#a-statistical-model-for-a-coin-toss" title="Link to this heading">#</a></h2>
 <section id="likelihood-for-a-coin-toss">
 <h3>Likelihood for a Coin Toss<a class="headerlink" href="#likelihood-for-a-coin-toss" title="Link to this heading">#</a></h3>
-<p>We can formally model the outcome of the single toss of a coin by a Bernoulli distribution
+<p>We can formally model the outcome of the single toss of a coin by a Bernoulli distribution</p>
 <div class="math notranslate nohighlight">
 \[
 Y \sim Ber(\theta)
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\theta\)</span> is the probability that the outcome <span class="math notranslate nohighlight">\(Y\)</span> will be heads.</p>
+<p>where <span class="math notranslate nohighlight">\(\theta\)</span> is the probability that the outcome <span class="math notranslate nohighlight">\(Y\)</span> will be heads.</p>
 <p><strong>Question:</strong> what assumptions does this statistical model expose?</p>
 <p>After <span class="math notranslate nohighlight">\(N\)</span> number of <em><strong>independent</strong></em> tosses of an <em><strong>identical</strong></em> coin, the probability (or likelihood) of observing <span class="math notranslate nohighlight">\(Y=H\)</span> number of heads is</p>
 <div class="math notranslate nohighlight">
@@ -570,28 +570,26 @@ where <span class="math notranslate nohighlight">\(\theta\)</span> is the probab
 {N \choose H} \theta^{H} (1 - \theta)^{N-H}
 \]</div>
 <p>That is, <span class="math notranslate nohighlight">\(Y\)</span> is a random variable with a <em><strong>binomial</strong></em> distribution <span class="math notranslate nohighlight">\(Y \sim Bin(N, \theta)\)</span>.</p>
-<p>We see that the fraction <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> from our empirical experiment is an estimate of the parameter <span class="math notranslate nohighlight">\(\theta\)</span> of the binomal distribution <span class="math notranslate nohighlight">\(Bin(N, \theta)\)</span>. Now that we have a statistical model, we can give formal justification for why our estimate is desirable (or undesirable).</p>
+<p>We see that the fraction <span class="math notranslate nohighlight">\(\frac{H}{N}\)</span> from our empirical experiment is an estimate of the parameter <span class="math notranslate nohighlight">\(\theta\)</span> of the binomial distribution <span class="math notranslate nohighlight">\(Bin(N, \theta)\)</span>. Now that we have a statistical model, we can give formal justification for why our estimate is desirable (or undesirable).</p>
 </section>
 </section>
 <section id="id1">
 <h2><span class="section-number">2.3. </span>Maximum Likelihood Estimation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <section id="parameter-estimation-maximum-likelihood">
 <h3>Parameter Estimation: Maximum Likelihood<a class="headerlink" href="#parameter-estimation-maximum-likelihood" title="Link to this heading">#</a></h3>
-<p>Let <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span> be independently and identically distributed with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span>, where <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span> is a distribution parameterized by <span class="math notranslate nohighlight">\(\theta\)</span> (<span class="math notranslate nohighlight">\(\theta\)</span> can be a scalar, a vector, a matrix, or a n-tuple of such quantities). The <em><strong>joint likelihood</strong></em> of <span class="math notranslate nohighlight">\(N\)</span> observations, <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span>, is
+<p>Let <span class="math notranslate nohighlight">\(Y_1, \ldots, Y_N\)</span> be independently and identically distributed with <span class="math notranslate nohighlight">\(Y_n \sim p(Y|\theta)\)</span>, where <span class="math notranslate nohighlight">\(p(Y|\theta)\)</span> is a distribution parameterized by <span class="math notranslate nohighlight">\(\theta\)</span> (<span class="math notranslate nohighlight">\(\theta\)</span> can be a scalar, a vector, a matrix, or a n-tuple of such quantities). The <em><strong>joint likelihood</strong></em> of <span class="math notranslate nohighlight">\(N\)</span> observations, <span class="math notranslate nohighlight">\(y_1, \ldots, y_N\)</span>, is</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 \mathcal{L}(\theta) = \prod_{n=1}^N p(y_n | \theta)
 \end{aligned}\]</div>
-
-<em>Note that we use upper-case letters <span class="math notranslate nohighlight">\(Y_n\)</span> to represent random variables and lower-case <span class="math notranslate nohighlight">\(y_n\)</span> to represent specific observed values of those variables.</em></p>
+<p><em>Note that we use upper-case letters <span class="math notranslate nohighlight">\(Y_n\)</span> to represent random variables and lower-case <span class="math notranslate nohighlight">\(y_n\)</span> to represent specific observed values of those variables.</em></p>
 <p>The joint likelihood quantifies how likely (or probable, if <span class="math notranslate nohighlight">\(Y\)</span> is discrete) we are to observed the data assuming the model <span class="math notranslate nohighlight">\(\theta\)</span>. When we consider the joint likelihood as a function of <span class="math notranslate nohighlight">\(\theta\)</span> (that is, treat the observed data as fixed), the <span class="math notranslate nohighlight">\(\mathcal{L}(\theta)\)</span> is called the <em><strong>likelihood function</strong></em>.</p>
-<p>The <em><strong>maximium likelihood estimate</strong></em> of <span class="math notranslate nohighlight">\(\theta\)</span> is defined as
+<p>The <em><strong>maximum likelihood estimate</strong></em> of <span class="math notranslate nohighlight">\(\theta\)</span> is defined as</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 \theta_{\text{MLE}} = \underset{\theta}{\mathrm{argmax}}\; \mathcal{L}(\theta) = \underset{\theta}{\mathrm{argmax}}\; \prod_{n=1}^N p(y_n | \theta)
 \end{aligned}\]</div>
-
-Recall that in Lecture #1 we gave some intuitive justification for the validity of the MLE.</p>
+<p>Recall that in <a class="reference internal" href="01-overview.html"><span class="doc">Chapter 1</span></a> we gave some intuitive justification for the validity of the MLE.</p>
 </section>
 <section id="maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood">
 <h3>Maximizing Likelihood is Equivalent to Maximizing Log-Likelihood<a class="headerlink" href="#maximizing-likelihood-is-equivalent-to-maximizing-log-likelihood" title="Link to this heading">#</a></h3>
@@ -619,13 +617,12 @@ z_1 &lt; z_2 \text{ if and only if } \log(z_1) &lt; \log(z_2).
 </section>
 <section id="stationary-points">
 <h3>Stationary Points<a class="headerlink" href="#stationary-points" title="Link to this heading">#</a></h3>
-<p>The instaneous rate of change, at <span class="math notranslate nohighlight">\(x=x_0\)</span>, of a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R} \to \mathbb{R}\)</span> is given by it’s first derivative at <span class="math notranslate nohighlight">\(x=x^*\)</span>, <span class="math notranslate nohighlight">\(\left.\frac{df}{dx}\right\vert_{x^*}\)</span>.</p>
-<p>For a multivariate differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the <em><strong>gradient</strong></em> of <span class="math notranslate nohighlight">\(f\)</span> at a point <span class="math notranslate nohighlight">\(x^*\)</span> is a vector consisting of the partial derivatives of <span class="math notranslate nohighlight">\(f\)</span> evaluated at <span class="math notranslate nohighlight">\(x^*\)</span>:
+<p>The instantaneous rate of change, at <span class="math notranslate nohighlight">\(x=x_0\)</span>, of a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R} \to \mathbb{R}\)</span> is given by it’s first derivative at <span class="math notranslate nohighlight">\(x=x^*\)</span>, <span class="math notranslate nohighlight">\(\left.\frac{df}{dx}\right\vert_{x^*}\)</span>.</p>
+<p>For a multivariate differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the <em><strong>gradient</strong></em> of <span class="math notranslate nohighlight">\(f\)</span> at a point <span class="math notranslate nohighlight">\(x^*\)</span> is a vector consisting of the partial derivatives of <span class="math notranslate nohighlight">\(f\)</span> evaluated at <span class="math notranslate nohighlight">\(x^*\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 \left.\nabla_x f \right\vert_{x^*}= \left[\left.\frac{\partial}{\partial x^{(1)}}\right\vert_{x^*}, \ldots, \left.\frac{\partial}{\partial x^{(D)}}\right\vert_{x^*}\right]
 \]</div>
-</p>
 <p>Each <span class="math notranslate nohighlight">\(\left.\frac{\partial}{\partial x^{(1)}}\right\vert_{x^*}\)</span> compute the instantaneous change of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x=x^*\)</span> with respect to <span class="math notranslate nohighlight">\(x^{(1)}\)</span>.</p>
 <p>The gradient is orthogonal to the level curve of <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(x^*\)</span> and hence, <em>when it is not zero</em>, points in the direction of the greatest instantaneous increase in <span class="math notranslate nohighlight">\(f\)</span>.</p>
 <figure class="align-center" id="fig-02-levelcurves">
@@ -655,13 +652,12 @@ z_1 &lt; z_2 \text{ if and only if } \log(z_1) &lt; \log(z_2).
 </section>
 <section id="unconstrained-optimization">
 <h3>Unconstrained Optimization<a class="headerlink" href="#unconstrained-optimization" title="Link to this heading">#</a></h3>
-<p>Analytically solving an optimization problem without constraints on the domain of the function,
+<p>Analytically solving an optimization problem without constraints on the domain of the function,</p>
 <div class="math notranslate nohighlight">
 \[
 x_{\max} = \underset{x}{\mathrm{argmax}}\; f(x)
 \]</div>
-
-involves:</p>
+<p>involves:</p>
 <ol class="arabic simple">
 <li><p>find the expression for <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span>.</p></li>
 <li><p>find the stationary points for <span class="math notranslate nohighlight">\(\nabla_x f(x)\)</span>. That is, solve the equation <span class="math notranslate nohighlight">\(\nabla_x f(x)=0\)</span> for <span class="math notranslate nohighlight">\(x\)</span>.</p></li>
@@ -712,12 +708,11 @@ involves:</p>
 \[
 \mathcal{L}(\theta) = \prod_{n=1}^N \frac{1}{\sqrt{2\pi \sigma^2}} \mathrm{exp} \left\{ -\frac{(y_n-\mu)^2}{2\sigma^2}\right\} =  \frac{1}{(2\pi \sigma^2)^{N/2}} \mathrm{exp} \left\{ -\frac{\sum_{n=1}^N(y_n-\mu)^2}{2\sigma^2}\right\}.
 \]</div>
-<p>The log likelihood is
+<p>The log likelihood is</p>
 <div class="math notranslate nohighlight">
 \[
 \ell(\theta) = -\frac{N}{2}\log 2\pi - N\log\sigma - \frac{(y_n-\mu)^2}{2\sigma^2}.
 \]</div>
-</p>
 </section>
 </section>
 <section id="id2">
@@ -744,7 +739,7 @@ involves:</p>
 \frac{\partial\ell}{\partial \sigma} = -\frac{N}{\sigma} + \sigma^{-3}\sum_{n=1}^N (y_n - \mu)^2 = 0&amp;
 \end{cases}
 \end{split}\]</div>
-<p>Solving this system, we get a <em>unique</em> solution at:
+<p>Solving this system, we get a <em>unique</em> solution at:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{cases}
@@ -752,7 +747,6 @@ involves:</p>
 \sigma = \sqrt{\frac{1}{N}\sum_{n=1}^N(y_n - \mu)^2}&amp;
 \end{cases}
 \end{split}\]</div>
-</p>
 </section>
 </section>
 <section id="id4">
@@ -767,7 +761,7 @@ involves:</p>
 \sigma_{\text{MLE}} = \sqrt{\frac{1}{N}\sum_{n=1}^N(y_n - \mu)^2}&amp;
 \end{cases}
 \end{split}\]</div>
-<p><em>Check for yourself:</em> write out the matrix of second order parial derivatives of the log-likelihood and check that all the upper-left submatrices have negative determinants.</p>
+<p><em>Check for yourself:</em> write out the matrix of second order partial derivatives of the log-likelihood and check that all the upper-left submatrices have negative determinants.</p>
 <p><em><strong>Note:</strong></em> If the objective is not concave, then there is no guarantee that the stationary points will be global maxima!</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Example: (Multivariate) Gaussian Distribution</p>
@@ -817,10 +811,9 @@ involves:</p>
 <h3>Constrained Optimization<a class="headerlink" href="#constrained-optimization" title="Link to this heading">#</a></h3>
 <p>Many times, we are constrained by the application to only consider certain types of values of the input <span class="math notranslate nohighlight">\(x\)</span>. Suppose that the <em><strong>constraints</strong></em> on <span class="math notranslate nohighlight">\(x\)</span> are given by the equation <span class="math notranslate nohighlight">\(g(x) = 0\)</span>. The set of values of <span class="math notranslate nohighlight">\(x\)</span> that satisfy the equation are called <em><strong>feasible</strong></em>.</p>
 <p>We recall a useful theorem from calculus:</p>
-<p><strong>Theorem:</strong>  For a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the local optima of <span class="math notranslate nohighlight">\(f\)</span> constrained by <span class="math notranslate nohighlight">\(g(x)=0\)</span> occur at points where the following hold for some <span class="math notranslate nohighlight">\(\lambda \in\mathbb{R}\)</span>,
+<p><strong>Theorem:</strong>  For a differentiable function <span class="math notranslate nohighlight">\(f: \mathbb{R}^D \to \mathbb{R}\)</span>, the local optima of <span class="math notranslate nohighlight">\(f\)</span> constrained by <span class="math notranslate nohighlight">\(g(x)=0\)</span> occur at points where the following hold for some <span class="math notranslate nohighlight">\(\lambda \in\mathbb{R}\)</span>,</p>
 <div class="math notranslate nohighlight">
 \[g(x) = 0, \quad \nabla_xf(x) = \lambda \nabla_x g(x).\]</div>
-</p>
 <p>The theorem says that the local optima of <span class="math notranslate nohighlight">\(f\)</span> satisfying <span class="math notranslate nohighlight">\(g(x)=0\)</span> are where the gradients of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> are parallel.</p>
 <figure class="align-center" id="fig-02-lagrange">
 <a class="reference internal image-reference" href="../_images/lagrange.jpg"><img alt="../_images/lagrange.jpg" src="../_images/lagrange.jpg" style="width: 347px;" />
@@ -829,13 +822,12 @@ involves:</p>
 </section>
 <section id="constrained-optimization-via-lagrange-multipliers">
 <h3>Constrained Optimization via Lagrange Multipliers<a class="headerlink" href="#constrained-optimization-via-lagrange-multipliers" title="Link to this heading">#</a></h3>
-<p>Unpacking the theorem, we get that solving an optimization problem within the <em><strong>feasible region</strong></em> of the function, i.e.
+<p>Unpacking the theorem, we get that solving an optimization problem within the <em><strong>feasible region</strong></em> of the function, i.e.</p>
 <div class="math notranslate nohighlight">
 \[
 \underset{x}{\mathrm{max}}\; f(x),\quad g(x) = 0
 \]</div>
-
-involves:</p>
+<p>involves:</p>
 <ol class="arabic simple">
 <li><p>finding the stationary points of the augmented objective <span class="math notranslate nohighlight">\(J(x) = f(x) - \lambda g(x)\)</span>, with respect to <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span>.</p></li>
 <li><p>determine global optima. Determine if any of the stationary points maximizes <span class="math notranslate nohighlight">\(f\)</span>.</p></li>
@@ -848,13 +840,12 @@ involves:</p>
 <section id="id5">
 <h4>Likelihood and Log-Likelihood<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
 <p>Suppose that <span class="math notranslate nohighlight">\(Y \sim Bin(N, \theta)\)</span>. To make the connection with constrained optimization (and to motivate the multinomial case), let’s write <span class="math notranslate nohighlight">\(\theta\)</span> as a vector <span class="math notranslate nohighlight">\([\theta_0, \theta_1]\)</span>, where <span class="math notranslate nohighlight">\(\theta_1\)</span> is the probability of a head and <span class="math notranslate nohighlight">\(\theta_0 + \theta_1 = 1\)</span>.</p>
-<p>The likelihood for a single observations is
+<p>The likelihood for a single observations is</p>
 <div class="math notranslate nohighlight">
 \[
 \mathcal{L}(\theta) = \frac{N!}{y!(N-y)!} \theta_1^{y}\theta_0^{N-y}.
 \]</div>
-
-The log likelihood is</p>
+<p>The log likelihood is</p>
 <div class="math notranslate nohighlight">
 \[
 \ell(\theta) = \log (N!) - \log(y!) - \log(N-y)! + y\log \theta_1 + (N-y) \log \theta_0.
@@ -888,7 +879,7 @@ J(\theta, \lambda) = \ell(\theta) - \lambda(\theta_0 + \theta_1 - 1).
 <h3>Example: Binomial Distribution<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <section id="stationary-points-of-the-lagrangian">
 <h4>Stationary points of the Lagrangian<a class="headerlink" href="#stationary-points-of-the-lagrangian" title="Link to this heading">#</a></h4>
-<p>The stationary points of the Lagrangian are solutions to the following system of equations:
+<p>The stationary points of the Lagrangian are solutions to the following system of equations:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{cases}
@@ -897,8 +888,7 @@ J(\theta, \lambda) = \ell(\theta) - \lambda(\theta_0 + \theta_1 - 1).
 \frac{\partial J}{\partial \lambda} = \theta_0 + \theta_1 - 1=0
 \end{cases}
 \end{split}\]</div>
-
-Solving this system, we get a <em>unique</em> solution at:
+<p>Solving this system, we get a <em>unique</em> solution at:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{cases}
@@ -907,8 +897,7 @@ Solving this system, we get a <em>unique</em> solution at:
 \theta_0 + \theta_1 = 1&amp;
 \end{cases}
 \end{split}\]</div>
-
-In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> and <span class="math notranslate nohighlight">\(\theta_1 = \frac{y}{N}\)</span> and <span class="math notranslate nohighlight">\(\theta_0 = \frac{N-y}{N}\)</span>.</p>
+<p>In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> and <span class="math notranslate nohighlight">\(\theta_1 = \frac{y}{N}\)</span> and <span class="math notranslate nohighlight">\(\theta_0 = \frac{N-y}{N}\)</span>.</p>
 </section>
 </section>
 <section id="id9">
@@ -923,7 +912,7 @@ In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> 
 \theta_1^{\text{MLE}} = \frac{y}{N}&amp;
 \end{cases}
 \end{split}\]</div>
-<p><em><strong>Note:</strong></em> If the objective function we are maximizing is not concave and the equality constraint is not affine, then we have no guarantee that the stationary points of the langrangian either locally or globally optimizes our objective!</p>
+<p><em><strong>Note:</strong></em> If the objective function we are maximizing is not concave and the equality constraint is not affine, then we have no guarantee that the stationary points of the Lagrangian either locally or globally optimizes our objective!</p>
 </section>
 </section>
 <section id="what-is-a-good-estimator">
@@ -969,7 +958,7 @@ In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> 
 <li><p><strong>(Unbiasedness)</strong> The MLE can be biased.</p></li>
 <li><p><strong>(Minimum Variance)</strong> The MLE is not the estimator with the lowest variance.</p></li>
 </ol>
-<p><em>Asympotically</em>, however, the MLE is unbiased and has the lowest variance (for unbiased estimators).</p>
+<p><em>Asymptotically</em>, however, the MLE is unbiased and has the lowest variance (for unbiased estimators).</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Example: The MLE Can Be Biased</p>
 <p>Suppose that <span class="math notranslate nohighlight">\(Y_n \overset{\text{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)\)</span>, where <span class="math notranslate nohighlight">\(\sigma &gt; 0\)</span>. Recall that the MLE of <span class="math notranslate nohighlight">\(\sigma\)</span> is</p>
@@ -1023,7 +1012,7 @@ In other words, <span class="math notranslate nohighlight">\(\lambda=N\)</span> 
 </section>
 <section id="bootstrap-confidence-intervals">
 <h3>Bootstrap Confidence Intervals<a class="headerlink" href="#bootstrap-confidence-intervals" title="Link to this heading">#</a></h3>
-<p>In practice, we may not know how to approximate the sampling distribution of <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>. We can approximate the sampling distribution by <em><strong>bootstraping</strong></em>, i.e. we simulate samples <span class="math notranslate nohighlight">\(X^{\theta}\)</span> with size <span class="math notranslate nohighlight">\(N\)</span> from <span class="math notranslate nohighlight">\(p_{\theta}\)</span> by sampling observations with size <span class="math notranslate nohighlight">\(N\)</span> from the observed data (also with size <span class="math notranslate nohighlight">\(N\)</span>).</p>
+<p>In practice, we may not know how to approximate the sampling distribution of <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>. We can approximate the sampling distribution by <em><strong>bootstrapping</strong></em>, i.e. we simulate samples <span class="math notranslate nohighlight">\(X^{\theta}\)</span> with size <span class="math notranslate nohighlight">\(N\)</span> from <span class="math notranslate nohighlight">\(p_{\theta}\)</span> by sampling observations with size <span class="math notranslate nohighlight">\(N\)</span> from the observed data (also with size <span class="math notranslate nohighlight">\(N\)</span>).</p>
 <p>We denote MLE obtained on a bootstrap sample by <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span>. When <span class="math notranslate nohighlight">\(N\)</span> is sufficiently large, <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span> approximates the distribution of <span class="math notranslate nohighlight">\(\theta_{\text{MLE}}\)</span>.</p>
 <p>Thus, we can approximate the 95% confidence interval of <span class="math notranslate nohighlight">\(\theta\)</span> using <span class="math notranslate nohighlight">\(\theta^{\text{bootstrap}}_{\text{MLE}}\)</span>.</p>
 </section>

@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -507,176 +508,67 @@ document.write(`
 <img alt="../_images/937a4549f3a2630d506443085322bc3a6acbff1335a973ee2c2ccacf8d29e7fd.png" src="../_images/937a4549f3a2630d506443085322bc3a6acbff1335a973ee2c2ccacf8d29e7fd.png" />
 </div>
 </div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define the mixture model in pymc3</span>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution</p>
+<p><em>The saved outputs below come from the first model (a Bayesian logistic regression with a single observation), not from the Gaussian mixture: when the notebook was run, the mixture cell failed because it did not import <code class="docutils literal notranslate"><span class="pre">theano</span></code>. Re-running them requires <code class="docutils literal notranslate"><span class="pre">pymc3</span></code>.</em></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define a Bayesian logistic regression model in pymc3 (the saved outputs below come from it)</span>
 <span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">model</span><span class="p">:</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sd</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
     <span class="n">y_1</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Bernoulli</span><span class="p">(</span><span class="s1">'y_1'</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define the mixture model in pymc3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">theano</span>
 <span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">model</span><span class="p">:</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">NormalMixture</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#sample from the model using No-U-turn HMC</span>
 <span class="k">with</span> <span class="n">model</span><span class="p">:</span>
     <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5000</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (2 chains in 2 jobs)
-NUTS: [w]
-Sampling 2 chains: 100%|██████████| 11000/11000 [00:03&lt;00:00, 3121.91draws/s]
-The number of effective samples is smaller than 25% for some parameters.
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#check the traceplot for convergence</span>
 <span class="n">pm</span><span class="o">.</span><span class="n">traceplot</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/932ff112f2e540cee6faef3f6240ad0f1ef0a67de2b38b6cb1392e67d6ff091c.png" src="../_images/932ff112f2e540cee6faef3f6240ad0f1ef0a67de2b38b6cb1392e67d6ff091c.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<a class="reference internal image-reference" href="../_images/solution-13.png"><img alt="Solution, figure 1" class="align-center" src="../_images/solution-13.png" style="width: 100%;" />
+</a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#approximate the target distribution using variational inference</span>
 <span class="k">with</span> <span class="n">model</span><span class="p">:</span>
     <span class="n">mean_field</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">ADVI</span><span class="p">()</span>
     <span class="n">mean_field</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">pm</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">CheckParametersConvergence</span><span class="p">(</span><span class="n">every</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">diff</span><span class="o">=</span><span class="s1">'absolute'</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)])</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Average Loss = 0.78644: 100%|██████████| 10000/10000 [00:02&lt;00:00, 3386.01it/s]
-Finished [100%]: Average Loss = 0.7811
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot the ELBO</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">-</span><span class="n">mean_field</span><span class="o">.</span><span class="n">hist</span><span class="p">[::</span><span class="mi">10</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'ELBO during training'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/4dc91fdf9231647f8716b73946c7a6012622aa249707ff51b963aab735aab8dc.png" src="../_images/4dc91fdf9231647f8716b73946c7a6012622aa249707ff51b963aab735aab8dc.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<img alt="Solution, figure 2" class="align-center" src="../_images/solution-22.png" />
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#visualize variational posterior</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">mean_field</span><span class="o">.</span><span class="n">approx</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1000</span><span class="p">)[</span><span class="s1">'w'</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'LightSeaGreen'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'variational approximation of target distribution'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/ca1fc406274a1a3605afc04e57e558ab5a97d1d09f3194865742d60a79d0f9fb.png" src="../_images/ca1fc406274a1a3605afc04e57e558ab5a97d1d09f3194865742d60a79d0f9fb.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<img alt="Solution, figure 3" class="align-center" src="../_images/solution-31.png" />
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mean_field</span><span class="o">.</span><span class="n">approx</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1000</span><span class="p">)[</span><span class="s1">'w'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-0.3545650265571895
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-0.3545650265571895
 </pre></div>
 </div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mean_field</span><span class="o">.</span><span class="n">approx</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1000</span><span class="p">)[</span><span class="s1">'w'</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6606441067212657
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>0.6606441067212657
 </pre></div>
 </div>
-</div>
+<p><em>Not covered here: a comparison of how well HMC and variational inference capture the target distribution.</em></p>
 </div>
 </section>
 </section>

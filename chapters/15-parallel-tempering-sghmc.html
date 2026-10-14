@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -506,13 +507,12 @@ document.write(`
 <h2><span class="section-number">19.1. </span>Review of HMC<a class="headerlink" href="#review-of-hmc" title="Link to this heading">#</a></h2>
 <section id="hamiltonian-monte-carlo-hmc">
 <h3>Hamiltonian Monte Carlo (HMC)<a class="headerlink" href="#hamiltonian-monte-carlo-hmc" title="Link to this heading">#</a></h3>
-<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions
+<p>We use the <em><strong>Gibbs distribution</strong></em> to transform between probability density functions and energy functions</p>
 <div class="math notranslate nohighlight">
 \[
 U(q) = - \log \pi(q), \quad \pi(q) = \frac{1}{Z}\exp\left\{ \frac{-U(q)}{T}\right\},\; T=1
 \]</div>
-
-This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
+<p>This allows us to use gradient information when we sample from <span class="math notranslate nohighlight">\(\pi(q)\)</span>.</p>
 <figure class="align-center" id="fig-15-hamiltonian">
 <a class="reference internal image-reference" href="../_images/hamiltonian.jpg"><img alt="../_images/hamiltonian.jpg" src="../_images/hamiltonian.jpg" style="width: 100%;" />
 </a>
@@ -528,7 +528,7 @@ This allows us to use gradient information when we sample from <span class="math
 <li><p><strong>Question:</strong> But I don’t need to implement it since <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> has already done so, right?<br>
 <strong>Answer:</strong> You need to implement HMC. Because <code class="docutils literal notranslate"><span class="pre">pymc3</span></code> is not going to scale well for Bayesian inference for models with neural network likelihoods and large datasets. <br><br></p></li>
 <li><p><strong>Question:</strong> We worked so hard to derive HMC, so it’s state-of-the-art and can be applied to any Bayesian model for any dataset right?<br>
-<strong>Answer:</strong> No. HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see this weeks readings). Futhermore, HMC <strong>does not scale well to large datasets</strong>.</p></li>
+<strong>Answer:</strong> No. HMC may still be inefficient for complex posteriors and improving HMC is an active area of research (see the readings at the end of this chapter). Furthermore, HMC <strong>does not scale well to large datasets</strong>.</p></li>
 </ol>
 </section>
 <section id="hmc-for-multimodal-distributions">
@@ -544,7 +544,7 @@ This allows us to use gradient information when we sample from <span class="math
 <li><p>“Reasonably high” acceptance rate of proposed steps</p></li>
 <li><p>Multiple chains initialized from different initial points give similar results</p></li>
 </ol>
-<p>Best practics:</p>
+<p>Best practices:</p>
 <ol class="arabic simple">
 <li><p>Always run multiple chains initialized from very different random starting points</p></li>
 <li><p>Always run your chains for as long as you can then burn and thin</p></li>
@@ -580,7 +580,7 @@ This allows us to use gradient information when we sample from <span class="math
 <h3>Quantitative Diagnostics<a class="headerlink" href="#quantitative-diagnostics" title="Link to this heading">#</a></h3>
 <p><strong>Idea:</strong> measure between-chain and within-chain variability of a quantity of interest – if the chains have converged, these measures will be similar; otherwise, the between-chain variability will be larger.</p>
 <ol class="arabic simple">
-<li><p><em><strong>Gelman &amp; Rubin</strong></em>: quantity <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} =  \frac{B}{W}\)</span>, which compares <span class="math notranslate nohighlight">\(B\)</span> the empirical variance of all the chains pooled and <span class="math notranslate nohighlight">\(W\)</span> the average emprical variance within each chain. If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}}\)</span> is large then the chains are very different (not converged). If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} = 1\)</span> is ideal but in practice we accept <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} &lt; 1.05\)</span>.<br><br></p></li>
+<li><p><em><strong>Gelman &amp; Rubin</strong></em>: quantity <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} =  \frac{B}{W}\)</span>, which compares <span class="math notranslate nohighlight">\(B\)</span> the empirical variance of all the chains pooled and <span class="math notranslate nohighlight">\(W\)</span> the average empirical variance within each chain. If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}}\)</span> is large then the chains are very different (not converged). If <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} = 1\)</span> is ideal but in practice we accept <span class="math notranslate nohighlight">\(\widehat{R}_{\text{GR}} &lt; 1.05\)</span>.<br><br></p></li>
 <li><p><em><strong>Geweke</strong></em>: takes two nonoverlapping parts (usually the first 0.1 and last 0.5 proportions) of the Markov chain and compares the means of both parts, using a difference of means test to see if the two parts of the chain are from the same distribution (the test statistic is a standard Z-score with the standard errors adjusted for autocorrelation).</p></li>
 </ol>
 </section>
@@ -611,9 +611,9 @@ p(y|\mu, \sigma^2, \pi) = \pi_1 \mathcal{N}(y; \mu_1, \sigma^2_1) + \pi_2 \mathc
 <p>In HMC terms, moving from one mode to another requires climbing a big hill – this is called an <em><strong>energy barrier</strong></em>. From simulated annealing we know that range of movement of a sampler of a Gibbs distribution is enhanced when we increase the temperature term:</p>
 <div class="math notranslate nohighlight">
 \[
-\pi_T(q) = \frac{1}{Z}\exp\left\{ -\frac{-\log\pi(q)}{T}\right\} 
+\pi_T(q) = \frac{1}{Z}\exp\left\{ -\frac{-\log\pi(q)}{T}\right\}
 \]</div>
-<p>Another way to say this is that when temperature is high, the poential energy landscape <span class="math notranslate nohighlight">\(\frac{-\log\pi(q)}{T}\)</span> is flat, hence easier to explore.</p>
+<p>Another way to say this is that when temperature is high, the potential energy landscape <span class="math notranslate nohighlight">\(\frac{-\log\pi(q)}{T}\)</span> is flat, hence easier to explore.</p>
 <p>But we can’t simply set <span class="math notranslate nohighlight">\(T &gt; 1\)</span>! Doing so means that we will not be sampling from the target <span class="math notranslate nohighlight">\(\pi(q)\)</span> (i.e. the above equation will not hold).</p>
 </section>
 <section id="the-idea-of-parallel-tempering">
@@ -626,13 +626,12 @@ p(y|\mu, \sigma^2, \pi) = \pi_1 \mathcal{N}(y; \mu_1, \sigma^2_1) + \pi_2 \mathc
 </section>
 <section id="parallel-tempering-with-hmc">
 <h3>Parallel Tempering with HMC<a class="headerlink" href="#parallel-tempering-with-hmc" title="Link to this heading">#</a></h3>
-<p>We set an increasing sequence of temperatures <span class="math notranslate nohighlight">\(T_0=1, \ldots, T_M &gt;1\)</span>. For each temperature, denote the corresponding Gibbs distribution and potential energy function as follows:
+<p>We set an increasing sequence of temperatures <span class="math notranslate nohighlight">\(T_0=1, \ldots, T_M &gt;1\)</span>. For each temperature, denote the corresponding Gibbs distribution and potential energy function as follows:</p>
 <div class="math notranslate nohighlight">
 \[
 \pi_m(q) = \frac{1}{Z}\exp\left\{ -U_m(q)\right\}, \; U_m(q) = \frac{-\log\pi(q)}{T_m}
 \]</div>
-
-We denote the potential energy of <span class="math notranslate nohighlight">\(\pi(q)\)</span> as <span class="math notranslate nohighlight">\(U(q) = -\log\pi(q)\)</span>.</p>
+<p>We denote the potential energy of <span class="math notranslate nohighlight">\(\pi(q)\)</span> as <span class="math notranslate nohighlight">\(U(q) = -\log\pi(q)\)</span>.</p>
 <p><strong>Parallel Tempering HMC</strong></p>
 <p><strong>1.</strong> initialize <span class="math notranslate nohighlight">\(M\)</span> number of HMC samplers: each using the same kinetic energy function, the <span class="math notranslate nohighlight">\(m\)</span>-th sampler using the potential energy function <span class="math notranslate nohighlight">\(U_m(q)\)</span>.</p>
 <p><strong>2.</strong>  alternate between:<br>
@@ -656,7 +655,7 @@ We denote the potential energy of <span class="math notranslate nohighlight">\(\
 \mathbf{w} &amp;\sim p(\mathbf{w})\\
 \mathcal{y_n} | x_n, \mathbf{w} &amp;\sim p(y_n | x_n, \mathbf{w})
 \end{aligned}\end{split}\]</div>
-<p>Then the potenial energy function determined by the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span> is given by</p>
+<p>Then the potential energy function determined by the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span> is given by</p>
 <div class="math notranslate nohighlight">
 \[U(\mathbf{w}) = \log p(\mathbf{w} | \mathcal{D}) = \sum_{n=1}^N \log p(y_n | x_n, \mathbf{w}) + \log p(\mathbf{w})\]</div>
 <p>We see that during <strong>each iteration</strong> of HMC, whenever we need to compute <span class="math notranslate nohighlight">\(\nabla_\mathbf{w} U\)</span>, we have to evaluate <span class="math notranslate nohighlight">\(\sum_{n=1}^N \nabla_\mathbf{w} p(y_n | x_n, \mathbf{w})\)</span> at each data point <span class="math notranslate nohighlight">\((x_n, y_n)\)</span>. Now if your data is large, this means that each step of HMC can take very long to compute!</p>
@@ -671,8 +670,8 @@ We denote the potential energy of <span class="math notranslate nohighlight">\(\
 \end{aligned}\]</div>
 <p>Again, if the observed data are independent, then by the Central Limit Theorem we have that <span class="math notranslate nohighlight">\(\nabla \widetilde{U}(\mathbf{w}) \approx \nabla U(\mathbf{w}) + \mathcal{N}(0, V(\mathbf{w}))\)</span>, where <span class="math notranslate nohighlight">\(V\)</span> is the covariance of the gradient noise. So, mini-batch gradient is a noisy approximation of the true gradient <span class="math notranslate nohighlight">\(\nabla U(\mathbf{w})\)</span>.</p>
 <p>Unfortunately, naïve stochastic gradient HMC does not preserve the target distribution <span class="math notranslate nohighlight">\(p(\mathbf{w}|\mathcal{D})\)</span>!</p>
-<p><strong>Corollary:</strong> The distribution <span class="math notranslate nohighlight">\(\pi(\mathbf{w}, p)\propto \mathrm{exp}(−H(\mathbf{w}, p))\)</span>, where <span class="math notranslate nohighlight">\(p\)</span> is the momentum, is no longer invariant under naïve stochastic gradient Hamiltonia dynamics.</p>
-<p>We can correct the errors in naïve stochastic gradient Hamiltonian dynamics with a Metropolis-Hastings step (i.e. we don’t accept all proposed samples), but in practice stochastic gradients produce large deviations from true Hamiltonia dynamics and hence <strong>the acceptance rate will be low</strong>! Furthermore, every MH step requires that we compute <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span>, which <strong>requires evaluating the likelihood at every data point</strong>!</p>
+<p><strong>Corollary:</strong> The distribution <span class="math notranslate nohighlight">\(\pi(\mathbf{w}, p)\propto \mathrm{exp}(−H(\mathbf{w}, p))\)</span>, where <span class="math notranslate nohighlight">\(p\)</span> is the momentum, is no longer invariant under naïve stochastic gradient Hamiltonian dynamics.</p>
+<p>We can correct the errors in naïve stochastic gradient Hamiltonian dynamics with a Metropolis-Hastings step (i.e. we don’t accept all proposed samples), but in practice stochastic gradients produce large deviations from true Hamiltonian dynamics and hence <strong>the acceptance rate will be low</strong>! Furthermore, every MH step requires that we compute <span class="math notranslate nohighlight">\(p(\mathbf{w} | \mathcal{D})\)</span>, which <strong>requires evaluating the likelihood at every data point</strong>!</p>
 <p><em><strong>Source:</strong></em> <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p>
 </section>
 <section id="stochastic-gradient-hmc-with-friction">
@@ -726,7 +725,7 @@ d\mathbf{p} = - \nabla_\mathbf{w} U(\mathbf{w}) - CM^{-1} p\,dt + \mathcal{N}(0,
 <ul class="simple">
 <li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/pdf/1402.4102.pdf" rel="noreferrer" target="_blank">Stochastic Gradient Hamiltonian Monte Carlo</a></p></li>
 <li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/1111.4246" rel="noreferrer" target="_blank">The No-U-Turn Sampler</a></p></li>
-<li><p><a class="reference external" href="https://arxiv.org/abs/1111.4246" rel="noreferrer" target="_blank"></a>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/0907.1100" rel="noreferrer" target="_blank">Riemannian Manifold Hamiltonian Monte Carlo</a></p></li>
+<li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/0907.1100" rel="noreferrer" target="_blank">Riemannian Manifold Hamiltonian Monte Carlo</a></p></li>
 <li><p>(Research Paper) <a class="reference external" href="https://arxiv.org/abs/1808.03230" rel="noreferrer" target="_blank">Does Hamiltonian Monte Carlo mix faster than a random walk on multimodal densities?</a></p></li>
 </ul>
 </section>

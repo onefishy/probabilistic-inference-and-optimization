@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -447,10 +448,10 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Visualizing Distributions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-relationships">Visualizing Relationships</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-comparisons-of-subgroups">Visualizing Comparisons of Subgroups</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypothese">Generating Hypothese</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypotheses">Generating Hypotheses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypotheses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-tools">Computational Tools</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-for-the-course">Tools for the Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-tools">Computing Tools</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupyter-or-colab-notebooks"><code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> or <code class="docutils literal notranslate"><span class="pre">colab</span></code> Notebooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-colab-notebook-look-like">What Does Colab Notebook Look Like?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">What Does Colab Notebook Look Like?</a></li>
@@ -478,7 +479,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-linalg-module">The <code class="docutils literal notranslate"><span class="pre">numpy.linalg</span></code> Module</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-random-module">The <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> Module</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matplotlib-visualization"><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualiztaion-with-matplotlib">Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualization-with-matplotlib">Data Visualization with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-types-of-visualizations">Common Types of Visualizations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-simulation-of-statistical-models">Exercise: Simulation of Statistical Models</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-of-usps-package-processing-time">Model of USPS Package Processing Time</a></li>
@@ -495,7 +496,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="lab-1-review-of-scientific-computing-in-python">
 <h1>Lab 1: Review of Scientific Computing in Python<a class="headerlink" href="#lab-1-review-of-scientific-computing-in-python" title="Link to this heading">#</a></h1>
-<p>This lab is adapted from AM207 (Harvard). Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>This lab is adapted from AM207 (Harvard). Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions are collapsed: try each exercise before expanding them.</p>
 <div class="tip admonition">
 <p class="admonition-title">In this lab</p>
 <ol class="arabic simple">
@@ -582,7 +583,7 @@ document.write(`
 </section>
 <section id="why-data-visualization">
 <h2>Why Data Visualization?<a class="headerlink" href="#why-data-visualization" title="Link to this heading">#</a></h2>
-<p>If I tell you that the average score for the final examis: 7.64/15.</p>
+<p>If I tell you that the average score for the final exam is: 7.64/15.</p>
 <p>What does that suggest?</p>
 </section>
 <section id="id2">
@@ -598,7 +599,7 @@ document.write(`
 <p>Analyze:</p>
 <ul class="simple">
 <li><p>Identify hidden patterns and trends</p></li>
-<li><p>Help formulate/test hypothese</p></li>
+<li><p>Help formulate/test hypotheses</p></li>
 <li><p>Help determine the next step in analysis/modeling</p></li>
 </ul>
 </section>
@@ -655,8 +656,8 @@ document.write(`
 </a>
 </figure>
 </section>
-<section id="generating-hypothese">
-<h2>Generating Hypothese<a class="headerlink" href="#generating-hypothese" title="Link to this heading">#</a></h2>
+<section id="generating-hypotheses">
+<h2>Generating Hypotheses<a class="headerlink" href="#generating-hypotheses" title="Link to this heading">#</a></h2>
 <p>We can see that birth weight is positively correlated with femur length.</p>
 <figure class="align-center" id="fig-lab1-fig11">
 <a class="reference internal image-reference" href="../_images/fig11.jpg"><img alt="../_images/fig11.jpg" src="../_images/fig11.jpg" style="width: 583px;" />
@@ -665,7 +666,7 @@ document.write(`
 <p>Can we describe exactly how they are correlated?</p>
 </section>
 <section id="id5">
-<h2>Generating Hypothese<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<h2>Generating Hypotheses<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p>We can see that types of iris seem to be distinguished by petal and sepal lengths.</p>
 <figure class="align-center" id="fig-lab1-fig12">
 <a class="reference internal image-reference" href="../_images/fig12.jpg"><img alt="../_images/fig12.jpg" src="../_images/fig12.jpg" style="width: 387px;" />
@@ -676,12 +677,12 @@ document.write(`
 <section id="computational-tools">
 <h2>Computational Tools<a class="headerlink" href="#computational-tools" title="Link to this heading">#</a></h2>
 </section>
-<section id="tools-for-the-course">
-<h2>Tools for the Course<a class="headerlink" href="#tools-for-the-course" title="Link to this heading">#</a></h2>
-<p>In all computation in this course, we will be using <code class="docutils literal notranslate"><span class="pre">python</span></code>, for which there are many robust and well documented libraries for machine learning and data science.</p>
-<p>Specifically, we will use
-0. <a class="reference external" href="https://www.anaconda.com/distribution/#download-section" rel="noreferrer" target="_blank"><code class="docutils literal notranslate"><span class="pre">Jupyter</span> <span class="pre">notebook</span></code></a> - a web-based interactive development environment for Jupyter notebooks, code, and data.</p>
-<ol class="arabic simple">
+<section id="computing-tools">
+<h2>Computing Tools<a class="headerlink" href="#computing-tools" title="Link to this heading">#</a></h2>
+<p>In all computation in this book, we will be using <code class="docutils literal notranslate"><span class="pre">python</span></code>, for which there are many robust and well documented libraries for machine learning and data science.</p>
+<p>Specifically, we will use</p>
+<ol class="arabic simple" start="0">
+<li><p><a class="reference external" href="https://www.anaconda.com/distribution/#download-section" rel="noreferrer" target="_blank"><code class="docutils literal notranslate"><span class="pre">Jupyter</span> <span class="pre">notebook</span></code></a> - a web-based interactive development environment for Jupyter notebooks, code, and data.</p></li>
 <li><p><a class="reference external" href="https://colab.research.google.com/" rel="noreferrer" target="_blank"><code class="docutils literal notranslate"><span class="pre">colab</span> <span class="pre">notebook</span></code></a> - a Google web app for creating interactive document containing text, equations, live code and outputs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for reading and manipulating data</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> - a <code class="docutils literal notranslate"><span class="pre">python</span></code> library for data visualization</p></li>
@@ -729,12 +730,12 @@ document.write(`
 </section>
 <section id="learning-python">
 <h2>Learning <code class="docutils literal notranslate"><span class="pre">python</span></code><a class="headerlink" href="#learning-python" title="Link to this heading">#</a></h2>
-<p>The course website contains readings, cheatsheets and tutorials for mastering general <code class="docutils literal notranslate"><span class="pre">python</span></code> programming as well as using <code class="docutils literal notranslate"><span class="pre">python</span></code> libraries for data manipulation/visualization.</p>
-<p><strong>Tips for learning a programmming language:</strong></p>
+<p>Many readings, cheatsheets and tutorials are available online for mastering general <code class="docutils literal notranslate"><span class="pre">python</span></code> programming as well as using <code class="docutils literal notranslate"><span class="pre">python</span></code> libraries for data manipulation/visualization.</p>
+<p><strong>Tips for learning a programming language:</strong></p>
 <ol class="arabic simple">
 <li><p>Don’t read code line by line (at first)</p></li>
 <li><p>Copy as much as possible (learn patterns and templates)</p></li>
-<li><p>Don’t be afriad to play (trial and error)</p></li>
+<li><p>Don’t be afraid to play (trial and error)</p></li>
 <li><p>Read documentation!</p></li>
 </ol>
 </section>
@@ -996,8 +997,8 @@ document.write(`
 <section id="matplotlib-visualization">
 <h2><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization<a class="headerlink" href="#matplotlib-visualization" title="Link to this heading">#</a></h2>
 </section>
-<section id="data-visualiztaion-with-matplotlib">
-<h2>Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code><a class="headerlink" href="#data-visualiztaion-with-matplotlib" title="Link to this heading">#</a></h2>
+<section id="data-visualization-with-matplotlib">
+<h2>Data Visualization with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code><a class="headerlink" href="#data-visualization-with-matplotlib" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> is a plotting library, the <code class="docutils literal notranslate"><span class="pre">pyplot</span></code> module contains a set of functions especially useful for generating a wide range of visualizations:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1032,7 +1033,7 @@ document.write(`
 <p><strong>Assumptions:</strong></p>
 <ol class="arabic simple">
 <li><p>packages arrive randomly in any given hour according to a Poisson distribution. That is, the number of packages <span class="math notranslate nohighlight">\(N\)</span> is distributed as <span class="math notranslate nohighlight">\(Poi(\lambda)\)</span>, with <span class="math notranslate nohighlight">\(\lambda = 3\)</span>.</p></li>
-<li><p>each package has a randomn size <span class="math notranslate nohighlight">\(S\)</span> (measured in <span class="math notranslate nohighlight">\(in^3\)</span>) and weight <span class="math notranslate nohighlight">\(W\)</span> (measured in pounds) jointly distributed as <span class="math notranslate nohighlight">\(\mathcal{N}\left([120, 4], \left[\begin{array}{cc} 1.5&amp; 1\\ 1 &amp; 1.5 \end{array} \right] \right)\)</span>.</p></li>
+<li><p>each package has a random size <span class="math notranslate nohighlight">\(S\)</span> (measured in <span class="math notranslate nohighlight">\(in^3\)</span>) and weight <span class="math notranslate nohighlight">\(W\)</span> (measured in pounds) jointly distributed as <span class="math notranslate nohighlight">\(\mathcal{N}\left([120, 4], \left[\begin{array}{cc} 1.5&amp; 1\\ 1 &amp; 1.5 \end{array} \right] \right)\)</span>.</p></li>
 <li><p>processing time <span class="math notranslate nohighlight">\(T\)</span> (in seconds) for each package is given by <span class="math notranslate nohighlight">\(T = 60 + 0.6 W + 0.2 S + \epsilon\)</span>, <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 5)\)</span>.</p></li>
 </ol>
 <p><strong>Tasks:</strong></p>
@@ -1042,6 +1043,265 @@ document.write(`
 <li><p>Compute the expected processing time of a single package.</p></li>
 <li><p>Compute the expected processing time of all packages over a single day.</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Task 1</p>
+<p>Before tackling the various computations, let’s get an intuitive understanding of the various distributions for number of packages, package weight and size etc. To do this, we visualize the distributions and ask ourselves if they realistically model the real-life quantities in which we are interested.</p>
+<p><strong>Number of Packages as a Random Variable</strong></p>
+<p>We first visualize the Poisson distribution that describes the number of packages that arrives in one hour. You can either plot the pmf of the Poisson distribution (available through <code class="docutils literal notranslate"><span class="pre">scipy.stats.poisson</span></code> ) as a function using <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> or you can sample from the distribution using <code class="docutils literal notranslate"><span class="pre">numpy.random.poisson</span></code> then histogram the samples using <code class="docutils literal notranslate"><span class="pre">.hist()</span></code> to empirically approximate the pmf.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#parmater for the poisson distribution</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1">#define x values that include most of the probability mass of the pmf</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">mu</span><span class="p">),</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">mu</span><span class="p">))</span>
+<span class="c1">#get the poisson pmf function from scipy.stats</span>
+<span class="n">poisson_pmf</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">pmf</span>
+
+<span class="c1">#sample 500 values from numpy's poisson distribution</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1">#plot the poisson pmf as a function</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">poisson_pmf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Poisson pmf'</span><span class="p">)</span>
+<span class="c1">#approximate the poisson pmf by histogramming the samples</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Histogram estimation of Poison pmf'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/task-1-1.png"><img alt="Task 1, figure 1" class="align-center" src="../_images/task-1-1.png" style="width: 100%;" />
+</a>
+<p>From the pmf, we can see that it’s more likely that 1-4 packages arrive in an hour and it’s much less likely that more than 5 packages arrive in an hour.</p>
+<p><strong>Size and Weight of the Packages as Random Variables</strong></p>
+<p>Again, to visualize the bivariate Gaussian distribution for the size and weight, we can visualize the pdf as a bivariate function (using heatmaps and contour maps) or we can sample from the distribution and visualize a scatter plot (the scatter plot is an approximation of the pdf).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#mean of the multivariate Gaussian</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="c1">#covariance matrix of the multivariate Gaussian</span>
+<span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">#define points that include most of the probability mass of the pdf</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">114</span><span class="p">:</span><span class="mi">126</span><span class="p">:</span><span class="mf">.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mf">.01</span><span class="p">]</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="c1">#get the value of the pdf at those points</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="c1">#sample 1000 points from numpy's multivariate normal distribution</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1">#plot the gaussian pdf as a heat-map</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Reds'</span><span class="p">)</span>
+<span class="c1">#plot the gaussian pdf as a countour map</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Gaussian pdf'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'size'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'weight'</span><span class="p">)</span>
+<span class="c1">#approximate the gaussian pdf by scatter plotting the samples</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Scatter plot estimation of a Gaussian pmf'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'size'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'weight'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/task-1-2.png"><img alt="Task 1, figure 2" class="align-center" src="../_images/task-1-2.png" style="width: 100%;" />
+</a>
+<p>We see that the most likely values under this Gaussian distribution are around 120 <span class="math notranslate nohighlight">\(in^3\)</span> and 4 lbs. This Gaussian distribution is skewed diagonally towards the right. What does this mean about the relationship between the two random variables: size and weight?</p>
+<p><em><strong>Important Exploration for Intuition:</strong></em>
+Can you see which components of the covariance matrix control which aspect of the shape of the Gaussian pdf? Specifically, which aspect of the shape do the diagonal entries control? Which aspect of the shape do the off diagonal entries control? Change some of the values in <span class="math notranslate nohighlight">\(\left[\begin{array}{cc} 1.5&amp; 1\\ 1 &amp; 1.5 \end{array} \right]\)</span> and see how the shape of the pdf is affected.</p>
+<p>The expression for the total weight and size of packages is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+W_{\text{total}} &amp;= \sum_{m=1}^{24}\sum_{n=1}^{N_m} W_{n}\\
+S_{\text{total}} &amp;= \sum_{m=1}^{24}\sum_{n=1}^{N_m} S_{n}
+\end{aligned}\end{split}\]</div>
+<p><em><strong>Analytic Solution</strong></em>
+Note that the total weight <span class="math notranslate nohighlight">\(W_{\text{total}}\)</span> (and respectively, size) depends on both the random variables <span class="math notranslate nohighlight">\(W_{n}\)</span> and the random variables <span class="math notranslate nohighlight">\(N_{m}\)</span>. Thus, when we take the expected (or “average”) value of <span class="math notranslate nohighlight">\(W_{\text{total}}\)</span> (and respectively, size), we must take the expectation with respect to both <span class="math notranslate nohighlight">\(W_{n}\)</span>’s and <span class="math notranslate nohighlight">\(N_{m}\)</span>’s:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\{W_n\}, \{N_m\}}W_{\text{total}} = \mathbb{E}_{\{W_n\}, \{N_m\}} \sum_{m=1}^{24}\sum_{n=1}^{N_m} W_{n}.
+\]</div>
+<p>Recall the definition of the expected value of a function of a random variable, <span class="math notranslate nohighlight">\(x\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{x}[f(x)] = \int f(x) p(x) dx,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(p(x)\)</span> is the pdf of the random variable <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>So, we can write (with slight abuses of notation for simplicity):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{\{W_n\}, \{N_m\}}W_{\text{total}} &amp;= \int_{\{W_n\}, \{N_m\}}W_{\text{total}} p\left(\{W_n\}, \{N_m\}\right) d\{W_n\}d\{N_m\}\\
+&amp;= \int_{\{W_n\}, \{N_m\}} \sum_{m=1}^{24}\sum_{n=1}^{N_m} W_{n} p\left(\{W_n\}, \{N_m\}\right)d\{W_n\}d\{N_m\}
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(p\left(\{W_n\}, \{N_m\}\right)\)</span> is the joint distribution of the <span class="math notranslate nohighlight">\(W_{n}\)</span>’s and the <span class="math notranslate nohighlight">\(N_{m}\)</span>’s. As you’ll see, we don’t need to know anything about the distribution <span class="math notranslate nohighlight">\(p\left(\{W_n\}, \{N_m\}\right)\)</span>, or compute any of these integrals. The only fact of integration we need to recall is that <em><strong>the integral is a linear operator</strong></em>, that is, integration is interchangeable with finite sums. I.e. we can interchange the order of the integral and the first summand:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\int_{\{W_n\}, \{N_m\}} \sum_{m=1}^{24}\sum_{n=1}^{N_m} W_{n} p\left(\{W_n\}, \{N_m\}\right)d\{W_n\}d\{N_m\} &amp;=
+\sum_{m=1}^{24}\int_{\{W_n\}, \{N_m\}} \sum_{n=1}^{N_m} W_{n} p\left(\{W_n\}, \{N_m\}\right)d\{W_n\}d\{N_m\}\\
+&amp;= \sum_{m=1}^{24} \mathbb{E}_{\{W_n\}, \{N_m\}} \sum_{n=1}^{N_m} W_{n}
+\end{aligned}\end{split}\]</div>
+<p>Now, since the second summand <span class="math notranslate nohighlight">\(\sum_{n=1}^{N_m}\)</span> involves the random variable <span class="math notranslate nohighlight">\(N_m\)</span> over which we are integrating, we cannot push the integral past this summand. Fortunately, it is a property of expectations that <em><strong>the expected value of a random sum of random variables (with the identical means) is the product of the expected length of the sum and the expected value of one of the random variables</strong></em>. That is,</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\sum_{m=1}^{24} \mathbb{E}_{\{W_n\}, \{N_m\}} \sum_{n=1}^{N_m} W_{n} = \sum_{m=1}^{24}\mathbb{E}_{\{W_n\}, \{N_m\}}[N_m ] \mathbb{E}_{\{W_n\}, \{N_m\}}[W_1]
+\end{aligned}\]</div>
+<p>But we modeled <span class="math notranslate nohighlight">\(N_m\)</span> as a Poisson variable and so its mean is <span class="math notranslate nohighlight">\(\lambda=3\)</span>; and we modeled <span class="math notranslate nohighlight">\(W_1\)</span> as a normal variable with mean 4. Thus, we have that</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb{E}_{\{W_n\}, \{N_m\}}W_{\text{total}} = \sum_{m=1}^{24}\mathbb{E}_{\{W_n\}, \{N_m\}}[N_m ] \mathbb{E}_{\{W_n\}, \{N_m\}}[W_1] = 24 * 3 * 4 = 288.
+\]</div>
+<p>That is, the expected (or average) total weight processed by this USPS facility is 288 lbs.</p>
+<p><em><strong>Solution via Simulation</strong></em>
+If we were unable (or unwilling) to compute these expectations analytically, we could have estimated <span class="math notranslate nohighlight">\(\mathbb{E}_{\{W_n\}, \{N_m\}}W_{\text{total}}\)</span> through simulation. That is, we</p>
+<ol class="arabic simple">
+<li><p>simulate (sample) the number of packages that would arrive in a hour, and then repeat this 24 times</p></li>
+<li><p>for each package in the 24 hours, we simulate (sample) a size and a weight</p></li>
+<li><p>we sum up the size and the weight for the total over 24 hours</p></li>
+<li><p>repeat this entire process a large number of times and compute the averaged total weight over the repetitions</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#repeat a 24 hr simulation for 100 times</span>
+<span class="n">total_size_weight</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1">#simulate number of packages in 24 hours</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+    <span class="n">total_packages</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="c1">#for each package sample a size and weight</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">size_weight_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">total_packages</span><span class="p">)</span>
+    <span class="c1">#sum up the weights and sizes separately and add this total to our list of totals</span>
+    <span class="n">total_size_weight</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">size_weight_samples</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="c1">#average the total size and weight over 100 simulations</span>
+<span class="n">total_size_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">total_size_weight</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">#store both averages in a pandas dataframe (for pretty output)</span>
+<span class="n">total_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">total_size_weight</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'total size'</span><span class="p">,</span> <span class="s1">'total weight'</span><span class="p">])</span>
+<span class="n">total_df</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   total size  total weight
+0  8566.29009    287.018862
+</pre></div>
+</div>
+<p>This is pretty close to what we predicted analytically for the total weight!</p>
+<p><em>Not covered here: the expected total size, and the expected average weight and size of a package.</em></p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Task 2</p>
+<p><em><strong>Analytic Solution</strong></em>
+The expression for the total number of packages that arrives in a single day is:</p>
+<div class="math notranslate nohighlight">
+\[
+N_{\text{total}} = \sum_{m=1}^{24} N_m
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(N_m\)</span> is the number of packages that arrives in a single hour. Note that <span class="math notranslate nohighlight">\(N_m \sim Poi(3)\)</span>.</p>
+<p>Thus,</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\mathbb{E}_{\{N_m\}} N_{\text{total}} = \mathbb{E}_{\{N_m\}}\sum_{m=1}^{24} N_m = \sum_{m=1}^{24}\mathbb{E}_{\{N_m\}}N_m = \sum_{m=1}^{24} 3 = 24 * 3 = 72
+\end{aligned}\]</div>
+<p>Again, we can approximate <span class="math notranslate nohighlight">\(\mathbb{E}_{\{N_m\}} N_{\text{total}}\)</span> through simulation.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Task 3</p>
+<p><em><strong>Analytic Solution</strong></em></p>
+<p>The expression for a single package is</p>
+<div class="math notranslate nohighlight">
+\[
+T = 60 + 0.6 W + 0.2 S + \epsilon.
+\]</div>
+<p>Thus, <span class="math notranslate nohighlight">\(T\)</span> is a random variable that depends on <span class="math notranslate nohighlight">\(W\)</span>, <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(\epsilon\)</span>. So when we compute the expected value of <span class="math notranslate nohighlight">\(T\)</span>, we need to take the expectation with respect to <span class="math notranslate nohighlight">\(W\)</span>, <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(\epsilon\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{W, S, \epsilon}[T] &amp;= \mathbb{E}_{W, S, \epsilon}[60 + 0.6 W + 0.2 S + \epsilon]\\
+&amp;= \mathbb{E}_{W, S, \epsilon}[60] + 0.6\mathbb{E}_{W, S, \epsilon}[W] + 0.2\mathbb{E}_{W, S, \epsilon}[S] + \mathbb{E}_{W, S, \epsilon}[\epsilon]\\
+&amp;= 60 + 0.6 * 4 + 0.2 * 120 + 0\\
+&amp;= 86.4
+\end{aligned}\end{split}\]</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">sample_total_time()</span></code> in Task 4 simulates <span class="math notranslate nohighlight">\(T\)</span> for every package, so we could also have estimated <span class="math notranslate nohighlight">\(\mathbb{E}_{W, S, \epsilon}[T]\)</span> by simulation.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Task 4</p>
+<p><strong>Processing Time as a Random Variable</strong></p>
+<p>What about the distribution of the processing time as a random variable? This is more complex since total processing time over a day, <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span>, is a function of other random variables,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+T_{\text{total}} &amp;= \sum_{m=1}^{24}\sum_{n=1}^{N_m} 60 + 0.6 W_n + 0.2 S_n + \epsilon_n \\
+\epsilon_n &amp;\sim \mathcal{N}(0, 5)\\
+[S_n, W_n] &amp;\sim \mathcal{N}\left([120, 4], \left[\begin{array}{cc} 1.5&amp; 1\\ 1 &amp; 1.5 \end{array} \right] \right)\\
+N_m &amp;\sim Poi(3)
+\end{aligned}\end{split}\]</div>
+<p>As such, we don’t know what exactly is the distribution of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span> (i.e. it’s not a normal distribution, it’s not Poisson etc). In this case, we can’t easily plot the pdf of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span> as we did for the other random variables. We can, however, still approximate the pdf by sampling from the distribution of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span>. Rather than sampling from a specific pdf (in this case we don’t know what it is), we can “build” samples of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span>, by sampling all relevant random variables on which <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span> depends and then summing them appropriately to obtain samples of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sample_total_time</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    function to simulate one sample of total processing time T_total</span>
+<span class="sd">    '''</span>
+    <span class="c1">#sample packages per hour for 24 hours</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+    <span class="c1">#sum hourly number of packages to get total number over 24 hours</span>
+    <span class="n">total_packages</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="c1">#for each package sample a size and weight</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">[</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+    <span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">size_weight_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">total_packages</span><span class="p">)</span>
+    <span class="c1">#sample epsilons</span>
+    <span class="n">epsilons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">total_packages</span><span class="p">)</span>
+    
+    <span class="c1">#compute total processing time for all packages</span>
+    <span class="n">T_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">60</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">size_weight_samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">size_weight_samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">epsilons</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">T_total</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#simulate 2000 samples of total processing time</span>
+<span class="n">number_of_samples</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">total_times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_samples</span><span class="p">):</span>
+    <span class="n">total_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_total_time</span><span class="p">())</span>
+
+<span class="c1">#visualize the total processing time samples</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">total_times</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Histogram of total processing time'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/task-4-1.png"><img alt="Task 4, figure 1" class="align-center" src="../_images/task-4-1.png" style="width: 100%;" />
+</a>
+<p>it looks like that the most likely total processing time over a day is just above 6000 seconds, or 1.67 hours.</p>
+<p><em><strong>Analytic Solution</strong></em></p>
+<p>The expression for the total processing time is</p>
+<div class="math notranslate nohighlight">
+\[
+T_{\text{total}} = \sum_{m=1}^{24}\sum_{n=1}^{N_m} 60 + 0.6 W_n + 0.2 S_n + \epsilon_n
+\]</div>
+<p>Thus, <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span> is a random variable that depends on the variables <span class="math notranslate nohighlight">\(\{N_m\}\)</span>, <span class="math notranslate nohighlight">\(\{W_n\}\)</span>, <span class="math notranslate nohighlight">\(\{S_n\}\)</span> and <span class="math notranslate nohighlight">\(\{\epsilon_n\}\)</span>. So when we compute the expected value of <span class="math notranslate nohighlight">\(T\)</span>, we need to take the expectation with respect to all the variables on which <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span> depends:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{\text{all vars}}[T_{\text{total}}] &amp;= \mathbb{E}_{\text{all vars}}\sum_{m=1}^{24}\sum_{n=1}^{N_m} 60 + 0.6 W_n + 0.2 S_n + \epsilon_n \\
+&amp;= \sum_{m=1}^{24}\mathbb{E}_{\text{all vars}}\sum_{n=1}^{N_m} 60 + 0.6 W_n + 0.2 S_n + \epsilon_n\\
+&amp;= \sum_{m=1}^{24} \mathbb{E}_{\text{all vars}}[N_m] (\mathbb{E}_{\text{all vars}}[60 + 0.6 W_n + 0.2 S_n + \epsilon_n])  \\
+&amp;= \sum_{m=1}^{24} 3 * 86.4\\
+&amp;= 24 * 3 * 86.4\\
+&amp;= 6220.8
+\end{aligned}\end{split}\]</div>
+<p>where we used the fact that <span class="math notranslate nohighlight">\(\mathbb{E}_{\text{all vars}}[60 + 0.6 W_n + 0.2 S_n + \epsilon_n] = 86.4\)</span> from Task 3.</p>
+<p><em><strong>Solution via Simulation</strong></em></p>
+<p>Above, we simulated samples from the distribution of <span class="math notranslate nohighlight">\(T_{\text{total}}\)</span>. So we can use the empirical mean of the samples in order to estimate the <span class="math notranslate nohighlight">\(\mathbb{E}_{\text{all vars}}[T_{\text{total}}]\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#estimate the empirical mean of the total processing time</span>
+<span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">total_times</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>6226.220272969424
+</pre></div>
+</div>
+<p>This looks close to our analytically computed expected value!</p>
+<p><strong>The Main Take-away:</strong>
+It is often the case that we are interested in computing some statistics (like the average) of a quantity that is a function of random variables (like total processing time, which is a function of weight, size etc). If we know the analytical form (the formula for the pdf or pmf) of the random involved and if the function is relatively simple, we can often compute these statistics analytically (by computing the various integrals exactly).</p>
+<p>When analytical computation is intractable, we want to simulate samples from the quantity of interest (e.g. simulate samples from total process time) and then estimate the statistic empirically using samples.</p>
+</div>
 </section>
 </section>
 
@@ -1127,10 +1387,10 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Visualizing Distributions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-relationships">Visualizing Relationships</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-comparisons-of-subgroups">Visualizing Comparisons of Subgroups</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypothese">Generating Hypothese</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypothese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-hypotheses">Generating Hypotheses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Generating Hypotheses</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-tools">Computational Tools</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-for-the-course">Tools for the Course</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-tools">Computing Tools</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jupyter-or-colab-notebooks"><code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> or <code class="docutils literal notranslate"><span class="pre">colab</span></code> Notebooks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-does-colab-notebook-look-like">What Does Colab Notebook Look Like?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">What Does Colab Notebook Look Like?</a></li>
@@ -1158,7 +1418,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-linalg-module">The <code class="docutils literal notranslate"><span class="pre">numpy.linalg</span></code> Module</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-numpy-random-module">The <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> Module</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matplotlib-visualization"><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>: Visualization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualiztaion-with-matplotlib">Data Visualiztaion with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-visualization-with-matplotlib">Data Visualization with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-types-of-visualizations">Common Types of Visualizations</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-simulation-of-statistical-models">Exercise: Simulation of Statistical Models</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-of-usps-package-processing-time">Model of USPS Package Processing Time</a></li>

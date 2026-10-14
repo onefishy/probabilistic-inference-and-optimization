@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -523,32 +524,28 @@ document.write(`
 </div>
 <section id="motivation">
 <h2><span class="section-number">7.1. </span>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
-<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as
+<p>Posterior samples allow us to approximately compute posterior point estimates, for example, we can approximate the posterior mean as</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[\theta] = \int_\Theta \theta\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S \theta_s,\, \theta_s \sim p(\theta | Y)
 \]</div>
-</p>
-<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected vaue of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:
+<p>In fact, for any function <span class="math notranslate nohighlight">\(f\)</span> of <span class="math notranslate nohighlight">\(\theta | Y\)</span>, we can estimate the expected value of <span class="math notranslate nohighlight">\(f\)</span> by first sampling <span class="math notranslate nohighlight">\(S\)</span> samples from the posterior <span class="math notranslate nohighlight">\(p(\theta | Y)\)</span> and then compute the average value of <span class="math notranslate nohighlight">\(f\)</span> on these samples:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta \approx \frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y)
 \]</div>
-</p>
 <p><strong>Question:</strong> But is this estimate consistent? Unbiased? Of minimal variance?</p>
 </section>
 <section id="basics-of-monte-carlo-integration">
 <h2><span class="section-number">7.2. </span>Basics of Monte Carlo Integration<a class="headerlink" href="#basics-of-monte-carlo-integration" title="Link to this heading">#</a></h2>
 <section id="naive-monte-carlo-estimation-of-integrals">
 <h3>Naive Monte Carlo Estimation of Integrals<a class="headerlink" href="#naive-monte-carlo-estimation-of-integrals" title="Link to this heading">#</a></h3>
-<p>Let <span class="math notranslate nohighlight">\(I\)</span> denote the integral
+<p>Let <span class="math notranslate nohighlight">\(I\)</span> denote the integral</p>
 <div class="math notranslate nohighlight">
 \[\mathbb{E}_{\theta|Y}[f(\theta)] = \int_\Theta f(\theta)\, p(\theta | Y)\,d\theta\]</div>
-
-and let <span class="math notranslate nohighlight">\(\widehat{I}\)</span> denote the approximation
+<p>and let <span class="math notranslate nohighlight">\(\widehat{I}\)</span> denote the approximation</p>
 <div class="math notranslate nohighlight">
 \[\frac{1}{S}\sum_{s=1}^S f(\theta_s),\, \theta_s \sim p(\theta | Y).\]</div>
-</p>
 <p>We call <span class="math notranslate nohighlight">\(\widehat{I}\)</span> the <em><strong>Monte Carlo estimate</strong></em> of <span class="math notranslate nohighlight">\(I\)</span>.</p>
 <p>In general, <em><strong>Monte Carlo integration</strong></em> is the process of estimating a deterministic quantity (an integral) using a procedure involving stochasticity (sampling).</p>
 </section>
@@ -569,14 +566,13 @@ and let <span class="math notranslate nohighlight">\(\widehat{I}\)</span> denote
 </section>
 <section id="the-variance-and-error-of-monte-carlo-estimators">
 <h3>The Variance and Error of Monte Carlo Estimators<a class="headerlink" href="#the-variance-and-error-of-monte-carlo-estimators" title="Link to this heading">#</a></h3>
-<p>The variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is given by
+<p>The variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is given by</p>
 <div class="math notranslate nohighlight">
 \[
 \mathrm{Var}\left[\widehat{I} \right] = \mathrm{Var} \left[ \frac{1}{S} \sum_{s=1}^{S} f(\theta_S) \right] = \frac{1}{S^2} \sum_{s=1}^{S} \mathrm{Var}\left[ f(\theta_S)\right] = \frac{\mathrm{Var}\left[ f(\theta)\right]}{S},
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\theta_S\)</span>, <span class="math notranslate nohighlight">\(\theta \sim p(\theta|Y)\)</span>. Plainly put, <strong>the variance of the estimator is reduced when the number of samples <span class="math notranslate nohighlight">\(S\)</span> is large and the variance <span class="math notranslate nohighlight">\(\sigma_f^2\)</span> of <span class="math notranslate nohighlight">\(f(\theta)\)</span> is low</strong>.</p>
-<p>The <strong>Centeral Limit Theorem</strong> says that the difference between sample mean and the theoretical mean of iid random variables will approach a normal distribution as <span class="math notranslate nohighlight">\(N\to \infty\)</span>. For us, this means that the error of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> has a roughly normal distribution:</p>
+<p>where <span class="math notranslate nohighlight">\(\theta_S\)</span>, <span class="math notranslate nohighlight">\(\theta \sim p(\theta|Y)\)</span>. Plainly put, <strong>the variance of the estimator is reduced when the number of samples <span class="math notranslate nohighlight">\(S\)</span> is large and the variance <span class="math notranslate nohighlight">\(\sigma_f^2\)</span> of <span class="math notranslate nohighlight">\(f(\theta)\)</span> is low</strong>.</p>
+<p>The <strong>Central Limit Theorem</strong> says that the difference between sample mean and the theoretical mean of iid random variables will approach a normal distribution as <span class="math notranslate nohighlight">\(N\to \infty\)</span>. For us, this means that the error of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> has a roughly normal distribution:</p>
 <div class="math notranslate nohighlight">
 \[
 p\left( \widehat{I} - I\right) \to \mathcal{N}\left(0, \frac{\sigma_f^2}{S} \right), \; N \to \infty
@@ -588,15 +584,14 @@ p\left( \widehat{I} - I\right) \to \mathcal{N}\left(0, \frac{\sigma_f^2}{S} \rig
 <h2><span class="section-number">7.3. </span>Variance Reduction: Control Variates<a class="headerlink" href="#variance-reduction-control-variates" title="Link to this heading">#</a></h2>
 <section id="a-baseline-for-variance-of-monte-carlo-estimates">
 <h3>A Baseline for Variance of Monte Carlo Estimates<a class="headerlink" href="#a-baseline-for-variance-of-monte-carlo-estimates" title="Link to this heading">#</a></h3>
-<p>The variance of the naive Monte Carlo estimate <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is:
+<p>The variance of the naive Monte Carlo estimate <span class="math notranslate nohighlight">\(\widehat{I}\)</span> is:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\mathrm{Var}\left[ \widehat{I}\right] &amp;= \frac{1}{S}\mathrm{Var}\left[ f(\theta)\right]\\ 
+\mathrm{Var}\left[ \widehat{I}\right] &amp;= \frac{1}{S}\mathrm{Var}\left[ f(\theta)\right]\\
 &amp;= \frac{1}{S}\mathbb{E}_{\theta|Y}\left[\left( f(\theta) - \mathbb{E}_{\theta|Y}\left[ f(\theta)\right]\right)^2\right]\\
 &amp;= \frac{1}{S}\mathbb{E}_{\theta|Y}\left[ f(\theta)^2 \right] - \mathbb{E}_{\theta|Y}\left[ f(\theta)\right]^2\\
 &amp;= \frac{1}{S}\left(\int_\Theta f(\theta)^2 p(\theta|Y)d\theta  - I^2\right)
 \end{aligned}\end{split}\]</div>
-</p>
 <p>We’ll compare the variance of alternative estimator to the above when checking for variance reduction.</p>
 <p><strong>Note:</strong> The variance of <span class="math notranslate nohighlight">\(f(\theta)\)</span> depends on <em>both</em> the variance of <span class="math notranslate nohighlight">\(\theta\)</span> and the amount of variation in the function <span class="math notranslate nohighlight">\(f\)</span>. <strong>Functions that change a great amount over the domain will have a high variance and functions that are flat will have a low variance.</strong></p>
 </section>
@@ -634,38 +629,34 @@ p\left( \widehat{I} - I\right) \to \mathcal{N}\left(0, \frac{\sigma_f^2}{S} \rig
 <li><p>choose a constant <span class="math notranslate nohighlight">\(c\)</span>.</p></li>
 </ol>
 <p>Typically, we want to choose an <span class="math notranslate nohighlight">\(h\)</span> that follows to the trends of <span class="math notranslate nohighlight">\(f\)</span> that is easy to integrate.</p>
-<p>The value of <span class="math notranslate nohighlight">\(c\)</span> that minimizes <span class="math notranslate nohighlight">\(\sigma_{\widehat{I}_{\text{control}}}^2\)</span> is
+<p>The value of <span class="math notranslate nohighlight">\(c\)</span> that minimizes <span class="math notranslate nohighlight">\(\sigma_{\widehat{I}_{\text{control}}}^2\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[
 c^* = \frac{\mathbf{cov}[f(\theta), h(\theta)]}{\sigma_h^2}.
 \]</div>
-</p>
 <p>In case <span class="math notranslate nohighlight">\(\mathbf{cov}[f(\theta), h(\theta)]^2\)</span> and <span class="math notranslate nohighlight">\(\sigma_h^2\)</span> are difficult to compute analytically, they can be empirically estimated from the samples.</p>
 <p>When we choose the optimal <span class="math notranslate nohighlight">\(c = c^*\)</span>, the variance of <span class="math notranslate nohighlight">\(\widehat{I}_{\text{control}}\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[
 \sigma_{\widehat{I}_{\text{control}}}^2 = \frac{1}{S}\left(1 - \frac{\mathbf{cov}[f(\theta), h(\theta)]}{\sigma_h^2\sigma_f^2}\right)\sigma_f^2 \sigma^2_{\widehat{I}_{\text{control}}} = \frac{1}{S}(1 - \rho_{f, h})\sigma_f^2,
 \]</div>
-<p>where <span class="math notranslate nohighlight">\(\rho_{f, h}\)</span> is the correlation between the outputs of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(h\)</span>. Hence, the more <span class="math notranslate nohighlight">\(h\)</span> is correlated with the ouput the greater the variance reduction.</p>
+<p>where <span class="math notranslate nohighlight">\(\rho_{f, h}\)</span> is the correlation between the outputs of <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(h\)</span>. Hence, the more <span class="math notranslate nohighlight">\(h\)</span> is correlated with the output the greater the variance reduction.</p>
 </section>
 <section id="example-control-variates">
 <h3>Example: Control Variates<a class="headerlink" href="#example-control-variates" title="Link to this heading">#</a></h3>
-<p>Let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. Let the control variate be <span class="math notranslate nohighlight">\(h(\theta) = -0.2 \theta^3\)</span>. We aim to estimate:
+<p>Let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. Let the control variate be <span class="math notranslate nohighlight">\(h(\theta) = -0.2 \theta^3\)</span>. We aim to estimate:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
 \]</div>
-</p>
-<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with the control variate:
+<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with the control variate:</p>
 <div class="math notranslate nohighlight">
 \[\widehat{I}_{\text{control}} = \frac{1}{S} \sum_{s=1}^S \left(f(\theta_s) - 1.5(h(\theta_s) - \mu_h)\right),\]</div>
-
-for <span class="math notranslate nohighlight">\(S = 100\)</span> and where
+<p>for <span class="math notranslate nohighlight">\(S = 100\)</span> and where</p>
 <div class="math notranslate nohighlight">
 \[
 \mu_h = \mathbb{E}_{\theta|Y}[h(\theta)] = \frac{1}{20}\int_{0}^{20} h(\theta) d\theta = -400.
 \]</div>
-</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -751,33 +742,29 @@ variance of control variate monte carlo estimate: 52.49658213225613
 </section>
 <section id="the-stratified-sampling-monte-carlo-estimator">
 <h3>The Stratified Sampling Monte Carlo Estimator<a class="headerlink" href="#the-stratified-sampling-monte-carlo-estimator" title="Link to this heading">#</a></h3>
-<p>Fix a function <span class="math notranslate nohighlight">\(f(\theta)\)</span>, where <span class="math notranslate nohighlight">\(\theta\)</span> is a random variable over the domain <span class="math notranslate nohighlight">\(\Theta\)</span> whose pdf is <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>. Then the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> can be decomposed as
+<p>Fix a function <span class="math notranslate nohighlight">\(f(\theta)\)</span>, where <span class="math notranslate nohighlight">\(\theta\)</span> is a random variable over the domain <span class="math notranslate nohighlight">\(\Theta\)</span> whose pdf is <span class="math notranslate nohighlight">\(p(\theta|Y)\)</span>. Then the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> can be decomposed as</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int f(x)p(x) dx = \sum_{m=1}^M \int_{\Theta_m} f(\theta) p(\theta) d\theta
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\bigcup_{m=1}^M\Theta_m = \Theta\)</span> and <span class="math notranslate nohighlight">\(\Theta_m \cap \Theta_{m'} = \emptyset\)</span> if <span class="math notranslate nohighlight">\(m\neq m'\)</span>.</p>
-<p>To make <span class="math notranslate nohighlight">\(p(\theta)\)</span> a pdf over <span class="math notranslate nohighlight">\(\Theta_{m'}\)</span> we need to normalize it, i.e.
+<p>where <span class="math notranslate nohighlight">\(\bigcup_{m=1}^M\Theta_m = \Theta\)</span> and <span class="math notranslate nohighlight">\(\Theta_m \cap \Theta_{m'} = \emptyset\)</span> if <span class="math notranslate nohighlight">\(m\neq m'\)</span>.</p>
+<p>To make <span class="math notranslate nohighlight">\(p(\theta)\)</span> a pdf over <span class="math notranslate nohighlight">\(\Theta_{m'}\)</span> we need to normalize it, i.e.</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{p(\theta)}{w_m},\quad w_m = \int_{\Theta_m} p(\theta)d\theta.
 \]</div>
-
-We can then rewrite the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> again
+<p>We can then rewrite the integral for <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta|Y}[f(\theta)]\)</span> again</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \sum_{m=1}^M \int_{\Theta_m} w_m f(\theta) \left(\frac{p(\theta)}{w_m}\right) d\theta = \sum_{m=1}^M w_m \mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)],
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\mathbb{1}_{\Theta_m}\)</span> is the indicator function for the set <span class="math notranslate nohighlight">\(\Theta_m\)</span>.</p>
-<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. Let <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> be the Monte Carlo estimate of <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)]\)</span> estimated with <span class="math notranslate nohighlight">\(S_m = w_m * S\)</span> samples, the <em><strong>stratified sampling Monte Carlo estimator</strong></em> is
+<p>where <span class="math notranslate nohighlight">\(\mathbb{1}_{\Theta_m}\)</span> is the indicator function for the set <span class="math notranslate nohighlight">\(\Theta_m\)</span>.</p>
+<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. Let <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> be the Monte Carlo estimate of <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)]\)</span> estimated with <span class="math notranslate nohighlight">\(S_m = w_m * S\)</span> samples, the <em><strong>stratified sampling Monte Carlo estimator</strong></em> is</p>
 <div class="math notranslate nohighlight">
 \[
 \widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
 \]</div>
-
-since <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_m\right]\)</span> is lower than <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}\right]\)</span>, we hope that <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_{\text{SS}}\right]\)</span> is also lower.</p>
+<p>since <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_m\right]\)</span> is lower than <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}\right]\)</span>, we hope that <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}_{\text{SS}}\right]\)</span> is also lower.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: The Nitty Gritty of Stratified Sampling: Variance Reduction</p>
 <p>The stratified sampling Monte Carlo is unbiased. Note that</p>
@@ -805,23 +792,21 @@ since <span class="math notranslate nohighlight">\(\mathrm{Var}\left[\widehat{I}
 </section>
 <section id="example-stratified-sampling">
 <h3>Example: Stratified Sampling<a class="headerlink" href="#example-stratified-sampling" title="Link to this heading">#</a></h3>
-<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:
+<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
 \]</div>
-</p>
 <p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with stratified sampling:</p>
 <div class="math notranslate nohighlight">
 \[
 \widehat{I}_{\text{SS}} = \sum_{m=1}^M \frac{1}{S_m} \sum_{s_m=1}^{S_m} w_m f(\theta_{s_m}),\; \theta_{s_m} \sim U(t_{m-1}, t_{m}),
 \]</div>
-<p>for sample sizes
+<p>for sample sizes</p>
 <div class="math notranslate nohighlight">
 \[
 [13, 20, 9, 10, 15, 32],
 \]</div>
-</p>
 <p>where the number <span class="math notranslate nohighlight">\(M\)</span> of strata is 10, <span class="math notranslate nohighlight">\(w_m = \frac{t_m - t_{m-1}}{20}\)</span>, and where the end points of the strata is given by</p>
 <div class="math notranslate nohighlight">
 \[
@@ -919,13 +904,12 @@ variance of stratified monte carlo estimate: 379.4187342386133
 </section>
 <section id="variance-of-importance-sampling">
 <h3>Variance of Importance Sampling<a class="headerlink" href="#variance-of-importance-sampling" title="Link to this heading">#</a></h3>
-<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. The <em><strong>importance sampling Monte Carlo estimator</strong></em> is
+<p>Fix a total sample size <span class="math notranslate nohighlight">\(S\)</span>. The <em><strong>importance sampling Monte Carlo estimator</strong></em> is</p>
 <div class="math notranslate nohighlight">
 \[
 \widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s), \; \theta_s \sim q(\theta_s)
 \]</div>
-
-We call <span class="math notranslate nohighlight">\(q\)</span> is the <em><strong>importance distribution</strong></em>, <span class="math notranslate nohighlight">\(p\)</span> the <em><strong>nominal distribution</strong></em> and <span class="math notranslate nohighlight">\(\frac{p(\theta_s|Y)}{q(\theta_s)}\)</span> the <em><strong>importance weight</strong></em>.</p>
+<p>We call <span class="math notranslate nohighlight">\(q\)</span> is the <em><strong>importance distribution</strong></em>, <span class="math notranslate nohighlight">\(p\)</span> the <em><strong>nominal distribution</strong></em> and <span class="math notranslate nohighlight">\(\frac{p(\theta_s|Y)}{q(\theta_s)}\)</span> the <em><strong>importance weight</strong></em>.</p>
 <p>We can show that <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> is unbiased and consistent using the following fact (assuming <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> have the same support):</p>
 <div class="math notranslate nohighlight">
 \[
@@ -941,29 +925,28 @@ where <span class="math notranslate nohighlight">\(\sigma^2_q\)</span> is the va
 </section>
 <section id="the-nitty-gritty-of-importance-sampling-the-design-of-q">
 <h3>The Nitty Gritty of Importance Sampling: the Design of <span class="math notranslate nohighlight">\(q\)</span><a class="headerlink" href="#the-nitty-gritty-of-importance-sampling-the-design-of-q" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p><strong>(When <span class="math notranslate nohighlight">\(q=0\)</span>)</strong> if <span class="math notranslate nohighlight">\(q(\theta_0)=0\)</span> but <span class="math notranslate nohighlight">\(p(\theta_0|Y) \neq 0\)</span> for some <span class="math notranslate nohighlight">\(\theta_0\)</span> then <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> will be biased, since sampling from <span class="math notranslate nohighlight">\(q\)</span> can never simulate sampling from <span class="math notranslate nohighlight">\(p\)</span> even after reweighting.<br><br></p></li>
 <li><p><strong>(When <span class="math notranslate nohighlight">\(q\approx 0\)</span>)</strong> related, if <span class="math notranslate nohighlight">\(q(\theta_0)\)</span> is very small (esp. when <span class="math notranslate nohighlight">\(q(\theta_0) &lt; p(\theta_0|Y)\)</span>) then it is unlikely that your samples will include <span class="math notranslate nohighlight">\(\theta_0\)</span>. Hence, <span class="math notranslate nohighlight">\(\widehat{I}_{\text{IS}}\)</span> will be biased. <strong>If you’ve never see snow, you can’t prepare for it!</strong><br><br></p></li>
 <li><p><strong>(Again, when <span class="math notranslate nohighlight">\(q\approx 0\)</span>)</strong> recall that <span class="math notranslate nohighlight">\(\sigma^2_q = \int_\Theta\frac{\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2}{q(\theta)}\)</span>. For smaller <span class="math notranslate nohighlight">\(\sigma^2_q\)</span>, we want <span class="math notranslate nohighlight">\(\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2\approx 0\)</span>, i.e. <span class="math notranslate nohighlight">\(q\propto f(\theta)p(\theta|Y)\)</span>. But where <span class="math notranslate nohighlight">\(q(\theta) \approx 0\)</span>, <span class="math notranslate nohighlight">\(\sigma^2_q\)</span> can be large even when <span class="math notranslate nohighlight">\(\left(f(\theta)p(\theta|Y) - I q(\theta)\right)^2\)</span> is small.<br><br></p></li>
-<li><p><strong>(Heterogenous weights)</strong> when <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are very dissimlar, the weights will either be near 0 or huge. Say we have one sample with weight 0 and one with weight 999, how many samples are we effectively simulating from <span class="math notranslate nohighlight">\(p\)</span>? A way to measure the “quality” of the samples from <span class="math notranslate nohighlight">\(q\)</span> in estimating <span class="math notranslate nohighlight">\(I\)</span>, is through the <em><strong>effective sample size</strong></em>.</p></li>
-</ol>
+<li><p><strong>(Heterogenous weights)</strong> when <span class="math notranslate nohighlight">\(q\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are very dissimilar, the weights will either be near 0 or huge. Say we have one sample with weight 0 and one with weight 999, how many samples are we effectively simulating from <span class="math notranslate nohighlight">\(p\)</span>? A way to measure the “quality” of the samples from <span class="math notranslate nohighlight">\(q\)</span> in estimating <span class="math notranslate nohighlight">\(I\)</span>, is through the <em><strong>effective sample size</strong></em>.</p>
 <p>When we have <span class="math notranslate nohighlight">\(100\)</span> samples from <span class="math notranslate nohighlight">\(q\)</span> but ESS is 10, then essentially your IS estimate of <span class="math notranslate nohighlight">\(I\)</span> is as good as as Monte Carlo estimate with 10 samples from <span class="math notranslate nohighlight">\(p\)</span>.</p>
+</li>
+</ol>
 </section>
 <section id="example-importance-sampling">
 <h3>Example: Importance Sampling<a class="headerlink" href="#example-importance-sampling" title="Link to this heading">#</a></h3>
-<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:
+<p>Again, let <span class="math notranslate nohighlight">\(f(\theta) = -0.2 \theta^3 + 100\sin(\theta)\)</span> for <span class="math notranslate nohighlight">\(\theta|Y \sim U(0, 20)\)</span>. We aim to estimate:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{\theta|Y}[f(\theta)] = \int_{\Theta} f(\theta) p(\theta|Y) d\theta = \frac{1}{20} \int_{\Theta} f(\theta) d\theta.
 \]</div>
-</p>
-<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with importance sampling, with the importance distribution being <span class="math notranslate nohighlight">\(\mathcal{N}(12, 3)\)</span>:
+<p>We compare the sample variance of <span class="math notranslate nohighlight">\(\widehat{I} = \frac{1}{S} \sum_{s=1}^S f(\theta_s)\)</span> with that of the Monte Carlo estimate with importance sampling, with the importance distribution being <span class="math notranslate nohighlight">\(\mathcal{N}(12, 3)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 \widehat{I}_{\text{IS}} = \sum_{s=1}^S  \frac{1/20 * \mathbb{1}_{[0, 20]}}{\mathcal{N}(\theta_s; 12, 3)}\, f(\theta_{s}),\; \theta_{s} \sim \mathcal{N}(12, 3),
 \]</div>
-
-for sample size <span class="math notranslate nohighlight">\(S=100\)</span>.</p>
+<p>for sample size <span class="math notranslate nohighlight">\(S=100\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#normal pdf</span>
@@ -1058,7 +1041,7 @@ variance of IS monte carlo estimate: 815108574708675.2
 <h2><span class="section-number">7.6. </span>Summary of Monte Carlo Integration<a class="headerlink" href="#summary-of-monte-carlo-integration" title="Link to this heading">#</a></h2>
 <section id="id1">
 <h3>Monte Carlo Integration<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<p>Last week we studied ways of <em><strong>sampling</strong></em> from an arbitrary distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span>:</p>
+<p>In <a class="reference internal" href="05-sampling.html"><span class="doc">Chapter 6</span></a> we studied ways of <em><strong>sampling</strong></em> from an arbitrary distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span>:</p>
 <ul class="simple">
 <li><p><strong>Inverse CDF Sampling:</strong> when the inverse of the CDF of <span class="math notranslate nohighlight">\(p\)</span> can be computed</p></li>
 <li><p><strong>Rejection Sampling:</strong> when a good substitute distribution for <span class="math notranslate nohighlight">\(p\)</span> can be found</p></li>
@@ -1080,26 +1063,26 @@ variance of IS monte carlo estimate: 815108574708675.2
 <h3>Variance Reduction for Monte Carlo Integration<a class="headerlink" href="#variance-reduction-for-monte-carlo-integration" title="Link to this heading">#</a></h3>
 <p>We can reduce the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> by increasing the sample size <span class="math notranslate nohighlight">\(S\)</span>. But this is not always practical. <strong>Why?</strong></p>
 <p>We studied three ways of reducing the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span> by reducing the variance of the function inside the expectation:</p>
-<ol class="arabic simple">
-<li><p><strong>Control Variates:</strong> find a function <span class="math notranslate nohighlight">\(h\)</span> that captures the trend of <span class="math notranslate nohighlight">\(f\)</span>:
+<ol class="arabic">
+<li><p><strong>Control Variates:</strong> find a function <span class="math notranslate nohighlight">\(h\)</span> that captures the trend of <span class="math notranslate nohighlight">\(f\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
-\widehat{I}_{\text{control}} = \frac{1}{S}\sum^S_{s=1} f(\theta_s) - c(h(\theta_s) - \mu_h), \; \theta_s \sim p(\theta)
-\]</div>
-</p></li>
-<li><p><strong>Stratified Sampling:</strong> Split the domain <span class="math notranslate nohighlight">\(\Theta\)</span> into <span class="math notranslate nohighlight">\(m\)</span> pieces (strata):
+   \widehat{I}_{\text{control}} = \frac{1}{S}\sum^S_{s=1} f(\theta_s) - c(h(\theta_s) - \mu_h), \; \theta_s \sim p(\theta)
+   \]</div>
+</li>
+<li><p><strong>Stratified Sampling:</strong> Split the domain <span class="math notranslate nohighlight">\(\Theta\)</span> into <span class="math notranslate nohighlight">\(m\)</span> pieces (strata):</p>
 <div class="math notranslate nohighlight">
 \[
-\widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
-\]</div>
-
-where <span class="math notranslate nohighlight">\(w_m = \int_{\Theta_m} p(\theta)d\theta\)</span>, and <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> is the MC estimate over the <span class="math notranslate nohighlight">\(m\)</span>-th strata</p></li>
-<li><p><strong>Importance Sampling:</strong> choose a <span class="math notranslate nohighlight">\(q\)</span> that places more weight where <span class="math notranslate nohighlight">\(f(\theta)\)</span> has high variance and <span class="math notranslate nohighlight">\(p\)</span> is more likely to produce samples:
+   \widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(w_m = \int_{\Theta_m} p(\theta)d\theta\)</span>, and <span class="math notranslate nohighlight">\(\widehat{I}_m\)</span> is the MC estimate over the <span class="math notranslate nohighlight">\(m\)</span>-th strata</p>
+</li>
+<li><p><strong>Importance Sampling:</strong> choose a <span class="math notranslate nohighlight">\(q\)</span> that places more weight where <span class="math notranslate nohighlight">\(f(\theta)\)</span> has high variance and <span class="math notranslate nohighlight">\(p\)</span> is more likely to produce samples:</p>
 <div class="math notranslate nohighlight">
 \[
-\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s),\; \theta_s \sim q(\theta).
-\]</div>
-</p></li>
+   \widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{p(\theta_s|Y)}{q(\theta_s)}f(\theta_s),\; \theta_s \sim q(\theta).
+   \]</div>
+</li>
 </ol>
 <p><strong>For each method:</strong>  What are the design choices you need to make? Where is the variance reduction coming from? Why is it hard to achieve?</p>
 </section>
@@ -1123,31 +1106,27 @@ where <span class="math notranslate nohighlight">\(w_m = \int_{\Theta_m} p(\thet
 </section>
 <section id="rewriting-an-arbitrary-definite-integral-as-an-expectation">
 <h3>Rewriting an Arbitrary Definite Integral as an Expectation<a class="headerlink" href="#rewriting-an-arbitrary-definite-integral-as-an-expectation" title="Link to this heading">#</a></h3>
-<p>We want to rewrite the following expression as an expectation:
+<p>We want to rewrite the following expression as an expectation:</p>
 <div class="math notranslate nohighlight">
 \[
 \int_{\Omega} f(x) dx = \int_{\Omega} g(x)h(x) dx.
 \]</div>
-
-Let <span class="math notranslate nohighlight">\(V\)</span> denote the integral of <span class="math notranslate nohighlight">\(h\)</span> over <span class="math notranslate nohighlight">\(\Omega\)</span>:
+<p>Let <span class="math notranslate nohighlight">\(V\)</span> denote the integral of <span class="math notranslate nohighlight">\(h\)</span> over <span class="math notranslate nohighlight">\(\Omega\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 V = \int_{\Omega} h(x)dx.
 \]</div>
-
-Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \frac{1}{V}h(x)dx = 1\)</span>. Hence, <span class="math notranslate nohighlight">\(\frac{1}{V}h(x)\)</span> is a valid pdf over <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
-<p>Then we can write:
+<p>Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \frac{1}{V}h(x)dx = 1\)</span>. Hence, <span class="math notranslate nohighlight">\(\frac{1}{V}h(x)\)</span> is a valid pdf over <span class="math notranslate nohighlight">\(\Omega\)</span>.</p>
+<p>Then we can write:</p>
 <div class="math notranslate nohighlight">
 \[
 \int_{\Omega} f(x) dx = \int_{\Omega} \left(Vg(x)\right)\left(\frac{1}{V}h(x)\right)dx.
 \]</div>
-</p>
-<p>We recognize the above integral as an expectation, and hence can estimated using Monte Carlo methods:
+<p>We recognize the above integral as an expectation, and hence can estimated using Monte Carlo methods:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbb{E}_{X\sim \frac{1}{V}h(X)}[Vg(X)] \approx V\sum_{s=1}^S g(X_s),\; X_s\sim \frac{1}{V}h(X).
 \]</div>
-</p>
 </section>
 <section id="how-do-you-factor-the-integrand-f">
 <h3>How Do You Factor the Integrand <span class="math notranslate nohighlight">\(f\)</span>?<a class="headerlink" href="#how-do-you-factor-the-integrand-f" title="Link to this heading">#</a></h3>
@@ -1165,33 +1144,34 @@ Note that, then, <span class="math notranslate nohighlight">\(\int_{\Omega} \fra
 </section>
 <section id="summary">
 <h2><span class="section-number">7.8. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p></li>
-</ol>
-<ul class="simple">
-<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synethic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
-<li><p><em><strong>(Marginal Data Log-Likelihood: Secretely Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:
+<ol class="arabic">
+<li><p><strong>Why Are We Sampling Again?</strong> AKA Bayesian Model Evaluation</p>
+<ul>
+<li><p><em><strong>(Posterior Predictive Check: Obviously Needs Sampling)</strong></em> Use the models in the posterior to generate synthetic data, in order to compare with real data, i.e. sample from the posterior predictive.</p></li>
+<li><p><em><strong>(Marginal Data Log-Likelihood: Secretly Needs Sampling)</strong></em> Compute the marginal log-likelihood of the data (train or test) over the posterior:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-\sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
-\end{aligned}\]</div>
-<br><br></p></li>
+     \sum_{m=1}^M \log \int_\Theta p(\mathbf{y}^*_m | \theta) p(\theta| \text{Data}) d\theta
+     \end{aligned}\]</div>
+<p><br><br></p>
+</li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>Integration Requires Sampling!</strong> Monte Carlo Integration</p></li>
-</ol>
-<ul class="simple">
-<li><p><strong>Recognize your integral as an expectation:</strong> <div class="math notranslate nohighlight">
+</li>
+<li><p><strong>Integration Requires Sampling!</strong> Monte Carlo Integration</p>
+<ul>
+<li><p><strong>Recognize your integral as an expectation:</strong></p>
+<div class="math notranslate nohighlight">
 \[\int_\Theta \underbrace{p(\mathbf{y}^*_m | \theta)}_{\text{$f(\theta)$}}\underbrace{p(\theta| \text{Data})}_{\text{pdf of $\theta$}} d\theta = \mathbb{E}_{\theta\sim p(\theta|\text{Data})}\left[ p(\mathbf{y}^*_m | \theta)\right]\]</div>
-</p></li>
-<li><p><strong>Approximate the expectation (theoretical mean) with sampling mean:</strong> <div class="math notranslate nohighlight">
+</li>
+<li><p><strong>Approximate the expectation (theoretical mean) with sampling mean:</strong></p>
+<div class="math notranslate nohighlight">
 \[\underbrace{\mathbb{E}_{\theta\sim p(\theta|\text{Data})}\left[ p(\mathbf{y}^*_m | \theta)\right]}_{I} \approx \underbrace{\frac{1}{S}\sum_{s=1}^S p(\mathbf{y}^*_m | \theta_s),\, \theta_s \sim p(\theta | Y)}_{\widehat{I}}\]</div>
-
-Why is this valid again? That is, what are the desirable properties of the estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span>?</p></li>
+<p>Why is this valid again? That is, what are the desirable properties of the estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span>?</p>
+</li>
 <li><p><strong>Reduce the variance of estimator <span class="math notranslate nohighlight">\(\widehat{I}\)</span>:</strong> What are the two factors contributing to the variance of <span class="math notranslate nohighlight">\(\widehat{I}\)</span>?</p>
 <ul>
 <li><p><em>Control Variates:</em></p>
-<ul>
+<ul class="simple">
 <li><p>Need to choose <span class="math notranslate nohighlight">\(h(\theta)\)</span> such that …?</p></li>
 <li><p>Need to choose constant <span class="math notranslate nohighlight">\(c\)</span></p></li>
 <li><p>Then <span class="math notranslate nohighlight">\(
@@ -1203,38 +1183,40 @@ Why is this valid again? That is, what are the desirable properties of the estim
 <li><p><em>Stratified Sampling:</em></p>
 <ul>
 <li><p>Need to choose the strata, e.g. a way to break up the domain of <span class="math notranslate nohighlight">\(\theta\)</span>, such that …?</p></li>
-<li><p>Need to renormalize <span class="math notranslate nohighlight">\(p\)</span> so it’s a pdf over each stratum
+<li><p>Need to renormalize <span class="math notranslate nohighlight">\(p\)</span> so it’s a pdf over each stratum</p>
 <div class="math notranslate nohighlight">
 \[
-\frac{p(\theta)}{w_m},\quad w_m = \int_{\Theta_m} p(\theta)d\theta.
-\]</div>
-</p></li>
+         \frac{p(\theta)}{w_m},\quad w_m = \int_{\Theta_m} p(\theta)d\theta.
+         \]</div>
+</li>
 <li><p>Estimate the integral <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim \frac{p(\theta)}{w_m}\mathbb{1}_{\Theta_m}}[f(\theta)]\)</span> on each stratum  estimated with <span class="math notranslate nohighlight">\(S_m = w_m * S\)</span> samples</p></li>
-<li><p>Piece together the integral over the entire domain of <span class="math notranslate nohighlight">\(\theta\)</span>
+<li><p>Piece together the integral over the entire domain of <span class="math notranslate nohighlight">\(\theta\)</span></p>
 <div class="math notranslate nohighlight">
 \[
-\widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
-\]</div>
-</p></li>
+         \widehat{I}_{\text{SS}} = \sum_{m=1}^M w_m \widehat{I}_m.
+         \]</div>
+</li>
 </ul>
 </li>
 <li><p><em>Importance Sampling:</em></p>
 <ul>
 <li><p>Need to choose importance distribution <span class="math notranslate nohighlight">\(q(\theta)\)</span> such that …?</p></li>
-<li><p>Sample from your importance distribution and then, instead of trashing samples unlikely under <span class="math notranslate nohighlight">\(p\)</span>, we down-weight their importance in the Monte Carlo sum
+<li><p>Sample from your importance distribution and then, instead of trashing samples unlikely under <span class="math notranslate nohighlight">\(p\)</span>, we down-weight their importance in the Monte Carlo sum</p>
 <div class="math notranslate nohighlight">
 \[\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \underbrace{\frac{p(\theta_s|Y)}{q(\theta_s)}}_{\text{Importance Weight}}f(\theta_s), \; \theta_s \sim q(\theta_s)\]</div>
-</p></li>
+</li>
 <li><p>Why do we need importance sampling? Why is it hard to achieve variance reduction with importance sampling?</p></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="exercises">
 <h2><span class="section-number">7.9. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-sampling-and-monte-carlo-integration">
 <span id="ps-hw3"></span><h3>Problem Set: Sampling and Monte Carlo Integration<a class="headerlink" href="#problem-set-sampling-and-monte-carlo-integration" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -1274,65 +1256,587 @@ f_X(x) = \begin{cases}
 \[
 h(x) = 7 * \mathrm{exp}\left\{\frac{(x-4)^2}{-2}\right\} + 3 * \mathrm{exp}\left\{\frac{(x-8)^2}{-2 * 0.7^2}\right\}
 \]</div>
-<p>Our goal is to compute the expected value of <span class="math notranslate nohighlight">\(h(X)\)</span>:
+<p>Our goal is to compute the expected value of <span class="math notranslate nohighlight">\(h(X)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 I = \mathbb{E}_{X\sim f_X}\left[h(X)\right] = \int_{\Omega} h(x) f_X(x)dx,
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\Omega\)</span> is the domain of <span class="math notranslate nohighlight">\(f_X\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(\Omega\)</span> is the domain of <span class="math notranslate nohighlight">\(f_X\)</span>.</p>
 <div class="admonition-exercise-part-i-implement-some-monte-carlo-estimates admonition">
 <p class="admonition-title">Exercise: Part I. Implement Some Monte Carlo Estimates</p>
 <p>Approximate <span class="math notranslate nohighlight">\(\mathbb{E}_{X\sim f_X}[h(X)]\)</span> using the Monte Carlo integration methods and your choice of a reasonable fixed <span class="math notranslate nohighlight">\(S\)</span> (for rejection sampling, this means run the algorithm <span class="math notranslate nohighlight">\(S\)</span> times):</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p><em><strong>Inverse CDF Sampling</strong></em> and naive Monte Carlo estimation.<br><br></p></li>
-<li><p><em><strong>Rejection Sampling</strong></em> and naive Monte Carlo estimation, using each of the following</p></li>
-</ol>
+<li><p><em><strong>Rejection Sampling</strong></em> and naive Monte Carlo estimation, using each of the following</p>
 <ul class="simple">
 <li><p>a uniform proposal distribution</p></li>
 <li><p>a normal proposal distribution</p></li>
 </ul>
 <p>and your choice of reasonable parameters for the proposal distributions.<br><br></p>
-<ol class="arabic simple" start="3">
-<li><p><em><strong>Importance Sampling</strong></em> using each of the following</p></li>
-</ol>
+</li>
+<li><p><em><strong>Importance Sampling</strong></em> using each of the following</p>
 <ul class="simple">
 <li><p>a uniform importance distribution</p></li>
 <li><p>a normal importance distribution</p></li>
 </ul>
 <p>and your choice of reasonable parameters for the importance distributions.<br><br></p>
-<ol class="arabic simple" start="2">
-<li><p><em><strong>Stratified Sampling</strong></em> using 4 strata, whose end points are given by
+</li>
+<li><p><em><strong>Stratified Sampling</strong></em> using 4 strata, whose end points are given by</p>
 <div class="math notranslate nohighlight">
 \[
-[1, 3, 5, 7, 9].
-\]</div>
-
-Use inverse cdf sampling on each stratum.</p></li>
+   [1, 3, 5, 7, 9].
+   \]</div>
+<p>Use inverse cdf sampling on each stratum.</p>
+</li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<p>The piecewise definition of the pdf looks intimidating at first glance, so let’s visualize it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### Import basic libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sk</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#definition of the pdf</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f_X</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.</span>
+
+<span class="c1">#vectorize f_X, so that it takes arrays and inputs!</span>
+<span class="n">f_X_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f_X</span><span class="p">)</span>
+
+<span class="c1">#visualize pdf</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'pdf f_X'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-1-11.png"><img alt="Part I, Question 1, figure 1" class="align-center" src="../_images/part-i-question-1-11.png" style="width: 100%;" />
+</a>
+<p>Recall that the CDF, <span class="math notranslate nohighlight">\(F_X\)</span>, of our pdf <span class="math notranslate nohighlight">\(f_X\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+F_X(a)= \int_{-\infty}^a f_X(x)dx, \quad a\in \mathbb{R}
+\]</div>
+<p>That is, <span class="math notranslate nohighlight">\(F_X(a)\)</span> is the area under <span class="math notranslate nohighlight">\(f_X\)</span> up to <span class="math notranslate nohighlight">\(X=a\)</span>. Now, since our pdf is zero when <span class="math notranslate nohighlight">\(X &lt; 1\)</span>. We rewrite the above as</p>
+<div class="math notranslate nohighlight">
+\[
+F_X(a)= \int_{1}^a f_X(x)dx, \quad a\in \mathbb{R}
+\]</div>
+<p>Since our function is defined piecewise, we can compute the CDF on each piece. We demonstrate this process for the third piece, <span class="math notranslate nohighlight">\(5&lt; x\leq 7\)</span>:</p>
+<ul class="simple">
+<li><p>the pdf over <span class="math notranslate nohighlight">\([5, 7]\)</span> has the form <span class="math notranslate nohighlight">\(\frac{1}{6}(x-5)\)</span>;</p></li>
+<li><p>an antiderivative is <span class="math notranslate nohighlight">\(\frac{1}{6}\left(\frac{1}{2}x^2-5x\right)\)</span>;</p></li>
+<li><p>the CDF over <span class="math notranslate nohighlight">\([5, 7]\)</span> is the area under <span class="math notranslate nohighlight">\(f_X\)</span> from <span class="math notranslate nohighlight">\(X=1\)</span> to <span class="math notranslate nohighlight">\(X=a\)</span>, <span class="math notranslate nohighlight">\(a\in [5, 7]\)</span>;</p></li>
+</ul>
+<p><strong>Be careful:</strong> you cannot compute the CDF as follows (simply by using the Fundamental Theorem)</p>
+<div class="math notranslate nohighlight">
+\[
+F_X(a)= \int_{1}^a f_X(x)dx = \left.\frac{1}{6}\left(\frac{1}{2}x^2-5x\right) \right|_{1}^{a}, \quad a\in [5, 7]
+\]</div>
+<p>This is because the functional form of the antiderivative is different out side of the interval [5, 7]!</p>
+<p>Instead, we break up the pdf as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+F_X(a) &amp;= \int_{5}^a f_X(x)dx  + \int_{1}^5 f_X(x)dx \\
+&amp;= \left.\frac{1}{6}\left(\frac{1}{2}x^2-5x\right) \right|_{5}^{a} + \frac{1}{3} \\
+&amp;= \frac{1}{6}(a^2/2-5a) + \frac{25}{12} + \frac{1}{3}, \quad a\in [5, 7],
+\end{aligned}\end{split}\]</div>
+<p>In the above, we note that the area <span class="math notranslate nohighlight">\(\int_{1}^5 f_X(x)dx\)</span> is the area of the small triangle, which is 1/3.</p>
+<p>The shaded region below illustrates the value of <span class="math notranslate nohighlight">\(F_X(a)\)</span> for <span class="math notranslate nohighlight">\(a\in [5, 7]\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#the upper limit of the integral</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">6.5</span>
+
+<span class="c1">#visualize F_X(a)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1">#visualize the pdf f_X</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f_X'</span><span class="p">)</span>
+
+<span class="c1">#visualize the area under f_X up to x=a</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gold'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'F_X(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'pdf f_X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-1-2.png"><img alt="Part I, Question 1, figure 2" class="align-center" src="../_images/part-i-question-1-2.png" style="width: 100%;" />
+</a>
+<p>In a similar manner, we compute expressions for the CDF of <span class="math notranslate nohighlight">\(X\)</span> on all four pieces of the domain:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+F_X(x) = \begin{cases}
+0, &amp; x &lt; 1 \\
+\frac{1}{12}(x^2/2-x) + \frac{1}{24}, &amp;1\leq x\leq 3\\
+-\frac{1}{12}(x^2/2-5x) - \frac{7}{8} + \frac{1}{6}, &amp;3&lt; x\leq 5\\
+\frac{1}{6}(x^2/2-5x) + \frac{25}{12} + \frac{1}{3}, &amp;5&lt; x\leq 7\\
+-\frac{1}{6}(x^2/2 - 9x) - \frac{77}{12} + \frac{2}{3}, &amp;7&lt; x\leq 9\\
+1, &amp;9 &lt; x
+\end{cases}
+\end{split}\]</div>
+<p>Each piece of <span class="math notranslate nohighlight">\(F_X\)</span> can now be inverted, with the help of <a class="reference external" href="https://www.wolframalpha.com" rel="noreferrer" target="_blank">WolframAlpha</a> if you’d like:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+F^{-1}_X(y) = \begin{cases}
+1 + 2\sqrt{6y}, &amp;0\leq y\leq \frac{1}{6}\\
+5 - 2\sqrt{2(1 - 3y)}, &amp;\frac{1}{6}&lt; y\leq \frac{1}{3}\\
+5 + 2\sqrt{3y - 1}, &amp;\frac{1}{3}&lt; y\leq \frac{2}{3}\\
+9 - 2\sqrt{3(1 - y)}, &amp;\frac{2}{3}&lt; y\leq 1\\
+\end{cases}
+\end{split}\]</div>
+<p>We now have all the pieces we need to sample from <span class="math notranslate nohighlight">\(f_X\)</span> and we can proceed with inverse CDF sampling to compute</p>
+<div class="math notranslate nohighlight">
+\[
+I = \mathbb{E}_{X\sim f_X}\left[ h(X)\right] \approx \frac{1}{S}\sum_{s=1}^{S} h(X_s),\; X_s\sim f_X.
+\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#inverse of the CDF</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">F_inv_X</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">6</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">5</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">y</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mf">2.</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mf">2.</span><span class="o">/</span><span class="mi">3</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">9</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="c1">#vectorize the inverse CDF</span>
+<span class="n">F_inv_X_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">F_inv_X</span><span class="p">)</span>
+
+<span class="c1">#function h</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">h</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">0.7</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">#implementation of inverse transform sampling</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">F_inv_X</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+
+    <span class="c1">#1. sample y-values uniformly from [0, 1]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+
+    <span class="c1">#2. turn these y-values into x-values using the inverse CDF</span>
+    <span class="n">x_samples</span> <span class="o">=</span> <span class="n">F_inv_X</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1">#3. apply h to the x-values and average</span>
+    <span class="n">mean_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">x_samples</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">x_samples</span><span class="p">,</span> <span class="n">mean_inv</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#number of samples to draw</span>
+<span class="n">S</span> <span class="o">=</span> <span class="mi">500</span> 
+<span class="c1">#get the samples and the MC estimate</span>
+<span class="n">inverse_cdf_samples</span><span class="p">,</span> <span class="n">mean_inv</span> <span class="o">=</span> <span class="n">inverse_transform</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">F_inv_X_vec</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Inverse Transform estimate of E[h(x)]: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_inv</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Inverse Transform estimate of E[h(x)]: 2.543618958612694
+</pre></div>
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<p>Setting up rejection sampling requires us to find a constant <span class="math notranslate nohighlight">\(M\)</span> such that <span class="math notranslate nohighlight">\(f_X \leq M g\)</span> where <span class="math notranslate nohighlight">\(g\)</span> is the proposal distribution. In general, we want <span class="math notranslate nohighlight">\(M\)</span> to be as small as possible. However, in this case we will simply pick a <span class="math notranslate nohighlight">\(M\)</span> based on visualizations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#setting up our proposal distributions</span>
+
+<span class="c1">#normal pdf: for sampling and evaluation</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normal_dist</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">S</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<span class="c1">#uniform pdf: for sampling and evaluation</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">uniform_dist</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">S</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define a normal proposal distribution </span>
+<span class="n">prop_1</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">normal_dist</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mf">5.3</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+<span class="c1">#choose an M_1 so that f_X &lt;= M_1 * prop_1</span>
+<span class="n">M_1</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1">#define a uniform proposal distribution</span>
+<span class="n">prop_2</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">uniform_dist</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="c1">#choose an M_2 so that f_X &lt;= M_2 * prop_2</span>
+<span class="n">M_2</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1">#visualize M_1 * prop_1, M_2 * prop_1 to make sure they dominate f_X</span>
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="c1">#visualize M_1 * prop_1</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f_X'</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M_1</span> <span class="o">*</span> <span class="n">prop_1</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">),</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'salmon'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'proposal distr, M=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">M_1</span><span class="p">))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'normal pdf as proposal'</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="c1">#visualize M_2 * prop_2</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f_X'</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M_2</span> <span class="o">*</span> <span class="n">prop_2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">),</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'proposal distr, M=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">M_2</span><span class="p">))</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'uniform pdf as proposal'</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-2-11.png"><img alt="Part I, Question 2, figure 1" class="align-center" src="../_images/part-i-question-2-11.png" style="width: 100%;" />
+</a>
+<p>Now that we have our constants and proposal distributions, we can proceed with rejection sampling to compute</p>
+<div class="math notranslate nohighlight">
+\[
+I = \mathbb{E}_{X\sim f_X}\left[ h(X)\right] \approx \frac{1}{S}\sum_{s=1}^{S} h(X_s),\; X_s\sim f_X.
+\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##implementation of rejection sampling</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rejection</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_dist</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">true_dist</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="c1">#get samples from the proposal distribution</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">prop_dist</span><span class="p">(</span><span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#get the likelihood ratio of sample under target distribution and proposal distribution</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">true_dist</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">prop_dist</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">samples</span><span class="p">))</span>
+    <span class="c1">#get uniform random samples between 0 and 1</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#accept samples if U is less than or equal to likelihood ratio</span>
+    <span class="n">accepted_sampes</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="n">U</span> <span class="o">&lt;=</span> <span class="n">ratio</span><span class="p">]</span>
+    <span class="c1">#average h over the accepted samples only</span>
+    <span class="n">mean_rej</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">accepted_sampes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">accepted_sampes</span><span class="p">,</span> <span class="n">mean_rej</span><span class="p">,</span> <span class="n">samples</span>
+
+<span class="c1">#get the samples and the MC estimate</span>
+<span class="n">rej_norm_samples</span><span class="p">,</span> <span class="n">mean_rej_norm</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">rejection</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_1</span><span class="p">,</span> <span class="n">M_1</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Rejection Sampling estimate of E[h(x)] (using normal proposal): </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_rej_norm</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Rejection Sampling estimate of E[h(x)] (using normal proposal): 2.3396045401464813
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rej_uni_samples</span><span class="p">,</span> <span class="n">mean_rej_uni</span><span class="p">,</span><span class="n">samples</span>  <span class="o">=</span> <span class="n">rejection</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_2</span><span class="p">,</span> <span class="n">M_2</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Rejection Sampling estimate of E[h(x)] (using uniform): </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_rej_uni</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Rejection Sampling estimate of E[h(x)] (using uniform): 2.2277466021996766
+</pre></div>
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>Recall that the importance sampling estimator of <span class="math notranslate nohighlight">\(I\)</span> is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S \frac{f_X(x_s)}{q(x_s)} h(x_s),\; x_s \sim q(X)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(w_s = \frac{f_X(x_s)}{q(x_s)}\)</span> is the <em><strong>importance weight</strong></em> of the <span class="math notranslate nohighlight">\(s\)</span>-th sample.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#implement importance sampling</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">importance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_dist</span><span class="p">,</span> <span class="n">nom_distribution</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="c1">#sample from the proposal distribution</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">prop_dist</span><span class="p">(</span><span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1">#compute the weights for the samples</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">nom_distribution</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">prop_dist</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span><span class="o">**-</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="c1">#multiply weights to h(x_s) and average over samples</span>
+    <span class="n">mean_imp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">weights</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mean_imp</span>
+
+<span class="n">weights_imp_norm</span><span class="p">,</span> <span class="n">mean_imp_norm</span> <span class="o">=</span> <span class="n">importance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_1</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Importance Sampling estimate of E[h(x)] (using normal): </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_imp_norm</span><span class="p">))</span>
+
+<span class="n">weights_imp_uni</span><span class="p">,</span> <span class="n">mean_imp_uni</span> <span class="o">=</span> <span class="n">importance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_2</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Importance Sampling estimate of E[h(x)] (using uniform): </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_imp_uni</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Importance Sampling estimate of E[h(x)] (using normal): 2.5267365305647753
+Importance Sampling estimate of E[h(x)] (using uniform): 2.4454662654776858
+</pre></div>
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 4</p>
+<p>Since the graph of <span class="math notranslate nohighlight">\(f_X\)</span> is a set of two triangular peaks. The area under the smaller triangle is <span class="math notranslate nohighlight">\(\frac{1}{3}\)</span> and the area under the larger is <span class="math notranslate nohighlight">\(\frac{2}{3}\)</span> (this is just algebra - no calculus required).</p>
+<p>Therefore the following integrals can be evaluated geometrically</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{[1, 3]} f_X(x) dx = \int_{[3, 5]} f_X(x) dx = \frac{1}{6}, \;\int_{[5, 7]} f_X(x) dx = \int_{[7, 9]} f_X(x) dx = \frac{1}{3}
+\]</div>
+<p>Thus, we can decompose the integral <span class="math notranslate nohighlight">\(I\)</span> as:</p>
+<div class="math notranslate nohighlight">
+\[
+I = \mathbb{E}[h(X)] = \frac{1}{6} \left(\int_1^3 h(x) f_{1}(x) dx + \int_3^5 h(x) f_{2}(x) dx \right)+ \frac{1}{3}\left( \int_5^7 h(x) f_{3}(x) dx + \int_7^9 h(x) f_{4}(x) dx \right),
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_i\)</span> is <span class="math notranslate nohighlight">\(f_X\)</span> renormalized to be a pdf on the <span class="math notranslate nohighlight">\(i\)</span>-th strata:</p>
+<div class="math notranslate nohighlight">
+\[
+f_1 = \frac{6}{12}(x-1),\; f_2 = -\frac{6}{12}(x-5),\; f_3 = \frac{3}{6}(x-5),\; f_4 = -\frac{3}{6}(x-9)
+\]</div>
+<p>We will approximate each integral in the above decomposition separately using inverse CDF sampling. From each strata, we will draw a number of points for each stratum that is proportional to the probability of a sampling landing in that stratum. In this case this it means choosing <span class="math notranslate nohighlight">\(S_i = 1./6 * S\)</span> or <span class="math notranslate nohighlight">\(S_i = 1./3 * S\)</span>.</p>
+<p>Inverting the CDF of each <span class="math notranslate nohighlight">\(f_i\)</span> gives:</p>
+<div class="math notranslate nohighlight">
+\[
+F^{-1}_1 = 1 + 2\sqrt{y},\; F^{-1}_2 = 5 - 2\sqrt{1 - y},\; F^{-1}_3 = 5 + 2\sqrt{y},\; F^{-1}_4= 9 - 2\sqrt{1 - y}.
+\]</div>
+<p>Now we are set to reuse our implementation of inverse CDF sampling and MC estimation to perform stratified sampling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#define the four inverse CDF's </span>
+<span class="n">F_inv_1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">F_inv_2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="mi">5</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">F_inv_3</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="n">F_inv_4</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="mi">9</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1">#implement stratified sampling</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stratified_sampling</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+    
+
+    <span class="c1">#list of inverse CDF's</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">F_inv_1</span><span class="p">,</span> <span class="n">F_inv_2</span><span class="p">,</span> <span class="n">F_inv_3</span><span class="p">,</span> <span class="n">F_inv_4</span><span class="p">]</span>
+    <span class="c1">#list of weights for each stratum</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span>
+    
+    <span class="n">mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1">#estimate on each stratum then sum</span>
+    <span class="k">for</span> <span class="n">F_inv_i</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="c1">#get the right number of points for each stratum</span>
+        <span class="n">S_stratum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span>
+        <span class="c1">#get samples from the stratum and compute the MC estimate</span>
+        <span class="n">samples_i</span><span class="p">,</span> <span class="n">mean_i</span> <span class="o">=</span> <span class="n">inverse_transform</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">F_inv_i</span><span class="p">,</span> <span class="n">S_stratum</span><span class="p">)</span>
+        <span class="c1">#add the estimates across strata in a weighted way</span>
+        <span class="n">mean</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">mean_i</span>
+        <span class="n">samples</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="n">samples_i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">mean</span>
+
+<span class="n">weights_strat</span><span class="p">,</span> <span class="n">mean_strat</span> <span class="o">=</span> <span class="n">stratified_sampling</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Stratified estimate of E[h(x)]: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_strat</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Stratified estimate of E[h(x)]: 2.4832724919254208
+</pre></div>
+</div>
 </div>
 <div class="admonition-exercise-part-ii-debug-your-samplers admonition">
 <p class="admonition-title">Exercise: Part II. Debug Your Samplers</p>
-<ol class="arabic simple">
-<li><p>Visualize the pdf <span class="math notranslate nohighlight">\(f_X\)</span> as well as samples obtained from Inverse CDF Sampling and Rejection Sampling (for both proposal distributions). It’s probably better to make separate plots for each set of samples.</p></li>
-</ol>
-<p>What does the comparison say about the quality of your samples? In particular, which sampler (and which proposal distribution) produces “better” samples? Is this surprising – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p>
+<ol class="arabic">
+<li><p>Visualize the pdf <span class="math notranslate nohighlight">\(f_X\)</span> as well as samples obtained from Inverse CDF Sampling and Rejection Sampling (for both proposal distributions). It’s probably better to make separate plots for each set of samples.</p>
+<p>What does the comparison say about the quality of your samples? In particular, which sampler (and which proposal distribution) produces “better” samples? Is this surprising – i.e. use some properties of these samplers discussed in <a class="reference internal" href="05-sampling.html"><span class="doc">Chapter 6</span></a> and this chapter to explain the patterns you’re observing?</p>
 <p><strong>Hint:</strong> you might find it helpful to visualize the proposal distributions along with <span class="math notranslate nohighlight">\(f_X\)</span> in your analysis of rejection sampling.<br><br></p>
-<ol class="arabic" start="2">
-<li><p>Visualize the distribution of the importance weights (one for each importance distribution).</p>
-<p>Is the weight distribution surprising – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p>
-<p>What do these importance weights tell you about the quality of your importance sampling estimate?</p>
-<p><strong>Hint:</strong> you might find it helpful to visualize the importnce distributions along with <span class="math notranslate nohighlight">\(f_X\)</span> and <span class="math notranslate nohighlight">\(h\)</span> in your analysis of importance sampling.<br><br></p>
 </li>
-<li><p>Visualize the distribution of all the samples across strata. Is the distribution what you expect – i.e. use some properties of these samplers discussed in class to explain the patterns you’re observing?</p></li>
+<li><p>Visualize the distribution of the importance weights (one for each importance distribution).</p>
+<p>Is the weight distribution surprising – i.e. use some properties of these samplers discussed in <a class="reference internal" href="05-sampling.html"><span class="doc">Chapter 6</span></a> and this chapter to explain the patterns you’re observing?</p>
+<p>What do these importance weights tell you about the quality of your importance sampling estimate?</p>
+<p><strong>Hint:</strong> you might find it helpful to visualize the importance distributions along with <span class="math notranslate nohighlight">\(f_X\)</span> and <span class="math notranslate nohighlight">\(h\)</span> in your analysis of importance sampling.<br><br></p>
+</li>
+<li><p>Visualize the distribution of all the samples across strata. Is the distribution what you expect – i.e. use some properties of these samplers discussed in <a class="reference internal" href="05-sampling.html"><span class="doc">Chapter 6</span></a> and this chapter to explain the patterns you’re observing?</p></li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 1</p>
+<p>Let’s first visualize the samples from the inverse CDF sampler.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Sanity check: make sure samples from inverse CDF look like they </span>
+<span class="c1">#are from the correct distribution</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">inverse_cdf_samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'lightgray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Inverse Transform Sampling Sanity Check'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-1-1.png"><img alt="Part II, Question 1, figure 1" class="align-center" src="../_images/part-ii-question-1-1.png" style="width: 100%;" />
+</a>
+<p>It looks like that the histogram of the 500 samples align well with the pdf <span class="math notranslate nohighlight">\(f_X\)</span>. It looks like that the big hump of the pdf is well approximated by our samples, where as the small hump is less so. This indicates that we might wish to increase the sample size <span class="math notranslate nohighlight">\(S\)</span> to get a more representative sampling. Recall that it’s important for our samples to cover the support of the pdf, since if our samples have “gaps” in their coverages, those <span class="math notranslate nohighlight">\(x\)</span> values are never accounted for in our MC estimate leading potentially both to higher variance and higher errors!</p>
+<p>Next, we plot the samples from rejection sampling.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Sanity check: make sure samples from rejection sampling look like they </span>
+<span class="c1">#are from the correct distribution</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">rej_norm_samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'salmon'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Rejection Sampling Sanity Check (using normal proposal)'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">rej_uni_samples</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Rejection Sampling Sanity Check (using uniform proposal)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-1-2.png"><img alt="Part II, Question 1, figure 2" class="align-center" src="../_images/part-ii-question-1-2.png" style="width: 100%;" />
+</a>
+<p>Recall that the efficiency of the rejection sampler depends on the constant <span class="math notranslate nohighlight">\(M\)</span> that bounds the ratio <span class="math notranslate nohighlight">\(f_X/g\)</span> – in particular, the sampler will typically accept <span class="math notranslate nohighlight">\(1/M\)</span> of the total number of samples.</p>
+<p>Since <span class="math notranslate nohighlight">\(M=4\)</span> for the normal proposal distribution and <span class="math notranslate nohighlight">\(M=3\)</span> for the uniform proposal distribution, we’d expect the first sampler to accept <span class="math notranslate nohighlight">\(500/4 = 125\)</span> samples and the second to accept <span class="math notranslate nohighlight">\(500/3 \approx 166\)</span> samples. Let’s check that the number of accepted samples in our simulation matches what we expect.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'number of samples accepted using normal proposal:'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rej_norm_samples</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'number of samples accepted using uniform proposal:'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rej_uni_samples</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>number of samples accepted using normal proposal: 125
+number of samples accepted using uniform proposal: 147
+</pre></div>
+</div>
+<p>Indeed, we find that the sampler using the normal proposal distribution accepts less samples. We know that fewer samples lead to more variance in our MC estimation and any given estimation can have a larger error.</p>
+<p>This indicates that we might prefer to use the MC estimate coming from the uniform proposal distribution</p>
+<p>In fact, since the inverse CDF is able to produce more samples from <span class="math notranslate nohighlight">\(f_X\)</span> (no sample is rejected), the estimate from inverse CDF sampling should have the least variance and smaller error for any given error, compared with the estimates produced by both rejection samplers.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 2</p>
+<p>To sanity check the importance sampling MC estimate, we first visualize the importance weights.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Sanity check: make sure importance weights from importance sampling with look relatively homogeneous</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">weights_imp_norm</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'purple'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'relative frequency'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'importance weight'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Importance Weights Sanity Check (using normal distribution)'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">weights_imp_uni</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'relative frequency'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'importance weight'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Importance Weights Sanity Check (using uniform distribution)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-2-11.png"><img alt="Part II, Question 2, figure 1" class="align-center" src="../_images/part-ii-question-2-11.png" style="width: 100%;" />
+</a>
+<p>It looks like the weights for the normal importance distribution is more heterogeneous than those for the uniform importance distribution. In fact, a significant portion of the weights for the normal importance distribution are close to zero! This makes sense since the normal pdf is non-zero everywhere, so we are often proposing <span class="math notranslate nohighlight">\(x\)</span> values smaller than 1 or larger than 9 – these values will have zero likelihood under <span class="math notranslate nohighlight">\(f_X\)</span>. Also most of the mass of the normal importance distribution is around values of <span class="math notranslate nohighlight">\(x\)</span> that are highly unlikely under <span class="math notranslate nohighlight">\(f_X\)</span>, this means, again that we will frequently be sampling <span class="math notranslate nohighlight">\(x\)</span> values whose importance weight will be small (since <span class="math notranslate nohighlight">\(f_X\)</span> will be small).</p>
+<p>In comparison, the weights for the uniform importance distribution are mostly close to 1 or moderately larger than 1. So in some sense, most of the samples we obtain will “count” towards our estimate and count roughly equally. This again is reasonable since the uniform distribution is less dissimilar to <span class="math notranslate nohighlight">\(f_X\)</span> and hence it will tend less to propose points that are extremely unlikely under <span class="math notranslate nohighlight">\(f_X\)</span>.</p>
+<p>We can also visualize the comparison of the importance distributions and the product <span class="math notranslate nohighlight">\(f_X*h\)</span>. Recall that we can hope for a variance reduction when the importance distribution is proportional to <span class="math notranslate nohighlight">\(f_X*h\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#visualize the importance distributions along with f_X*h</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f_X * h'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prop_2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">),</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'proposal distr, uniform'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'uniform pdf as importance distribution'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'f_X * h'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prop_1</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">),</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'salmon'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'proposal distr, mu=</span><span class="si">{}</span><span class="s1">, sigma=</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">5.3</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'normal pdf as importance distribution'</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-2-21.png"><img alt="Part II, Question 2, figure 2" class="align-center" src="../_images/part-ii-question-2-21.png" style="width: 100%;" />
+</a>
+<p>From the above visualization, we see that neither importance distribution is proportional to <span class="math notranslate nohighlight">\(f_X*h\)</span>, it’s hard to determine by just visual examination which is “worse”.</p>
+<p>However, since the importance weights of the normal importance distribution is visibly more heterogeneous than those of the uniform importance distribution. We may still expect that the variance of MC estimate using the uniform importance distribution will be smaller.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 3</p>
+<p>We visualize the samples from across the strata to check that they are coming from the correct distribution.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#Sanity check: make sure samples from stratified sampling look like they </span>
+<span class="c1">#are from the correct distribution</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">weights_strat</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Stratified Sampling Sanity Check'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-3-11.png"><img alt="Part II, Question 3, figure 1" class="align-center" src="../_images/part-ii-question-3-11.png" style="width: 100%;" />
+</a>
+<p>Recall that stratified sampling works well when the function is relatively “flat” over each strata, we can visualize <span class="math notranslate nohighlight">\(h\)</span> over the strata and check if this is the case!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'X'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'h over the strata'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-3-2.png"><img alt="Part II, Question 3, figure 2" class="align-center" src="../_images/part-ii-question-3-2.png" style="width: 100%;" />
+</a>
+<p>We see that the convenient way in which we carved up the domain of <span class="math notranslate nohighlight">\(X\)</span> into strata is not necessarily appropriate for <span class="math notranslate nohighlight">\(h\)</span>.</p>
 </div>
 <div class="admonition-exercise-part-iii-variance-reduction admonition">
 <p class="admonition-title">Exercise: Part III: Variance Reduction</p>
 <ol class="arabic simple">
-<li><p>Compute the sample variance of the four Monte Carlo estimates in Part I. Based on the discussions in lecture, which sampling methods (and proposal/importance distributions) is expected, in principle, to resulted in lower variances? How well do your results align with these expectations?<br><br></p></li>
+<li><p>Compute the sample variance of the four Monte Carlo estimates in Part I. Based on the discussion in this chapter, which sampling methods (and proposal/importance distributions) is expected, in principle, to resulted in lower variances? How well do your results align with these expectations?<br><br></p></li>
 <li><p>Based on your experiments, would you feel comfortable concluding which type of Monte Carlo estimate will <strong>generally</strong> have the lowest variance? Why or why not?</p></li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part III, Question 1</p>
+<p>Variance of these MC estimates can be estimated from sample variance. That is, we repeat the estimation <span class="math notranslate nohighlight">\(N\)</span> times, each time using <span class="math notranslate nohighlight">\(S\)</span> samples. Then we compute the variance of these estimates across the <span class="math notranslate nohighlight">\(N\)</span> trials.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#total number of simulations</span>
+<span class="n">n_simulations</span> <span class="o">=</span> <span class="mi">5000</span>
+
+<span class="c1">#simulate each estimate repeatedly</span>
+<span class="n">var_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">F_inv_X_vec</span><span class="p">,</span> <span class="n">S</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+<span class="n">var_imp_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">importance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_1</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+<span class="n">var_imp_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">importance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_2</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+<span class="n">var_rej_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">rejection</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_1</span><span class="p">,</span> <span class="n">M_1</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+<span class="n">var_rej_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">rejection</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">prop_2</span><span class="p">,</span> <span class="n">M_2</span><span class="p">,</span> <span class="n">f_X_vec</span><span class="p">,</span> <span class="n">h</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+<span class="n">var_strat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">([</span><span class="n">stratified_sampling</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">S</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_simulations</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'variance of inverse cdf: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_inv</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of rejection with normal: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_rej_1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of rejection with uniform: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_rej_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of importance with normal: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_imp_1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of importance with uniform: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_imp_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'variance of stratified sampling: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_strat</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>variance of inverse cdf: 0.006795495738697655
+variance of rejection with normal: 0.02687357882120318
+variance of rejection with uniform: 0.02043573708976313
+variance of importance with normal: 0.011503050090124714
+variance of importance with uniform: 0.007590987264605916
+variance of stratified sampling: 0.0012275204882845991
+</pre></div>
+</div>
+<p>We see that the MC estimate with inverse CDF sampling has lower variance than both estimates using rejection sampling. This is something we already anticipated since we get <span class="math notranslate nohighlight">\(S\)</span> samples from <span class="math notranslate nohighlight">\(f_X\)</span> using inverse CDF sampling, but we get less than <span class="math notranslate nohighlight">\(S\)</span> samples when we use rejection sampling (since many samples will be rejected). The variance for rejection sampling with normal proposal distribution is also higher than that with uniform proposal distribution. This is also anticipated, since the normal proposal distribution yields a smaller number of samples from <span class="math notranslate nohighlight">\(f_X\)</span> than the uniform proposal distribution.</p>
+<p>The variances of importance sampling MC estimates are both higher than that of MC with inverse CDF sampling. Theoretically speaking, we use importance sampling as a means of variance reduction. However, reduction is attained only with the appropriate choice of importance distribution that yields reasonable importance weights! From the diagnostics we ran in Part II, we already anticipated that the variance of the importance sampling MC estimates will be high since both importance distributions are unideal for <span class="math notranslate nohighlight">\(f_X\)</span> and <span class="math notranslate nohighlight">\(h\)</span>. We expected that the estimate with the normal importance distribution will have a high variance since the corresponding importance weights were very heterogeneous – this is exactly what we see.</p>
+<p><em>Not covered here: a discussion of the stratified estimate’s variance, which is the lowest of the six above.</em></p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part III, Question 2</p>
+<p>From our experiment it’s not reasonable to make many definitive generalizations. For example, we can’t say that importance sampling is unable to produce variance reduction – we haven’t tried very hard to find an appropriate importance distribution. What this exercise demonstrates is that the design choices we make in these algorithm can have a significant impact on performance and that practically no algorithm works “out-of-the-box”. When our choices are ill-considered the actual performance can be orders of magnitude different from the theoretically predicted optimal!</p>
 </div>
 </section>
 </section>

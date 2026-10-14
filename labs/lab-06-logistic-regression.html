@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -539,16 +540,19 @@ document.write(`
 </div>
 <section id="problem-description-modeling-preterm-births">
 <h2>Problem Description: Modeling Preterm Births<a class="headerlink" href="#problem-description-modeling-preterm-births" title="Link to this heading">#</a></h2>
-<p>You are given the birth mother data (normalized) for approximately 2,000 new borns in California between the years 2000 and 2001 (<code class="docutils literal notranslate"><span class="pre">lab_6_data.csv</span></code>). Previous studies have indicated that demographic factors of the birth mother strongly affects the risk of preterm births (preterm here means a gestational age of less than 37 weeks). Your task is to investigate whether or not this assertion holds for the dataset at hand.</p>
+<p>You are given the birth mother data (normalized) for approximately 2,000 newborns in California between the years 2000 and 2001 (<code class="docutils literal notranslate"><span class="pre">lab_6_data.csv</span></code>). Previous studies have indicated that demographic factors of the birth mother strongly affects the risk of preterm births (preterm here means a gestational age of less than 37 weeks). Your task is to investigate whether or not this assertion holds for the dataset at hand.</p>
 <section id="modeling-for-testing-scientific-hypotheses">
 <h3>Modeling for Testing Scientific Hypotheses<a class="headerlink" href="#modeling-for-testing-scientific-hypotheses" title="Link to this heading">#</a></h3>
 <p>We can investigate our hypothesis – that demographic factors of the birth mother strongly affects the risk of preterm births – in multiple ways:</p>
 <ol class="arabic simple">
 <li><p>visualize the joint distribution of the covariates – color preterm births differently than the full term births. From the way the data looks, is there any evidence to support our hypothesis?<br><br></p></li>
 <li><p>visualize marginal distribution of the covariates. For each covariate, make two histograms on the same plot, one for preterm births, another for full-term births. From the way the marginals look, is there any evidence to support our hypothesis?<br><br></p></li>
-<li><p>in the lecture notes for logistic regression, we showed that fitting a logistic regression model to explain Bernoulli outcomes is the same as fitting a hyperplane (a decision boundary) to separate (or classify) two classes of data in covariate-space. Use <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>’s logistic regression model (set the parameter <code class="docutils literal notranslate"><span class="pre">C</span></code> to be large), to find the MLE of the coefficients of a logistic regression model for this dataset. <br><br></p></li>
+<li><p>In <a class="reference internal" href="../chapters/12-logistic-regression-gradient-descent.html"><span class="doc">Chapter 15</span></a>, we showed that fitting a logistic regression model to explain Bernoulli outcomes is the same as fitting a hyperplane (a decision boundary) to separate (or classify) two classes of data in covariate-space. Use <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>’s logistic regression model (set the parameter <code class="docutils literal notranslate"><span class="pre">C</span></code> to be large), to find the MLE of the coefficients of a logistic regression model for this dataset. <br><br></p>
+<ol class="arabic simple">
 <li><p>Extract and interpret the MLE coefficients found by your <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> model (<code class="docutils literal notranslate"><span class="pre">coef_</span></code>, <code class="docutils literal notranslate"><span class="pre">intercept_</span></code>). What do these coefficients tell you about the relationship between demographic factors of the birth mother and the risk of preterm birth?<br><br></p></li>
 <li><p>Visualize the decision boundary of the MLE logistic regression model using the <code class="docutils literal notranslate"><span class="pre">plot_decision_boundary</span></code> function provided to you. What does this visualization tell you about the reliability of your conclusions about the relationship between demographic factors of the birth mother and the risk of preterm birth?<br><br></p></li>
+</ol>
+</li>
 </ol>
 </section>
 <section id="model-evaluation">
@@ -566,7 +570,7 @@ document.write(`
 <p>Evaluating a single MLE model fitted on the observed data gives you no sense of how sensitive the model is to small changes in the data. We can easily test our model’s sensitivity:</p>
 <ol class="arabic simple">
 <li><p>bootstrapping your data, fit 100 MLE logistic regression models. Compute the mean MLE coefficients (averaged over 100 bootstrap estimates). What do these coefficients tell you about the relationship between demographic factors of the birth mother and the risk of preterm birth?</p></li>
-<li><p>visualize the decision boundaries of all of these boostrap MLE models. What does this visualization tell you about the reliability of your conclusions about the relationship between demographic factors of the birth mother and the risk of preterm birth?</p></li>
+<li><p>visualize the decision boundaries of all of these bootstrap MLE models. What does this visualization tell you about the reliability of your conclusions about the relationship between demographic factors of the birth mother and the risk of preterm birth?</p></li>
 </ol>
 </section>
 </section>
@@ -579,7 +583,7 @@ document.write(`
 </section>
 <section id="data-heterogeneity">
 <h3>Data Heterogeneity<a class="headerlink" href="#data-heterogeneity" title="Link to this heading">#</a></h3>
-<p>Recall from the many examples from lecture and homework that it is often useful to break up the data into categories and fit a model for each category. This is especially true if the variations in the data is heterogeneous.</p>
+<p>Recall from the many examples in this book that it is often useful to break up the data into categories and fit a model for each category. This is especially true if the variations in the data is heterogeneous.</p>
 <ol class="arabic simple">
 <li><p>look at the our data, is there any heterogeneity in the data? Do you think there would be any benefit in break up the data and fitting separate models for each subset?<br><br></p></li>
 <li><p>in the case of the kidney cancer data set, it was easy to break up the data into categories based on the county. If we wanted to break up this dataset, how would we do it?</p></li>
@@ -670,13 +674,8 @@ document.write(`
 </div>
 </details>
 </div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Modeling for Testing Scientific Hypotheses</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'preterm'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'full-term'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
@@ -686,23 +685,7 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/7a1e2855b4cbff2ff3f6a59c1b1660b0817fe352236d49d39da9f72447c3f5ca.png" src="../_images/7a1e2855b4cbff2ff3f6a59c1b1660b0817fe352236d49d39da9f72447c3f5ca.png" />
-</div>
-</div>
-<div class="dropdown admonition">
-<p class="admonition-title">Solution</p>
-<p>Notice that the data is heterogneous – it doesn’t fall nicely into two clumps (pre-term, full-term). Within each category, there is a lot of variation – each category looks to contain two subclasses.</p>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<img alt="Modeling for Testing Scientific Hypotheses, figure 1" class="align-center" src="../_images/modeling-for-testing-scientific-hypotheses-1.png" />
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">'preterm'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">'full term'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
@@ -715,42 +698,12 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/7f201fb97f578f12e8dc8a8a4e583f2f5647201dcb6f72d3790bc3276078f073.png" src="../_images/7f201fb97f578f12e8dc8a8a4e583f2f5647201dcb6f72d3790bc3276078f073.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<a class="reference internal image-reference" href="../_images/modeling-for-testing-scientific-hypotheses-2.png"><img alt="Modeling for Testing Scientific Hypotheses, figure 2" class="align-center" src="../_images/modeling-for-testing-scientific-hypotheses-2.png" style="width: 100%;" />
+</a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logistic</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">'lbfgs'</span><span class="p">)</span>
 <span class="n">logistic</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LogisticRegression(C=10000000000.0, class_weight=None, dual=False,
-                   fit_intercept=True, intercept_scaling=1, l1_ratio=None,
-                   max_iter=100, multi_class='warn', n_jobs=None, penalty='l2',
-                   random_state=0, solver='lbfgs', tol=0.0001, verbose=0,
-                   warm_start=False)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">logistic</span><span class="p">],</span> <span class="n">ax</span><span class="p">,</span> <span class="n">poly_degree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'income'</span><span class="p">)</span>
@@ -759,37 +712,17 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="Modeling for Testing Scientific Hypotheses, figure 3" class="align-center" src="../_images/modeling-for-testing-scientific-hypotheses-3.png" />
+<p><em>Not covered here: an interpretation of the plots and of the MLE coefficients.</em></p>
 </div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/6c60f4e04c44b7f431969297ce4d4df44b41d813795b8cfd4001f7fd9b933fce.png" src="../_images/6c60f4e04c44b7f431969297ce4d4df44b41d813795b8cfd4001f7fd9b933fce.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Predictiveness</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">'the accuracy of our logistic regression model as a classifier is:'</span><span class="p">,</span> <span class="n">logistic</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>the accuracy of our logistic regression model as a classifier is: 0.8935
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>the accuracy of our logistic regression model as a classifier is: 0.8935
 </pre></div>
 </div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prob_pos</span> <span class="o">=</span> <span class="n">logistic</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">fraction_of_positives</span><span class="p">,</span> <span class="n">mean_predicted_value</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">prob_pos</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
@@ -800,19 +733,11 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="Predictiveness, figure 1" class="align-center" src="../_images/predictiveness-1.png" />
+<p><em>Not covered here: an interpretation of the accuracy and of the calibration plot.</em></p>
 </div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/e5b1e7a34448c1b271d7dd10751fd89da44ff72848f7e015259a82281e0d910b.png" src="../_images/e5b1e7a34448c1b271d7dd10751fd89da44ff72848f7e015259a82281e0d910b.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Uncertainty</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -831,19 +756,11 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="Uncertainty, figure 1" class="align-center" src="../_images/uncertainty-1.png" />
+<p><em>Not covered here: the mean bootstrap coefficients, and an interpretation of the bootstrap decision boundaries.</em></p>
 </div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/679cc4256e08e31bdb825925103b311a5bc134c0de72bdf17c71b41fe618ca09.png" src="../_images/679cc4256e08e31bdb825925103b311a5bc134c0de72bdf17c71b41fe618ca09.png" />
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: A Bayesian Approach</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span> <span class="k">as</span> <span class="n">bayesian_model</span><span class="p">:</span>
     <span class="c1">#define priors</span>
     <span class="n">slopes</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">'slopes'</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -860,42 +777,12 @@ document.write(`
     <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Multiprocess sampling (2 chains in 2 jobs)
-NUTS: [intercept, slopes]
-Sampling 2 chains: 100%|██████████| 12000/12000 [00:11&lt;00:00, 1038.42draws/s]
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pm</span><span class="o">.</span><span class="n">traceplot</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span> <span class="p">[</span><span class="s1">'intercept'</span><span class="p">,</span> <span class="s1">'slopes'</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/15343aa9413cc205b0f803c10ae10cca23abc41d7412ee5104e804bd7d5f95b2.png" src="../_images/15343aa9413cc205b0f803c10ae10cca23abc41d7412ee5104e804bd7d5f95b2.png" />
-</div>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
+<a class="reference internal image-reference" href="../_images/a-bayesian-approach-1.png"><img alt="A Bayesian Approach, figure 1" class="align-center" src="../_images/a-bayesian-approach-1.png" style="width: 100%;" />
+</a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Bayesian_logistic_regression</span><span class="p">:</span>
@@ -907,16 +794,6 @@ Sampling 2 chains: 100%|██████████| 12000/12000 [00:11&lt;00
         <span class="k">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-cell docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell content</p>
-<p class="expanded admonition-title">Hide code cell content</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">thinned_trace</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[::</span><span class="mi">10</span><span class="p">]</span>
 <span class="n">posterior_samples_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">thinned_trace</span><span class="p">)),</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
@@ -927,16 +804,6 @@ Sampling 2 chains: 100%|██████████| 12000/12000 [00:11&lt;00
     <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</details>
-</div>
-<div class="cell tag_hide-input docutils container">
-<details class="admonition hide above-input">
-<summary aria-label="Toggle hidden content">
-<p class="collapsed admonition-title">Show code cell source</p>
-<p class="expanded admonition-title">Hide code cell source</p>
-</summary>
-<div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_decision_boundary</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">poly_degree</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'income'</span><span class="p">)</span>
@@ -945,11 +812,12 @@ Sampling 2 chains: 100%|██████████| 12000/12000 [00:11&lt;00
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="A Bayesian Approach, figure 2" class="align-center" src="../_images/a-bayesian-approach-2.png" />
+<p><em>Not covered here: the comparison of the bootstrap and Bayesian uncertainties.</em></p>
 </div>
-</details>
-<div class="cell_output docutils container">
-<img alt="../_images/dccdfaf5b6aa688e23c8da0b2f35eb5df4e203f7236c7bfe6dd7dddf9233a3fa.png" src="../_images/dccdfaf5b6aa688e23c8da0b2f35eb5df4e203f7236c7bfe6dd7dddf9233a3fa.png" />
-</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Data Heterogeneity, Question 1</p>
+<p>Notice that the data is heterogeneous – it doesn’t fall nicely into two clumps (pre-term, full-term). Within each category, there is a lot of variation – each category looks to contain two subclasses.</p>
 </div>
 </section>
 </section>

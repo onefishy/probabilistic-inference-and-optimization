@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -503,27 +504,28 @@ document.write(`
 <h2><span class="section-number">23.1. </span>Review of Black Box Variational Inference<a class="headerlink" href="#review-of-black-box-variational-inference" title="Link to this heading">#</a></h2>
 <section id="developments-in-computationally-efficient-variational-inference">
 <h3>Developments in Computationally Efficient Variational Inference<a class="headerlink" href="#developments-in-computationally-efficient-variational-inference" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p><strong>Black-box Variational Inference (2013)</strong>
-Uses the log-derivative trick to rewrite the gradient of the ELBO as:</p></li>
-</ol>
+Uses the log-derivative trick to rewrite the gradient of the ELBO as:</p>
 <div class="math notranslate nohighlight">
 \[\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) = \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]\]</div>
 <p>This requires <strong>only</strong> the computation of the gradient of <span class="math notranslate nohighlight">\(q(\mathbf{W})\)</span>, which is generally much simpler than <span class="math notranslate nohighlight">\(p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)})\)</span>.</p>
 <p>Implementation of BBVI means hard-coding a large library of different kinds of variational distributions <span class="math notranslate nohighlight">\(q(\mathbf{W} | \lambda)\)</span> and their gradients. User inputs the joint distribution of their Bayesian model and chooses a variational family <span class="math notranslate nohighlight">\(q(\mathbf{W} | \lambda)\)</span> - then you can optimize the variational parameters <span class="math notranslate nohighlight">\(\lambda\)</span> to best approximate the target posterior by gradient descent.</p>
-<ol class="arabic simple" start="2">
+</li>
+</ol>
+<ol class="arabic" start="2">
 <li><p><strong>Weight Uncertainty in Neural Networks (2015)</strong>
-Assuming the variational family is mean-field Gaussian, uses the reparametrization trick to rewrite the gradient of the ELBO as:
+Assuming the variational family is mean-field Gaussian, uses the reparametrization trick to rewrite the gradient of the ELBO as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma)=&amp; \mathbb{E}_{\epsilon \sim \mathcal{N}(0, \mathbf{I})}\left[\nabla_{\mu, \Sigma} \log \left[p(\epsilon^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon^\top \Sigma^{1/2} + \mu)\right]\right]\\
-&amp;+ \nabla_{\mu, \Sigma}\underbrace{\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}}
-\end{aligned}\end{split}\]</div>
-</p></li>
-</ol>
+   \nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma)=&amp; \mathbb{E}_{\epsilon \sim \mathcal{N}(0, \mathbf{I})}\left[\nabla_{\mu, \Sigma} \log \left[p(\epsilon^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon^\top \Sigma^{1/2} + \mu)\right]\right]\\
+   &amp;+ \nabla_{\mu, \Sigma}\underbrace{\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}}
+   \end{aligned}\end{split}\]</div>
 <p>For Bayesian Neural Networks, the gradient in the above can be computed by backpropagation - then you can optimize the variational parameters <span class="math notranslate nohighlight">\(\mu, \Sigma\)</span> to best approximate the target posterior by gradient descent. This algorithm is called <strong>Bayes by Backprop</strong>.<br><br></p>
+</li>
+</ol>
 <ol class="arabic simple" start="3">
-<li><p><strong>Automatic Differentiaition Variational Inference (2016)</strong>
+<li><p><strong>Automatic Differentiation Variational Inference (2016)</strong>
 Anytime the gradient of the ELBO can be written as the expectation of a gradient (of an expression without integrals), the gradient can be computed by any automatic differentiation package - then you can optimize the variational parameters <span class="math notranslate nohighlight">\(\lambda\)</span> to best approximate the target posterior by gradient descent.</p></li>
 </ol>
 </section>
@@ -562,7 +564,7 @@ Anytime the gradient of the ELBO can be written as the expectation of a gradient
 f(x) &amp;= h(x)^2 g(x) + \ln(h(x)) + g(x)\\
 f'(x) &amp;= 2h(x)h'(x)g(x) + h(x)^2g'(x) + \frac{h'(x)}{h(x)} + g'(x)
 \end{aligned}\end{split}\]</div>
-<p>Numerical evaluation of the derivative can be inefficient due to the redudant evaluation of the components of <span class="math notranslate nohighlight">\(f\)</span>.</p>
+<p>Numerical evaluation of the derivative can be inefficient due to the redundant evaluation of the components of <span class="math notranslate nohighlight">\(f\)</span>.</p>
 </section>
 <section id="automatic-differentiation-the-idea">
 <h3>Automatic Differentiation: The Idea<a class="headerlink" href="#automatic-differentiation-the-idea" title="Link to this heading">#</a></h3>
@@ -571,12 +573,12 @@ f'(x) &amp;= 2h(x)h'(x)g(x) + h(x)^2g'(x) + \frac{h'(x)}{h(x)} + g'(x)
 <a class="reference internal image-reference" href="../_images/computation_graph.png"><img alt="../_images/computation_graph.png" src="../_images/computation_graph.png" style="width: 432px;" />
 </a>
 </figure>
-<p>We apply symbolic differentiation to elementary operations, like: arithmetic operations, elementary functions (exponential, logarithmic, trignometric, power).</p>
+<p>We apply symbolic differentiation to elementary operations, like: arithmetic operations, elementary functions (exponential, logarithmic, trigonometric, power).</p>
 <p>We keep intermediate values of the components of <span class="math notranslate nohighlight">\(f\)</span> so that they can be reused.</p>
 </section>
 <section id="evaluation-trace-and-computational-graph">
 <h3>Evaluation Trace and Computational Graph<a class="headerlink" href="#evaluation-trace-and-computational-graph" title="Link to this heading">#</a></h3>
-<p>Given a function <span class="math notranslate nohighlight">\(f: \mathbb{R}^n \to \mathbb{R}^m\)</span>, we represent <span class="math notranslate nohighlight">\(f\)</span> as the composition of elementary functions through elemtary operations by a sequence of intermediate values <span class="math notranslate nohighlight">\(v_k\)</span> that is involved with the evaluation of <span class="math notranslate nohighlight">\(f\)</span>, this is the <em><strong>evaluation trace</strong></em>. We can also represent the trace graphically, resulting in the <em><strong>computational graph</strong></em>.</p>
+<p>Given a function <span class="math notranslate nohighlight">\(f: \mathbb{R}^n \to \mathbb{R}^m\)</span>, we represent <span class="math notranslate nohighlight">\(f\)</span> as the composition of elementary functions through elementary operations by a sequence of intermediate values <span class="math notranslate nohighlight">\(v_k\)</span> that is involved with the evaluation of <span class="math notranslate nohighlight">\(f\)</span>, this is the <em><strong>evaluation trace</strong></em>. We can also represent the trace graphically, resulting in the <em><strong>computational graph</strong></em>.</p>
 <p><strong>Example:</strong> Given <span class="math notranslate nohighlight">\(y = f(x_1, x_2) = \ln(x_1) + x_1x_2 - \sin(x_2)\)</span>, its evaluation trace and computational graph are:</p>
 <table>
     <tr>
@@ -590,7 +592,7 @@ f'(x) &amp;= 2h(x)h'(x)g(x) + h(x)^2g'(x) + \frac{h'(x)}{h(x)} + g'(x)
 </table></section>
 <section id="automatic-differentiation-forward-mode">
 <h3>Automatic Differentiation: Forward Mode<a class="headerlink" href="#automatic-differentiation-forward-mode" title="Link to this heading">#</a></h3>
-<p>In <em><strong>forward mode automatic differentiation</strong></em>, we start with the input and work towards the output: evaluating the value of each intermediate value <span class="math notranslate nohighlight">\(v_k\)</span> as well as the derivative of <span class="math notranslate nohighlight">\(v_k\)</span> with repect to a fixed <span class="math notranslate nohighlight">\(x_i\)</span> using the chain rule:</p>
+<p>In <em><strong>forward mode automatic differentiation</strong></em>, we start with the input and work towards the output: evaluating the value of each intermediate value <span class="math notranslate nohighlight">\(v_k\)</span> as well as the derivative of <span class="math notranslate nohighlight">\(v_k\)</span> with respect to a fixed <span class="math notranslate nohighlight">\(x_i\)</span> using the chain rule:</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{\partial v_k}{\partial x_i} = \sum_{v\in \mathrm{parent}(v_k)}\frac{\partial v_k}{\partial v}\frac{\partial v}{\partial x_i}
@@ -603,7 +605,7 @@ f'(x) &amp;= 2h(x)h'(x)g(x) + h(x)^2g'(x) + \frac{h'(x)}{h(x)} + g'(x)
 </section>
 <section id="automatic-differentiation-reverse-mode">
 <h3>Automatic Differentiation: Reverse Mode<a class="headerlink" href="#automatic-differentiation-reverse-mode" title="Link to this heading">#</a></h3>
-<p>In <em><strong>reverse mode automatic differentiation</strong></em>, we first do a forward pass to compute all intermediate values. Then we start with in the output and work towards the input: evaluating the derivative of <span class="math notranslate nohighlight">\(f\)</span> with repect to an intermediate value <span class="math notranslate nohighlight">\(v_k\)</span> using the chain rule:</p>
+<p>In <em><strong>reverse mode automatic differentiation</strong></em>, we first do a forward pass to compute all intermediate values. Then we start with in the output and work towards the input: evaluating the derivative of <span class="math notranslate nohighlight">\(f\)</span> with respect to an intermediate value <span class="math notranslate nohighlight">\(v_k\)</span> using the chain rule:</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{\partial f}{\partial v_k} = \sum_{v\in \mathrm{child}(v_k)}\frac{\partial f}{\partial v}\frac{\partial v}{\partial v_k}

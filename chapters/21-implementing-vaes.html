@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -500,7 +501,7 @@ document.write(`
 </section>
 <section id="defining-make-objective">
 <h2><span class="section-number">26.2. </span>Defining <code class="docutils literal notranslate"><span class="pre">.make_objective</span></code><a class="headerlink" href="#defining-make-objective" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">.make_objective</span></code> function of the VAE class takes in parameters: <code class="docutils literal notranslate"><span class="pre">y</span></code>, the training data, and <code class="docutils literal notranslate"><span class="pre">S</span></code>, the number of samples used for the Monte Carlo estimte in the ELBO. This function returns the negative ELBO and the gradient of the ELBO function.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.make_objective</span></code> function of the VAE class takes in parameters: <code class="docutils literal notranslate"><span class="pre">y</span></code>, the training data, and <code class="docutils literal notranslate"><span class="pre">S</span></code>, the number of samples used for the Monte Carlo estimate in the ELBO. This function returns the negative ELBO and the gradient of the ELBO function.</p>
 <p>Recall that the ELBO for an VAE, whose generative model has parameters <span class="math notranslate nohighlight">\(w\)</span> and whose inference model has parameters <span class="math notranslate nohighlight">\(v\)</span>, is written as follows:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
@@ -565,13 +566,12 @@ document.write(`
 </section>
 <section id="defining-log-likelihood">
 <h2><span class="section-number">26.3. </span>Defining <code class="docutils literal notranslate"><span class="pre">.log_likelihood</span></code><a class="headerlink" href="#defining-log-likelihood" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">.log_likelihood</span></code> function computes the log-likelihood of the observed data given a learned generative model <span class="math notranslate nohighlight">\(f_w\)</span>. Recall that the log-likelihood can be written as:
+<p>The <code class="docutils literal notranslate"><span class="pre">.log_likelihood</span></code> function computes the log-likelihood of the observed data given a learned generative model <span class="math notranslate nohighlight">\(f_w\)</span>. Recall that the log-likelihood can be written as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \ell_v(y) &amp;= \frac{1}{N}\sum_{n=1}^N \log \left[\mathbb{E}_{z_n \sim p(z)} \mathcal{N}(y_n; f_w(z_n), \sigma_y^2I) \right]\\
 &amp;\approx \frac{1}{N}\sum_{n=1}^N \log \left[\frac{1}{S}\sum_{s=1}^S \mathcal{N}(y_n; f_w(z^s_n), \sigma_y^2I) \right], \quad z^s_n \sim p(z)
 \end{aligned}\end{split}\]</div>
-</p>
 <p>Since the Gaussian pdf will tend to be small, in higher dimensions, the log-likelihood will be numerically unstable to compute. We instead write the log-likelihood in an equivalent but more computationally stable way:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}

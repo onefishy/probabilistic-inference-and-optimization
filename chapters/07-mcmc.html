@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -446,7 +447,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-aperiodicity">Properties of Markov Chains: Aperiodicity</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-stationary-distributions">Properties of Markov Chains: Stationary Distributions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-limiting-distributions">Properties of Markov Chains: Limiting Distributions</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorm-of-markov-chains">Fundamental Theorm of Markov Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorem-of-markov-chains">Fundamental Theorem of Markov Chains</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-reversibility">Properties of Markov Chains: Reversibility</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reversibility-and-stationary-distributions">Reversibility and Stationary Distributions</a></li>
 </ul>
@@ -563,12 +564,11 @@ p(X_{n+1}, Y_{n+1} | X_n=1, Y_n=1)
 <section id="transition-matrices-and-kernels">
 <h3>Transition Matrices and Kernels<a class="headerlink" href="#transition-matrices-and-kernels" title="Link to this heading">#</a></h3>
 <p>The Markov property ensure that we can describe the dynamics of the entire chain by describing how the chain <em><strong>transitions</strong></em> from state <span class="math notranslate nohighlight">\(i\)</span> to state <span class="math notranslate nohighlight">\(j\)</span>. <strong>Why?</strong></p>
-<p>If the state space is finite, then we can represent the transition from <span class="math notranslate nohighlight">\(X_{n-1}\)</span> to <span class="math notranslate nohighlight">\(X_{n}\)</span> as a <em><strong>transition matrix</strong></em> <span class="math notranslate nohighlight">\(T\)</span>, where <span class="math notranslate nohighlight">\(T_{ij}\)</span> is the probability of the chain transitioning from state <span class="math notranslate nohighlight">\(i\)</span> to <span class="math notranslate nohighlight">\(j\)</span>:
+<p>If the state space is finite, then we can represent the transition from <span class="math notranslate nohighlight">\(X_{n-1}\)</span> to <span class="math notranslate nohighlight">\(X_{n}\)</span> as a <em><strong>transition matrix</strong></em> <span class="math notranslate nohighlight">\(T\)</span>, where <span class="math notranslate nohighlight">\(T_{ij}\)</span> is the probability of the chain transitioning from state <span class="math notranslate nohighlight">\(i\)</span> to <span class="math notranslate nohighlight">\(j\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 T_{ij} = \mathbb{P}[X_n = j | X_{n-1} = i].
 \]</div>
-</p>
 <p>The transition matrix can be represented visually as a <em><strong>finite state diagram</strong></em>.</p>
 <p>If the state space is continuous, then we can represent the transition from <span class="math notranslate nohighlight">\(X_{n-1}\)</span> to <span class="math notranslate nohighlight">\(X_{n}\)</span> as <em><strong>transition kernel pdf</strong></em>,
 <span class="math notranslate nohighlight">\(
@@ -588,12 +588,11 @@ representing the likelihood of transitioning from state <span class="math notran
 \[
 \mathbb{P}[X_2 = j | X_{0} = i] = \sum_{k\in \mathcal{S}} \mathbb{P}[X_1 = k | X_{0} = i]\mathbb{P}[X_{2} = j|X_{1}=k] = \sum_{k\in \mathcal{S}}T_{ik}T_{kj}
 \]</div>
-<p>We recognize <span class="math notranslate nohighlight">\(\sum_{k\in \mathcal{S}}T_{ik}T_{kj}\)</span> as the <span class="math notranslate nohighlight">\(ij\)</span>-the entry in the matrix <span class="math notranslate nohighlight">\(TT\)</span>. Thus, the Chapman-Kolmogorov equation gives us that the matrix <span class="math notranslate nohighlight">\(T^{(n)}\)</span> for a <span class="math notranslate nohighlight">\(n\)</span>-step transition is
+<p>We recognize <span class="math notranslate nohighlight">\(\sum_{k\in \mathcal{S}}T_{ik}T_{kj}\)</span> as the <span class="math notranslate nohighlight">\(ij\)</span>-the entry in the matrix <span class="math notranslate nohighlight">\(TT\)</span>. Thus, the Chapman-Kolmogorov equation gives us that the matrix <span class="math notranslate nohighlight">\(T^{(n)}\)</span> for a <span class="math notranslate nohighlight">\(n\)</span>-step transition is</p>
 <div class="math notranslate nohighlight">
 \[
 T^{(n)} = \underbrace{T\ldots T}_{\text{$n$ times}}
 \]</div>
-</p>
 <p>In particular, when we have the initial distribution <span class="math notranslate nohighlight">\(\pi^{(0)}\)</span> over states, then the unconditional distribution <span class="math notranslate nohighlight">\(\pi^{(1)}\)</span> over the next state is given by:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -608,12 +607,11 @@ T^{(n)} = \underbrace{T\ldots T}_{\text{$n$ times}}
 <a class="reference internal image-reference" href="../_images/apple.jpg"><img alt="../_images/apple.jpg" src="../_images/apple.jpg" style="width: 498px;" />
 </a>
 </figure>
-<p>The transition matrix for the Markov chain is:
+<p>The transition matrix for the Markov chain is:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 T = \left(\begin{array}{cc}0.8 &amp; 0.2\\ 0.4 &amp; 0.6 \end{array} \right)
 \end{split}\]</div>
-</p>
 <p>Say that the market is initially <span class="math notranslate nohighlight">\(\pi^{(0)} = [0.7\; 0.3]\)</span>, i.e. 70% Apple. What is the market distribution in the long term?</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -669,19 +667,17 @@ T^{(2)}(x, x') = \int_{\mathcal{S}}T(x, y)\, T(y, x') dy.
 </section>
 <section id="properties-of-markov-chains-stationary-distributions">
 <h3>Properties of Markov Chains: Stationary Distributions<a class="headerlink" href="#properties-of-markov-chains-stationary-distributions" title="Link to this heading">#</a></h3>
-<p>A distribution <span class="math notranslate nohighlight">\(\pi\)</span> over the finite state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is a <em><strong>stationary distribution</strong></em> of the Markov Chain with transition matrix <span class="math notranslate nohighlight">\(T\)</span> if
+<p>A distribution <span class="math notranslate nohighlight">\(\pi\)</span> over the finite state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is a <em><strong>stationary distribution</strong></em> of the Markov Chain with transition matrix <span class="math notranslate nohighlight">\(T\)</span> if</p>
 <div class="math notranslate nohighlight">
 \[
 \pi = \pi T,
 \]</div>
-
-i.e. performing the transition matrix doesn’t change the distribution.</p>
-<p>The equivalent condition for continuous state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is:
+<p>i.e. performing the transition matrix doesn’t change the distribution.</p>
+<p>The equivalent condition for continuous state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is:</p>
 <div class="math notranslate nohighlight">
 \[
 \pi(x) = \int_{\mathcal{S}} T(y, x)\,\pi(y)dy.
 \]</div>
-</p>
 </section>
 <section id="properties-of-markov-chains-limiting-distributions">
 <h3>Properties of Markov Chains: Limiting Distributions<a class="headerlink" href="#properties-of-markov-chains-limiting-distributions" title="Link to this heading">#</a></h3>
@@ -692,8 +688,8 @@ i.e. performing the transition matrix doesn’t change the distribution.</p>
 \]</div>
 <p>If <span class="math notranslate nohighlight">\(\pi^{(\infty)} = \underset{n\to \infty}{\lim}\pi^{(n)}\)</span> exists (with some caveats in the continuous state case), we call it the <em><strong>limiting distribution</strong></em> of the Markov chain.</p>
 </section>
-<section id="fundamental-theorm-of-markov-chains">
-<h3>Fundamental Theorm of Markov Chains<a class="headerlink" href="#fundamental-theorm-of-markov-chains" title="Link to this heading">#</a></h3>
+<section id="fundamental-theorem-of-markov-chains">
+<h3>Fundamental Theorem of Markov Chains<a class="headerlink" href="#fundamental-theorem-of-markov-chains" title="Link to this heading">#</a></h3>
 <p>Now we are ready to relate all these properties of Markov chains in a single theorem:</p>
 <p><strong>Fundamental Theorem of Markov Chains:</strong> if a Markov chain is irreducible and aperiodic, then it has a <em>unique</em> stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> and <span class="math notranslate nohighlight">\(\pi^{\infty} = \underset{n\to \infty}{\lim}\pi^{(n)} = \pi\)</span>.</p>
 <p>In practice, the theorem says you can start with any initial distribution over the state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>, asymptotically, you will always obtain the distribution <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
@@ -722,7 +718,7 @@ i.e. performing the transition matrix doesn’t change the distribution.</p>
 <p>Using reversibility, we have another way to characterize a stationary distribution.</p>
 <p><strong>Theorem:</strong> If a Markov chain, with transition matrix or kernel pdf <span class="math notranslate nohighlight">\(T\)</span>, is reversible with respect to <span class="math notranslate nohighlight">\(\pi\)</span>. Then <span class="math notranslate nohighlight">\(\pi\)</span> is a stationary distribution of the chain.</p>
 <p><em><strong>Proof:</strong></em> We will give the proof for the case of a continuous state space <span class="math notranslate nohighlight">\(\mathcal{S}\)</span>.
-Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x) \pi(y)\)</span>, then</p>
+Suppose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x) \pi(y)\)</span>, then</p>
 <div class="math notranslate nohighlight">
 \[
 \int_{\mathcal{S}}\pi(y) T(y, x)dy = \int_{\mathcal{S}} \pi(x) T(x, y)dy  = \pi(x) \int_{\mathcal{S}}T(y, x)dx = \pi(x) \cdot 1 = \pi(x).
@@ -744,15 +740,15 @@ Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x
 </section>
 <section id="what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p">
 <h3>What Do We Need to Prove to get <span class="math notranslate nohighlight">\(pT=p\)</span> and <span class="math notranslate nohighlight">\(\underset{n\to \infty}{\lim} \pi^{(n)} = p\)</span>?<a class="headerlink" href="#what-do-we-need-to-prove-to-get-pt-p-and-underset-n-to-infty-lim-pi-n-p" title="Link to this heading">#</a></h3>
-<ol class="arabic simple">
-<li><p>Prove that the sampler is <em><strong>irreducible</strong></em> and <em><strong>aperiodic</strong></em>. Then, there is a unique stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> such that
+<ol class="arabic">
+<li><p>Prove that the sampler is <em><strong>irreducible</strong></em> and <em><strong>aperiodic</strong></em>. Then, there is a unique stationary distribution <span class="math notranslate nohighlight">\(\pi\)</span> such that</p>
 <div class="math notranslate nohighlight">
 \[\pi T = \pi.\]</div>
-</p></li>
-<li><p>Prove that the sampler is <em><strong>reversible</strong></em> or <em><strong>detailed balanced</strong></em> with respect to <span class="math notranslate nohighlight">\(p\)</span>. Then,
+</li>
+<li><p>Prove that the sampler is <em><strong>reversible</strong></em> or <em><strong>detailed balanced</strong></em> with respect to <span class="math notranslate nohighlight">\(p\)</span>. Then,</p>
 <div class="math notranslate nohighlight">
 \[\pi = p.\]</div>
-</p></li>
+</li>
 </ol>
 </section>
 <section id="gibbs-as-mcmc">
@@ -764,17 +760,15 @@ Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x
 </section>
 <section id="summary">
 <h2><span class="section-number">8.5. </span>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><strong>We need more samplers!</strong> Now we’ve seen that every activity in Bayesian modeling requires sampling! But our current tool-box of sampler’s isn’t really that great.</p></li>
-</ol>
+<ol class="arabic">
+<li><p><strong>We need more samplers!</strong> Now we’ve seen that every activity in Bayesian modeling requires sampling! But our current tool-box of sampler’s isn’t really that great.</p>
 <ul class="simple">
 <li><p>What’s wrong with Inverse CDF Sampling?</p></li>
 <li><p>What’s wrong with Rejection Sampling?</p></li>
 <li><p>What’s wrong with Gibbs Sampling?<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>Samplers as Markov Chains – Markov Chain Monte Carlo Sampling:</strong> Why do we need to talk about Markov Chains again?</p></li>
-</ol>
+</li>
+<li><p><strong>Samplers as Markov Chains – Markov Chain Monte Carlo Sampling:</strong> Why do we need to talk about Markov Chains again?</p>
 <ul>
 <li><p>All the samplers we’ve seen so far define Markov Chains. <em>How?</em></p></li>
 <li><p>What’s the big deal with Markov Chains? They are easy to describe and analyze!</p>
@@ -819,22 +813,22 @@ Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="3">
-<li><p><strong>How Do I Use This In Practice?</strong> What do we need to prove to show that our sampler is correct (is an MCMC sampler)?</p></li>
-</ol>
+</li>
+<li><p><strong>How Do I Use This In Practice?</strong> What do we need to prove to show that our sampler is correct (is an MCMC sampler)?</p>
 <ul class="simple">
 <li><p>Show that the Markov Chain defined by our sampler is irreducible and aperiodic</p></li>
 <li><p>Show that the sampler satisfies detailed balance with respect to the target distribution</p></li>
 <li><p>Invoke the Fundamental Theorem<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="4">
-<li><p><strong>But do I HAVE to be Bayesian???</strong> So some of you might be thinking, I will never work with a Bayesian model because MLE’s are so easy to compute. You’ll be disappointed to find out in Lecture #9 that MLE inference be just as difficult as Bayesian inference.<br><br></p></li>
-<li><p><strong>But do I HAVE to do probabilistic machine learning at all???</strong> Related questions:</p></li>
-</ol>
+</li>
+<li><p><strong>But do I HAVE to be Bayesian???</strong> So some of you might be thinking, I will never work with a Bayesian model because MLE’s are so easy to compute. You’ll be disappointed to find out in <a class="reference internal" href="09-latent-variable-models.html"><span class="doc">Chapter 11</span></a> that MLE inference can be just as difficult as Bayesian inference.<br><br></p></li>
+<li><p><strong>But do I HAVE to do probabilistic machine learning at all???</strong> Related questions:</p>
 <ul class="simple">
 <li><p>If not you who?</p></li>
 <li><p>What is the broader impact of MCMC theory?<br><br></p></li>
 </ul>
+</li>
+</ol>
 </section>
 <section id="further-reading">
 <h2><span class="section-number">8.6. </span>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
@@ -928,7 +922,7 @@ Supoose that <span class="math notranslate nohighlight">\(\pi(x)T(x, y) = T(y, x
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-aperiodicity">Properties of Markov Chains: Aperiodicity</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-stationary-distributions">Properties of Markov Chains: Stationary Distributions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-limiting-distributions">Properties of Markov Chains: Limiting Distributions</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorm-of-markov-chains">Fundamental Theorm of Markov Chains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorem-of-markov-chains">Fundamental Theorem of Markov Chains</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-markov-chains-reversibility">Properties of Markov Chains: Reversibility</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reversibility-and-stationary-distributions">Reversibility and Stationary Distributions</a></li>
 </ul>

@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -513,8 +514,8 @@ document.write(`
 <h2><span class="section-number">11.1. </span>Motivation for Latent Variable Models<a class="headerlink" href="#motivation-for-latent-variable-models" title="Link to this heading">#</a></h2>
 <section id="a-model-for-birth-weights">
 <h3>A Model for Birth Weights<a class="headerlink" href="#a-model-for-birth-weights" title="Link to this heading">#</a></h3>
-<p>Recall our model for birth weigths, <span class="math notranslate nohighlight">\(Y_1,\ldots, Y_N\)</span>. We <em>posited</em> that the birth weights are iid normally distributed with known <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(Y_n \sim \mathcal{N}(\mu, 1)\)</span>.</p>
-<p>Compare the maximum likelihood model and the Bayesian model for bith weight. Which model would you use to make clinical decisions? What’s hard about this comparison?</p>
+<p>Recall our model for birth weights, <span class="math notranslate nohighlight">\(Y_1,\ldots, Y_N\)</span>. We <em>posited</em> that the birth weights are iid normally distributed with known <span class="math notranslate nohighlight">\(\sigma^2\)</span>, <span class="math notranslate nohighlight">\(Y_n \sim \mathcal{N}(\mu, 1)\)</span>.</p>
+<p>Compare the maximum likelihood model and the Bayesian model for birth weight. Which model would you use to make clinical decisions? What’s hard about this comparison?</p>
 <figure class="align-center" id="fig-09-compare">
 <a class="reference internal image-reference" href="../_images/compare.jpg"><img alt="../_images/compare.jpg" src="../_images/compare.jpg" style="width: 569px;" />
 </a>
@@ -528,8 +529,8 @@ document.write(`
 D_{\text{KL}}[q \,\|\, p] = \int_{\Theta} \log\left[\frac{q(\theta)}{p(\theta)} \right] q(\theta)d\theta
 \]</div>
 <p>The KL-divergence <span class="math notranslate nohighlight">\(D_{\text{KL}}[q \,\|\, p]\)</span> is bounded below by 0, which happens if and only if <span class="math notranslate nohighlight">\(q=p\)</span>.
-The KL-divergence has information theoretic interpretations that we will explore later in the course.</p>
-<p><strong>Note:</strong> The KL-divergence is defined in terms of the pdf’s of <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>. If <span class="math notranslate nohighlight">\(p\)</span> is a distribution from which we only have samples and not the pdf (like the empirical distribution), we can nontheless estimate <span class="math notranslate nohighlight">\(D_{\text{KL}}[q \,\|\, p]\)</span>. Techniques that estimate the KL-divergence from samples are called <em><strong>non-parametric</strong></em>. We will use them later in the course.</p>
+The KL-divergence also has information theoretic interpretations.</p>
+<p><strong>Note:</strong> The KL-divergence is defined in terms of the pdf’s of <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>. If <span class="math notranslate nohighlight">\(p\)</span> is a distribution from which we only have samples and not the pdf (like the empirical distribution), we can nonetheless estimate <span class="math notranslate nohighlight">\(D_{\text{KL}}[q \,\|\, p]\)</span>. Techniques that estimate the KL-divergence from samples are called <em><strong>non-parametric</strong></em>.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Why is the KL bounded below by 0?</p>
 <p>First let’s see why the answer isn’t obvious. Recall that the <em><strong>KL divergence is the expected log ratio between two distribution</strong></em>:</p>
@@ -577,7 +578,7 @@ Y_n | Z_n \sim \mathcal{N}\left(\mu_{Z_n}, \sigma^2_{Z_n}\right)
 <h2><span class="section-number">11.2. </span>Common Latent Variable Models<a class="headerlink" href="#common-latent-variable-models" title="Link to this heading">#</a></h2>
 <section id="latent-variable-models">
 <h3>Latent Variable Models<a class="headerlink" href="#latent-variable-models" title="Link to this heading">#</a></h3>
-<p>Models that include an observed variable <span class="math notranslate nohighlight">\(Y\)</span> and at least one unobserved variable <span class="math notranslate nohighlight">\(Z\)</span> are called <em><strong>latent variable models</strong></em>. In general, our model can allow <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(Z\)</span> to interact in many different ways. Today, we will study models with one type of interaction:</p>
+<p>Models that include an observed variable <span class="math notranslate nohighlight">\(Y\)</span> and at least one unobserved variable <span class="math notranslate nohighlight">\(Z\)</span> are called <em><strong>latent variable models</strong></em>. In general, our model can allow <span class="math notranslate nohighlight">\(Y\)</span> and <span class="math notranslate nohighlight">\(Z\)</span> to interact in many different ways. In this chapter, we will study models with one type of interaction:</p>
 <figure class="align-center" id="fig-09-graphical-model">
 <a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 592px;" />
 </a>
@@ -655,7 +656,7 @@ Why is this an hard optimization problem?</p>
 &amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \sum_{n=1}^N \log \mathbb{E}_{Z\sim q(Z)} \left[\,\left( \frac{p(y_n, Z|\theta, \phi)}{q(Z)}\right)\right]\\
 &amp;\geq \underset{\theta, \phi, q}{\mathrm{max}}\; \underbrace{\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]}_{ELBO(\theta, \phi)}, \quad (\text{Jensen's Inequality})\\
 \end{aligned}\end{split}\]</div>
-<p>We call <span class="math notranslate nohighlight">\(\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[ \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z)}\right)\right]\)</span> the Evidence Lower Bound (ELBO). Note that maximizing the ELBO will yield a lower bound of the maximum value of the log likelihood. Although <strong>the optimal point of the ELBO may not be the optimal point of the log likelihood</strong>, we nontheless prefer to optimize the ELBO because the gradients, with respect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>, of the ELBO are easier to compute:</p>
+<p>We call <span class="math notranslate nohighlight">\(\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[ \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z)}\right)\right]\)</span> the Evidence Lower Bound (ELBO). Note that maximizing the ELBO will yield a lower bound of the maximum value of the log likelihood. Although <strong>the optimal point of the ELBO may not be the optimal point of the log likelihood</strong>, we nonetheless prefer to optimize the ELBO because the gradients, with respect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>, of the ELBO are easier to compute:</p>
 <div class="math notranslate nohighlight">
 \[
 \nabla_{\theta, \phi} ELBO(\theta, \phi) = \nabla_{\theta, \phi}\left[ \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]\right] =  \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \nabla_{\theta, \phi} \left( \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right)\right]
@@ -689,7 +690,7 @@ q^*(Z_n) = \underset{q}{\mathrm{argmax}}\;\left(\underset{\theta, \phi}{\mathrm{
 &amp;= \sum_{n=1}^N \int_{\Omega_Z}  \log\left(\frac{q(z_n)}{p(z_n| y_n, \theta, \phi)} \right)q(z_n) dz_n, \quad\left(\text{Baye's Rule: } \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta, \phi)} = p(z_n| y_n, \theta, \phi)\right)\\
 &amp;= \sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
 \end{aligned}\end{split}\]</div>
-<p>Since <span class="math notranslate nohighlight">\(\ell(\theta, \phi)\)</span> is a constant, the difference <span class="math notranslate nohighlight">\(\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = \ell(\theta, \phi) - ELBO(\theta, \phi, q)\)</span> descreases when <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> increases (and vice versa). Thus, maximizing the ELBO is equivalent to minimizing <span class="math notranslate nohighlight">\(D_{\text{KL}} \left[ q(Z_n) \| p(Y_n| Z_n, \theta, \phi)\right]\)</span>:</p>
+<p>Since <span class="math notranslate nohighlight">\(\ell(\theta, \phi)\)</span> is a constant, the difference <span class="math notranslate nohighlight">\(\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = \ell(\theta, \phi) - ELBO(\theta, \phi, q)\)</span> decreases when <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> increases (and vice versa). Thus, maximizing the ELBO is equivalent to minimizing <span class="math notranslate nohighlight">\(D_{\text{KL}} \left[ q(Z_n) \| p(Y_n| Z_n, \theta, \phi)\right]\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
 \underset{q}{\mathrm{argmax}}\, ELBO(\theta, \phi, q) = \underset{q}{\mathrm{argmin}}\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
@@ -783,26 +784,25 @@ f(x, z) = xzf ( x , z ) = x z.
 </div>
 <section id="the-expectation-maximization-algorithm">
 <h3>The Expectation Maximization Algorithm<a class="headerlink" href="#the-expectation-maximization-algorithm" title="Link to this heading">#</a></h3>
-<p>The <em><strong>exepectation maximization (EM) algorithm</strong></em> maximize the ELBO of the model,</p>
+<p>The <em><strong>expectation maximization (EM) algorithm</strong></em> maximize the ELBO of the model,</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../_images/graphical_model.jpg"><img alt="../_images/graphical_model.jpg" src="../_images/graphical_model.jpg" style="width: 296px;" />
 </a>
 </figure>
-<ol class="arabic simple" start="0">
+<ol class="arabic" start="0">
 <li><p><strong>Initialization:</strong> Pick <span class="math notranslate nohighlight">\(\theta_0\)</span>, <span class="math notranslate nohighlight">\(\phi_0\)</span>.</p></li>
-<li><p>Repeat <span class="math notranslate nohighlight">\(i=1, \ldots, I\)</span> times:</p></li>
-</ol>
-<p><strong>E-Step:</strong>
+<li><p>Repeat <span class="math notranslate nohighlight">\(i=1, \ldots, I\)</span> times:</p>
+<p><strong>E-Step:</strong></p>
 <div class="math notranslate nohighlight">
 \[q_{\text{new}}(Z_n) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta_{\text{old}}, \phi_{\text{old}}, q) = p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})\]</div>
-</p>
-<p><strong>M-Step:</strong>
+<p><strong>M-Step:</strong></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-  \theta_{\text{new}}, \phi_{\text{new}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q_{\text{new}})\\
-  &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right].
-\end{aligned}\end{split}\]</div>
-</p>
+   \theta_{\text{new}}, \phi_{\text{new}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q_{\text{new}})\\
+   &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right].
+   \end{aligned}\end{split}\]</div>
+</li>
+</ol>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: The Auxiliary Function</p>
 <p>We often denote the expectation in the M-step by <span class="math notranslate nohighlight">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span></p>
@@ -822,7 +822,7 @@ Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) = \sum_{n=1}^
 <li><p>In the E-step, you fill in the latent variables in the complete data log-likelihood using “average” values, this leaves just an estimate of the observed log-likelihood.</p></li>
 <li><p>In the M-step, you find parameters <span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> that maximizes your estimate of the observed log-likelihood.</p></li>
 </ul>
-<p>We chose to derive EM via the ELBO in this lecture because it makes an explicit connection between the EM algorithm for estimating MLE and variational inference method for approximating the posterior of Bayesian models. It is, however, worthwhile to derive EM using the auxiliary function <span class="math notranslate nohighlight">\(Q\)</span>, as <span class="math notranslate nohighlight">\(Q\)</span> makes it convient for us to prove properties of the EM algorithm.</p>
+<p>We chose to derive EM via the ELBO in this chapter because it makes an explicit connection between the EM algorithm for estimating MLE and variational inference method for approximating the posterior of Bayesian models. It is, however, worthwhile to derive EM using the auxiliary function <span class="math notranslate nohighlight">\(Q\)</span>, as <span class="math notranslate nohighlight">\(Q\)</span> makes it convenient for us to prove properties of the EM algorithm.</p>
 </div>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Monotonicity and Convergence of EM</p>
@@ -863,7 +863,7 @@ Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) = \sum_{n=1}^
 <p>Thus, we have that by maximizing <span class="math notranslate nohighlight">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>, we ensure that <span class="math notranslate nohighlight">\(\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\geq 0\)</span> in each iteration of EM.</p>
 <p>If the likelihood of the model is bounded above (i.e. <span class="math notranslate nohighlight">\(\ell(\theta, \phi) \leq M\)</span> for some constant <span class="math notranslate nohighlight">\(M\)</span>), then EM is guaranteed to convergence. This is because we’ve proved that EM increases (or maintains) log-likelihood in each iteration, therefore, if <span class="math notranslate nohighlight">\(\ell(\theta, \phi)\)</span> is bounded, the process must converge.</p>
 <p><strong>Disclaimer:</strong>
-Although EM converges for bounded likelihoods, it is not guaranteed to converge to the global max of the log-likelihood! Maximizing a lower bound of a function does not necessarily maximize the function itself! Often time, EM converges to local optima of the likelihood function and the point to which it converges may be very sensitive to initialization. We will study this kind of behaviour in more detail when we cover non-convex optimization later in the course.</p>
+Although EM converges for bounded likelihoods, it is not guaranteed to converge to the global max of the log-likelihood! Maximizing a lower bound of a function does not necessarily maximize the function itself! Often time, EM converges to local optima of the likelihood function and the point to which it converges may be very sensitive to initialization. We will study this kind of behaviour in more detail when we cover non-convex optimization in <a class="reference internal" href="13-sgd-simulated-annealing.html"><span class="doc">Chapter 16</span></a>.</p>
 <figure class="align-center" id="fig-09-em">
 <a class="reference internal image-reference" href="../_images/EM.jpg"><img alt="../_images/EM.jpg" src="../_images/EM.jpg" style="width: 711px;" />
 </a>
@@ -871,7 +871,7 @@ Although EM converges for bounded likelihoods, it is not guaranteed to converge 
 </div>
 <div class="dropdown admonition">
 <p class="admonition-title">Going deeper: Example: EM for the Gaussian Mixture Model of Birth Weight</p>
-<p>The Gaussian mixture model for the birth weight data has 3 Gaussians with meand <span class="math notranslate nohighlight">\(\mu = [\mu_1, \mu_2, \mu_3]\)</span> and variances <span class="math notranslate nohighlight">\(\sigma^2 = [\sigma_1^2, \sigma_2^2, \sigma_3^2]\)</span>, and the model is defined as:</p>
+<p>The Gaussian mixture model for the birth weight data has 3 Gaussians with means <span class="math notranslate nohighlight">\(\mu = [\mu_1, \mu_2, \mu_3]\)</span> and variances <span class="math notranslate nohighlight">\(\sigma^2 = [\sigma_1^2, \sigma_2^2, \sigma_3^2]\)</span>, and the model is defined as:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 Z_n &amp;\sim Cat(\pi),\\
@@ -909,14 +909,13 @@ The M-step in EM maximize the following:</p>
 <h3>Example: EM for the Gaussian Mixture Model of Birth Weight<a class="headerlink" href="#example-em-for-the-gaussian-mixture-model-of-birth-weight" title="Link to this heading">#</a></h3>
 <section id="solving-the-m-step">
 <h4>Solving the M-Step<a class="headerlink" href="#solving-the-m-step" title="Link to this heading">#</a></h4>
-<p>We see that the optimization problem in the M-step: <span class="math notranslate nohighlight">\(\mu_{\text{new}}, \sigma^2_{\text{new}}, \pi_{\text{new}} = \underset{\mu, \sigma^2, \pi}{\mathrm{argmax}}\; ELBO(\mu, \sigma^2, \pi, q_{\text{new}})\)</span> is equivalent to two problems
+<p>We see that the optimization problem in the M-step: <span class="math notranslate nohighlight">\(\mu_{\text{new}}, \sigma^2_{\text{new}}, \pi_{\text{new}} = \underset{\mu, \sigma^2, \pi}{\mathrm{argmax}}\; ELBO(\mu, \sigma^2, \pi, q_{\text{new}})\)</span> is equivalent to two problems</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 &amp;1.\quad \underset{\mu, \sigma^2}{\mathrm{argmax}}\; \sum_{n=1}^N \sum_{k=1}^K r_{n, k} \log \mathcal{N}(y_n; \mu_k, \sigma^2_k)\\
 &amp;2.\quad \underset{\pi}{\mathrm{argmax}}\; \sum_{n=1}^N \sum_{k=1}^K r_{n, k}\pi_k
 \end{aligned}\end{split}\]</div>
-
-We can solve each optimization problem analytically by finding stationary points of the gradient (or the Lagrangian):</p>
+<p>We can solve each optimization problem analytically by finding stationary points of the gradient (or the Lagrangian):</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\mu_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} y_n\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(\sigma^2_{\text{new}} = \frac{1}{ \sum_{n=1}^N r_{n, k}} \sum_{n=1}^N r_{n, k} (y_n - \mu_{\text{new}})^2\)</span></p></li>
@@ -1107,13 +1106,12 @@ p(Z_n = k|y_n, \pi_{\text{old}}, \mu_{\text{old}}, \Sigma_{\text{old}}) = \frac{
 </section>
 <section id="sanity-check-log-likelihood-during-training">
 <h3>Sanity Check: Log-Likelihood During Training<a class="headerlink" href="#sanity-check-log-likelihood-during-training" title="Link to this heading">#</a></h3>
-<p>Remember that ploting the MLE model against actual data is not always an option (e.g. high-dimensional data).</p>
-<p>A sanity check for that your EM algorithm has been implemented correctly is to plot the observed data log-likelihood over the iterations of the algorithm:
+<p>Remember that plotting the MLE model against actual data is not always an option (e.g. high-dimensional data).</p>
+<p>A sanity check for that your EM algorithm has been implemented correctly is to plot the observed data log-likelihood over the iterations of the algorithm:</p>
 <div class="math notranslate nohighlight">
 \[
 \ell_y(\mu, \sigma^2, \pi) = \sum_{n=1}^N \log \sum_{k=1}^K \mathcal{N}(y_n; \mu_k, \sigma_k^2) \pi_k
 \]</div>
-</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -1176,19 +1174,19 @@ If we are interested in computing the maximum likelihood estimators of the param
 &amp;= \log \mathbb{E}_{z\sim q(z)}\left[\frac{p(y, z| \theta, \phi)}{q(z)}\right]\\
 &amp;\geq \underbrace{\mathbb{E}_{z\sim q(z)} \left[\log\left(\frac{p(y, z| \theta, \phi)}{q(z)}\right)\right]}_{ELBO(\theta, \phi, q)}
 \end{aligned}\end{split}\]</div>
-<p>We have dervied that <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> is a lower bound of the log-likelihood <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span>, for any choice of <span class="math notranslate nohighlight">\(q\)</span>. So rather than maximizing the log-likelihood, we maximize the <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span>, thus ensuring that <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span> is at least as big:</p>
+<p>We have derived that <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span> is a lower bound of the log-likelihood <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span>, for any choice of <span class="math notranslate nohighlight">\(q\)</span>. So rather than maximizing the log-likelihood, we maximize the <span class="math notranslate nohighlight">\(ELBO(\theta, \phi, q)\)</span>, thus ensuring that <span class="math notranslate nohighlight">\(\ell_y(\theta, \phi)\)</span> is at least as big:</p>
 <div class="math notranslate nohighlight">
 \[
 \underset{\theta, \phi}{\max}\ell_y(\theta, \phi)\geq \underset{\theta, \phi, q}{\max}ELBO(\theta, \phi, q)
 \]</div>
-<p>In order to maximize the ELBO, we use coordinate ascent. That is, we take turns maximizing the ELBO with respect to <span class="math notranslate nohighlight">\(q\)</span> and then with repect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>.</p>
+<p>In order to maximize the ELBO, we use coordinate ascent. That is, we take turns maximizing the ELBO with respect to <span class="math notranslate nohighlight">\(q\)</span> and then with respect to <span class="math notranslate nohighlight">\(\theta, \phi\)</span>.</p>
 <p>This algorithm is called <em><strong>expectation maximization (EM)</strong></em>.</p>
 </div>
 </section>
 </section>
 <section id="exercises">
 <h2><span class="section-number">11.4. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-latent-variables-for-data-augmentation">
 <span id="ps-hw4a"></span><h3>Problem Set: Latent Variables for Data Augmentation<a class="headerlink" href="#problem-set-latent-variables-for-data-augmentation" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -1210,7 +1208,7 @@ If we are interested in computing the maximum likelihood estimators of the param
 </div>
 </details>
 </div>
-<p>A botany research lab in Cambridge is exprimentally cross-breeding two types of hibiscus flowers: blue and pink. The goal is to study the genetic factor that creates an exotic flower whose petals are pink with a ring of blue on each.</p>
+<p>A botany research lab in Cambridge is experimentally cross-breeding two types of hibiscus flowers: blue and pink. The goal is to study the genetic factor that creates an exotic flower whose petals are pink with a ring of blue on each.</p>
 <p>There are four types of child plant that can result from this cross-breeding:</p>
 <ul class="simple">
 <li><p>Type 1: blue petals</p></li>
@@ -1234,12 +1232,11 @@ Y &amp; \sim Mult\left(197, \left[\frac{\theta+2}{4}, \frac{1 - \theta}{4}, \fra
 <p>The aim of this problem is to estimate <span class="math notranslate nohighlight">\(\theta\)</span> from the observed counts.</p>
 <div class="admonition-exercise-part-i-mle-through-latent-variable-augmentation-and-em admonition">
 <p class="admonition-title">Exercise: Part I: MLE Through Latent Variable Augmentation and EM</p>
-<p>In models where directly computing the MLE is hard (you can think about if that is the case here), the optimization of the likelihood can often be simplified by introducing a latent variable into the model and then optimize the liklelihood using EM - this process is called <em><strong>data augmentation</strong></em>.</p>
-<p>The nursery augmented the data with a new variable <span class="math notranslate nohighlight">\(Z\)</span> such that:
+<p>In models where directly computing the MLE is hard (you can think about if that is the case here), the optimization of the likelihood can often be simplified by introducing a latent variable into the model and then optimize the likelihood using EM - this process is called <em><strong>data augmentation</strong></em>.</p>
+<p>The nursery augmented the data with a new variable <span class="math notranslate nohighlight">\(Z\)</span> such that:</p>
 <div class="math notranslate nohighlight">
 \[Z + (y_1 - Z) = y_1.\]</div>
-
-That is, using <span class="math notranslate nohighlight">\(Z\)</span>, they are breaking <span class="math notranslate nohighlight">\(y_1\)</span>, the number of Type I child plants, into two subtypes, with <span class="math notranslate nohighlight">\(Z\)</span> being the count of Subtype #1 and <span class="math notranslate nohighlight">\((y_1-Z)\)</span> being the count of Subtype #2. The lab posited the probability of obtain the two subtype <span class="math notranslate nohighlight">\(\theta/4\)</span> and <span class="math notranslate nohighlight">\(1/2\)</span>, respectively.</p>
+<p>That is, using <span class="math notranslate nohighlight">\(Z\)</span>, they are breaking <span class="math notranslate nohighlight">\(y_1\)</span>, the number of Type I child plants, into two subtypes, with <span class="math notranslate nohighlight">\(Z\)</span> being the count of Subtype #1 and <span class="math notranslate nohighlight">\((y_1-Z)\)</span> being the count of Subtype #2. The lab posited the probability of obtain the two subtype <span class="math notranslate nohighlight">\(\theta/4\)</span> and <span class="math notranslate nohighlight">\(1/2\)</span>, respectively.</p>
 <p>The augmented model (which includes the observed data <span class="math notranslate nohighlight">\(y\)</span> and the latent variable <span class="math notranslate nohighlight">\(z\)</span> they introduced) they derived is as follows:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
@@ -1251,6 +1248,113 @@ Y &amp; \sim Mult\left(197, \left[\frac{1}{2} + \frac{\theta}{4}, \frac{1 - \the
 <li><p>Derive the EM updates for the augmented latent variable model.<br><br></p></li>
 <li><p>Implement the EM algorithm to estimate the MLE of <span class="math notranslate nohighlight">\(\theta\)</span>. Choose an appropriate initialization point and an appropriate stopping condition.</p></li>
 </ol>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<p>The probability of a child plant of Type <span class="math notranslate nohighlight">\(I\)</span> is <span class="math notranslate nohighlight">\(\frac{1}{2} + \frac{\theta}{4} = \frac{\theta+2}{4}\)</span>. Thus, the probability of obtaining Subtype #1 <strong>given that we have a child plant of Type I</strong> is <span class="math notranslate nohighlight">\(\frac{\theta/4}{(\theta + 2)/4} = \frac{\theta}{\theta + 2}\)</span>.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<p>Recall that the maximum (log) likelihood estimate of <span class="math notranslate nohighlight">\(\theta\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[
+\theta_{\text{MLE}} = \underset{\theta}{\text{argmax}} \log p(Y|\theta)
+\]</div>
+<p>If this is a quantity we cannot or do not wish to directly compute (if, for example, the derivative of the log likelihood is complicated ), then we can maximize a lower bound to the log-likelihood: the ELBO. To emphasize again: <strong>maximizing the ELBO does not maximize the log-likelihood, but it guarantees that your likelihood will be as big as the ELBO</strong>. This is a <strong>trade-off</strong> we explicitly make: tractability of computation for the extent to which log likelihood is maximized.</p>
+<p>Recall that the ELBO is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+ELBO(\theta, q) = \mathbb{E}_{z\sim q(Z)}\left[ \log \frac{p(Z, Y|\theta)}{q(Z)}\right].
+\]</div>
+<p>EM is an algorithm in which we iteratively increase the ELBO by coordinate ascent, that is, we maximize the ELBO with respect to <span class="math notranslate nohighlight">\(\theta\)</span> while holding <span class="math notranslate nohighlight">\(q\)</span> fixed and then maximize <span class="math notranslate nohighlight">\(q\)</span> holding <span class="math notranslate nohighlight">\(\theta\)</span> fixed:</p>
+<ol class="arabic simple">
+<li><p>(E-step) <span class="math notranslate nohighlight">\(q^*(Z) = \underset{q}{\text{argmax}}\; ELBO(\theta, q) = p(Z|Y, \theta_{old})\)</span></p></li>
+<li><p>(M-step) <span class="math notranslate nohighlight">\(\theta^* = \underset{\theta}{\text{argmax}}\; ELBO(\theta, q^*) = \underset{\theta}{\text{argmax}}\;\mathbb{E}_{Z\sim p(Z|Y, \theta_{old})}\left[ \log (p(Y, Z|\theta))\right]\)</span>.</p></li>
+</ol>
+<p>For the E-step, since we are given that <span class="math notranslate nohighlight">\(p(Z|Y, \theta_{old}) = Bin\left(Z; y_1, \frac{\theta_{old}}{2 + \theta_{old}}\right)\)</span>, there is nothing to compute!</p>
+<p>For the M-step, we first compute the expectation <span class="math notranslate nohighlight">\(\mathbb{E}_{Z\sim p(Z|Y, \theta_{old})}\left[ \log (p(Y, Z|\theta))\right]\)</span>. For this we note that the joint distribution <span class="math notranslate nohighlight">\(p(Y, Z|\theta)\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[
+p(y, z | \theta) = Bin\left(z; y_1, \frac{\theta}{2 + \theta}\right)Mult\left(y; 197, \left[\frac{1}{2} + \frac{\theta}{4}, \frac{1 - \theta}{4}, \frac{1 - \theta}{4}, \frac{\theta}{4} \right]\right)
+\]</div>
+<p>Thus, we can rewrite the above expectation (during this process, make note of terms that do not depend on <span class="math notranslate nohighlight">\(\theta\)</span>, those will be dropped during the optimization step):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbb{E}_{Z | Y, \theta_{old}}\left[\log p(Y, Z | \theta) \right] =&amp;\; \mathbb{E}_{Z | Y, \theta_{old}}\left[\log\left( \binom{y_{1}}{Z} \left (\frac{1}{2} \right )^{y_1-Z} \left(\frac{\theta}{4} \right )^{Z}  \left(\frac{1-\theta}{4}\right)^{y_2+y_3}  \, \left(\frac{\theta}{4}\right)^{y_4}\right)\right]\\
+=&amp;\; \mathbb{E}_{Z | Y, \theta_{old}}\left[  \log\binom{y_1}{Z} +  (y_1 - Z)\log\left(\frac{1}{2}\right)  + Z\log \left(\frac{\theta}{4}\right) +  (y_2 + y_3) \log \left(\frac{1-\theta}{4}\right) + y_4 \log \left(\frac{\theta}{4}\right) \right]\\
+=&amp;\;  \mathbb{E}_{Z | Y, \theta_{old}}\left[\log\binom{y_1}{Z}\right] +   \log\left(\frac{1}{2}\right)\mathbb{E}_{Z | Y, \theta_{old}} (y_1 - Z)  + \log (\theta)\;\mathbb{E}_{Z | Y, \theta_{old}} \left[Z\right] +  (y_2 + y_3) \log \left({1-\theta}\right)+ y_4 \log \left({\theta}\right) - \left(\mathbb{E}_{Z | Y, \theta_{old}}\left[Z\right] + y_2 + y_3 + y_4\right)\log 4 \\
+=&amp;\; \mathbb{E}_{Z | Y, \theta_{old}}\left[\log\binom{y_1}{Z}\right]  +  \log\left(\frac{1}{2}\right) \left(y_1 - \frac{y_1\theta_{old}}{2 + \theta_{old}}\right)  + \log (\theta)\left(\frac{y_1\theta_{old}}{2 + \theta_{old}}\right) +  (y_2 + y_3) \log (1 - \theta) + y_4\log (\theta) - \left(\frac{y_1\theta_{old}}{2 + \theta_{old}} + y_2 + y_3 + y_4\right)\log 4\\
+=&amp;\;  C + \log (\theta)\left(\frac{y_1\theta_{old}}{2 + \theta_{old}}\right) +  (y_2 + y_3 ) \log (1 - \theta) + y_4 \log (\theta)\\
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C = \mathbb{E}_{Z | Y, \theta_{old}}\left[\log\binom{y_1}{Z}\right] + \log\frac{1}{2} \left(y_1 - \frac{y_1\theta_{old}}{2 + \theta_{old}}\right)  - \left(\frac{y_1\theta_{old}}{2 + \theta_{old}} + y_2 + y_3 + y_4\right)\log 4\)</span> are all the terms that do not involve <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>To complete the M-step, we maximize the above with respect to <span class="math notranslate nohighlight">\(\theta\)</span>, and thus can drop any terms not involving <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\underset{\theta}{\text{argmax}} \left[ C   +  (y_2 + y_3) \log (1 - \theta) + \left(y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}\right) \log\theta\right] = \underset{\theta}{\text{argmax}}\left[(y_2 + y_3) \log (1 - \theta) + \left(y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}\right) \log\theta\right]
+\end{aligned}\]</div>
+<p>But the above looks like (up to a constant) the log likelihood of a binomial pdf! That is,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\underset{\theta}{\text{argmax}}\left[(y_2 + y_3) \log (1 - \theta) + \left(y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}\right) \log\theta\right] &amp; =\underset{\theta}{\text{argmax}}\left[(y_2 + y_3) \log (1 - \theta) + \left(y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}\right) \log\theta + \log \mathcal{Z}\right]\\
+&amp;=  \text{argmax}_\theta \log Bin\left(B; A + B, \theta  \right)
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(A = y_2 + y_3\)</span> and <span class="math notranslate nohighlight">\(B = y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{Z}\)</span> is the normalizing constant of the binomial. So <span class="math notranslate nohighlight">\(\underset{\theta}{\text{argmax}}\)</span> of the above is just taking the MLE of a binomial. But the MLE of this binomial is</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{B}{A + B} = \frac{ y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}}{ y_2 + y_3 + y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}}.
+\]</div>
+<p>So the in the M-Step, we get that</p>
+<div class="math notranslate nohighlight">
+\[
+\theta^* = \frac{ y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}}{ y_2 + y_3 + y_4  + \frac{y_1\theta_{old}}{2 + \theta_{old}}}.
+\]</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<p>We implement the two steps in EM and run the algorithm for until convergence or up to 1000 iterations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#convergence threshold for theta</span>
+<span class="n">conv_thresh</span> <span class="o">=</span> <span class="mf">1e-9</span>
+<span class="c1">#total iterations</span>
+<span class="n">total_iters</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1">#initial difference between current and new theta</span>
+<span class="n">diff</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="c1">#counts</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="mi">125</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">34</span><span class="p">)</span>
+<span class="c1">#initialize theta at 1.</span>
+<span class="n">thetas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]</span>
+<span class="c1">#initialize iteration number at 0</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#while convergence threshold is not reached or under the total number of iterations</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total_iters</span> <span class="ow">and</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="n">conv_thresh</span><span class="p">:</span>
+    <span class="c1">#update for theta from the M-step</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">/</span><span class="p">((</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'iteration </span><span class="si">{}</span><span class="s1">, theta </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">theta</span><span class="p">))</span>
+    <span class="c1">#update iteration counter</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1">#compute different between current theta and new theta</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1">#add the new theta to our list of theta estimates</span>
+    <span class="n">thetas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="s1">'final estimate of MLE of theta'</span><span class="p">,</span> <span class="n">thetas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>iteration 0, theta 0.6656891495601173
+iteration 1, theta 0.6318386749517709
+iteration 2, theta 0.6274852197611572
+iteration 3, theta 0.6269095829647825
+iteration 4, theta 0.6268331929394925
+iteration 5, theta 0.6268230507139951
+iteration 6, theta 0.6268217040552755
+iteration 7, theta 0.6268215252478676
+iteration 8, theta 0.6268215015060504
+iteration 9, theta 0.6268214983536422
+iteration 10, theta 0.6268214979350694
+final estimate of MLE of theta 0.6268214979350694
+</pre></div>
+</div>
+<p>It looks like EM converged in 10 iterations!</p>
 </div>
 </section>
 </section>

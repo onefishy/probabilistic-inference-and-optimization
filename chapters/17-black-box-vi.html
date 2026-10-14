@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-new-tab-link.css?v=d87cb1ac" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6aa0208b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -725,14 +726,13 @@ document.write(`
 <h2><span class="section-number">22.1. </span>Review of Neural Network Models<a class="headerlink" href="#review-of-neural-network-models" title="Link to this heading">#</a></h2>
 <section id="how-would-you-parameterize-a-non-linear-trend">
 <h3>How Would You Parameterize a Non-linear Trend?<a class="headerlink" href="#how-would-you-parameterize-a-non-linear-trend" title="Link to this heading">#</a></h3>
-<p>In non-linear regression, we are interested in modeling observed outcome <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> as a non-linear function of observed covariates <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span>:
+<p>In non-linear regression, we are interested in modeling observed outcome <span class="math notranslate nohighlight">\(Y^{(n)}\)</span> as a non-linear function of observed covariates <span class="math notranslate nohighlight">\(\mathbf{X}^{(n)}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mu &amp;= g_{\mathbf{w}}(\mathbf{X}^{(n)})\\
 Y^{(n)}&amp;\sim \mathcal{N}(\mu, \sigma^2)
 \end{aligned}\end{split}\]</div>
-
-But it’s not easy to think of a function class <span class="math notranslate nohighlight">\(g(x)\)</span> can capture the trend in the data (e.g. polynomial or sinusoical)?</p>
+<p>But it’s not easy to think of a function class <span class="math notranslate nohighlight">\(g(x)\)</span> can capture the trend in the data (e.g. polynomial or sinusoidal)?</p>
 <figure class="align-center" id="fig-17-fig12">
 <a class="reference internal image-reference" href="../_images/fig12.png"><img alt="../_images/fig12.png" src="../_images/fig12.png" style="width: 100%;" />
 </a>
@@ -740,7 +740,7 @@ But it’s not easy to think of a function class <span class="math notranslate n
 </section>
 <section id="representing-arbitrarily-complex-functions">
 <h3>Representing Arbitrarily Complex Functions<a class="headerlink" href="#representing-arbitrarily-complex-functions" title="Link to this heading">#</a></h3>
-<p><strong>Motto:</strong> neural netoworks build up a complex function <span class="math notranslate nohighlight">\(g\)</span> by <strong>composing</strong> simple nonlinear functions. We represent neural networks as <strong>layered directed graphs</strong> where each node <span class="math notranslate nohighlight">\(i\)</span> in the <span class="math notranslate nohighlight">\(l\)</span>-th layer represents the function <span class="math notranslate nohighlight">\(f\left(\sum_{j}w^{l-1}_{ji} h^{l-1}_j\right)\)</span>, <span class="math notranslate nohighlight">\(h^{l-1}_j\)</span> being the hidden nodes from the <span class="math notranslate nohighlight">\(l-1\)</span>-th layer.</p>
+<p><strong>Motto:</strong> neural networks build up a complex function <span class="math notranslate nohighlight">\(g\)</span> by <strong>composing</strong> simple nonlinear functions. We represent neural networks as <strong>layered directed graphs</strong> where each node <span class="math notranslate nohighlight">\(i\)</span> in the <span class="math notranslate nohighlight">\(l\)</span>-th layer represents the function <span class="math notranslate nohighlight">\(f\left(\sum_{j}w^{l-1}_{ji} h^{l-1}_j\right)\)</span>, <span class="math notranslate nohighlight">\(h^{l-1}_j\)</span> being the hidden nodes from the <span class="math notranslate nohighlight">\(l-1\)</span>-th layer.</p>
 <figure class="align-center" id="fig-17-fig5">
 <a class="reference internal image-reference" href="../_images/fig5.png"><img alt="../_images/fig5.png" src="../_images/fig5.png" style="width: 553px;" />
 </a>
@@ -764,23 +764,21 @@ The non-linear function <span class="math notranslate nohighlight">\(f\)</span> 
 <section id="neural-networks-regression">
 <h3>Neural Networks Regression<a class="headerlink" href="#neural-networks-regression" title="Link to this heading">#</a></h3>
 <p><strong>Model for Regression:</strong> <span class="math notranslate nohighlight">\(Y^{(n)}\sim \mathcal{N}(\mu, \sigma^2)\)</span>, <span class="math notranslate nohighlight">\(\mu = g_\mathbf{W}(\mathbf{X}^{(n)})\)</span>, where <span class="math notranslate nohighlight">\(g_\mathbf{W}\)</span> is a neural network with parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.</p>
-<p><strong>Training Objective:</strong> find <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> to maximize the likelihood of our data. This is equivalent to minimizing the Mean Square Error,
+<p><strong>Training Objective:</strong> find <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> to maximize the likelihood of our data. This is equivalent to minimizing the Mean Square Error,</p>
 <div class="math notranslate nohighlight">
 \[
 \min_{\mathbf{W}}\, \mathrm{MSE}(\mathbf{W}) = \frac{1}{N}\sum^N_{n=1} \left(y_n - g_\mathbf{W}(x_n)\right)^2
 \]</div>
-</p>
-<p><strong>Optimizing the Training Objective:</strong> The main challenge of optimizing the objective is computing the gradient of a neural network. Luckily, the gradient can be computed in an algorithmic way using the chain rule, working from the output node <strong>backwards</strong> towards the input. For example, the derivative with respect to the hidden node <span class="math notranslate nohighlight">\(h^l_i\)</span> is:
+<p><strong>Optimizing the Training Objective:</strong> The main challenge of optimizing the objective is computing the gradient of a neural network. Luckily, the gradient can be computed in an algorithmic way using the chain rule, working from the output node <strong>backwards</strong> towards the input. For example, the derivative with respect to the hidden node <span class="math notranslate nohighlight">\(h^l_i\)</span> is:</p>
 <div class="math notranslate nohighlight">
 \[
 \frac{\partial \mathrm{MSE}}{\partial h^l_i} = \sum_{j}\underbrace{\frac{\partial \mathrm{MSE}}{\partial h^{l+1}_j}}_{\text{derivative from layer $l\quad$}} \underbrace{\frac{\partial h^{l+1}_j}{\partial h^{l}_i}}_{\text{derivative of $f\left(\sum_{k}w_k h_k\right)$}}
 \]</div>
-
-Using this backwards gradient computation, we can optimize a neural network with respect to the MSE using <strong>gradient descent</strong>.</p>
+<p>Using this backwards gradient computation, we can optimize a neural network with respect to the MSE using <strong>gradient descent</strong>.</p>
 </section>
 <section id="the-maximum-likelihood-objective-is-non-convex-for-neural-networks">
 <h3>The Maximum Likelihood Objective is Non-Convex for Neural Networks<a class="headerlink" href="#the-maximum-likelihood-objective-is-non-convex-for-neural-networks" title="Link to this heading">#</a></h3>
-<p>Unfortunately, the likelihood and MSE functions for neural network regression models are not convex! This means that <strong>just because your gradient is zero, it doens’t mean you’ve optimized anything</strong>.</p>
+<p>Unfortunately, the likelihood and MSE functions for neural network regression models are not convex! This means that <strong>just because your gradient is zero, it doesn’t mean you’ve optimized anything</strong>.</p>
 <figure class="align-center" id="fig-17-loss-landscape">
 <a class="reference internal image-reference" href="../_images/loss_landscape.jpg"><img alt="../_images/loss_landscape.jpg" src="../_images/loss_landscape.jpg" style="width: 418px;" />
 </a>
@@ -791,7 +789,7 @@ Using this backwards gradient computation, we can optimize a neural network with
 <p>Linear models are easy to interpret. Once we’ve found the MLE of the model parameters, we can formulate scientific hypotheses about the relationship between the outcome <span class="math notranslate nohighlight">\(Y\)</span> and the covariates <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-    \widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
+\widehat{\text{income}} = 2 * \text{education (yr)} + 3.1 * \text{married} - 1.5 * \text{gaps in work history}
 \end{aligned}\]</div>
 <p>What do the weights of a neural network tell you about the relationship between the covariates and the outcome?</p>
 <figure class="align-center">
@@ -844,7 +842,7 @@ Y^{(n)} &amp;\sim \mathcal{N}(\mu^{(n)}, \sigma^2_Y)
 Y^{(n)} &amp;\sim \mathcal{N}(\mu^{(n)}, \sigma^2_Y)
 \end{aligned}\end{split}\]</div>
 <p>Unfortunately, the posterior of a neural network is multimodal and very complex, posing a challenge for samplers. Furthermore, training data for BNNs are typically large, this makes gradient-based samplers like HMC extremely inefficient – in every leap-frog iteration of HMC, the gradient <span class="math notranslate nohighlight">\(\frac{\partial U(q)}{\partial q}\)</span> requires an evaluation over the entire training data set.</p>
-<p><strong>See course project papers:</strong></p>
+<p><strong>Further reading:</strong></p>
 <ol class="arabic simple">
 <li><p>NeuTra-lizing Bad Geometry in Hamiltonian Monte Carlo Using Neural Transport</p></li>
 <li><p>Stochastic Gradient Hamiltonian Monte Carlo</p></li>
@@ -860,11 +858,10 @@ Y^{(n)} &amp;\sim \mathcal{N}(\mu^{(n)}, \sigma^2_Y)
 <p>A. <em><strong>(Variational family)</strong></em> a family <span class="math notranslate nohighlight">\(Q\)</span> of candidate distributions for approximating <span class="math notranslate nohighlight">\(p\)</span>. The members of <span class="math notranslate nohighlight">\(Q\)</span> are called the <em><strong>variational distributions</strong></em>.</p>
 <p><strong>Our Choice:</strong>  we assume that the joint <span class="math notranslate nohighlight">\(q(\psi)\)</span> factorizes completely over each dimension of <span class="math notranslate nohighlight">\(\psi\)</span>, i.e. <span class="math notranslate nohighlight">\(q(\psi)= \prod_{i=1}^I q(\psi_i | \lambda_i)\)</span>. This is called the <em><strong>mean field assumption</strong></em>. What can go wrong with this design choice?</p>
 <p>B. <em><strong>(Divergence measure)</strong></em> a divergence measure to quantify the difference between <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
-<p><strong>Our Choice:</strong>
+<p><strong>Our Choice:</strong></p>
 <div class="math notranslate nohighlight">
 \[D_{\text{KL}}(q(\psi | \lambda) \| p(\psi | Y_1, \ldots, Y_N)) = \mathbb{E}_{\psi \sim q(\psi|\lambda)}\left[\log\left( \frac{q(\psi | \lambda)}{p(\psi | Y_1, \ldots, Y_N)} \right) \right]\]</div>
-
-What can go wrong with this design choice?</p>
+<p>What can go wrong with this design choice?</p>
 </section>
 <section id="variational-inference-as-optimization">
 <h3>Variational Inference as Optimization<a class="headerlink" href="#variational-inference-as-optimization" title="Link to this heading">#</a></h3>
@@ -885,27 +882,24 @@ What can go wrong with this design choice?</p>
 </section>
 <section id="variational-inference-for-bayesian-neural-networks">
 <h3>Variational Inference for Bayesian Neural Networks<a class="headerlink" href="#variational-inference-for-bayesian-neural-networks" title="Link to this heading">#</a></h3>
-<p>Consider a Bayesian neural network:
+<p>Consider a Bayesian neural network:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 \mathbf{W} &amp;\sim \mathcal{N}(0, \sigma^2_W \mathbf{I})\\
 Y^{(n)} &amp;\sim \mathcal{N}(g_{\mathbf{W}}(\mathbf{X}^{(n)}), \sigma^2_Y)
 \end{aligned}\end{split}\]</div>
-
-and a mean-field Gaussian variational family:
+<p>and a mean-field Gaussian variational family:</p>
 <div class="math notranslate nohighlight">
 \[
 q(\mathbf{W} | \mu, \Sigma) = \mathcal{N}(\mathbf{W}; \mu, \Sigma)
 \]</div>
-
-where <span class="math notranslate nohighlight">\(\Sigma\)</span> is a diagonal matrix.</p>
-<p>The ELBO is:
+<p>where <span class="math notranslate nohighlight">\(\Sigma\)</span> is a diagonal matrix.</p>
+<p>The ELBO is:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
 ELBO(\mu, \Sigma) &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]\\
 &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{\mathcal{N}(\mathbf{W}; 0, \sigma^2_W \mathbf{I}) \prod_{n=1}^N \mathcal{N}(Y^{(n)}; g_{\mathbf{W}}(\mathbf{X}^{(n)}), \sigma^2_Y)}{\mathcal{N}(\mathbf{W}; \mu, \Sigma)} \right) \right].
 \end{aligned}\end{split}\]</div>
-</p>
 <p>To find the optimal variational parameters such that <span class="math notranslate nohighlight">\(\mu^*, \Sigma^* = \mathrm{argmax}\, ELBO(\mu, \Sigma)\)</span>, we need to compute the gradient of the ELBO:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
@@ -918,7 +912,7 @@ ELBO(\mu, \Sigma) &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)
 \[\begin{aligned}
 \nabla_{\mu, \Sigma}\, ELBO(\mu, \Sigma) = \nabla_{\mu, \Sigma}\,\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right],
 \end{aligned}\]</div>
-<p>The main problem in computing this gradient is that we can’t take the gradient of a complex integral in closed form, and we can’t push the gradient inside the expectation to make the gradient computation easier (since the expectation is over a distribution that involves <span class="math notranslate nohighlight">\(\mu, \Sigma\)</span>). Recall that in Coordinate Ascent Variational Inference (CAVI), we avoided computing this gradient all together, but this required extensive model-specific derivations. Today, instead, we will adopt the approach of performing gradient descent taking MC estimates of expectations in the gradient.</p>
+<p>The main problem in computing this gradient is that we can’t take the gradient of a complex integral in closed form, and we can’t push the gradient inside the expectation to make the gradient computation easier (since the expectation is over a distribution that involves <span class="math notranslate nohighlight">\(\mu, \Sigma\)</span>). Recall that in Coordinate Ascent Variational Inference (CAVI), we avoided computing this gradient all together, but this required extensive model-specific derivations. In this chapter, we will instead adopt the approach of performing gradient descent taking MC estimates of expectations in the gradient.</p>
 <p>But before we estimate the expectation with a sum, we need to push the gradient inside the expectation! To do so, we rewrite the expectation as an integral:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
@@ -968,7 +962,7 @@ ELBO(\mu, \Sigma) &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)
 \[\begin{split}\begin{aligned}
 \nabla_{\mu, \Sigma}\, ELBO(\mu, \Sigma) =&amp; \int_{\mathcal{W}}\left[\log p(\mathbf{W}, \text{Data}) - \log q(\mathbf{W} | \mu, \Sigma) \right] \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma)\, d\mathbf{W}\\
 \end{aligned}\end{split}\]</div>
-<p>But the problem is that this doesn’t look like an expectation! So we can’t use MC estimatation to approximate this integral! Luckily, we observe the following algebra fact: since we know that
+<p>But the problem is that this doesn’t look like an expectation! So we can’t use MC estimation to approximate this integral! Luckily, we observe the following algebra fact: since we know that
 <span class="math notranslate nohighlight">\(
 \nabla_{\mu, \Sigma}\,\log q(\mathbf{W} | \mu, \Sigma)  = \frac{\nabla_{\mu, \Sigma}\,q(\mathbf{W} | \mu, \Sigma)}{q(\mathbf{W} | \mu, \Sigma)}
 \)</span>,
@@ -993,24 +987,24 @@ this gives us</p>
 \[\begin{aligned}
 \nabla_{\mu, \Sigma}\, ELBO(\mu, \Sigma) = \mathbb{E}_{\mathbf{W}\sim q(\mathbf{W} | \mu, \Sigma)}\left[\left[\log p(\mathbf{W}, \text{Data}) - \log q(\mathbf{W} | \mu, \Sigma) \right] \nabla_{\mu, \Sigma}\, \log q(\mathbf{W} | \mu, \Sigma)\right] = \underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{\text{score function gradient}}
 \end{aligned}\]</div>
-<p>That is, we have successfully rewritten the gradient of the ELBO as an expectation of a gradient! The resulting expectation of a gradient is called the <em><strong>score function gradient</strong></em> of the ELBO. Finally, to approximate the gradient, we can perform MC estimation to estmiate the expectation and use <code class="docutils literal notranslate"><span class="pre">autograd</span></code> to compute <span class="math notranslate nohighlight">\( \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma)\)</span>; and since the gradient is now easily approximated we can maximize the ELBO (minimize the negative ELBO) using gradient descent.</p>
+<p>That is, we have successfully rewritten the gradient of the ELBO as an expectation of a gradient! The resulting expectation of a gradient is called the <em><strong>score function gradient</strong></em> of the ELBO. Finally, to approximate the gradient, we can perform MC estimation to estimate the expectation and use <code class="docutils literal notranslate"><span class="pre">autograd</span></code> to compute <span class="math notranslate nohighlight">\( \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma)\)</span>; and since the gradient is now easily approximated we can maximize the ELBO (minimize the negative ELBO) using gradient descent.</p>
 </div>
 </section>
 <section id="id3">
 <h3>Black-Box Variational Inference<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
-<p>The <em><strong>Black-box Variational Inference (BBVI)</strong></em> algorithm for BNN’s:
-0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p>
-<ol class="arabic simple">
+<p>The <em><strong>Black-box Variational Inference (BBVI)</strong></em> algorithm for BNN’s:</p>
+<ol class="arabic" start="0">
+<li><p><strong>Initialization:</strong> pick an initial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p></li>
 <li><p><strong>Gradient Ascent:</strong> repeat:</p>
-<ol class="arabic simple">
-<li><p>Approximate the gradient
+<ol class="arabic">
+<li><p>Approximate the gradient</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]\\
-&amp;\approx\underbrace{\frac{1}{S}\sum_{s=1}^S \nabla_{\mu, \Sigma}\, \log q(\mathbf{W}^s | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}^s) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W}^s)}{q(\mathbf{W}^s | \mu, \Sigma)} \right)}_{{\text{score function gradient}}},
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W} | \mu^{\text{current}}, \Sigma^{\text{current}})\)</span>.</p></li>
+      \nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) &amp;= \mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]\\
+      &amp;\approx\underbrace{\frac{1}{S}\sum_{s=1}^S \nabla_{\mu, \Sigma}\, \log q(\mathbf{W}^s | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}^s) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W}^s)}{q(\mathbf{W}^s | \mu, \Sigma)} \right)}_{{\text{score function gradient}}},
+      \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W} | \mu^{\text{current}}, \Sigma^{\text{current}})\)</span>.</p>
+</li>
 <li><p>Update parameters <span class="math notranslate nohighlight">\((\mu^{\text{current}}, \Sigma^{\text{current}}) \leftarrow (\mu^{\text{current}}, \Sigma^{\text{current}}) + \eta * {\text{score function gradient}}\)</span></p></li>
 </ol>
 </li>
@@ -1039,19 +1033,19 @@ where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W}
 </section>
 <section id="black-box-variational-inference-with-the-reparametrization-trick">
 <h3>Black-Box Variational Inference with the Reparametrization Trick<a class="headerlink" href="#black-box-variational-inference-with-the-reparametrization-trick" title="Link to this heading">#</a></h3>
-<p>The <em><strong>Black-box Variational Inference (BBVI) with the reparametrization trick</strong></em> or <em><strong>Bayes By Backprop</strong></em> algorithm for BNN’s:
-0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p>
-<ol class="arabic simple">
+<p>The <em><strong>Black-box Variational Inference (BBVI) with the reparametrization trick</strong></em> or <em><strong>Bayes By Backprop</strong></em> algorithm for BNN’s:</p>
+<ol class="arabic" start="0">
+<li><p><strong>Initialization:</strong> pick an initial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p></li>
 <li><p><strong>Gradient Ascent:</strong> repeat:</p>
-<ol class="arabic simple">
-<li><p>Approximate the gradient
+<ol class="arabic">
+<li><p>Approximate the gradient</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) \approx&amp; \small\frac{1}{S} \sum_{s=1}^S \nabla_{\mu, \Sigma} \log \left[p(\epsilon_s^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon_s^\top \Sigma^{1/2} + \mu)\right] \\
-&amp;+ \nabla_{\mu, \Sigma}\underbrace{-\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}},
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0, \mathbf{I})\)</span>.</p></li>
+      \nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) \approx&amp; \small\frac{1}{S} \sum_{s=1}^S \nabla_{\mu, \Sigma} \log \left[p(\epsilon_s^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon_s^\top \Sigma^{1/2} + \mu)\right] \\
+      &amp;+ \nabla_{\mu, \Sigma}\underbrace{-\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}},
+      \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0, \mathbf{I})\)</span>.</p>
+</li>
 <li><p>Update parameters <span class="math notranslate nohighlight">\((\mu^{\text{current}}, \Sigma^{\text{current}}) \leftarrow (\mu^{\text{current}}, \Sigma^{\text{current}}) + \eta * {\text{reparametrization gradient}}\)</span></p></li>
 </ol>
 </li>
@@ -1259,17 +1253,15 @@ where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0
 <br><br></p>
 </li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p><strong>(Linear vs Neural Network Models)</strong> While both simple and complex models can be interpreted and successfully trained, there are trade-offs between using a complex vs a simple model!</p></li>
-</ol>
+<ol class="arabic" start="2">
+<li><p><strong>(Linear vs Neural Network Models)</strong> While both simple and complex models can be interpreted and successfully trained, there are trade-offs between using a complex vs a simple model!</p>
 <ul class="simple">
 <li><p>Easily interpreted vs interpretations are harder to come by</p></li>
 <li><p>Interpretations are more faithful vs interpretations can be more misleading</p></li>
 <li><p>Training is easier (because objective function is convex) vs training is much harder (because objective function is extremely non-convex)<br><br></p></li>
 </ul>
-<ol class="arabic simple" start="3">
-<li><p><strong>(Bayesian Neural Networks)</strong> Deep Bayes refers to the subfield of ML wherein we try to combine deep learning with Bayesian learning. A Bayesian Neural Network is one example of a deep Bayesian model.</p></li>
-</ol>
+</li>
+<li><p><strong>(Bayesian Neural Networks)</strong> Deep Bayes refers to the subfield of ML wherein we try to combine deep learning with Bayesian learning. A Bayesian Neural Network is one example of a deep Bayesian model.</p>
 <ul>
 <li><p>Why do we want to make our NNs Bayesian?</p></li>
 <li><p>How do we make NNs Bayesian?</p></li>
@@ -1285,29 +1277,31 @@ where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0
 </ul>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
-\nabla_{\mu, \Sigma}\,\underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{ELBO(\mu, \Sigma)}.
-\end{aligned}\]</div>
+       \nabla_{\mu, \Sigma}\,\underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{ELBO(\mu, \Sigma)}.
+       \end{aligned}\]</div>
 </li>
 </ul>
 </li>
 </ul>
+</li>
+</ol>
 <hr class="docutils" />
 <section id="variational-inference-for-bnns">
 <h3>Variational Inference for BNNs<a class="headerlink" href="#variational-inference-for-bnns" title="Link to this heading">#</a></h3>
-<p>The <em><strong>Black-box Variational Inference (BBVI)</strong></em> algorithm for BNN’s:
-0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p>
-<ol class="arabic simple">
+<p>The <em><strong>Black-box Variational Inference (BBVI)</strong></em> algorithm for BNN’s:</p>
+<ol class="arabic" start="0">
+<li><p><strong>Initialization:</strong> pick an initial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p></li>
 <li><p><strong>Gradient Ascent:</strong> repeat:</p>
-<ol class="arabic simple">
-<li><p>Approximate the gradient
+<ol class="arabic">
+<li><p>Approximate the gradient</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) &amp;= \nabla_{\mu, \Sigma}\,\underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{ELBO(\mu, \Sigma)}\\
-&amp;= \underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{\text{score function gradient}}\\
-&amp;\approx\underbrace{\frac{1}{S}\sum_{s=1}^S \nabla_{\mu, \Sigma}\, \log q(\mathbf{W}^s | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}^s) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W}^s)}{q(\mathbf{W}^s | \mu, \Sigma)} \right)}_{{\text{MC approx. of score function gradient}}},
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W} | \mu^{\text{current}}, \Sigma^{\text{current}})\)</span>.<br><br></p></li>
+      \nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) &amp;= \nabla_{\mu, \Sigma}\,\underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)} \left[ \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{ELBO(\mu, \Sigma)}\\
+      &amp;= \underbrace{\mathbb{E}_{\mathbf{W} \sim q(\mathbf{W} | \mu, \Sigma)}\left[ \nabla_{\mu, \Sigma}\, q(\mathbf{W} | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W})}{q(\mathbf{W} | \mu, \Sigma)} \right) \right]}_{\text{score function gradient}}\\
+      &amp;\approx\underbrace{\frac{1}{S}\sum_{s=1}^S \nabla_{\mu, \Sigma}\, \log q(\mathbf{W}^s | \mu, \Sigma) * \log \left( \frac{p(\mathbf{W}^s) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \mathbf{W}^s)}{q(\mathbf{W}^s | \mu, \Sigma)} \right)}_{{\text{MC approx. of score function gradient}}},
+      \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W} | \mu^{\text{current}}, \Sigma^{\text{current}})\)</span>.<br><br></p>
+</li>
 <li><p>Update parameters <span class="math notranslate nohighlight">\((\mu^{\text{current}}, \Sigma^{\text{current}}) \leftarrow (\mu^{\text{current}}, \Sigma^{\text{current}}) + \eta * {\text{(MC approx. of score function gradient)}}\)</span><br><br></p></li>
 </ol>
 </li>
@@ -1319,19 +1313,19 @@ where <span class="math notranslate nohighlight">\(\mathbf{W}^s\sim q(\mathbf{W}
 <a class="reference internal image-reference" href="../_images/reparametrized_grad.png"><img alt="../_images/reparametrized_grad.png" src="../_images/reparametrized_grad.png" style="width: 717px;" />
 </a>
 </figure>
-<p>The <em><strong>Black-box Variational Inference (BBVI) with the reparametrization trick</strong></em> algorithm for BNN’s:
-0. <strong>Initialization:</strong> pick an intial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p>
-<ol class="arabic simple">
+<p>The <em><strong>Black-box Variational Inference (BBVI) with the reparametrization trick</strong></em> algorithm for BNN’s:</p>
+<ol class="arabic" start="0">
+<li><p><strong>Initialization:</strong> pick an initial value <span class="math notranslate nohighlight">\(\mu^{(0)}, \Sigma^{(0)}\)</span></p></li>
 <li><p><strong>Gradient Ascent:</strong> repeat:</p>
-<ol class="arabic simple">
-<li><p>Approximate the gradient
+<ol class="arabic">
+<li><p>Approximate the gradient</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) \approx&amp; \small\frac{1}{S} \sum_{s=1}^S \nabla_{\mu, \Sigma} \log \left[p(\epsilon_s^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon_s^\top \Sigma^{1/2} + \mu)\right] \\
-&amp;+ \nabla_{\mu, \Sigma}\underbrace{-\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}},
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0, \mathbf{I})\)</span>.</p></li>
+      \nabla_{\mu, \Sigma} \, ELBO(\mu, \Sigma) \approx&amp; \small\frac{1}{S} \sum_{s=1}^S \nabla_{\mu, \Sigma} \log \left[p(\epsilon_s^\top \Sigma^{1/2} + \mu) \prod_{n=1}^N p(Y^{(n)} | \mathbf{X}^{(n)}, \epsilon_s^\top \Sigma^{1/2} + \mu)\right] \\
+      &amp;+ \nabla_{\mu, \Sigma}\underbrace{-\mathbb{E}_{\mathbf{W} \sim \mathcal{N}(\mu, \Sigma )}\left[\log \mathcal{N}(\mathbf{W};\mu, \Sigma ) \right]}_{\text{Guassian entropy: has closed form}},
+      \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0, \mathbf{I})\)</span>.</p>
+</li>
 <li><p>Update parameters <span class="math notranslate nohighlight">\((\mu^{\text{current}}, \Sigma^{\text{current}}) \leftarrow (\mu^{\text{current}}, \Sigma^{\text{current}}) + \eta * {\text{reparametrization gradient}}\)</span></p></li>
 </ol>
 </li>
@@ -1340,7 +1334,7 @@ where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0
 </section>
 <section id="exercises">
 <h2><span class="section-number">22.5. </span>Exercises<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h2>
-<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder.</p>
+<p>These problems were originally assigned as homework. Data files are in the book’s <code class="docutils literal notranslate"><span class="pre">data/</span></code> folder. Worked solutions, where available, are collapsed beneath the questions they answer; try each problem before expanding them.</p>
 <section id="problem-set-bayesian-neural-networks">
 <span id="ps-hw8"></span><h3>Problem Set: Bayesian Neural Networks<a class="headerlink" href="#problem-set-bayesian-neural-networks" title="Link to this heading">#</a></h3>
 <div class="cell tag_hide-cell docutils container">
@@ -1523,7 +1517,7 @@ where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0
 </div>
 <section id="bayesian-neural-network-regression">
 <h4>Bayesian Neural Network Regression<a class="headerlink" href="#bayesian-neural-network-regression" title="Link to this heading">#</a></h4>
-<p>In this problem set you will explore Bayeisan models for regression with neural networks – essentially, you will place priors on the network parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> and infer the posterior <span class="math notranslate nohighlight">\(p(\mathbf{W}|\text{Data})\)</span>. These Bayesian models are called <em><strong>Bayesian neural networks</strong></em>. The data for this regression problem is in <code class="docutils literal notranslate"><span class="pre">HW8_data.csv</span></code>. You are provided an implementation of a neural network as well as an example of how to use it – but feel free to implement your own version!</p>
+<p>In this problem set you will explore Bayesian models for regression with neural networks – essentially, you will place priors on the network parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> and infer the posterior <span class="math notranslate nohighlight">\(p(\mathbf{W}|\text{Data})\)</span>. These Bayesian models are called <em><strong>Bayesian neural networks</strong></em>. The data for this regression problem is in <code class="docutils literal notranslate"><span class="pre">HW8_data.csv</span></code>. You are provided an implementation of a neural network as well as an example of how to use it – but feel free to implement your own version!</p>
 <div class="cell tag_hide-cell docutils container">
 <details class="admonition hide above-input">
 <summary aria-label="Toggle hidden content">
@@ -1622,23 +1616,58 @@ where <span class="math notranslate nohighlight">\(\epsilon_s \sim \mathcal{N}(0
 </div>
 <div class="admonition-exercise-part-i-inference-for-bayesian-neural-networks-using-hmc admonition">
 <p class="admonition-title">Exercise: Part I: Inference for Bayesian Neural Networks Using HMC</p>
-<ol class="arabic simple">
-<li><p>(<strong>The Bayesian Neural Network Model</strong>) We will implement the following Bayesian model for the data:<br>
+<ol class="arabic">
+<li><p>(<strong>The Bayesian Neural Network Model</strong>) We will implement the following Bayesian model for the data:<br></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\mathbf{W} &amp;\sim \mathcal{N}(0, 5^2 \mathbf{I}_{D\times D})\\
-\mu^{(n)} &amp;= g_{\mathbf{W}}(\mathbf{X}^{(n)})\\
-Y^{(n)} &amp;\sim \mathcal{N}(\mu^{(n)}, 0.5^2)\\
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(g_{\mathbf{W}}\)</span> is a neural network with parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> represented as a vector in <span class="math notranslate nohighlight">\(\mathbb{R}^{D}\)</span> with <span class="math notranslate nohighlight">\(D\)</span> being the total number of parameters (including biases).
+   \mathbf{W} &amp;\sim \mathcal{N}(0, 5^2 \mathbf{I}_{D\times D})\\
+   \mu^{(n)} &amp;= g_{\mathbf{W}}(\mathbf{X}^{(n)})\\
+   Y^{(n)} &amp;\sim \mathcal{N}(\mu^{(n)}, 0.5^2)\\
+   \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(g_{\mathbf{W}}\)</span> is a neural network with parameters <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> represented as a vector in <span class="math notranslate nohighlight">\(\mathbb{R}^{D}\)</span> with <span class="math notranslate nohighlight">\(D\)</span> being the total number of parameters (including biases).
 <br><br>
 Implement the log of the joint distribution in <code class="docutils literal notranslate"><span class="pre">autograd</span></code>’s version of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, i.e. implement <span class="math notranslate nohighlight">\(\log \left[p(\mathbf{W})\prod_{n=1}^N p(Y^{(n)} |\mathbf{X}^{(n)} , \mathbf{W}) \right]\)</span>.
-<em><strong>Hint:</strong></em> you’ll need to write out the log of the various Gaussian pdf’s and implement their formulae using <code class="docutils literal notranslate"><span class="pre">autograd</span></code>’s numpy functions.</p></li>
+<em><strong>Hint:</strong></em> you’ll need to write out the log of the various Gaussian pdf’s and implement their formulae using <code class="docutils literal notranslate"><span class="pre">autograd</span></code>’s numpy functions.</p>
+</li>
 </ol>
 </div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 1</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">###Bayesian model parameterss</span>
+<span class="c1">#covariance matrix of the Gaussian prior on weights</span>
+<span class="n">Sigma_W</span> <span class="o">=</span> <span class="mi">5</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+<span class="c1">#Gaussian likelihood variance</span>
+<span class="n">sigma_y</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">**</span><span class="mi">2</span>
+<span class="c1">#number of data points</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">#precision matrix of the Gaussian prior on weights</span>
+<span class="n">Sigma_W_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Sigma_W</span><span class="p">)</span>
+<span class="c1">#determinant of the covaraince matrix of the Gaussian prior on weights</span>
+<span class="n">Sigma_W_det</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Sigma_W</span><span class="p">)</span>
+
+<span class="c1">###definition of the log prior</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_prior</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">D</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    <span class="n">constant_W</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">D</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Sigma_W_det</span><span class="p">))</span>
+    <span class="n">exponential_W</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">Sigma_W_inv</span><span class="p">),</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">exponential_W</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">log_p_W</span> <span class="o">=</span> <span class="n">constant_W</span> <span class="o">+</span> <span class="n">exponential_W</span>
+    <span class="k">return</span> <span class="n">log_p_W</span>
+
+<span class="c1">###definition of the log likelihood</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_lklhd</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nn</span><span class="o">.</span><span class="n">D</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">constant</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigma_y</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="n">N</span>
+    <span class="n">exponential</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">sigma_y</span><span class="o">**-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span> <span class="o">-</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_train</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">exponential</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">constant</span> <span class="o">+</span> <span class="n">exponential</span>
+</pre></div>
+</div>
+</div>
 <ol class="arabic simple" start="2">
-<li><p>(<strong>Sample from the Posterior</strong>) Use HMC to sample from the posterior of the Bayesian neural network in Exercise 1 with 1 hidden layer and 5 hidden nodes. Start with the following settings for your sampler:</p></li>
+<li><p>(<strong>Sample from the Posterior</strong>) Use HMC to sample from the posterior of the Bayesian neural network in Question 1 with 1 hidden layer and 5 hidden nodes. Start with the following settings for your sampler:</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'step_size'</span><span class="p">:</span><span class="mf">1e-3</span><span class="p">,</span> 
           <span class="s1">'leapfrog_steps'</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> 
@@ -1649,8 +1678,263 @@ Implement the log of the joint distribution in <code class="docutils literal not
 </pre></div>
 </div>
 <p>Note that you should initialize with the MLE model, otherwise convergence may be slow. Please feel free to tweak these design choices as you see fit!</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 2</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">scipy</span> <span class="k">as</span> <span class="n">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">HMC</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">potential_energy</span><span class="p">,</span> <span class="n">kinetic_energy</span><span class="p">,</span> <span class="n">kinetic_energy_distribution</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diagnostic_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">random</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">kinetic_energy_distribution</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy</span> <span class="o">=</span> <span class="n">potential_energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_energy</span> <span class="o">=</span> <span class="n">kinetic_energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_energy</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">position</span><span class="p">,</span> <span class="n">momentum</span><span class="p">:</span> <span class="n">potential_energy</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="n">kinetic_energy</span><span class="p">(</span><span class="n">momentum</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">kinetic_energy_distribution</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_potential_energy</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">potential_energy</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'step_size'</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+                       <span class="s1">'leapfrog_steps'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                       <span class="s1">'total_samples'</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                       <span class="s1">'burn_in'</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+                       <span class="s1">'thinning_factor'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                       <span class="s1">'diagnostic_mode'</span><span class="p">:</span> <span class="n">diagnostic_mode</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy_trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kinetic_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_potential_energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">leap_frog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_init</span><span class="p">,</span> <span class="n">momentum_init</span><span class="p">):</span>
+        <span class="c1"># initialize position (a copy, so the caller's array is not changed in place)</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">position_init</span><span class="p">)</span>
+
+        <span class="c1"># half step update of momentum</span>
+        <span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum_init</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_potential_energy</span><span class="p">(</span><span class="n">position_init</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="c1"># full leap frog steps</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'leapfrog_steps'</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">position</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*</span> <span class="n">momentum</span>
+            <span class="n">momentum</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_potential_energy</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">momentum</span><span class="p">))</span>
+
+        <span class="c1"># full step update of position</span>
+        <span class="n">position_proposal</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*</span> <span class="n">momentum</span>
+        <span class="c1"># half step update of momentum</span>
+        <span class="n">momentum_proposal</span> <span class="o">=</span> <span class="n">momentum</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_potential_energy</span><span class="p">(</span><span class="n">position_proposal</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+
+        <span class="k">return</span> <span class="n">position_proposal</span><span class="p">,</span> <span class="n">momentum_proposal</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hmc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">):</span>
+        <span class="c1">### Refresh momentum</span>
+        <span class="n">momentum_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1">### Simulate Hamiltonian dynamics using Leap Frog</span>
+        <span class="n">position_proposal</span><span class="p">,</span> <span class="n">momentum_proposal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leap_frog</span><span class="p">(</span><span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">)</span>
+
+        <span class="c1"># compute total energy in current position and proposal position</span>
+        <span class="n">current_total_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_energy</span><span class="p">(</span><span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">)</span>
+        <span class="n">proposal_total_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_energy</span><span class="p">(</span><span class="n">position_proposal</span><span class="p">,</span> <span class="n">momentum_proposal</span><span class="p">)</span>
+
+        <span class="c1">### Output for diganostic mode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'diagnostic_mode'</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'potential energy change:'</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">(</span><span class="n">position_current</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">(</span><span class="n">position_proposal</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'kinetic energy change:'</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_energy</span><span class="p">(</span><span class="n">momentum_current</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">kinetic_energy</span><span class="p">(</span><span class="n">momentum_proposal</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'total enregy change:'</span><span class="p">,</span>
+                  <span class="n">current_total_energy</span><span class="p">,</span>
+                  <span class="n">proposal_total_energy</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
+
+        <span class="c1">### Metropolis Hastings Step</span>
+        <span class="c1"># comute accept probability</span>
+        <span class="n">accept_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">current_total_energy</span> <span class="o">-</span> <span class="n">proposal_total_energy</span><span class="p">)])</span>
+        <span class="c1"># accept proposal with accept probability</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">accept_prob</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span> <span class="o">+=</span> <span class="mf">1.</span>
+            <span class="n">position_current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">position_proposal</span><span class="p">)</span>
+            <span class="n">momentum_current</span> <span class="o">=</span> <span class="n">momentum_proposal</span>
+
+        <span class="k">return</span> <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tuning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burn_in_period</span><span class="p">,</span> <span class="n">position_init</span><span class="p">,</span> <span class="n">momentum_init</span><span class="p">):</span>
+        <span class="c1">### Determine check point</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'diagnostic_mode'</span><span class="p">]:</span>
+            <span class="n">check_point</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">check_point</span> <span class="o">=</span> <span class="mi">100</span>
+
+        <span class="c1">### Initialize position and momentum</span>
+        <span class="n">position_current</span> <span class="o">=</span> <span class="n">position_init</span>
+        <span class="n">momentum_current</span> <span class="o">=</span> <span class="n">momentum_init</span>
+
+        <span class="c1">### Tune step size param during burn-in period</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">burn_in_period</span><span class="p">):</span>
+            <span class="c1">### Checks accept rate at check point iterations and adjusts step size</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">check_point</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">accept_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span> <span class="o">/</span> <span class="n">i</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'HMC </span><span class="si">{}</span><span class="s1">: accept rate of </span><span class="si">{}</span><span class="s1"> with step size </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">accept_rate</span> <span class="o">*</span> <span class="mf">100.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]))</span>
+
+                <span class="k">if</span> <span class="n">accept_rate</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">0.95</span>
+                <span class="k">if</span> <span class="n">accept_rate</span> <span class="o">&gt;</span> <span class="mf">0.8</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">1.05</span>
+
+            <span class="c1">### perform one HMC step</span>
+            <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hmc</span><span class="p">(</span><span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">)</span>
+
+        <span class="c1">### Reset number of accepts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_hmc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_point</span><span class="p">,</span> <span class="n">position_init</span><span class="p">,</span> <span class="n">momentum_init</span><span class="p">):</span>
+        <span class="c1">### Initialize position and momentum</span>
+        <span class="n">position_current</span> <span class="o">=</span> <span class="n">position_init</span>
+        <span class="n">momentum_current</span> <span class="o">=</span> <span class="n">momentum_init</span>
+
+        <span class="c1">### Perform multiple HMC steps</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'total_samples'</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1">### output accept rate at check point iterations</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">check_point</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">accept_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span> <span class="o">*</span> <span class="mf">100.</span> <span class="o">/</span> <span class="n">i</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'HMC </span><span class="si">{}</span><span class="s1">: accept rate of </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">accept_rate</span><span class="p">))</span>
+
+            <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hmc</span><span class="p">(</span><span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">)</span>
+
+            <span class="c1"># add sample to trace</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'thinning_factor'</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="n">position_current</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy_trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">potential_energy_trace</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">potential_energy</span><span class="p">(</span><span class="n">position_current</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">leapfrog_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">total_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">burn_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thinning_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check_point</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+               <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">diagnostic_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1">### Sample random initial momentum</span>
+        <span class="n">momentum_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_momentum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1">### Set model parameters</span>
+        <span class="k">if</span> <span class="n">position_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">position_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">momentum_init</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">position_init</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">step_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'step_size'</span><span class="p">]</span> <span class="o">=</span> <span class="n">step_size</span>
+        <span class="k">if</span> <span class="n">leapfrog_steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'leapfrog_steps'</span><span class="p">]</span> <span class="o">=</span> <span class="n">leapfrog_steps</span>
+        <span class="k">if</span> <span class="n">total_samples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'total_samples'</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_samples</span>
+        <span class="k">if</span> <span class="n">burn_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'burn_in'</span><span class="p">]</span> <span class="o">=</span> <span class="n">burn_in</span>
+        <span class="k">if</span> <span class="n">thinning_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'thinning_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">thinning_factor</span>
+        <span class="k">if</span> <span class="n">diagnostic_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'diagnostic_mode'</span><span class="p">]</span> <span class="o">=</span> <span class="n">diagnostic_mode</span>
+
+        <span class="c1">### Tune parameters during burn-in period</span>
+        <span class="n">burn_in_period</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'burn_in'</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'total_samples'</span><span class="p">])</span>
+        <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuning</span><span class="p">(</span><span class="n">burn_in_period</span><span class="p">,</span> <span class="n">position_init</span><span class="p">,</span> <span class="n">momentum_init</span><span class="p">)</span>
+        <span class="c1">### Obtain samples from HMC using optimized parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_hmc</span><span class="p">(</span><span class="n">check_point</span><span class="p">,</span> <span class="n">position_current</span><span class="p">,</span> <span class="n">momentum_current</span><span class="p">)</span>
+        <span class="c1"># (run_hmc already keeps every thinning_factor-th sample)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#potential energy function</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">potential_energy</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">log_lklhd</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_prior</span><span class="p">(</span><span class="n">W</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#kinetic energy function</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kinetic_energy</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">W</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+<span class="c1">#the gibbs distribution of the kinetic energy function</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kinetic_energy_distribution</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#initialize the position vector for HMC sampling with the weights of the trained neural network</span>
+<span class="n">position_init</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">))</span>
+<span class="c1">#leap-frog step size</span>
+<span class="n">step_size</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="c1">#leap-frog steps</span>
+<span class="n">leapfrog_steps</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="c1">#number of total samples after burn-in</span>
+<span class="n">total_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="c1">#percentage of samples to burn</span>
+<span class="n">burn_in</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="c1">#thinning factor</span>
+<span class="n">thinning_factor</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1">#instantiate an HMC sampler</span>
+<span class="n">HMC_sampler</span> <span class="o">=</span> <span class="n">HMC</span><span class="p">(</span><span class="n">potential_energy</span><span class="p">,</span> <span class="n">kinetic_energy</span><span class="p">,</span>
+                  <span class="n">kinetic_energy_distribution</span><span class="p">,</span>
+                  <span class="n">random</span><span class="o">=</span><span class="n">random</span><span class="p">)</span>
+
+<span class="c1">#sample from the bayesian neural network posterior</span>
+<span class="n">HMC_sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">position_init</span><span class="o">=</span><span class="n">position_init</span><span class="p">,</span>
+                   <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span>
+                   <span class="n">leapfrog_steps</span><span class="o">=</span><span class="n">leapfrog_steps</span><span class="p">,</span>
+                   <span class="n">total_samples</span><span class="o">=</span><span class="n">total_samples</span><span class="p">,</span>
+                   <span class="n">burn_in</span><span class="o">=</span><span class="n">burn_in</span><span class="p">,</span>
+                   <span class="n">thinning_factor</span><span class="o">=</span><span class="n">thinning_factor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>HMC 100: accept rate of 100.0 with step size 0.001
+HMC 200: accept rate of 100.0 with step size 0.0010500000000000002
+HMC 300: accept rate of 100.0 with step size 0.0011025000000000002
+HMC 400: accept rate of 100.0 with step size 0.0011576250000000002
+HMC 500: accept rate of 100.0 with step size 0.0012155062500000004
+HMC 600: accept rate of 100.0 with step size 0.0012762815625000006
+HMC 700: accept rate of 100.0 with step size 0.0013400956406250007
+HMC 800: accept rate of 100.0 with step size 0.0014071004226562508
+HMC 900: accept rate of 99.8888888888889 with step size 0.0014774554437890634
+HMC 200: accept rate of 99.5
+HMC 400: accept rate of 99.25
+HMC 600: accept rate of 99.0
+HMC 800: accept rate of 98.875
+HMC 1000: accept rate of 98.9
+HMC 1200: accept rate of 99.0
+HMC 1400: accept rate of 99.07142857142857
+HMC 1600: accept rate of 99.1875
+HMC 1800: accept rate of 99.27777777777777
+HMC 2000: accept rate of 99.35
+HMC 2200: accept rate of 99.4090909090909
+HMC 2400: accept rate of 99.41666666666667
+HMC 2600: accept rate of 99.46153846153847
+HMC 2800: accept rate of 99.46428571428571
+HMC 3000: accept rate of 99.43333333333334
+[... 29 lines omitted ...]
+HMC 9000: accept rate of 99.4
+HMC 9200: accept rate of 99.40217391304348
+HMC 9400: accept rate of 99.41489361702128
+HMC 9600: accept rate of 99.41666666666667
+HMC 9800: accept rate of 99.40816326530613
+</pre></div>
+</div>
+</div>
 <ol class="arabic simple" start="3">
-<li><p>(<strong>Visualize the Posterior Predictive</strong>) Visualize 100 samples, randomly selected, from your posterior samples of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, by ploting their predicted values plus a random noise <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 0.5^2)\)</span> at 100 equally spaced x-values between -8 and 8:</p></li>
+<li><p>(<strong>Visualize the Posterior Predictive</strong>) Visualize 100 samples, randomly selected, from your posterior samples of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, by plotting their predicted values plus a random noise <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 0.5^2)\)</span> at 100 equally spaced x-values between -8 and 8:</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">y_test</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)))</span> 
@@ -1658,35 +1942,238 @@ Implement the log of the joint distribution in <code class="docutils literal not
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">sample</span></code> is a posterior sample of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part I, Question 3</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#100 randomly selected posterior samples</span>
+<span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">HMC_sampler</span><span class="o">.</span><span class="n">trace</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">HMC_sampler</span><span class="o">.</span><span class="n">trace</span><span class="p">),</span> <span class="mi">100</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+<span class="n">total_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">)</span>
+
+<span class="n">y_predict_train_noiseless</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">,</span> <span class="n">x_train</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">total_samples</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">total_samples</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma_y</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">total_samples</span><span class="p">,</span> <span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="c1">#Gaussian log pdf</span>
+<span class="n">gaussian_log_pdf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma_sq</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma_sq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">sigma_sq</span><span class="p">)</span>
+
+<span class="c1">#compute log likelihood for the training data</span>
+<span class="n">log_likelihood</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">log_likelihood</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gaussian_log_pdf</span><span class="p">(</span><span class="n">y_train</span><span class="p">[:,</span> <span class="n">n</span><span class="p">],</span> <span class="n">sigma_y</span><span class="p">,</span>  <span class="n">y_predict_train_noiseless</span><span class="p">[:,</span> <span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="n">log_likelihood</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="c1">#compute the 95 percentiles and the mean of the posterior predictives</span>
+<span class="n">ub_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">lb_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mean_bayes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">#visualize the posterior predictive distribution</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="n">y_pred_test</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_train</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'train data'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">mean_bayes</span><span class="p">,</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'posterior mean'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">ub_bayes</span><span class="p">,</span> <span class="n">lb_bayes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'95% predictive interval'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'posterior predictive from HMC samples of the BNN posterior</span><span class="se">\n</span><span class="s1">(train log-likelihood: </span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">log_likelihood</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-i-question-3-13.png"><img alt="Part I, Question 3, figure 1" class="align-center" src="../_images/part-i-question-3-13.png" style="width: 100%;" />
+</a>
+</div>
 <ol class="arabic simple" start="4">
 <li><p>(<strong>Model Evaluation</strong>) Discuss the fit of your model to the data. Discuss also what the posterior predictive tell you about the aleatoric and epistemic uncertainty of the model. Are these uncertainties what you’d want (think about want kind of uncertainties you want and where)?</p></li>
 </ol>
 <div class="admonition-exercise-part-ii-inference-for-bnns-using-black-box-variational-inference-with-the-reparametrization-trick admonition">
 <p class="admonition-title">Exercise: Part II: Inference for BNNs Using Black-Box Variational Inference with the Reparametrization Trick</p>
 <ol class="arabic">
-<li><p>(<strong>BBVI with the Reparametrization Trick</strong>) Implement BBVI with the reparametrization trick for approximating an arbitrary posterior <span class="math notranslate nohighlight">\(p(w| \text{Data})\)</span> by an isotropic Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu, \Sigma)\)</span>, where <span class="math notranslate nohighlight">\(\Sigma\)</span> is a diagonal matrix. See Lecture #17 or the example code from <a class="reference external" href="https://github.com/HIPS/autograd/blob/master/examples/black_box_svi.py" rel="noreferrer" target="_blank">autograd’s github repo</a>.</p>
-<p><strong>Unit Test:</strong> You shoud check that your implementation is correct by approximating the posterior of the following Bayesian logistic regression model:
+<li><p>(<strong>BBVI with the Reparametrization Trick</strong>) Implement BBVI with the reparametrization trick for approximating an arbitrary posterior <span class="math notranslate nohighlight">\(p(w| \text{Data})\)</span> by an isotropic Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(\mu, \Sigma)\)</span>, where <span class="math notranslate nohighlight">\(\Sigma\)</span> is a diagonal matrix. See the derivation earlier in this chapter or the example code from <a class="reference external" href="https://github.com/HIPS/autograd/blob/master/examples/black_box_svi.py" rel="noreferrer" target="_blank">autograd’s github repo</a>.</p>
+<p><strong>Unit Test:</strong> You should check that your implementation is correct by approximating the posterior of the following Bayesian logistic regression model:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-w &amp;\sim \mathcal{N}(0, 1)\\
-Y^{(n)} &amp;\sim Ber(\text{sigm}(wX^{(n)} + 10))
-\end{aligned}\end{split}\]</div>
-
-where <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(Y^{(n)}\)</span>, <span class="math notranslate nohighlight">\(X^{(n)}\)</span> are a real scalar valued random variables, and where the data consists of a single observation <span class="math notranslate nohighlight">\((Y=1, X=-20)\)</span>.</p>
+    w &amp;\sim \mathcal{N}(0, 1)\\
+    Y^{(n)} &amp;\sim Ber(\text{sigm}(wX^{(n)} + 10))
+    \end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(Y^{(n)}\)</span>, <span class="math notranslate nohighlight">\(X^{(n)}\)</span> are a real scalar valued random variables, and where the data consists of a single observation <span class="math notranslate nohighlight">\((Y=1, X=-20)\)</span>.</p>
+<p>The true posterior <span class="math notranslate nohighlight">\(p(w | Y=1, X=-20)\)</span> should look like the following (i.e. the true posterior is left-skewed):</p>
 </li>
 </ol>
-<p>The true posterior <span class="math notranslate nohighlight">\(p(w | Y=1, X=-20)\)</span> should look like the following (i.e. the true posterior is left-skewed):</p>
 <figure class="align-center" id="fig-17-hw8-logistic-posterior">
 <a class="reference internal image-reference" href="../_images/logistic_posterior.png"><img alt="../_images/logistic_posterior.png" src="../_images/logistic_posterior.png" style="width: 291px;" />
 </a>
 </figure>
 <p>Your mean-field variational approximation should be a Gaussian with mean around -0.321 and standard deviation around 0.876.</p>
 </div>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 1</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">autograd.misc.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">adam</span><span class="p">,</span> <span class="n">sgd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autograd.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span> <span class="k">as</span> <span class="n">npr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.scipy.stats.multivariate_normal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mvn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">autograd.scipy.stats.norm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">norm</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BBVI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">''' BBVI with mean field approximation and reparameterization trick'''</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">analytic_entropy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">softplus</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1">#instantiate random number generator</span>
+        <span class="k">if</span> <span class="n">random</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">dimension</span> <span class="c1">#dimension of support of target distribution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">S</span> <span class="c1">#number of monte carlo samples for computing expectation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">log_probability</span> <span class="c1">#target distribution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unpack_params</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variational_objective</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_variational_objective</span><span class="p">(</span><span class="n">analytic_entropy</span><span class="p">,</span> <span class="n">softplus</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_point</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1">#number of iterations before outputing optimization stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="c1">#elbo values over optimization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">))</span> <span class="c1">#variational parmeeters over optimization</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_variational_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analytic_entropy</span><span class="p">,</span> <span class="n">softplus</span><span class="p">,</span> <span class="n">log_probability</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">softplus</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">unpack_params</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+                <span class="n">mean</span><span class="p">,</span> <span class="n">parametrized_var</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">:]</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">parametrized_var</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">unpack_params</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+                <span class="n">mean</span><span class="p">,</span> <span class="n">parametrized_var</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">:]</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">parametrized_var</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span>
+
+        <span class="k">if</span> <span class="n">analytic_entropy</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">entropy</span><span class="p">(</span><span class="n">std</span><span class="p">):</span>
+<span class="w">                    </span><span class="sd">''' Gaussian entropy '''</span>
+                    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">std</span><span class="p">))</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">variational_objective</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">''' Varational objective = H[q] + E_q[target] '''</span>
+                <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">unpack_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="c1">#unpack std parameters</span>
+                <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span> <span class="c1">#sample from q using reparametrization</span>
+                <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">entropy</span><span class="p">(</span><span class="n">std</span><span class="p">)</span> <span class="o">+</span>  <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_probability</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span> <span class="c1">#ELBO</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">lower_bound</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">log_gaussian_pdf</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">samples</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">mean</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+
+                <span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">std</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">Sigma_det</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">Sigma</span><span class="p">)</span>
+                <span class="n">Sigma_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Sigma</span><span class="p">)</span>
+
+                <span class="n">constant</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Sigma_det</span><span class="p">))</span>
+                <span class="n">dist_to_mean</span> <span class="o">=</span> <span class="n">samples</span> <span class="o">-</span> <span class="n">mean</span>
+                <span class="n">exponential</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dist_to_mean</span><span class="p">,</span> <span class="n">Sigma_inv</span><span class="p">),</span> <span class="n">dist_to_mean</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">constant</span> <span class="o">+</span> <span class="n">exponential</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">variational_objective</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">unpack_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="c1">#unpack std parameters</span>
+                <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span> <span class="c1">#sample from q using reparametrization</span>
+                <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">log_probability</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">log_gaussian_pdf</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">mean</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)),</span> <span class="n">std</span><span class="p">))</span> <span class="c1">#ELBO</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">lower_bound</span>
+
+        <span class="k">return</span> <span class="n">unpack_params</span><span class="p">,</span> <span class="n">variational_objective</span><span class="p">,</span> <span class="n">grad</span><span class="p">(</span><span class="n">variational_objective</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">call_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">''' Actions per optimization step '''</span>
+        <span class="n">elbo</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">variational_objective</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span><span class="p">,</span> <span class="n">elbo</span><span class="p">))</span>
+        <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpack_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_point</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Iteration </span><span class="si">{}</span><span class="s2"> lower bound </span><span class="si">{}</span><span class="s2">; gradient mag: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">elbo</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">))))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">debug_call_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">''' Actions per optimization step '''</span>
+        <span class="n">elbo</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">variational_objective</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span><span class="p">,</span> <span class="n">elbo</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))))</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_point</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Iteration </span><span class="si">{}</span><span class="s2"> lower bound </span><span class="si">{}</span><span class="s2">; gradient mag: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">elbo</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">iteration</span><span class="p">))))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">max_iteration</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">check_point</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">call_back</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">'adam'</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">''' Optimization of the variational objective '''</span>
+        <span class="k">if</span> <span class="n">check_point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_point</span> <span class="o">=</span> <span class="n">check_point</span>
+
+        <span class="k">if</span> <span class="n">params_init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mean_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+            <span class="n">parametrized_var_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+            <span class="n">params_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">mean_init</span><span class="p">,</span> <span class="n">parametrized_var_init</span><span class="p">])</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">params_init</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+        <span class="k">if</span> <span class="n">call_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">call_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_back</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="o">==</span> <span class="s1">'adam'</span><span class="p">:</span>
+            <span class="n">adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">,</span> <span class="n">params_init</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">max_iteration</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">call_back</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">optimizer</span> <span class="o">==</span> <span class="s1">'sgd'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="mf">1e-16</span>
+            <span class="n">sgd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">,</span> <span class="n">params_init</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">num_iters</span><span class="o">=</span><span class="n">max_iteration</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">call_back</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">optimizer</span> <span class="o">==</span> <span class="s1">'debug'</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">params_init</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iteration</span><span class="p">):</span>
+                <span class="n">params</span> <span class="o">-=</span> <span class="n">step_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">debug_call_back</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variational_params</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ELBO</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</pre></div>
+</div>
+<p><em>Not covered here: a unit test of the implementation on the Bayesian logistic regression model.</em></p>
+</div>
 <ol class="arabic simple" start="2">
-<li><p>(<strong>Variational Inference for BNNs</strong>) For the Bayesian model you implemented in Exercise 1 and 2, use BBVI with the reparametrization trick to approximate the posterior of the Bayesian neural network with a mean-field Gaussian variational family (i.e. an isotropic Gaussian). Please set learning rate and maximum iteration choices as you see fit!</p></li>
+<li><p>(<strong>Variational Inference for BNNs</strong>) For the Bayesian model you implemented in Part I, Questions 1 and 2, use BBVI with the reparametrization trick to approximate the posterior of the Bayesian neural network with a mean-field Gaussian variational family (i.e. an isotropic Gaussian). Please set learning rate and maximum iteration choices as you see fit!</p></li>
 </ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 2</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#log joint distribution of the BNN (log_prior and log_lklhd are defined in Part I)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_joint</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">log_lklhd</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_prior</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+
+<span class="c1">#initialize the variational means at the MLE weights and the variational std's near zero</span>
+<span class="n">init_mean</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">,</span> <span class="p">))</span>
+<span class="n">init_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">init_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">10</span>
+<span class="n">init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">init_mean</span><span class="p">,</span> <span class="n">init_var</span><span class="p">))</span>
+
+<span class="c1">#fit a mean-field Gaussian approximation of the posterior with BBVI</span>
+<span class="c1">#(with step size 1e-3 the ELBO is still rising after 10,000 iterations)</span>
+<span class="n">bbvi</span> <span class="o">=</span> <span class="n">BBVI</span><span class="p">(</span><span class="n">log_joint</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="n">random</span><span class="p">)</span>
+<span class="n">bbvi</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">step_size</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">max_iteration</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">check_point</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">params_init</span><span class="o">=</span><span class="n">init</span><span class="p">)</span>
+
+<span class="c1">#keep the variational parameters with the best ELBO over the last 100 iterations</span>
+<span class="n">best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">bbvi</span><span class="o">.</span><span class="n">ELBO</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">:])</span>
+<span class="n">var_mean</span><span class="p">,</span> <span class="n">var_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">bbvi</span><span class="o">.</span><span class="n">variational_params</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">:][</span><span class="n">best</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Iteration 0 lower bound -185.87949140797616; gradient mag: 4.014578552818984
+Iteration 1000 lower bound -63.77811252168141; gradient mag: 21.456917623534206
+Iteration 2000 lower bound -56.43868191157114; gradient mag: 25.58634855369172
+Iteration 3000 lower bound -52.841006026133215; gradient mag: 28.293362430983564
+Iteration 4000 lower bound -52.41879774855775; gradient mag: 10.615756649916593
+Iteration 5000 lower bound -53.46030481619978; gradient mag: 15.06745791428742
+Iteration 6000 lower bound -48.59204013383875; gradient mag: 4.5042228032117
+Iteration 7000 lower bound -48.95762556827522; gradient mag: 3.1676748578154115
+Iteration 8000 lower bound -51.46443779733541; gradient mag: 3.071710774335043
+Iteration 9000 lower bound -46.538403415330556; gradient mag: 18.246746703267746
+</pre></div>
+</div>
+</div>
 <ol class="arabic simple" start="3">
-<li><p>(<strong>Visualize the Posterior Predictive</strong>) Visualize 100 samples <span class="math notranslate nohighlight">\(\mathbf{W}^s\)</span> from your approximate posterior of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> by ploting the neural network outputs with weight <span class="math notranslate nohighlight">\(\mathbf{W}^s\)</span> plus a random noise <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 0.5^2)\)</span> at 100 equally spaced x-values between -8 and 8:</p></li>
+<li><p>(<strong>Visualize the Posterior Predictive</strong>) Visualize 100 samples <span class="math notranslate nohighlight">\(\mathbf{W}^s\)</span> from your approximate posterior of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> by plotting the neural network outputs with weight <span class="math notranslate nohighlight">\(\mathbf{W}^s\)</span> plus a random noise <span class="math notranslate nohighlight">\(\epsilon \sim \mathcal{N}(0, 0.5^2)\)</span> at 100 equally spaced x-values between -8 and 8:</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">y_test</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)))</span> 
@@ -1694,6 +2181,33 @@ where <span class="math notranslate nohighlight">\(w\)</span>, <span class="math
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">sample</span></code> is a sample from the approximate posterior of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part II, Question 3</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#100 samples from the variational approximation of the posterior</span>
+<span class="n">posterior_samples</span> <span class="o">=</span> <span class="n">var_mean</span> <span class="o">+</span> <span class="n">var_std</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
+<span class="c1">#posterior predictive samples: network outputs plus observation noise</span>
+<span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">posterior_samples</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma_y</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="c1">#compute the 95% predictive interval and the predictive mean</span>
+<span class="n">y_postpred_ub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">y_postpred_lb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">y_postpred_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_pred_test</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#visualize 95% posterior predictive interval and posterior predictive mean</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">y_pred</span> <span class="ow">in</span> <span class="n">y_pred_test</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'training data'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_postpred_ub</span><span class="p">,</span> <span class="n">y_postpred_lb</span><span class="p">,</span>
+                <span class="n">facecolor</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'posterior pred 95</span><span class="si">% i</span><span class="s1">nterval'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y_postpred_means</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'posterior pred mean'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'best'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-ii-question-3-13.png"><img alt="Part II, Question 3, figure 1" class="align-center" src="../_images/part-ii-question-3-13.png" style="width: 100%;" />
+</a>
+</div>
 <ol class="arabic simple" start="4">
 <li><p>(<strong>Model Evaluation</strong>) Discuss the fit of your model to the data. Discuss also what the posterior predictive tell you about the aleatoric and epistemic uncertainty of the model. Are these uncertainties what you’d want (think about want kind of uncertainties you want and where)?</p></li>
 </ol>
@@ -1703,12 +2217,36 @@ where <span class="math notranslate nohighlight">\(w\)</span>, <span class="math
 <li><p>(<strong>Model Evaluation</strong>) Compare the posterior predictive visualization from BBVI with the reparametrization trick to the one you obtained using HMC. Can you say whether or not your posterior approximation is good? How does approximating the posterior effect our estimation of epistemic and aleatoric uncertainty?</p></li>
 </ol>
 </div>
-<ol class="arabic simple" start="2">
-<li><p>(<strong>Quality of Posterior Vs Quality of Posterior Predictive</strong>) Based on your convergence diagnostics of your HMC sampler, do you believe that you’ve obtained a set of representative samples from the BNN posterior? Why or why not?</p></li>
-</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part III, Question 1</p>
+<p>Compare the posterior predictive in Part II, Question 3 with the one produced by HMC in Part I, Question 3.</p>
+<p>In general, it looks like the posterior predictive uncertainty produced by variational inference is smaller across the x-values we tested. In addition, the posterior predictive produced by HMC was able to capture epistemic uncertainty – the predictive uncertainty where there is no training data is larger than where there is training data; whereas the predictive uncertainty produced by variational inference is rather uniform across the input space regardless of whether or not training data is present.</p>
+<p><em>Not covered here: whether the posterior approximation is good.</em></p>
+</div>
+<ol class="arabic" start="2">
+<li><p>(<strong>Quality of Posterior Vs Quality of Posterior Predictive</strong>) Based on your convergence diagnostics of your HMC sampler, do you believe that you’ve obtained a set of representative samples from the BNN posterior? Why or why not?</p>
 <p>Based on your understanding of BNN posteriors, do you believe that a mean-field Gaussian is a good approximation of the BNN posterior? Why or why not?</p>
 <p>Which set of samples, HMC or VI, do you believe better captures the BNN posterior?</p>
-<p>Based on the empirical results from above, do you believe there is a clear positive relationship between posterior approximation and quality of posterior predictive uncertainties - i.e. is it true that the more I capture of the BNN posterior the beter the quality of my posterior predictive uncertainties?</p>
+<p>Based on the empirical results from above, do you believe there is a clear positive relationship between posterior approximation and quality of posterior predictive uncertainties - i.e. is it true that the more I capture of the BNN posterior the better the quality of my posterior predictive uncertainties?</p>
+</li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution: Part III, Question 2</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#visualize the traceplots for all of the 16 neural network parameters</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">D</span><span class="p">):</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">4</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">4</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">HMC_sampler</span><span class="o">.</span><span class="n">trace</span><span class="p">)),</span> <span class="n">HMC_sampler</span><span class="o">.</span><span class="n">trace</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">'Trace plots for all neural network parameters'</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/part-iii-question-2-1.png"><img alt="Part III, Question 2, figure 1" class="align-center" src="../_images/part-iii-question-2-1.png" style="width: 100%;" />
+</a>
+<p>As we can see, none of the parameters have converged.</p>
+<p><em>Not covered here: whether a mean-field Gaussian is a good approximation of the BNN posterior, which set of samples better captures it, and how posterior approximation relates to the quality of the posterior predictive uncertainties.</em></p>
+</div>
 <ol class="arabic simple" start="3">
 <li><p>(<strong>Speed and Scalability</strong>) Compare the two inference methods, HMC and BBVI, and discuss the scalability of each with respect to the number of model parameters and number of data points (how does increasing the number of model parameters or the number of data points affect each inference method?).</p></li>
 </ol>
