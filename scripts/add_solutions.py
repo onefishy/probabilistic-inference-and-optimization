@@ -46,7 +46,7 @@ MAX_OUTPUT_LINES = 30
 
 # Course-specific references that must not reach the book (code is checked too).
 LINT_RE = re.compile(
-    r"Lecture\s*#?\d|\bHW\s*#?\d(?!_data)|Homework\s*#?\d|\bin class\b|\bin lecture\b|last week"
+    r"\blectures?\b|\bHW\s*#?\d(?!_data)|Homework\s*#?\d|\b(?:in|from) class\b|last week"
     r"|\bLab\s*#\d|Long Form|Fall 20\d\d|/Users/|/anaconda3|some of you|(?-i:\bNEED|\bTFs?\b)",
     re.I)
 # Output reprs that carry no information for a reader.
@@ -137,6 +137,11 @@ def slice_text(text, start, end, where, keep_start=False):
     return text
 
 
+def label_tag(page):
+    """Short per-page tag for figure labels: '06' for chapters, 'lab-03' for labs."""
+    return "-".join(page.split("-")[:2]) if page.startswith("lab-") else page.split("-")[0]
+
+
 def prose(text, ctx, page, src, assets, labels):
     """Book-style markdown from a source markdown cell; code fences are left untouched."""
     text = text.replace("\r\n", "\n")
@@ -145,7 +150,7 @@ def prose(text, ctx, page, src, assets, labels):
     src_base = ctx.source_path(src).parent if src else ROOT
     parts = CODE_FENCE_RE.split(text)
     for i in range(0, len(parts), 2):
-        t = clean_markdown(parts[i], assets, src_base, f"fig-{page.split('-')[0]}-sol", labels,
+        t = clean_markdown(parts[i], assets, src_base, f"fig-{label_tag(page)}-sol", labels,
                            heading_delta=0, fig_dir=SOLUTION_FIGS / page, static_dir=STATIC_FIGS / "solutions" / page)
         parts[i] = headings_to_bold(t)
     return "\n\n".join(p.strip() for p in parts if p.strip())
@@ -291,11 +296,17 @@ warnings.filterwarnings('ignore')
 import numpy as np
 np.random.seed(207)"""
 
+# Runs in the re-run environment. The kernel is that interpreter's own ipykernel: with no
+# kernel directories, a "python3" kernelspec installed elsewhere (e.g. in ~/Library/Jupyter)
+# cannot take its place.
 EXECUTE = """\
 import sys, nbformat
+from jupyter_client.kernelspec import KernelSpecManager
+from jupyter_client.manager import AsyncKernelManager
 from nbclient import NotebookClient
 nb = nbformat.read(sys.argv[1], as_version=4)
-NotebookClient(nb, timeout=None, kernel_name='python3', resources={'metadata': {'path': sys.argv[2]}}).execute()
+km = AsyncKernelManager(kernel_name='python3', kernel_spec_manager=KernelSpecManager(kernel_dirs=[]))
+NotebookClient(nb, km=km, timeout=None, resources={'metadata': {'path': sys.argv[2]}}).execute()
 nbformat.write(nb, sys.argv[1])
 """
 
@@ -324,6 +335,13 @@ def run_program(page, ctx, book):
     return cells
 
 
+def check_run(page, nb):
+    for c in nb.cells:
+        for o in c.get("outputs", []):
+            if o.get("output_type") == "error":
+                raise SystemExit(f"{page}: run failed: {o.get('ename')}: {o.get('evalue')}")
+
+
 def load_run(page, ctx, book):
     cells = run_program(page, ctx, book)
     digest = hashlib.sha256(json.dumps(cells).encode()).hexdigest()
@@ -334,7 +352,6 @@ def load_run(page, ctx, book):
             raise SystemExit(f"{page}: no up-to-date run in {ctx.rerun_dir}; pass --rerun PYTHON")
         nb = nbformat.v4.new_notebook()
         nb.cells = [nbformat.v4.new_code_cell(src) for _, src in cells]
-        nb.metadata["solutions_digest"] = digest
         nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
         ctx.rerun_dir.mkdir(parents=True, exist_ok=True)
         nbformat.write(nb, path)
@@ -342,10 +359,12 @@ def load_run(page, ctx, book):
         subprocess.run([str(ctx.rerun_python), "-c", EXECUTE, str(path), str(page_path(page).parent)],
                        check=True)
         nb = nbformat.read(path, as_version=4)
-    for c in nb.cells:
-        for o in c.get("outputs", []):
-            if o.get("output_type") == "error":
-                raise SystemExit(f"{page}: run failed: {o.get('ename')}: {o.get('evalue')}")
+        check_run(page, nb)
+        # Only a run that finished without errors is marked up to date; a failed run stays
+        # unmarked, so the next invocation executes it again instead of showing empty outputs.
+        nb.metadata["solutions_digest"] = digest
+        nbformat.write(nb, path)
+    check_run(page, nb)
     ctx.runs[page] = {key: (src, nb.cells[i].get("outputs", []))
                       for i, (key, src) in enumerate(cells) if key}
 

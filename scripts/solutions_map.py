@@ -334,6 +334,30 @@ _CH13_P1 = "Exercise: Part I: Cost minimization with descent algorithms"
 _HW6_DATA = [("'HW5_data.csv'", "'../data/HW6_data.csv'")]
 
 PROMPT_EDITS[_CH13] = [(INTRO_OLD, INTRO_NEW)]
+
+# Question 7 (no timings) is re-run so its plot titles state the step sizes and algorithms used
+# (the source's said "stepsize 1." for step size 10 and "Gradient Descent" for SGD).
+def _title_fix(old_step, new_step):
+    """Title of the SGD plots: 'Gradient Descent ... stepsize <old>' -> 'Stochastic Gradient Descent ... stepsize <new>'."""
+    return (r"'Total Cost vs Iteration in Gradient Descent,\n init @({}, 0), stepsize " + old_step + r"\n'",
+            r"'Total Cost vs Iteration in Stochastic Gradient Descent,\n init @({}, 0), stepsize " + new_step + r"\n'")
+RERUN[_CH13] = [
+    run("imports", "HW6", 3),
+    run("data", "HW6", 5, fixes=_HW6_DATA),
+    run("loss", "HW6", 6),
+    run("grad", "HW6", 12),
+    run("gd", "HW6", 14),
+    run("sgd", "HW6", 18),
+    run("init-gd", "HW6", 34, fixes=[
+        (r"ax[0, i].set_title('Total Cost vs Iteration in Gradient Descent,\n init @({}, 0), stepsize 1.\n'",
+         r"ax[0, i].set_title('Total Cost vs Iteration in Gradient Descent,\n init @({}, 0), stepsize 10\n'"),
+        (r"initial 500 iterations, \n init @({}, 0), stepsize 1.\n'", r"initial 500 iterations, \n init @({}, 0), stepsize 10\n'"),
+    ]),
+    run("init-grad", "HW6", 36),
+    run("init-sgd-10", "HW6", 38, fixes=[_title_fix("1.", "10")]),
+    run("init-sgd-50", "HW6", 40, fixes=[_title_fix("50", "50")]),
+    run("init-sgd-500", "HW6", 42, fixes=[_title_fix("500", "500")]),
+]
 GAPS[_CH13] = ["Part II (Broader Impact)"]
 
 SOLUTIONS += [
@@ -410,19 +434,19 @@ SOLUTIONS += [
       note("a step-by-step discussion of the SGD runs for each step size.")),
     S(_CH13, _CH13_P1, "Solution: Part I, Question 7",
       md("HW6", 33, "#### Sensitivity to Initialization\n"),
-      code("HW6", 34),
+      ran("init-gd"),
       md("HW6", 35),
-      code("HW6", 36),
+      ran("init-grad"),
       md("HW6", 37, fixes=[
           ("In lecture, we discussed how this descent", "Earlier in this chapter we saw how this descent"),
       ]),
-      code("HW6", 38),
+      ran("init-sgd-10"),
       md("HW6", 39, fixes=[
           ("We see that with step size 1., stochastic gradient descent", "We see that with step size 10, stochastic gradient descent"),
       ]),
-      code("HW6", 40),
+      ran("init-sgd-50"),
       md("HW6", 41),
-      code("HW6", 42),
+      ran("init-sgd-500"),
       md("HW6", 43),
       note("gradient descent with a learning rate of 50.")),
 ]
@@ -522,6 +546,11 @@ SOLUTIONS += [
           ("From #1, we see", "From Question 1, we see"),
           ("by sampling 100 points from", "by sampling 200 points from"),
           ("of these 100 samples", "of these 200 samples"),
+          # Column 0 of the samples is the slope w_1 (x_matrix = [x, 1]).
+          (r"For the posterior marginal distribution $p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)$, we simply histogram the first coordinates (representing $w_0$)",
+           r"For the posterior marginal distribution $p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n)$, we simply histogram the first coordinates (representing $w_1$)"),
+          (r"The same can be done for $p(w_1 | y_1, \ldots y_n, x_1, \ldots, x_n)$.",
+           r"The same can be done for $p(w_0 | y_1, \ldots y_n, x_1, \ldots, x_n)$."),
       ]),
       ran("posterior"),
       ran("joint"),
@@ -683,12 +712,15 @@ SOLUTIONS += [
       ran("mse"),
       md("HW2", 11, fixes=[("the actualy data generating function", "the actual data generating function")]),
       ran("new-data"),
-      # The re-run shows degree 10 with a train/test gap like degree 15's, so the source's remark
-      # that degree 10 is indistinguishable from degrees 3 and 5 is left out.
+      # The re-run shows degrees 10 and 15 with similar train/test gaps (degree 15's test MSE is
+      # below degree 5's), so the source's paragraph singling out degrees 15+ and setting degree 10
+      # apart is left out.
       md("HW2", 13, fixes=[
-          (" But although we decided, based on our visual anlysis, that the degree 10 polynomial model is overfitting,"
-           " the difference between train and test MSE for this model is not significantly different from the degree 3"
-           " or degree 5 model. ", ""),
+          ("Now, with a new toy dataset sampled from the same distribution as our training dataset, we can finally see"
+           " evidence that degrees 15 and higher are indeed overfitting. But although we decided, based on our visual"
+           " anlysis, that the degree 10 polynomial model is overfitting, the difference between train and test MSE for"
+           " this model is not significantly different from the degree 3 or degree 5 model. \n\nFinally, it is clear",
+           "It is clear"),
       ])),
     S(_CH04, "2. **(Model Selection)**", "Solution: Part I, Question 2",
       ran("cv"),
@@ -815,7 +847,9 @@ SOLUTIONS += [
           ("we'd accept the first sampler", "we'd expect the first sampler"),
       ]),
       ran("accepted"),
-      md("HW3", 27, end="### 2. Importance Sampling MC Estimate")),
+      md("HW3", 27, end="### 2. Importance Sampling MC Estimate", fixes=[
+          ("From intuition and the formal proof from lecture, we know that fewer samples", "We know that fewer samples"),
+      ])),
     S(_CH06, _CH06_P2, "Solution: Part II, Question 2",
       md("HW3", 27, "### 2. Importance Sampling MC Estimate\n"),
       ran("weights"),
@@ -1075,6 +1109,9 @@ LAB_REMOVE[_LAB8] = _lab_cells(_LAB8, range(6, 15))
 
 SOLUTIONS += [
     S(_LAB8, "#mixture weights", "Solution",
+      text("*The saved outputs below come from the first model (a Bayesian logistic regression with a"
+           " single observation), not from the Gaussian mixture: when the notebook was run, the mixture cell"
+           " failed because it did not import `theano`. Re-running them requires `pymc3`.*"),
       code("LAB8", 6),
       code("LAB8", 7, fixes=[("#define the mixture model in pymc3\n", "#define the mixture model in pymc3\nimport theano\n")]),
       code("LAB8", 8),
@@ -1084,9 +1121,6 @@ SOLUTIONS += [
       code("LAB8", 12),
       code("LAB8", 13),
       code("LAB8", 14),
-      text("*The saved outputs above come from the first model (a Bayesian logistic regression with a"
-           " single observation), not from the Gaussian mixture: when the notebook was run, the mixture cell"
-           " failed because it did not import `theano`. Re-running them requires `pymc3`.*"),
       note("a comparison of how well HMC and variational inference capture the target distribution.")),
 ]
 
@@ -1343,6 +1377,9 @@ RERUN[_LAB7] = [
     book(f"{_LAB7}-017"),
     run("fit-one-nn-2", "LAB7", 18), run("plot-one-nn-2", "LAB7", 19), run("one-poly-2", "LAB7", 21),
     run("ensembles-2", "LAB7", 22, fixes=[
+        # the Part II data has noise variance y_var = 1.0, not 0.5**2
+        ("##define normal log-likelihood with variance 0.5**2\noutput_noise = 0.5**2\n",
+         "##define normal log-likelihood with the noise variance of the data\noutput_noise = y_var\n"),
         _LAB7_LOGLIK, *_LAB7_SCORE,
         (_LAB7_FIT, _LAB7_RESET + "    #fit my neural network to minimize MSE on the bootstrap sample\n"
                                   "    nn.fit(bootstrap_x.reshape((1, -1)), bootstrap_y.reshape((1, -1)), params)\n"),
