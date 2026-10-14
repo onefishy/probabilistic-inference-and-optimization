@@ -76,22 +76,16 @@ INTRO_OLD = "These problems were originally assigned as homework. Data files are
 INTRO_NEW = INTRO_OLD + (" Worked solutions, where available, are collapsed beneath the questions they answer;"
                          " try each problem before expanding them.")
 
-# Exact edits to question text: (old, new) per page; skipped once `new` is present.
-PROMPT_EDITS = {
-    "08-metropolis-hastings-gibbs": [
-        (INTRO_OLD, INTRO_NEW),
-        # The list restarts after an unindented paragraph, so the source numbers 1, 3, 4 show as is.
-        ("3.  Implement and run a Metropolis", "2.  Implement and run a Metropolis"),
-        ("4. Check for and discuss the convergence", "3. Check for and discuss the convergence"),
-    ],
-    "09-latent-variable-models": [(INTRO_OLD, INTRO_NEW)],
-}
-
+# Filled in page by page below.
+SOLUTIONS = []
+# Exact edits to question text: page -> [(old, new)]; an edit is skipped once `new` is present.
+PROMPT_EDITS = {}
 # Old lab answer cells (by cell id) that the merged lab solutions replace.
 LAB_REMOVE = {}
-
-# page -> re-run steps, executed in order in one kernel.
+# page -> re-run steps, executed in order in one kernel (after RUN_SETUP in add_solutions.py).
 RERUN = {}
+# Questions with no answer in the sources (listed by --report).
+GAPS = {}
 
 # ---------------------------------------------------------------------------
 # 08-metropolis-hastings-gibbs (ps-hw4b): MH-in-Gibbs on the kidney cancer data
@@ -101,7 +95,15 @@ _CH08 = "08-metropolis-hastings-gibbs"
 _CH08_P1 = "Exercise: Part I: The Conditional Distributions"
 _CH08_P2 = "Exercise: Part II: Metropolis-Hastings-in-Gibbs"
 
-SOLUTIONS = [
+PROMPT_EDITS[_CH08] = [
+    (INTRO_OLD, INTRO_NEW),
+    # The list restarts after an unindented paragraph, so the source numbers 1, 3, 4 show as is.
+    ("3.  Implement and run a Metropolis", "2.  Implement and run a Metropolis"),
+    ("4. Check for and discuss the convergence", "3. Check for and discuss the convergence"),
+]
+GAPS[_CH08] = ["Part III (Broader Impact)"]
+
+SOLUTIONS += [
     S(_CH08, _CH08_P1, "Solution: Part I, Question 1",
       md("HW4", 8, "### Problem 1.\n", "### Problem 2.", fixes=[
           ("As we discussed in class, the MLE to represent cancer rates exagerates rate",
@@ -138,6 +140,8 @@ SOLUTIONS = [
 _CH09 = "09-latent-variable-models"
 _CH09_P1 = "Exercise: Part I: MLE Through Latent Variable Augmentation and EM"
 
+PROMPT_EDITS[_CH09] = [(INTRO_OLD, INTRO_NEW)]
+
 SOLUTIONS += [
     S(_CH09, _CH09_P1, "Solution: Part I, Question 1",
       md("HW4", 5, "### Problem 1\n", "### Problem 2")),
@@ -170,7 +174,131 @@ SOLUTIONS += [
       md("HW4", 7, end="## Problem 4")),
 ]
 
-# Questions with no answer in the sources (reported by --report).
-GAPS = {
-    "08-metropolis-hastings-gibbs": ["Part III (Broader Impact)"],
-}
+# ---------------------------------------------------------------------------
+# 10-variational-inference (ps-hw5a): EM and variational inference (essay questions)
+# ---------------------------------------------------------------------------
+
+_CH10 = "10-variational-inference"
+_CH10_Q = "#### Bayesian Latent Variable Model"
+
+PROMPT_EDITS[_CH10] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH10] = ["Question 5 (Generalizability of EM)"]
+
+SOLUTIONS += [
+    S(_CH10, _CH10_Q, "Solution: Question 1",
+      md("HW5", 5, "### Problem 1: Comparing ELBOs\n", "### Problem 2", fixes=[
+          ("The simliarity between", "The similarity between"),
+          ("\n\n***Extra Credit is available to any student who fleshes out this argument fully!***", ""),
+      ]),
+      note("a comparison of the EM update steps with the CAVI update steps.")),
+    S(_CH10, _CH10_Q, "Solution: Question 2",
+      md("HW5", 5, "### Problem 2: Comparing ELBOs and KL-divergences\n", "### Problem 3", fixes=[
+          # The variational target is the posterior over everything unobserved, z included,
+          # so the intractable term is the log evidence log p(y | a, b).
+          (r"p(\theta, \phi|y, z, a, b)", r"p(z, \theta, \phi|y, a, b)", 6),
+          (r"p(y, z | a, b)", r"p(y | a, b)", 6),
+          (r"\int_{\Theta, \Phi}p(y, z, \theta, \phi| a, b) d(\theta, \phi)",
+           r"\int p(y, z, \theta, \phi| a, b)\, dz\, d\theta\, d\phi", 2),
+          ("when we substitue this", "when we substitute this"),
+          ("the problemmatic term", "the problematic term"),
+          ("prefer to evalutation this", "prefer to evaluate this"),
+          ("a hard problem to sovle", "a hard problem to solve"),
+          ("is not intractible to compute", "is not intractable to compute"),
+          ("is known and tractible", "is known and tractable"),
+      ])),
+    S(_CH10, _CH10_Q, "Solution: Question 3",
+      md("HW5", 5, "### Problem 3. The Mean Field Assumption and Coordinate Ascent\n", "### Problem 4")),
+    S(_CH10, _CH10_Q, "Solution: Question 4",
+      md("HW5", 5, "### Problem 4. Generalizability of CAVI\n", fixes=[
+          ("Bayesian Gaussain mixture", "Bayesian Gaussian mixture"),
+      ])),
+]
+
+# ---------------------------------------------------------------------------
+# 11-hierarchical-models (ps-hw5b): empirical Bayes and hierarchical Bayes, kidney cancer
+# ---------------------------------------------------------------------------
+
+_CH11 = "11-hierarchical-models"
+_CH11_P1 = "Exercise: Part I: Empirical Bayes"
+_CH11_P2 = "Exercise: Part II: Hierarchical Bayes"
+
+PROMPT_EDITS[_CH11] = [(INTRO_OLD, INTRO_NEW)]
+GAPS[_CH11] = ["Part III (Broader Impact), Questions 1-2"]
+
+# Part I re-runs (numpy/pandas only) with the plotting helper fixed: the raw rates were
+# drawn at alpha=0.0001 (invisible) and the top/bottom 300 colours were swapped.
+# Part II needs pymc3, so its saved outputs are shown.
+RERUN[_CH11] = [
+    lit("imports", "import pandas as pd\nimport matplotlib.pyplot as plt"),
+    run("helper", "HW5", 4, fixes=[
+        ("# estimates_df is a numpy array", "# estimates is a numpy array"),
+        ('y="pct_mortality", alpha=0.0001, color="grey")', 'y="pct_mortality", alpha=0.1, color="grey")'),
+        ('alpha=0.0001, color="blue", ax=ax', 'alpha=0.5, color="red", ax=ax'),
+        ('alpha=0.0001, color="red", ax=ax', 'alpha=0.5, color="blue", ax=ax'),
+    ]),
+    run("raw", "HW5", 7),
+    run("moments", "HW5", 10),
+    run("alpha-beta", "HW5", 12),
+    run("posterior", "HW5", 14),
+    run("posterior-plot", "HW5", 16),
+]
+
+_HW5_PART2_PLOT = text(
+    "*This plot comes from the original `pymc3` run, which drew the raw rates almost transparent;"
+    " only the posterior means (green) are visible.*")
+
+SOLUTIONS += [
+    S(_CH11, _CH11_P1, "Solution: Part I, Question 1",
+      ran("helper", out=False),
+      ran("raw"),
+      md("HW5", 8)),
+    S(_CH11, _CH11_P1, "Solution: Part I, Question 2",
+      md("HW5", 9, "### Problem #2: Empirical Bayes\n", fixes=[
+          (" Since the Poisson distribution \n", "\n"),
+          # Poisson pmf: (5 n_j theta_j)^{y_j} e^{-5 n_j theta_j} / y_j!
+          (r"\frac{1}{y_j!} e^{5 \cdot n_j \cdot \theta_j}",
+           r"\frac{\left(5 \cdot n_j \cdot \theta_j\right)^{y_j}}{y_j!} e^{-5 \cdot n_j \cdot \theta_j}"),
+          (r"\Gamma\left((\alpha + y_j - 2) - 1\right)", r"\Gamma\left((\alpha + y_j - 2) + 1\right)"),
+          (r"NegBin\left(\alpha, \frac{5 n_j}{1  + \beta}\right)", r"NegBin\left(\alpha, \frac{5 n_j}{5 n_j  + \beta}\right)"),
+          (r"&= \mathbb{E}[y_j] \left( \frac{5}{\beta} + \frac{1}{n_j}\right).",
+           r"&= \mathbb{E}\left[\frac{y_j}{n_j}\right] \left( \frac{5}{\beta} + \frac{1}{n_j}\right)."),
+          ("If we are permited to be", "If we are permitted to be"),
+      ]),
+      ran("moments"),
+      md("HW5", 11),
+      ran("alpha-beta"),
+      md("HW5", 13, fixes=[("the postior mean", "the posterior mean")]),
+      ran("posterior")),
+    S(_CH11, _CH11_P1, "Solution: Part I, Question 3",
+      md("HW5", 15, "### Problem #4: Posterior Means Visualization\n"),
+      ran("posterior-plot"),
+      md("HW5", 17)),
+    S(_CH11, _CH11_P2, "Solution: Part II, Question 1",
+      md("HW5", 18, "### Problem 1: Posterior Marginal Means of the Hierarchical Model\n"),
+      code("HW5", 19, out=False, fixes=[
+          ("#hyperparameters of hierarchical model\n",
+           "import pymc3 as pm\nfrom pymc3 import Model\n\n#hyperparameters of hierarchical model\n"),
+          ("\n    \n#draw graphical model for the thing we just defined  \nmodel_to_graphviz(hiearchical_model)", ""),
+      ]),
+      code("HW5", 20, fixes=[
+          ("#the default sampler for pymc3 is a type of MCMC sampler called No-U-turn HMC, \n"
+           "#which we have not covered in class\n",
+           "#the default sampler for pymc3 is the No-U-Turn Sampler (NUTS), a type of HMC\n"),
+      ]),
+      code("HW5", 21),
+      md("HW5", 22, end="### Problem 2", fixes=[
+          ("Certainty, the traceplots", "Certainly, the traceplots"),
+          ("than for the naive sampler we implemented last week!",
+           "than for the Metropolis-Hastings-in-Gibbs sampler from the [[ps:4b]]!"),
+      ]),
+      code("HW5", 23),
+      _HW5_PART2_PLOT),
+    S(_CH11, _CH11_P2, "Solution: Part II, Question 2",
+      md("HW5", 22, "### Problem 2: Hierarchical Bayes vs Empirical Bayes\n", fixes=[
+          ("Ploting the posterior mean", "Plotting the posterior mean"),
+          ("More so that in the case", "More so than in the case"),
+          ("(all the rates are around 0.00005%)", "(all the rates are around 0.005%)"),
+      ]),
+      code("HW5", 23),
+      _HW5_PART2_PLOT),
+]
