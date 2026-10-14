@@ -331,6 +331,7 @@ TEXT_FIXES += [
     ("19", "We've argued in this course that", "We've argued in this book that"),
     ("19", "**What this class is not:** This class is not", "**What this book is not:** This book is not"),
     ("19", "You don't remember everything from the class,", "You don't remember everything from the book,"),
+    ("19", "with practice in the future (you're getting some of that practice with the project)!", "with practice in the future!"),
     ("19", "**What is this class:** This class is a map", "**What this book is:** This book is a map"),
     ("19", "Using the structure of this class you can", "Using the structure of this book you can"),
     ("19", "This class is a foundation for you to build on, future classes in ML",
