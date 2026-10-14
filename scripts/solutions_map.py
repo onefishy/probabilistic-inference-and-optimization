@@ -695,3 +695,145 @@ SOLUTIONS += [
       note("a discussion of the ensembles fitted on larger training sets (what happens in the data-rich and"
            " data-poor regions, and whether any of the intervals are ideal when data is abundant).")),
 ]
+
+# ---------------------------------------------------------------------------
+# 06-monte-carlo-integration (ps-hw3): Monte Carlo estimates of E[h(X)]
+# ---------------------------------------------------------------------------
+# Bugs fixed before re-running (numpy/scipy):
+#   - rejection sampling averaged h over all proposals instead of the accepted samples;
+#   - inverse_transform ignored the inverse CDF it was given (always the global F_inv_X_vec),
+#     so "stratified sampling" was naive Monte Carlo, and the per-stratum inverse CDFs were wrong;
+#   - Part III computed standard deviations and called them variances.
+
+_CH06 = "06-monte-carlo-integration"
+_CH06_P1 = "Exercise: Part I. Implement Some Monte Carlo Estimates"
+_CH06_P2 = "Exercise: Part II. Debug Your Samplers"
+_CH06_P3 = "Exercise: Part III: Variance Reduction"
+
+PROMPT_EDITS[_CH06] = [
+    (INTRO_OLD, INTRO_NEW),
+    # Each list restarts after an unindented paragraph, so the source numbers show as is.
+    ("2. ***Stratified Sampling*** using 4 strata", "4. ***Stratified Sampling*** using 4 strata"),
+    ("3. Based on your experiments, would you feel comfortable", "2. Based on your experiments, would you feel comfortable"),
+]
+
+_STRATA_INV = (
+    "F_inv_1 = lambda y: (1 + 2 * np.sqrt(6 * y)) * 6\nF_inv_2 = lambda y: (5 - 2 * np.sqrt(2 * (1 - 3 * y))) * 6\n"
+    "F_inv_3 = lambda y: (5 + 2 * np.sqrt(3 * y - 1)) * 3\nF_inv_4 = lambda y: (9 - 2 * np.sqrt(3 * (1 - y))) * 3",
+    "F_inv_1 = lambda y: 1 + 2 * np.sqrt(y)\nF_inv_2 = lambda y: 5 - 2 * np.sqrt(1 - y)\n"
+    "F_inv_3 = lambda y: 5 + 2 * np.sqrt(y)\nF_inv_4 = lambda y: 9 - 2 * np.sqrt(1 - y)")
+
+RERUN[_CH06] = [
+    book("06-045"),
+    run("imports", "HW3", 3, fixes=[("import scipy as sp\n", "import scipy as sp\nimport scipy.stats\n")]),
+    run("pdf", "HW3", 5),
+    run("cdf-area", "HW3", 7),
+    run("inverse-cdf", "HW3", 9, fixes=[("    x_samples = F_inv_X_vec(y)", "    x_samples = F_inv_X(y)")]),
+    run("inverse-cdf-estimate", "HW3", 10, fixes=[("inverse_transform(h, F_inv_X, S)", "inverse_transform(h, F_inv_X_vec, S)")]),
+    run("proposals", "HW3", 12),
+    run("proposal-plot", "HW3", 13, fixes=[("#choose an M_2 so that f_X <= M_2 * prop_1", "#choose an M_2 so that f_X <= M_2 * prop_2")]),
+    run("rejection-normal", "HW3", 15, fixes=[
+        ("    mean_rej = np.mean(h(samples))", "    #average h over the accepted samples only\n    mean_rej = np.mean(h(accepted_sampes))"),
+    ]),
+    run("rejection-uniform", "HW3", 16),
+    run("importance", "HW3", 18),
+    run("stratified", "HW3", 20, fixes=[("#define the four inverse pdf's", "#define the four inverse CDF's"), _STRATA_INV]),
+    run("check-inverse", "HW3", 22),
+    run("check-rejection", "HW3", 24),
+    run("accepted", "HW3", 26),
+    run("weights", "HW3", 28),
+    run("importance-plot", "HW3", 30, fixes=[("sigma={}'.format(5, 1.6)", "sigma={}'.format(5.3, 1.6)")]),
+    run("check-strata", "HW3", 32),
+    run("h-strata", "HW3", 34),
+    run("variances", "HW3", 37, fixes=[
+        ("inverse_transform(h, F_inv_X, S)", "inverse_transform(h, F_inv_X_vec, S)"),
+        ("np.std(", "np.var(", 6),
+    ]),
+    run("variances-print", "HW3", 38, fixes=[("'std of ", "'variance of ", 6)]),
+]
+
+_ONE_OVER_S = (r"\approx \sum_{s=1}^{S} h(X_s)", r"\approx \frac{1}{S}\sum_{s=1}^{S} h(X_s)")
+
+SOLUTIONS += [
+    S(_CH06, _CH06_P1, "Solution: Part I, Question 1",
+      md("HW3", 4, "**Solution:**\n"),
+      ran("imports", out=False),
+      ran("pdf"),
+      md("HW3", 6, "### 1. Inverse Transform Sampling\n"),
+      ran("cdf-area"),
+      md("HW3", 8, fixes=[_ONE_OVER_S]),
+      ran("inverse-cdf"),
+      ran("inverse-cdf-estimate")),
+    S(_CH06, _CH06_P1, "Solution: Part I, Question 2",
+      md("HW3", 11, "### 2. Rejection Sampling\n"),
+      ran("proposals"),
+      ran("proposal-plot"),
+      md("HW3", 14, fixes=[_ONE_OVER_S]),
+      ran("rejection-normal"),
+      ran("rejection-uniform")),
+    S(_CH06, _CH06_P1, "Solution: Part I, Question 3",
+      md("HW3", 17, "### 3. Importance Sampling\n", fixes=[
+          (r"\widehat{I}_{\text{IS}} = \sum_{s=1}^S", r"\widehat{I}_{\text{IS}} = \frac{1}{S}\sum_{s=1}^S"),
+      ]),
+      ran("importance")),
+    S(_CH06, _CH06_P1, "Solution: Part I, Question 4",
+      md("HW3", 19, "### 4. Stratified Sampling\n", fixes=[
+          ("Note that we already have the inverse CDF's for each $f_i$:", "Inverting the CDF of each $f_i$ gives:"),
+          (r"F^{-1}_1 = 6(1 + 2\sqrt{6y}),\; F^{-1}_2 = 6(5 - 2\sqrt{2(1 - 3y)}),\; F^{-1}_3 = 3(5 + 2\sqrt{3y - 1}),\; F^{-1}_4= 3(9 - 2\sqrt{3(1 - y)}).",
+           r"F^{-1}_1 = 1 + 2\sqrt{y},\; F^{-1}_2 = 5 - 2\sqrt{1 - y},\; F^{-1}_3 = 5 + 2\sqrt{y},\; F^{-1}_4= 9 - 2\sqrt{1 - y}."),
+      ]),
+      ran("stratified")),
+    S(_CH06, _CH06_P2, "Solution: Part II, Question 1",
+      md("HW3", 21, "### 1. Inverse CDF and Rejection Sampling\n", fixes=[("Let's firt visualize", "Let's first visualize")]),
+      ran("check-inverse"),
+      md("HW3", 23, fixes=[("histogram of the 100 samples", "histogram of the 500 samples")]),
+      ran("check-rejection"),
+      # The re-run histograms don't show the uniform proposal doing "much better", so the
+      # source's opening comparison is left out.
+      md("HW3", 25, "More formally, recall that", keep_start=True, fixes=[
+          ("More formally, recall that the effficiency", "Recall that the efficiency"),
+          ("bounds the ratio $g/f_X$", "bounds the ratio $f_X/g$"),
+          ("we'd accept the first sampler", "we'd expect the first sampler"),
+      ]),
+      ran("accepted"),
+      md("HW3", 27, end="### 2. Importance Sampling MC Estimate")),
+    S(_CH06, _CH06_P2, "Solution: Part II, Question 2",
+      md("HW3", 27, "### 2. Importance Sampling MC Estimate\n"),
+      ran("weights"),
+      md("HW3", 29, fixes=[("this mean, again", "this means, again"), ("less dissimlar", "less dissimilar")]),
+      ran("importance-plot"),
+      md("HW3", 31, end="### Stratified Sampling", fixes=[
+          ("hard to determin by", "hard to determine by"),
+          ("visibly more heterogenous", "visibly more heterogeneous"),
+          ("uniform importand distribution", "uniform importance distribution"),
+      ])),
+    S(_CH06, _CH06_P2, "Solution: Part II, Question 3",
+      md("HW3", 31, "### Stratified Sampling\n"),
+      ran("check-strata"),
+      md("HW3", 33),
+      ran("h-strata"),
+      # With the stratified sampler fixed, the variance reduction is large (Part III), so the
+      # source's prediction that it "may be very insignificant" is left out.
+      md("HW3", 35, fixes=[
+          ("We see that the convinient way", "We see that the convenient way"),
+          (" This means that the variance reduction we get may be very insignificant!", ""),
+      ])),
+    S(_CH06, _CH06_P3, "Solution: Part III, Question 1",
+      md("HW3", 36, "### 1. Computing sample variance\n"),
+      ran("variances"),
+      ran("variances-print"),
+      md("HW3", 39, end="### 2. Overall comparison", fixes=[
+          # The fixed stratified estimate has about a fifth of the naive variance, not "close to" it.
+          ("Now, the variance of stratified sampling is smaller but close to the variance of naive MC with inverse CDF"
+           " sampling. We expect stratified sampling to deliver a variance reduction, which it apparently does, but this"
+           " reduction may be small (depending on our design choices). We'd anticipated this by visualizing the function"
+           " $h$ across the strata.\n\nFurthermore, if you ran a smaller number of trials, the sample estimation of the"
+           " variance itself will be noisy and you may find that the **estimated variance** of stratified sampling can be"
+           " higher than the **estimated variance** of naive Monte Carlo!\n\n", ""),
+          ("less that $S$ samples", "less than $S$ samples"),
+          ("both higher that that of", "both higher than that of"),
+      ]),
+      note("a discussion of the stratified estimate's variance, which is the lowest of the six above.")),
+    S(_CH06, _CH06_P3, "Solution: Part III, Question 2",
+      md("HW3", 39, "### 2. Overall comparison\n")),
+]
